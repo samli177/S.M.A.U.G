@@ -4,8 +4,8 @@
  * Created: 4/1/2014 10:53:49 AM
  *  Author: samli177
  */ 
-#define F_CPU 18432000
-#define BaudRate 9600
+#define F_CPU 16000000
+#define BaudRate 1000000
 
 #define servoDDR DDRD
 #define servoDirPort PORTD
@@ -17,6 +17,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <math.h>
 
 
 
@@ -174,11 +175,12 @@ void sendServoPacket(uint8_t ID, uint8_t instruction, uint8_t parametersLength)
 	
 }
 
-void servoGoto(double angle, int16_t speed)
+void servoGoto(int8_t ID, double angle, int16_t speed = 0x200)
 {
-	//int16_t goalPosition; 
-	//int8_t goalPosition_low, goalPosition_high;
+	int16_t goalPosition; 
+	int8_t goalPosition_low, goalPosition_high;
 	
+	// limit inputs to between 0 and 300 degrees
 	if (angle > 5.23598776)
 	{
 		angle = 5.23598776;
@@ -187,10 +189,16 @@ void servoGoto(double angle, int16_t speed)
 		angle = 0;
 	}
 	
-	//goalPosition = (angle/5.23598776)*0x3ff; //this will probably truncate correctly...or not....
+	goalPosition = (int16_t)((angle/5.23598776)*0x3ff); //this will probably truncate correctly...or not....
 	
 	
-			
+	gServoParameters[0] = 0x1E;
+	gServoParameters[1] = (int8_t)goalPosition; //truncates to low byte
+	gServoParameters[2] = (int8_t)(goalPosition>>8); //high byte
+	gServoParameters[3] = (int8_t)speed; 
+	gServoParameters[4] = (int8_t)(speed>>8); 
+	
+	sendServoPacket(ID, INST_WRITE, 5);	
 }
 
 int main(void)
