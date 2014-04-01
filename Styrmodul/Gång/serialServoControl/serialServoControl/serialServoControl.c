@@ -12,8 +12,8 @@
 #define servoDirPin PD4
 
 
-#define servoTx servoDirPort |= (1<<servoDirPin)
-#define servoRx servoDirPort &= ~(1<<servoDirPin)
+#define servoRx servoDirPort |= (1<<servoDirPin)
+#define servoTx servoDirPort &= ~(1<<servoDirPin)
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -197,7 +197,7 @@ int main(void)
 {
 	initServoSerial();
 	
-	servoRx;
+	servoTx;
 	
 	
 	//set servo angle
