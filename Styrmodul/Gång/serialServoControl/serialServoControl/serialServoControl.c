@@ -175,10 +175,9 @@ void sendServoPacket(uint8_t ID, uint8_t instruction, uint8_t parametersLength)
 	
 }
 
-void servoGoto(int8_t ID, double angle, int16_t speed = 0x200)
+void servoGoto(int8_t ID, double angle, int16_t speed)
 {
 	int16_t goalPosition; 
-	int8_t goalPosition_low, goalPosition_high;
 	
 	// limit inputs to between 0 and 300 degrees
 	if (angle > 5.23598776)
@@ -197,6 +196,38 @@ void servoGoto(int8_t ID, double angle, int16_t speed = 0x200)
 	gServoParameters[2] = (int8_t)(goalPosition>>8); //high byte
 	gServoParameters[3] = (int8_t)speed; 
 	gServoParameters[4] = (int8_t)(speed>>8); 
+	
+	sendServoPacket(ID, INST_WRITE, 5);	
+}
+
+void servoAngleLimit(int8_t ID, double minAngle, double maxAngle)
+{
+	uint16_t minPosition, maxPosition;
+	// limit inputs to between 0 and 300 degrees
+	if (minAngle > 5.23598776)
+	{
+		minAngle = 5.23598776;
+	} else if (minAngle < 0)
+	{
+		minAngle = 0;
+	}
+	
+	if (maxAngle > 5.23598776)
+	{
+		maxAngle = 5.23598776;
+	} else if (minAngle < 0)
+	{
+		maxAngle = 0;
+	}
+	
+	minPosition = (int16_t)((minAngle/5.23598776)*0x3ff);
+	maxPosition = (int16_t)((maxAngle/5.23598776)*0x3ff);
+	
+	gServoParameters[0] = 0x06; // address for CW Angle Limit(L)
+	gServoParameters[1] = (int8_t)minPosition; //truncates to low byte
+	gServoParameters[2] = (int8_t)(minPosition>>8); //high byte
+	gServoParameters[3] = (int8_t)maxPosition;
+	gServoParameters[4] = (int8_t)(maxPosition>>8);
 	
 	sendServoPacket(ID, INST_WRITE, 5);	
 }
