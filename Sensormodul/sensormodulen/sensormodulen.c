@@ -6,7 +6,7 @@
 */
 
 
-#define F_CPU 18300000UL
+#define F_CPU 16000000UL
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -30,7 +30,7 @@ int main(void)
 
 void displaytest(void)
 {
-	print_text("Test display");
+	print_line(0, "Initiating AI");
 }
 
 void init_TWI_sensor(void)

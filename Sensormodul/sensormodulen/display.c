@@ -6,7 +6,7 @@
  * Martin, Per
  */
 
-#define F_CPU 18300000UL
+#define F_CPU 16000000UL
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -107,7 +107,7 @@ void print_line(int line, char text[])
 		break;
 	}
 	
-	for(int i = 0; i < 5; ++i)
+	for(int i = 0; i < strlen(text); ++i)
 	{
 		print_char(text[i]);
 	}
