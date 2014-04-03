@@ -28,6 +28,86 @@ int main(void)
 	}
 }
 
+void init_mux()
+{
+	DDRA |= 0b00111110;
+	DDRA &= !(1<<PORTA0);
+	PORTA &= !(1<<PORTA5);
+	PORTA &= 0b11100001;
+}
+
+void init_UL()
+{
+	DDRA |= (1<<PORTA7);
+	DDRA &= !(1<<PORTA6);
+	TCCR0B = 0x05;
+}
+
+void select_sensor(int sensor)
+{
+	PORTA &= 0b11100001;
+	switch(sensor)
+	{
+		case(8):
+		{
+			break;
+		}
+		case(7):
+		{
+			PORTA |= 0b00000010;
+			break;
+		}
+		case(6):
+		{
+			PORTA |= 0b00001110;
+			break;
+		}
+		case(5):
+		{
+			PORTA |= 0b00001100;
+			break;
+		}
+		case(4):
+		{
+			PORTA |= 0b00001010;
+			break;
+		}
+		case(3):
+		{
+			PORTA |= 0b00001000;
+			break;
+		}
+		case(2);
+		{
+			PORTA |= 0b00000110;
+			break;
+		}
+		default:
+		{
+			PORTA |= 0b00000100;
+			break;
+		}
+	}
+}
+
+int get_sensor()
+{
+	return (PORTA & (1<<PORTA0));
+}
+
+unsigned int UL-sensor()
+{
+	unsigned int i;
+	PORTA |= (1<<PORTA7);
+	_delay_us(15);
+	PORTA &= !(1<<PORTA7);
+	//while(!(PORTA & (1<<PORTA6)));
+	TCNT0 = 0;
+	while((PORTA & (1<<PORTA6)));
+	i = TCNT0;
+	return i;
+}
+
 void displaytest(void)
 {
 	print_line(0, "Initiating AI");
