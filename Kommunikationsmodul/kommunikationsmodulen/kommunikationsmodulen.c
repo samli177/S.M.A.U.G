@@ -14,12 +14,29 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <stdbool.h>
+#include <string.h>
+#include "twi.h"
 
 // -- Global variables --
 uint8_t gTxPayload [255];
 uint8_t gTxBuffer [517]; // if there are only control octets in data it needs to be 255 + 7 + 255 = 517
 uint8_t gRxBuffer [517];
 uint16_t gRxBufferIndex;
+
+// -- Global variables from TWI --
+int my_adress;
+char message[255];
+int message_counter;
+bool instruction;
+int current_instruction;
+int settings;
+int buffer[8];
+int sensors[8];
+int servo;
+int sensor;
+int command[3];
+int current_command;
 
 // -- FIFO --
 
@@ -123,6 +140,8 @@ uint8_t ReadByte()
 }
 
 
+
+
 // calculate crc for packet
 uint16_t crc16(uint8_t tag, uint8_t length)
 {
@@ -215,7 +234,15 @@ void sendPacket(char tag, uint8_t length)
 	}
 }
 
-
+void SerialSendMessage(char msg[])
+{
+	for(int i = 0; i < strlen(msg); ++i )
+	{
+		gTxPayload[i] = msg[i];
+	}
+	
+	sendPacket('M', strlen(msg));
+}
 	
 
 void sendPacket2(char tag, uint8_t length)
@@ -233,10 +260,25 @@ void sendPacket2(char tag, uint8_t length)
 	
 }
 
+
+
+
+
+// -- MAIN --
+
+
+
+
+
 int main(void)
 {
 	init();
 	initSerial();
+	
+	// init TWI
+	my_adress = C_ADRESS;
+	init_TWI(my_adress);
+	
 	sei();
 
 	
@@ -255,6 +297,14 @@ int main(void)
 		_delay_ms(1000);
     }
 }
+
+
+
+
+
+
+
+
 
 // -- Interrupts -- 
 
@@ -275,12 +325,15 @@ ISR (USART0_RX_vect)
 			 PORTA ^= (1<<PORTA1); // turn on/off led
 			//temp		
 			
-			
+			// bounce
 			for(int i = 0; i < gRxBuffer[1]; i++)
 			{
 				gTxPayload[i] = gRxBuffer[i+2];
 			} 
 			sendPacket(gRxBuffer[0], gRxBuffer[1]);
+					
+			// send message to sensor module
+			send_string_fixed_length(S_ADRESS, gTxPayload, gRxBuffer[1]);
 			
 			
 			gRxBufferIndex = 0;
@@ -296,4 +349,175 @@ ISR (USART0_RX_vect)
 	}
 		
 	
+}
+
+
+
+// -- interrupt vector from TWI --
+
+//TWI Interrupt vector to exist in every module
+ISR(TWI_vect)
+{
+	switch(my_adress)
+	{
+		// ----------------------------------------------------------------------------- Communications
+		case(C_ADRESS):
+		{
+			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+			{
+				instruction = true;
+			}
+			else if(CONTROL == DATA_SLAW)
+			{
+				if(instruction)
+				{
+					current_instruction = get_data();
+					instruction = false;
+				}
+				else
+				{
+					switch(current_instruction)
+					{
+						case(I_SETTINGS):
+						{
+							PORTA |= (1<<PORTA1);
+							settings = get_data();
+							break;
+						}
+						case(I_STRING):
+						{
+							message[message_counter] = get_data();
+							message_counter += 1;
+							break;
+						}
+					}
+				}
+			}
+			else if (CONTROL == DATA_GENERAL)
+			{
+				if(sensor == 8)
+				{
+					for(int i = 0; i < sizeof(sensors)/sizeof(int);++i)
+					{
+						sensors[i] = buffer[i];
+					}
+					servo = get_data();
+				}
+				else
+				{
+					buffer[sensor] = get_data();
+					sensor += 1;
+				}
+			}
+			else if (CONTROL == STOP)
+			{
+				sensor = 0;
+				//Do something smart with the message.
+				
+				
+				
+				message_counter = 0;
+			}
+			break;
+		}
+		// ----------------------------------------------------------------------------- Sensors
+		case(S_ADRESS):
+		{
+			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+			{
+				instruction = true;
+			}
+			else if(CONTROL == DATA_SLAW)
+			{
+				if(instruction)
+				{
+					current_instruction = get_data();
+					instruction = false;
+				}
+				else
+				{
+					switch(current_instruction)
+					{
+						case(I_SWEEP):
+						{
+							//sweep = get_data(); ? :O
+							break;
+						}
+						case(I_STRING):
+						{
+							message[message_counter] = get_data();
+							message_counter += 1;
+							break;
+						}
+					}
+				}
+			}
+			else if (CONTROL == STOP)
+			{
+				//Gör något smart med message
+				message_counter = 0;
+			}
+			break;
+		}
+		// ----------------------------------------------------------------------------- Steer
+		case(ST_ADRESS):
+		{
+			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+			{
+				instruction = true;
+			}
+			else if(CONTROL == DATA_SLAW)
+			{
+				if(instruction)
+				{
+					current_instruction = get_data();
+					instruction = false;
+				}
+				else
+				{
+					switch(current_instruction)
+					{
+						case(I_COMMAND):
+						{
+							command[current_command] = get_data();
+							current_command += 1;
+							break;
+						}
+						case(I_STRING):
+						{
+							message[message_counter] = get_data();
+							message_counter += 1;
+							break;
+						}
+					}
+				}
+			}
+			else if (CONTROL == DATA_GENERAL)
+			{
+				if(sensor == 8)
+				{
+					for(int i = 0; i < sizeof(sensors)/sizeof(int);++i)
+					{
+						sensors[i] = buffer[i];
+					}
+					servo = get_data();
+				}
+				else
+				{
+					buffer[sensor] = get_data();
+					sensor += 1;
+				}
+			}
+			else if (CONTROL == STOP)
+			{
+				sensor = 0;
+				current_command = 0;
+				//Do something with the commands.
+				//Nothing to do with a string here really...
+				message_counter = 0;
+			}
+		}
+		break;
+	}
+	reset_TWI();
 }

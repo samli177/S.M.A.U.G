@@ -37,7 +37,8 @@ SUBDIRS :=
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../display.c \
-../sensormodulen.c
+../sensormodulen.c \
+../twi.c
 
 
 PREPROCESSING_SRCS += 
@@ -48,19 +49,23 @@ ASM_SRCS +=
 
 OBJS +=  \
 display.o \
-sensormodulen.o
+sensormodulen.o \
+twi.o
 
 OBJS_AS_ARGS +=  \
 display.o \
-sensormodulen.o
+sensormodulen.o \
+twi.o
 
 C_DEPS +=  \
 display.d \
-sensormodulen.d
+sensormodulen.d \
+twi.d
 
 C_DEPS_AS_ARGS +=  \
 display.d \
-sensormodulen.d
+sensormodulen.d \
+twi.d
 
 OUTPUT_FILE_PATH +=sensormodulen.elf
 
@@ -73,6 +78,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

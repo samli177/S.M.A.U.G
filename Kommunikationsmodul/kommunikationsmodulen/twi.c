@@ -5,7 +5,7 @@
  *  Author: perjo018
  */ 
 
-#define F_CPU 16000000UL
+#define F_CPU 18432000UL
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -315,6 +315,42 @@ bool send_string(int adr, char str[])
 		return false;
 	}
 	for(int i = 0; i < strlen(str); ++i)
+	{
+		set_data(str[i]);
+		send_bus();
+		wait_for_bus();
+	}
+	stop_bus();
+	return true;
+}
+
+
+bool send_string_fixed_length(int adr, uint8_t str[], int len)
+{
+	start_bus();
+	wait_for_bus();
+	if(CONTROL != START)
+	{
+		Error();
+		return false;
+	}
+	set_data(adr);
+	send_bus();
+	wait_for_bus();
+	if(CONTROL != ADRESS_W)
+	{
+		Error();
+		return false;
+	}
+	set_data(I_STRING);
+	send_bus();
+	wait_for_bus();
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	for(int i = 0; i < len; ++i)
 	{
 		set_data(str[i]);
 		send_bus();
