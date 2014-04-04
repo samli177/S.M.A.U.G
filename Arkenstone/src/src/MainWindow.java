@@ -16,6 +16,18 @@ import jssc.SerialPortTimeoutException;
  */
 public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPortEventListener {
 
+    public static enum SENSOR {
+
+        LEFT_FRONT,
+        RIGHT_FRONT,
+        LEFT_BACK,
+        RIGHT_BACK,
+        FRONT,
+        BACK,
+        VERTICAL,
+        ULTRA_SOUND
+    }
+
     SerialPort comPort;
     LinkedList<byte[]> messageBuffer;
     Object lock;
@@ -817,14 +829,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     public void run() {
         while (true) {
 
-            ((UpperPanel) upperDrawArea).updatePoints((float) Math.random() * 20 - 10, 395 + (float) Math.random() * 20);
             upperDrawArea.repaint();
-
-            ((LowerPanel) lowerDrawArea).updatePoints(100 + (float) Math.random() * 10, LowerPanel.LEFT_FRONT_SENSOR);
-            ((LowerPanel) lowerDrawArea).updatePoints(100 + (float) Math.random() * 10, LowerPanel.RIGHT_FRONT_SENSOR);
-            ((LowerPanel) lowerDrawArea).updatePoints(100 + (float) Math.random() * 10, LowerPanel.LEFT_BACK_SENSOR);
-            ((LowerPanel) lowerDrawArea).updatePoints(100 + (float) Math.random() * 10, LowerPanel.RIGHT_BACK_SENSOR);
-            ((LowerPanel) lowerDrawArea).updatePoints(100 + (float) Math.random() * 10, LowerPanel.FRONT_SENSOR);
             lowerDrawArea.repaint();
 
             if (hasMessage()) {
@@ -871,7 +876,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     private void settingsUpdate(byte[] data) {
-
+        
     }
 
     private void messageRecieved(byte[] data) {
@@ -885,6 +890,33 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     private void sensorUpdate(byte[] data) {
-
+        int sensor = data[0];
+        int length = data[1];
+        switch (sensor) {
+            case 0:
+                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_FRONT);
+                break;
+            case 1:
+                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.RIGHT_FRONT);
+                break;
+            case 2:
+                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_BACK);
+                break;
+            case 3:
+                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.RIGHT_BACK);
+                break;
+            case 4:
+                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.FRONT);
+                break;
+            case 5:
+                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.BACK);
+                break;
+            case 6:
+                ((UpperPanel) upperDrawArea).updatePoints(length, data[2], SENSOR.VERTICAL);
+                break;
+            case 7:
+                ((UpperPanel) upperDrawArea).updatePoints(length, 20, SENSOR.ULTRA_SOUND);
+                break;
+        }
     }
 }

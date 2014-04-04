@@ -8,7 +8,6 @@ package src;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 
@@ -19,11 +18,6 @@ import javax.swing.JPanel;
 public class LowerPanel extends JPanel {
 
     int MAX_POINTS = 20;
-    public static int LEFT_FRONT_SENSOR = 0;
-    public static int RIGHT_FRONT_SENSOR = 1;
-    public static int LEFT_BACK_SENSOR = 2;
-    public static int RIGHT_BACK_SENSOR = 3;
-    public static int FRONT_SENSOR = 4;
 
     ArrayList<Float> leftFront;
     ArrayList<Float> rightFront;
@@ -45,9 +39,9 @@ public class LowerPanel extends JPanel {
         front = new ArrayList<>();
     }
 
-    public void updatePoints(float length, int sensor) {
+    public void updatePoints(float length, MainWindow.SENSOR sensor) {
         switch (sensor) {
-            case 0:
+            case LEFT_FRONT:
                 leftFront.add(length);
                 if(leftFront.size() > MAX_POINTS){
                     ArrayList<Float> temp = new ArrayList<>();
@@ -59,7 +53,7 @@ public class LowerPanel extends JPanel {
                     temp.clear();
                 }
                 break;
-            case 1:
+            case RIGHT_FRONT:
                 rightFront.add(length);
                 if(rightFront.size() > MAX_POINTS){
                     ArrayList<Float> temp = new ArrayList<>();
@@ -71,7 +65,7 @@ public class LowerPanel extends JPanel {
                     temp.clear();
                 }
                 break;
-            case 2:
+            case LEFT_BACK:
                 leftBack.add(length);
                 if(leftBack.size() > MAX_POINTS){
                     ArrayList<Float> temp = new ArrayList<>();
@@ -83,7 +77,7 @@ public class LowerPanel extends JPanel {
                     temp.clear();
                 }
                 break;
-            case 3:
+            case RIGHT_BACK:
                 rightBack.add(length);
                 if(rightBack.size() > MAX_POINTS){
                     ArrayList<Float> temp = new ArrayList<>();
@@ -95,7 +89,7 @@ public class LowerPanel extends JPanel {
                     temp.clear();
                 }
                 break;
-            case 4:
+            case FRONT:
                 front.add(length);
                 if(front.size() > MAX_POINTS){
                     ArrayList<Float> temp = new ArrayList<>();

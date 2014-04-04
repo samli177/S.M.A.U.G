@@ -30,7 +30,7 @@ public class UpperPanel extends JPanel {
         points = new ArrayList<>();
     }
     
-    public void updatePoints(float angle, float length){
+    public void updatePoints(float angle, float length, MainWindow.SENSOR sensor){
         Point2D newPoint = new Point2D.Float(angle, length);
         points.add(newPoint);
         if(points.size() > MAX_POINTS){
