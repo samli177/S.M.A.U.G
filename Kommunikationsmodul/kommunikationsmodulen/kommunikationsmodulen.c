@@ -66,27 +66,28 @@ uint8_t FifoDataLength (struct fifo *fifo)
 
 uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
 {
-	// fifo full -> error
-	if (FifoDataLength(fifo) == (fifo->size -1))
+	// fifo full : error
+	if (FifoDataLength(fifo) == (fifo->size - 1))
 	{
 		return 1;
 	}
-	 
-	fifo->buffer[fifo->write + 1] = data; // write data
-	fifo->write = (fifo->write + 1) & (fifo->size - 1); // increment write pointer
+	// write data & increment write pointer
+	fifo->buffer[fifo->write] = data;
+	fifo->write = (fifo->write + 1) & (fifo->size - 1);
 	return 0;
 };
 
+
 uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
 {
-	// fifo empty -> error
+	// fifo empty : error
 	if (FifoDataLength(fifo) == 0)
 	{
 		return 1;
 	}
-	
-	*data = fifo->buffer[fifo->read]; // read data
-	fifo->read = (fifo->read + 1) & (fifo->size -1); // increment read pointer
+	// read data & increment read pointer
+	*data = fifo->buffer[fifo->read];
+	fifo->read = (fifo->read + 1) & (fifo->size - 1);
 	return 0;
 };
 
@@ -293,8 +294,43 @@ int main(void)
 		
 		sendPacket('M', 3); */
 		
+		/* Test of fifo-buffer
 		
-		_delay_ms(1000);
+		if(FifoWrite(gRxFIFO, '1'))
+		{
+			send_string(S_ADRESS,"error 1");
+		
+		}
+		if(FifoWrite(gRxFIFO, '8'))
+		{
+			send_string(S_ADRESS, "error 2");
+		}
+		
+		uint8_t *databit = 0;
+		
+		char databits[1];
+		
+		if(FifoRead(gRxFIFO, databit))
+		{
+			send_string(S_ADRESS, "error 3");
+		}
+		
+		databits[0] = *databit;
+		
+		if(FifoRead(gRxFIFO, databit))
+		{
+			send_string(S_ADRESS, "error 4");
+		}  
+		
+		databits[1] = *databit;
+		
+		send_string_fixed_length(S_ADRESS, databits, 2);
+		
+		_delay_ms(5000);
+		
+		*/
+		
+		
     }
 }
 
@@ -319,7 +355,6 @@ ISR (USART0_RX_vect)
 	{
 		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
 		{
-			//TODO: add correct packet to FIFO or something	
 			
 			//temp
 			 PORTA ^= (1<<PORTA1); // turn on/off led
@@ -331,6 +366,13 @@ ISR (USART0_RX_vect)
 				gTxPayload[i] = gRxBuffer[i+2];
 			} 
 			sendPacket(gRxBuffer[0], gRxBuffer[1]);
+			
+			// Add packet (-crc) to fifo-buffer to cue it for decoding
+			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
+			{
+				FifoWrite(gRxFIFO, gRxBuffer[i]);
+			}
+				
 					
 			// send message to sensor module
 			send_string_fixed_length(S_ADRESS, gTxPayload, gRxBuffer[1]);
