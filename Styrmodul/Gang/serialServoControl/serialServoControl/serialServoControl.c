@@ -179,18 +179,18 @@ void servoGoto(uint8_t ID, double angle, uint16_t speed)
 {
 	int16_t goalPosition; 
 	
-	angle = angle - 0.52359877559;
+	angle = 150 + angle * 150/3.1415;
 	
 	// limit inputs to between 0 and 300 degrees
-	if (angle > 5.23598776)
+	if (angle > 300)
 	{
-		angle = 5.23598776;
+		angle = 300;
 	} else if (angle < 0)
 	{
 		angle = 0;
 	}
 	
-	goalPosition = (uint16_t)((angle/5.23598776)*0x3ff); //this will probably truncate correctly...or not....
+	goalPosition = (uint16_t)(angle * 0x3ff / 300); //this will probably truncate correctly...or not....
 	
 	
 	gServoParameters[0] = 0x1E;
@@ -239,6 +239,9 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 
 int main(void)
 {
+	
+	DDRD |= (1<<PORTD5);
+	
 	initServoSerial();
 	
 	servoTx;
@@ -251,16 +254,36 @@ int main(void)
 	gServoParameters[3] = 0x00;
 	gServoParameters[4] = 0x02;
 	
+	for(int i = 1; i<=18; ++i)
+		{
+			servoGoto(i, 0, 100);
+			_delay_ms(2000);
+		}
+	/*
+	servoGoto(15, -3.14/6, 100);
+	servoGoto(3, -3.14/6, 100);
+	servoGoto(9, -3.14/6, 100);
+	servoGoto(16, 3.14/6, 100);
+	servoGoto(4, 3.14/6, 100);
+	servoGoto(10, 3.14/6, 100);
 	
-	
-	while(1)
+	servoGoto(12, -3.14/6, 100);
+	servoGoto(18, -3.14/6, 100);
+	servoGoto(6, -3.14/6, 100);
+	servoGoto(5, -3.14/6, 100);
+	servoGoto(11, 3.14/6, 100);
+	servoGoto(17, -3.14/6, 100);
+	*/
+	/*while(1)
 	{
-		_delay_ms(500);
-		servoGoto(16, 3.14/2 ,0x200);
-		_delay_ms(500);
-		servoGoto(16, 0 ,0x200);
+		_delay_ms(2000);
+		servoGoto(7, 0 ,50);
+		PORTD |= (1<<PORTD5);
+		_delay_ms(2000);
+		servoGoto(7, 3.1415/4 ,50);
+		PORTD &= !(1<<PORTD5);
 		
-	}
+	}*/
 	
 	
 }
