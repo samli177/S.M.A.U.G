@@ -1,17 +1,14 @@
 package src;
 
 import java.awt.event.ItemEvent;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.text.DefaultCaret;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
+import jssc.SerialPortTimeoutException;
 
 /**
  *
@@ -87,13 +84,13 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         jLabel12 = new javax.swing.JLabel();
         changeParametersButton = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
-        jTextField12 = new javax.swing.JTextField();
+        parameter1TextField = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
-        jTextField13 = new javax.swing.JTextField();
+        parameter3TextField = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
-        jTextField14 = new javax.swing.JTextField();
+        parameter2TextField = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
-        jTextField15 = new javax.swing.JTextField();
+        parameter4TextField = new javax.swing.JTextField();
         jSeparator3 = new javax.swing.JSeparator();
         jSeparator4 = new javax.swing.JSeparator();
         jSeparator5 = new javax.swing.JSeparator();
@@ -344,19 +341,19 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
         jLabel13.setText("Testparameter 1");
 
-        jTextField12.setText("5");
+        parameter1TextField.setText("5");
 
         jLabel14.setText("Testparameter 3");
 
-        jTextField13.setText("5");
+        parameter3TextField.setText("5");
 
         jLabel15.setText("Testparameter 2");
 
-        jTextField14.setText("5");
+        parameter2TextField.setText("5");
 
         jLabel16.setText("Testparameter 4");
 
-        jTextField15.setText("5");
+        parameter4TextField.setText("5");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -385,19 +382,19 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
                                     .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jTextField13, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(parameter3TextField, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.LEADING))
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                                     .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jTextField15, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(parameter4TextField, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING)))
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
                                     .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jTextField12, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(parameter1TextField, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jTextField14, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(parameter2TextField, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.LEADING)))
                                 .addComponent(changeParametersButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGap(0, 302, Short.MAX_VALUE)))
@@ -429,19 +426,19 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(parameter1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addComponent(jLabel15)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(parameter2TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(parameter3TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel16)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(parameter4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(29, 29, 29)
                 .addComponent(changeParametersButton)
                 .addContainerGap(67, Short.MAX_VALUE))
@@ -506,14 +503,21 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }//GEN-LAST:event_autoButtonActionPerformed
 
     private void changeParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeParametersButtonActionPerformed
-        writeMessage("Parametrar uppdaterade");
+        String mess = parameter1TextField.getText();
+        if (sendMessage('M', mess)) {
+            writeMessage("Parametrar uppdaterade");
+            writeMessage("Wrote: " + mess);
+        } else {
+            writeMessage("Kunde inte skicka");
+        }
     }//GEN-LAST:event_changeParametersButtonActionPerformed
 
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
         if (connectButton.getText() == "Koppla ifrån") {
             try {
-                comPort.closePort();
                 writeMessage("Kopplar ifrån");
+                comPort.closePort();
+                writeMessage("Ifrånkopplad");
                 connectButton.setText("Koppla upp");
             } catch (SerialPortException ex) {
                 System.out.println(ex);
@@ -624,12 +628,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField12;
-    private javax.swing.JTextField jTextField13;
-    private javax.swing.JTextField jTextField14;
-    private javax.swing.JTextField jTextField15;
     private javax.swing.JPanel lowerDrawArea;
     private javax.swing.JTextArea messageTextArea;
+    private javax.swing.JTextField parameter1TextField;
+    private javax.swing.JTextField parameter2TextField;
+    private javax.swing.JTextField parameter3TextField;
+    private javax.swing.JTextField parameter4TextField;
     private javax.swing.JTextField ultraSoundTextField;
     private javax.swing.JPanel upperDrawArea;
     // End of variables declaration//GEN-END:variables
@@ -665,7 +669,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     public void serialEvent(SerialPortEvent serialPortEvent) {
         try {
             byte[] indata = comPort.readBytes(1);
-            
+
             if (indata[0] == 0x7E) {
 
                 ArrayList<Byte> bytes = new ArrayList();
@@ -673,7 +677,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 byte b;
                 byte b2;
                 do {
-                    indata = comPort.readBytes(1);
+                    try {
+                        indata = comPort.readBytes(1, 100);
+                    } catch (SerialPortTimeoutException ex) {
+                        System.out.println("Timeout");
+                        return;
+                    }
                     b = indata[0];
 
                     if (b == 0x7D) {
@@ -691,77 +700,120 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
                 // Ta bort stopbiten
                 bytes.remove(bytes.size() - 1);
-                
+
                 // Säger om meddelandet är korrekt
                 boolean correct = true;
-                
+
                 // Kontrollera rätt längd på paketet och CRC
-                int length = bytes.get(1);
                 if (bytes.size() < 4) {
                     correct = false;
-                } else if (bytes.size() != 4 + length) {
+                } else if (bytes.size() != 4 + bytes.get(1)) {
                     correct = false;
                 }/* else {
-                    byte[] crcIndata = new byte[length + 2];
-                    for(int i = 0; i < length + 2; i++){
-                        crcIndata[i] = bytes.get(i);
-                    }
-                    int crc = crc16(length, crcIndata);
-                    byte crc1 = (byte) (crc & 0x00FF);
-                    byte crc2 = (byte) ((crc & 0xFF00) >> 8);
-                    System.out.println("CRC: " + crc1 + ", " + crc2);
-                    if (crc1 != bytes.get(length + 2) || crc2 != bytes.get(length + 3)){
-                        correct = false;
-                    }
-                }*/
-                
-                for(byte byte1: bytes){
+                 byte[] crcIndata = new byte[length + 2];
+                 for(int i = 0; i < length + 2; i++){
+                 crcIndata[i] = bytes.get(i);
+                 }
+                 int crc = crc16(length, crcIndata);
+                 byte crc1 = (byte) (crc & 0x00FF);
+                 byte crc2 = (byte) ((crc & 0xFF00) >> 8);
+                 System.out.println("CRC: " + crc1 + ", " + crc2);
+                 if (crc1 != bytes.get(length + 2) || crc2 != bytes.get(length + 3)){
+                 correct = false;
+                 }
+                 }*/
+
+                for (byte byte1 : bytes) {
                     System.out.println(byte1);
                 }
-                //
+
                 if (correct) {
-                    //synchronized (lock) {
+                    int length = bytes.get(1);
                     byte[] relevantData = new byte[length + 2];
-                    for(int i = 0; i < length + 2; i++){
+                    for (int i = 0; i < length + 2; i++) {
                         relevantData[i] = bytes.get(i);
                     }
-                    messageBuffer.addLast(relevantData);
-                    //}
+                    // Synkronisera skrivning och läsning till och från buffern
+                    synchronized (lock) {
+                        messageBuffer.addLast(relevantData);
+                    }
                 } else {
                     System.out.println("Felaktigt meddelande\n");
                 }
             }
-
-            // Lägg in datan i en buffer.
         } catch (SerialPortException ex) {
             System.out.println(ex);
         }
     }
 
-    private int crc16(int length, byte[] data){
+    private int crc16(int length, byte[] data) {
         int crc = 0xFFFF;
         int poly = 0x8408;
-        
-        if(length == 0){
+
+        if (length == 0) {
             return 0;
         }
-        for(int i = length - 1; i >= 0; i--){
+        for (int i = length - 1; i >= 0; i--) {
             byte b = data[i];
-            for(int j = 0; j < 8; j++){
-                if((crc & 0x0001) != ((b >> j) & 0x0001)){
+            for (int j = 0; j < 8; j++) {
+                if ((crc & 0x0001) != ((b >> j) & 0x0001)) {
                     crc = (crc >> 1) ^ poly;
                 } else {
                     crc >>= 1;
                 }
             }
         }
-        
+
         crc ^= 0xFFFF;
         int clone = crc;
         crc = (crc << 8) | ((clone >> 8) & 0x00FF);
         return crc;
     }
-    
+
+    public boolean sendMessage(char tag, String instructions) {
+        if (comPort == null || !comPort.isOpened()) {
+            writeMessage("Koppla upp till roboten först!");
+            return false;
+        }
+
+        byte[] data = instructions.getBytes();
+        byte length = (byte) data.length;
+        int crc = crc16(length, data);
+        byte crc1 = (byte) ((crc & 0xFF00) >> 8);
+        byte crc2 = (byte) (crc & 0x00FF);
+
+        ArrayList<Byte> message = new ArrayList<>();
+        message.add((byte) 0x7E);
+        message.add((byte) tag);
+        message.add(length);
+        for (int i = 0; i < length; i++) {
+            byte b = data[i];
+            if (b == 0x7E || b == 0x7D) {
+                // Escape octet
+                message.add((byte) 0x7D);
+                message.add((byte) (b ^ 0x20));
+            } else {
+                message.add(b);
+            }
+        }
+        message.add(crc1);
+        message.add(crc2);
+        message.add((byte) 0x7E);
+
+        byte[] doneMessage = new byte[message.size()];
+        for (int i = 0; i < message.size(); i++) {
+            doneMessage[i] = message.get(i);
+        }
+        try {
+            comPort.writeBytes(doneMessage);
+        } catch (SerialPortException ex) {
+            System.out.println(ex);
+            return false;
+        }
+
+        return true;
+    }
+
     public void run() {
         while (true) {
 
@@ -794,9 +846,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private void decodeMessage() {
         byte[] message = messageBuffer.getFirst();
         //Kanske behöver synkroniseras med serialEvent...
-        //synchronized (lock){
-        messageBuffer.removeFirst();
-        //}
+        synchronized (lock) {
+            messageBuffer.removeFirst();
+        }
 
         char tag = (char) message[0];
         int length = message[1];
@@ -824,11 +876,11 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void messageRecieved(byte[] data) {
         String m = "";
-        
-        for(byte b : data){
+
+        for (byte b : data) {
             m += (char) b;
         }
-        
+
         writeMessage("Message: " + m);
     }
 

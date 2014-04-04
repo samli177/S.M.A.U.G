@@ -440,23 +440,23 @@
                                   <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
                                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                              <Component id="jTextField13" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="parameter3TextField" alignment="0" max="32767" attributes="0"/>
                                               <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace pref="27" max="32767" attributes="0"/>
                                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                              <Component id="jTextField15" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="parameter4TextField" alignment="0" max="32767" attributes="0"/>
                                               <Component id="jLabel16" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                              <Component id="jTextField12" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="parameter1TextField" alignment="0" max="32767" attributes="0"/>
                                               <Component id="jLabel13" alignment="0" max="32767" attributes="0"/>
                                           </Group>
                                           <EmptySpace max="32767" attributes="0"/>
                                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                              <Component id="jTextField14" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="parameter2TextField" alignment="0" max="32767" attributes="0"/>
                                               <Component id="jLabel15" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
@@ -498,23 +498,23 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jTextField12" min="-2" max="-2" attributes="0"/>
+                                      <Component id="parameter1TextField" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jTextField14" min="-2" max="-2" attributes="0"/>
+                                      <Component id="parameter2TextField" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jTextField13" min="-2" max="-2" attributes="0"/>
+                              <Component id="parameter3TextField" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jTextField15" min="-2" max="-2" attributes="0"/>
+                              <Component id="parameter4TextField" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
@@ -599,7 +599,7 @@
                 <Property name="text" type="java.lang.String" value="Testparameter 1"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="jTextField12">
+            <Component class="javax.swing.JTextField" name="parameter1TextField">
               <Properties>
                 <Property name="text" type="java.lang.String" value="5"/>
               </Properties>
@@ -609,7 +609,7 @@
                 <Property name="text" type="java.lang.String" value="Testparameter 3"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="jTextField13">
+            <Component class="javax.swing.JTextField" name="parameter3TextField">
               <Properties>
                 <Property name="text" type="java.lang.String" value="5"/>
               </Properties>
@@ -619,7 +619,7 @@
                 <Property name="text" type="java.lang.String" value="Testparameter 2"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="jTextField14">
+            <Component class="javax.swing.JTextField" name="parameter2TextField">
               <Properties>
                 <Property name="text" type="java.lang.String" value="5"/>
               </Properties>
@@ -629,7 +629,7 @@
                 <Property name="text" type="java.lang.String" value="Testparameter 4"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="jTextField15">
+            <Component class="javax.swing.JTextField" name="parameter4TextField">
               <Properties>
                 <Property name="text" type="java.lang.String" value="5"/>
               </Properties>
