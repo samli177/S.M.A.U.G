@@ -273,25 +273,27 @@ uint8_t DecodeMessageRxFIFO()
 		return 1; // error
 	}
 	
-	uint8_t msg[1];
-	msg[0] = *len;
-	send_string_fixed_length(S_ADRESS, msg, 1); 
-	for(uint8_t i = 0; i < *len - 1; ++i)
+	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
+	
+	//NOTE: there has to be a better way of doing this...
+	int ifzero = 0;
+	if(length == 0) ifzero = 1;
+	uint8_t msg[length-1+ifzero];
+
+	for(int i = 0; i < length; ++i)
 	{
 		if(FifoRead(gRxFIFO, character))
 		{
 			send_string(S_ADRESS, "RxFIFO ERROR: DATA MISSING");
 			return 1; // error
 		}
-		
+
 		msg[i] = *character;
 	}
 	
-	FifoRead(gRxFIFO, character);
 	
-	//send_string(S_ADRESS, "a");
 	// TODO: send to relevant party... the display for now
-	//send_string_fixed_length(S_ADRESS, msg, *len);
+	send_string_fixed_length(S_ADRESS, msg, length);
 	return 0;
 }
 
@@ -352,51 +354,7 @@ int main(void)
 		
 		DecodeRxFIFO();
 		
-		_delay_ms(500);
-		
-		/*
-		gTxPayload[0] = 'p';
-		gTxPayload[1] = 'a';
-		gTxPayload[2] = 'j';
-		
-		SendPacket('M', 3); */
-		
-		/*
-		
-		if(FifoWrite(gRxFIFO, 'a'))
-		{
-			send_string(S_ADRESS,"error 1");
-		
-		}
-		if(FifoWrite(gRxFIFO, '8'))
-		{
-			send_string(S_ADRESS, "error 2");
-		}
-		
-		uint8_t *databit = 0;
-		
-		char databits[1];
-		
-		if(FifoRead(gRxFIFO, databit))
-		{
-			send_string(S_ADRESS, "error 3");
-		}
-		
-		databits[0] = *databit;
-		
-		if(FifoRead(gRxFIFO, databit))
-		{
-			send_string(S_ADRESS, "error 4");
-		}  
-		
-		databits[1] = *databit;
-		
-		send_string_fixed_length(S_ADRESS, databits, 2);
-		
-		_delay_ms(5000);
-		
-		
-		*/
+		_delay_ms(1000);
 		
     }
 }
