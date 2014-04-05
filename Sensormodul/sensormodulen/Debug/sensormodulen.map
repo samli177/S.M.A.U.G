@@ -37,11 +37,27 @@ Discarded input sections
  .text.select_sensor
                 0x00000000       0x56 sensormodulen.o
  .text.get_sensor
-                0x00000000        0x8 sensormodulen.o
+                0x00000000        0x2 sensormodulen.o
  .text.UL_sensor
                 0x00000000       0x18 sensormodulen.o
  .text.send_data
                 0x00000000       0x4c sensormodulen.o
+ .data.SENSOR_UL
+                0x00000000        0x2 sensormodulen.o
+ .data.SENSOR_VERTICAL
+                0x00000000        0x2 sensormodulen.o
+ .data.SENSOR_BACK
+                0x00000000        0x2 sensormodulen.o
+ .data.SENSOR_FRONT
+                0x00000000        0x2 sensormodulen.o
+ .data.SENSOR_BACK_RIGHT
+                0x00000000        0x2 sensormodulen.o
+ .data.SENSOR_BACK_LEFT
+                0x00000000        0x2 sensormodulen.o
+ .data.SENSOR_FRONT_RIGHT
+                0x00000000        0x2 sensormodulen.o
+ .bss.SENSOR_FRONT_LEFT
+                0x00000000        0x2 sensormodulen.o
  .text          0x00000000        0x0 twi.o
  .bss           0x00000000        0x0 twi.o
  .text.send_status
@@ -518,24 +534,24 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x1487
+.debug_info     0x00000000     0x1513
  *(.debug_info)
  .debug_info    0x00000000      0x55c display.o
- .debug_info    0x0000055c      0x5cb sensormodulen.o
- .debug_info    0x00000b27      0x960 twi.o
+ .debug_info    0x0000055c      0x657 sensormodulen.o
+ .debug_info    0x00000bb3      0x960 twi.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0x65d
+.debug_abbrev   0x00000000      0x645
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x1c0 display.o
- .debug_abbrev  0x000001c0      0x28d sensormodulen.o
- .debug_abbrev  0x0000044d      0x210 twi.o
+ .debug_abbrev  0x000001c0      0x275 sensormodulen.o
+ .debug_abbrev  0x00000435      0x210 twi.o
 
-.debug_line     0x00000000     0x110e
+.debug_line     0x00000000     0x1103
  *(.debug_line)
  .debug_line    0x00000000      0x3e0 display.o
- .debug_line    0x000003e0      0x573 sensormodulen.o
- .debug_line    0x00000953      0x7bb twi.o
+ .debug_line    0x000003e0      0x568 sensormodulen.o
+ .debug_line    0x00000948      0x7bb twi.o
 
 .debug_frame    0x00000000      0x3a8
  *(.debug_frame)
@@ -543,13 +559,13 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x000000dc      0x100 sensormodulen.o
  .debug_frame   0x000001dc      0x1cc twi.o
 
-.debug_str      0x00000000      0x355
+.debug_str      0x00000000      0x3d0
  *(.debug_str)
  .debug_str     0x00000000      0x170 display.o
                                 0x1b8 (size before relaxing)
- .debug_str     0x00000170       0xfa sensormodulen.o
-                                0x295 (size before relaxing)
- .debug_str     0x0000026a       0xeb twi.o
+ .debug_str     0x00000170      0x175 sensormodulen.o
+                                0x310 (size before relaxing)
+ .debug_str     0x000002e5       0xeb twi.o
                                 0x249 (size before relaxing)
 
 .debug_loc      0x00000000      0xa13
