@@ -113,6 +113,78 @@ void print_line(int line, char text[])
 	}
 }
 
+void print_value(float value)
+{
+	if(value == (int) value)
+	{
+		// Integer
+		if(value < 10)
+		{
+			print_digit(value);
+		} else 
+		{
+			print_int(value);
+		}
+	}
+}
+
+void print_int(int number)
+{
+	if(number < 10)
+	{
+		if(number != 0)
+		{
+			print_digit(number);
+		}
+	} else
+	{
+		int mod = number % 10;
+		int left = number - mod;
+		print_int(left / 10);
+		print_digit(mod);
+	}
+}
+
+void print_digit(int digit)
+{
+	switch(digit)
+	{
+		case 0:
+			print_char('0');
+			break;
+		case 1:
+			print_char('1');
+			break;
+		case 2:
+			print_char('2');
+			break;
+		case 3:
+			print_char('3');
+			break;
+		case 4:
+			print_char('4');
+			break;
+		case 5:
+			print_char('5');
+			break;
+		case 6:
+			print_char('6');
+			break;
+		case 7:
+			print_char('7');
+			break;
+		case 8:
+			print_char('8');
+			break;
+		case 9:
+			print_char('9');
+			break;
+		default:
+			print_char('0');
+			break;
+	}
+}
+
 void clear_display()
 {
 	PORTB = 0b00000001; //Clear Display
