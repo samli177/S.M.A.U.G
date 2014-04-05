@@ -160,6 +160,28 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 	sendServoPacket(ID, INST_WRITE, 5);	
 }
 
+#define coxa 56;
+#define femur 66;
+#define tibia 131;
+#define femurAngleAddition 0.2426;
+#define tibiaAngleAddition 3.1415/4;
+void LegOneGoto(int x,int y,int z, int servospeed)
+{
+	double alpha;
+	double beta;
+	double gamma;
+	double d;
+	
+	gamma = atan(x/y);
+	d = sqrt(z*z+pow((x-coxa*sin(gamma)), 2)+pow((y-coxa*cos(gamma)), 2));
+	beta = 3.1415 - acos((femur*femur+tibia*tibia-d*d)/(2*femur*tibia));
+	alpha = acos((femur*femur-tibia*tibia+d*d)/(2*femur*d))-asin(z/d);
+	
+	servoGoto(8, gamma, servospeed);
+	servoGoto(10,alpha + femurAngleAddition,servospeed);
+	servoGoto(12, -beta + tibiaAngleAddition,servospeed);
+}
+
 
 int main(void)
 {
@@ -190,10 +212,10 @@ int main(void)
 	sendServoPacket(BROADCASTING_ID, INST_WRITE, 3);
 	
 	//variables for standard position and speed
-	/*
+	
 	double alpha = 3.1415/4;
 	double beta = 3.1415/2.2;
-	int speed = 150;
+	int speed = 180;
 	
 	//dummy code that puts robot in standard position
 	
@@ -224,12 +246,22 @@ int main(void)
 	
 	_delay_ms(5000);
 	
+	while(1)
+	{
+		LegOneGoto(0,150,80,200);
+		_delay_ms(900);
+		LegOneGoto(100,100,0,200);
+		_delay_ms(900);
+		LegOneGoto(-100,100,0,200);
+		_delay_ms(900);
+	}
+	
 	//This dummy code puts robot in disco mode, use with care
-	//It spins on the spot flashing its LEDs*/
+	//It spins on the spot flashing its LEDs
 	/*
 	while(1)
 	{
-		_delay_ms(2000);
+		_delay_ms(1000);
 		PORTD |= (1<<PORTD5);
 		servoGoto(9, -alpha - 3.14/6, speed);
 		servoGoto(16, alpha + 3.14/6, speed);
@@ -284,7 +316,7 @@ int main(void)
 		
 		
 	}*/
-	
+	/*
 	double x=120;
 	double y=170;
 	double z=200;
@@ -306,15 +338,16 @@ int main(void)
 			d = sqrt(z*z+pow((x-coxa*sin(gamma)), 2)+pow((y-coxa*cos(gamma)), 2));
 			beta = 3.1415 - acos((femur*femur+tibia*tibia-d*d)/(2*femur*tibia));
 			alpha = acos((femur*femur-tibia*tibia+d*d)/(2*femur*d))-asin(z/d);
-			d = alpha + beta;
 		}
 		PORTD |= (1<<PORTD5);
 		_delay_ms(1000);
 	
 	servoGoto(14, gamma, 50);
 	servoGoto(16,alpha+0.2426,50);
-	servoGoto(18, -beta+3.1415/4,50);
+	servoGoto(18, -beta+3.1415/4,50);*/
 }
+
+
 
 // -- Interrupts --
 
