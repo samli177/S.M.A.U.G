@@ -263,6 +263,7 @@ void SendPacket2(char tag, uint8_t length)
 
 uint8_t DecodeMessageRxFIFO()
 {
+	
 	uint8_t *len = 0;
 	uint8_t *character = 0;
 	
@@ -272,9 +273,10 @@ uint8_t DecodeMessageRxFIFO()
 		return 1; // error
 	}
 	
-	uint8_t msg[*len]; 
-	
-	for(uint8_t i = 0; i < *len; ++i)
+	uint8_t msg[1];
+	msg[0] = *len;
+	send_string_fixed_length(S_ADRESS, msg, 1); 
+	for(uint8_t i = 0; i < *len - 1; ++i)
 	{
 		if(FifoRead(gRxFIFO, character))
 		{
@@ -285,14 +287,15 @@ uint8_t DecodeMessageRxFIFO()
 		msg[i] = *character;
 	}
 	
+	FifoRead(gRxFIFO, character);
 	
+	//send_string(S_ADRESS, "a");
 	// TODO: send to relevant party... the display for now
-	send_string_fixed_length(S_ADRESS, msg, *len);
-	
+	//send_string_fixed_length(S_ADRESS, msg, *len);
 	return 0;
 }
 
-void decodeRxFIFO()
+void DecodeRxFIFO()
 {
 	uint8_t *tag = 0;
 	
@@ -347,7 +350,7 @@ int main(void)
     {
 		PORTA ^= (1<<PORTA0);
 		
-		DecodeMessageRxFIFO();
+		DecodeRxFIFO();
 		
 		_delay_ms(500);
 		
@@ -358,9 +361,9 @@ int main(void)
 		
 		SendPacket('M', 3); */
 		
-		/* Test of fifo-buffer
+		/*
 		
-		if(FifoWrite(gRxFIFO, '1'))
+		if(FifoWrite(gRxFIFO, 'a'))
 		{
 			send_string(S_ADRESS,"error 1");
 		
@@ -392,8 +395,8 @@ int main(void)
 		
 		_delay_ms(5000);
 		
-		*/
 		
+		*/
 		
     }
 }
