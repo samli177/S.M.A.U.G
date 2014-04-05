@@ -190,7 +190,7 @@ int main(void)
 	sendServoPacket(BROADCASTING_ID, INST_WRITE, 3);
 	
 	//variables for standard position and speed
-	
+	/*
 	double alpha = 3.1415/4;
 	double beta = 3.1415/2.2;
 	int speed = 150;
@@ -225,7 +225,7 @@ int main(void)
 	_delay_ms(5000);
 	
 	//This dummy code puts robot in disco mode, use with care
-	//It spins on the spot flashing its LEDs
+	//It spins on the spot flashing its LEDs*/
 	/*
 	while(1)
 	{
@@ -285,7 +285,35 @@ int main(void)
 		
 	}*/
 	
+	double x=120;
+	double y=170;
+	double z=200;
+
+	double alpha;
+	double beta;
+	double gamma;
+
+	double coxa=56;
+	double femur=66;
+	double tibia=131;
+	double d;
 	
+		PORTD &= !(1<<PORTD5);
+		for(int i=0; i<4; ++i)
+		{
+			_delay_ms(1000);		
+			gamma = atan(x/y);
+			d = sqrt(z*z+pow((x-coxa*sin(gamma)), 2)+pow((y-coxa*cos(gamma)), 2));
+			beta = 3.1415 - acos((femur*femur+tibia*tibia-d*d)/(2*femur*tibia));
+			alpha = acos((femur*femur-tibia*tibia+d*d)/(2*femur*d))-asin(z/d);
+			d = alpha + beta;
+		}
+		PORTD |= (1<<PORTD5);
+		_delay_ms(1000);
+	
+	servoGoto(14, gamma, 50);
+	servoGoto(16,alpha+0.2426,50);
+	servoGoto(18, -beta+3.1415/4,50);
 }
 
 // -- Interrupts --
