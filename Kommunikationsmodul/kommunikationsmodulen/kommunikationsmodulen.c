@@ -190,7 +190,7 @@ uint16_t crc16(uint8_t tag, uint8_t length)
 	return (crc);
 }
 
-void sendPacket(char tag, uint8_t length)
+void SendPacket(char tag, uint8_t length)
 {
 	int count, offset, buffersize;
 	uint16_t crc;
@@ -242,11 +242,11 @@ void SerialSendMessage(char msg[])
 		gTxPayload[i] = msg[i];
 	}
 	
-	sendPacket('M', strlen(msg));
+	SendPacket('M', strlen(msg));
 }
 	
 
-void sendPacket2(char tag, uint8_t length)
+void SendPacket2(char tag, uint8_t length)
 {
 	WriteByte(0x7e);
 	WriteByte(tag);
@@ -261,6 +261,66 @@ void sendPacket2(char tag, uint8_t length)
 	
 }
 
+uint8_t DecodeMessageRxFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *character = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		send_string(S_ADRESS, "RxFIFO ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	uint8_t msg[*len]; 
+	
+	for(uint8_t i = 0; i < *len; ++i)
+	{
+		if(FifoRead(gRxFIFO, character))
+		{
+			send_string(S_ADRESS, "RxFIFO ERROR: DATA MISSING");
+			return 1; // error
+		}
+		
+		msg[i] = *character;
+	}
+	
+	
+	// TODO: send to relevant party... the display for now
+	send_string_fixed_length(S_ADRESS, msg, *len);
+	
+	return 0;
+}
+
+void decodeRxFIFO()
+{
+	uint8_t *tag = 0;
+	
+	if(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
+	{
+		switch(*tag){
+			case('M'): // if 'tag' is 'M'
+			{
+				if(DecodeMessageRxFIFO()) // if decoding failed
+				{
+					// TODO: flush buffer?
+					return;
+				}
+				
+				break;
+			}
+		}
+	}
+}
+
+void bounce()
+{
+	for(int i = 0; i < gRxBuffer[1]; i++)
+	{
+		gTxPayload[i] = gRxBuffer[i+2];
+	}
+	SendPacket(gRxBuffer[0], gRxBuffer[1]);
+}
 
 
 
@@ -287,12 +347,16 @@ int main(void)
     {
 		PORTA ^= (1<<PORTA0);
 		
+		DecodeMessageRxFIFO();
+		
+		_delay_ms(500);
+		
 		/*
 		gTxPayload[0] = 'p';
 		gTxPayload[1] = 'a';
 		gTxPayload[2] = 'j';
 		
-		sendPacket('M', 3); */
+		SendPacket('M', 3); */
 		
 		/* Test of fifo-buffer
 		
@@ -338,10 +402,6 @@ int main(void)
 
 
 
-
-
-
-
 // -- Interrupts -- 
 
 ISR (USART0_RX_vect)
@@ -355,34 +415,20 @@ ISR (USART0_RX_vect)
 	{
 		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
 		{
-			
 			//temp
 			 PORTA ^= (1<<PORTA1); // turn on/off led
 			//temp		
 			
-			// bounce
-			for(int i = 0; i < gRxBuffer[1]; i++)
-			{
-				gTxPayload[i] = gRxBuffer[i+2];
-			} 
-			sendPacket(gRxBuffer[0], gRxBuffer[1]);
+			bounce();
 			
-			// Add packet (-crc) to fifo-buffer to cue it for decoding
+			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
 			{
 				FifoWrite(gRxFIFO, gRxBuffer[i]);
 			}
-				
-					
-			// send message to sensor module
-			send_string_fixed_length(S_ADRESS, gTxPayload, gRxBuffer[1]);
-			
-			
-			gRxBufferIndex = 0;
-		}else
-		{
-			gRxBufferIndex = 0; // can be optimized away...
 		}
+		
+		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read 
 		
 	}else
 	{

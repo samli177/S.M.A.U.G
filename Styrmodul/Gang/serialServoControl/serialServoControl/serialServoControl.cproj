@@ -109,6 +109,9 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="serialServoControl.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="serialServoControl.c">
       <SubType>compile</SubType>
     </Compile>
