@@ -34,6 +34,17 @@ int sensor;
 int command[3];
 int current_command;
 
+// -- Definition of sensors --
+int SENSOR_FRONT_LEFT = 0;
+int SENSOR_FRONT_RIGHT = 1;
+int SENSOR_BACK_LEFT = 2;
+int SENSOR_BACK_RIGHT = 3;
+int SENSOR_FRONT = 4;
+int SENSOR_BACK = 5;
+int SENSOR_VERTICAL = 6;
+int SENSOR_UL = 7;
+
+
 int main(void)
 {
 	init_display();
@@ -118,9 +129,11 @@ void select_sensor(int sensor)
 	}
 }
 
-int get_sensor()
+void get_sensor()
 {
-	return (PORTA & (1<<PORTA0));
+	//return (PORTA & (1<<PORTA0));
+	
+	
 }
 
 unsigned int UL_sensor()

@@ -4,98 +4,22 @@
  * Created: 4/1/2014 10:53:49 AM
  *  Author: samli177
  */ 
-#define F_CPU 16000000
-#define BaudRate 1000000
-
-#define servoDDR DDRD
-#define servoDirPort PORTD
-#define servoDirPin PD4
-
-
-#define servoRx servoDirPort |= (1<<servoDirPin)
-#define servoTx servoDirPort &= ~(1<<servoDirPin)
 
 #include <avr/io.h>
+#include "serialServoControl.h"
+
 #include <util/delay.h>
 #include <math.h>
-
-
-
-//--- Control Table Address ---
-//EEPROM AREA
-#define P_MODEL_NUMBER_L 0
-#define P_MODOEL_NUMBER_H 1
-#define P_VERSION 2
-#define P_ID 3
-#define P_BAUD_RATE 4
-#define P_RETURN_DELAY_TIME 5
-#define P_CW_ANGLE_LIMIT_L 6
-#define P_CW_ANGLE_LIMIT_H 7
-#define P_CCW_ANGLE_LIMIT_L 8
-#define P_CCW_ANGLE_LIMIT_H 9
-#define P_SYSTEM_DATA2 10
-#define P_LIMIT_TEMPERATURE 11
-#define P_DOWN_LIMIT_VOLTAGE 12
-#define P_UP_LIMIT_VOLTAGE 13
-#define P_MAX_TORQUE_L 14
-#define P_MAX_TORQUE_H 15
-#define P_RETURN_LEVEL 16
-#define P_ALARM_LED 17
-#define P_ALARM_SHUTDOWN 18
-#define P_OPERATING_MODE 19
-#define P_DOWN_CALIBRATION_L 20
-#define P_DOWN_CALIBRATION_H 21
-#define P_UP_CALIBRATION_L 22
-#define P_UP_CALIBRATION_H 23
-
-//RAM AREA
-
-#define P_TORQUE_ENABLE (24)
-#define P_LED (25)
-#define P_CW_COMPLIANCE_MARGIN (26)
-#define P_CCW_COMPLIANCE_MARGIN (27)
-#define P_CW_COMPLIANCE_SLOPE (28)
-#define P_CCW_COMPLIANCE_SLOPE (29)
-#define P_GOAL_POSITION_L (30)
-#define P_GOAL_POSITION_H (31)
-#define P_GOAL_SPEED_L (32)
-#define P_GOAL_SPEED_H (33)
-#define P_TORQUE_LIMIT_L (34)
-#define P_TORQUE_LIMIT_H (35)
-#define P_PRESENT_POSITION_L (36)
-#define P_PRESENT_POSITION_H (37)
-#define P_PRESENT_SPEED_L (38)
-#define P_PRESENT_SPEED_H (39)
-#define P_PRESENT_LOAD_L (40)
-#define P_PRESENT_LOAD_H (41)
-#define P_PRESENT_VOLTAGE (42)
-#define P_PRESENT_TEMPERATURE (43)
-#define P_REGISTERED_INSTRUCTION (44)
-#define P_PAUSE_TIME (45)
-#define P_MOVING (46)
-#define P_LOCK (47)
-#define P_PUNCH_L (48)
-#define P_PUNCH_H (49)
-
-//--- Instruction ---
-#define INST_PING 0x01
-#define INST_READ 0x02
-#define INST_WRITE 0x03
-#define INST_REG_WRITE 0x04
-#define INST_ACTION 0x05
-#define INST_RESET 0x06
-#define INST_DIGITAL_RESET 0x07
-#define INST_SYSTEM_READ 0x0C
-#define INST_SYSTEM_WRITE 0x0D
-#define INST_SYNC_WRITE 0x83
-#define INST_SYNC_REG_WRITE 0x84
-
-#define BROADCASTING_ID 0xfe
+#include <avr/interrupt.h>
 
 
 // -- Global Variables --
 uint8_t gServoParameters[128];
 uint8_t gServoTxBuffer[128];
+
+uint8_t gServoRxBuffer[260];
+uint8_t gServoRxReadMode = RM_WAIT_FOR_START;
+uint8_t gServoLengthCounter = 0;
 
 
 void initServoSerial()
@@ -105,9 +29,8 @@ void initServoSerial()
 	UBRR1H = (uint8_t) (((F_CPU / 16 / BaudRate ) - 1)>>8);
 	UBRR1L = (uint8_t) ((F_CPU / 16 / BaudRate ) - 1) ;
 	
-	//enable receiver and transmitter
-	//TODO:: enbable interrupts?
-	UCSR1B = (1<<RXEN1)|(1<<TXEN1);
+	//enable receiver and transmitter and enable interrupts
+	UCSR1B = (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1);
 	
 	//Frame format: 8data, no parity, 1 stop bit
 	UCSR1C = (1<<UCSZ10 | 1<<UCSZ11);
@@ -237,6 +160,7 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 	sendServoPacket(ID, INST_WRITE, 5);	
 }
 
+
 int main(void)
 {
 	
@@ -254,36 +178,184 @@ int main(void)
 	gServoParameters[3] = 0x00;
 	gServoParameters[4] = 0x02;
 	
-	for(int i = 1; i<=18; ++i)
+	
+	
+	/*for(int i = 1; i<=18; ++i)
 		{
 			servoGoto(i, 0, 100);
 			_delay_ms(2000);
-		}
-	/*
-	servoGoto(15, -3.14/6, 100);
-	servoGoto(3, -3.14/6, 100);
-	servoGoto(9, -3.14/6, 100);
-	servoGoto(16, 3.14/6, 100);
-	servoGoto(4, 3.14/6, 100);
-	servoGoto(10, 3.14/6, 100);
+		}*/
+
 	
-	servoGoto(12, -3.14/6, 100);
-	servoGoto(18, -3.14/6, 100);
-	servoGoto(6, -3.14/6, 100);
-	servoGoto(5, -3.14/6, 100);
-	servoGoto(11, 3.14/6, 100);
-	servoGoto(17, -3.14/6, 100);
-	*/
-	/*while(1)
+	sendServoPacket(BROADCASTING_ID, INST_WRITE, 3);
+	
+	//variables for standard position and speed
+	/*
+	double alpha = 3.1415/4;
+	double beta = 3.1415/2.2;
+	int speed = 150;
+	
+	//dummy code that puts robot in standard position
+	
+	servoGoto(1, 0, speed);
+	servoGoto(2, 0, speed);
+	servoGoto(7, 0, speed);
+	servoGoto(8, 0, speed);
+	servoGoto(13, 0, speed);
+	servoGoto(14, 0, speed);
+	
+	_delay_ms(100);
+	
+	servoGoto(15, -alpha, speed);
+	servoGoto(3, -alpha, speed);
+	servoGoto(9, -alpha, speed);
+	servoGoto(16, alpha, speed);
+	servoGoto(4, alpha, speed);
+	servoGoto(10, alpha, speed);
+	
+	_delay_ms(100);
+	
+	servoGoto(12, -beta, speed);
+	servoGoto(18, -beta, speed);
+	servoGoto(6, -beta, speed);
+	servoGoto(5, beta, speed);
+	servoGoto(11, beta, speed);
+	servoGoto(17, beta, speed);
+	
+	_delay_ms(5000);
+	
+	//This dummy code puts robot in disco mode, use with care
+	//It spins on the spot flashing its LEDs*/
+	/*
+	while(1)
 	{
 		_delay_ms(2000);
-		servoGoto(7, 0 ,50);
 		PORTD |= (1<<PORTD5);
-		_delay_ms(2000);
-		servoGoto(7, 3.1415/4 ,50);
+		servoGoto(9, -alpha - 3.14/6, speed);
+		servoGoto(16, alpha + 3.14/6, speed);
+		servoGoto(3, -alpha - 3.14/6, speed);
+		_delay_ms(1000);
+		servoGoto(7, 3.14/6, speed);
+		servoGoto(1, 3.14/6, speed);
+		servoGoto(14, 3.14/6, speed);
+		_delay_ms(1000);
+		servoGoto(9, -alpha, speed);
+		servoGoto(16, alpha, speed);
+		servoGoto(3, -alpha, speed);
+		_delay_ms(1000);
 		PORTD &= !(1<<PORTD5);
+		servoGoto(10, alpha + 3.14/6, speed);
+		servoGoto(15, -alpha - 3.14/6, speed);
+		servoGoto(4, alpha + 3.14/6, speed);
+		_delay_ms(1000);
+		servoGoto(2, 3.14/6, speed);
+		servoGoto(8, 3.14/6, speed);
+		servoGoto(13, 3.14/6, speed);
+		_delay_ms(1000);
+		servoGoto(10, alpha, speed);
+		servoGoto(15, -alpha, speed);
+		servoGoto(4, alpha, speed);
+		_delay_ms(1000);
+		PORTD |= (1<<PORTD5);
+		servoGoto(9, -alpha - 3.14/6, speed);
+		servoGoto(16, alpha + 3.14/6, speed);
+		servoGoto(3, -alpha - 3.14/6, speed);
+		_delay_ms(1000);
+		servoGoto(2, -3.14/6, speed);
+		servoGoto(8, -3.14/6, speed);
+		servoGoto(13, -3.14/6, speed);
+		_delay_ms(1000);
+		servoGoto(9, -alpha, speed);
+		servoGoto(16, alpha, speed);
+		servoGoto(3, -alpha, speed);
+		_delay_ms(1000);
+		PORTD &= !(1<<PORTD5);
+		servoGoto(10, alpha + 3.14/6, speed);
+		servoGoto(15, -alpha - 3.14/6, speed);
+		servoGoto(4, alpha + 3.14/6, speed);
+		_delay_ms(1000);
+		servoGoto(1, -3.14/6, speed);
+		servoGoto(7, -3.14/6, speed);
+		servoGoto(14, -3.14/6, speed);
+		_delay_ms(1000);
+		servoGoto(10, alpha, speed);
+		servoGoto(15, -alpha, speed);
+		servoGoto(4, alpha, speed);
+		
 		
 	}*/
 	
+	double x=120;
+	double y=170;
+	double z=200;
+
+	double alpha;
+	double beta;
+	double gamma;
+
+	double coxa=56;
+	double femur=66;
+	double tibia=131;
+	double d;
 	
+		PORTD &= !(1<<PORTD5);
+		for(int i=0; i<4; ++i)
+		{
+			_delay_ms(1000);		
+			gamma = atan(x/y);
+			d = sqrt(z*z+pow((x-coxa*sin(gamma)), 2)+pow((y-coxa*cos(gamma)), 2));
+			beta = 3.1415 - acos((femur*femur+tibia*tibia-d*d)/(2*femur*tibia));
+			alpha = acos((femur*femur-tibia*tibia+d*d)/(2*femur*d))-asin(z/d);
+			d = alpha + beta;
+		}
+		PORTD |= (1<<PORTD5);
+		_delay_ms(1000);
+	
+	servoGoto(14, gamma, 50);
+	servoGoto(16,alpha+0.2426,50);
+	servoGoto(18, -beta+3.1415/4,50);
 }
+
+// -- Interrupts --
+
+ISR (USART1_RX_vect)
+{
+	uint8_t data;
+	data = UDR1; // read data from buffer TODO: add check for overflow
+	
+	if(data == 0xff)
+	{
+		if(gServoRxReadMode == RM_WAIT_FOR_START)
+		{
+			gServoRxReadMode = RM_CHECK_FOR_SECOND_START;
+			
+		}else if(gServoRxReadMode == RM_CHECK_FOR_SECOND_START)
+		{
+			gServoRxReadMode = RM_READ_ID;
+		}
+		
+	}else if(gServoRxReadMode == RM_READ_ID)
+	{
+		gServoRxBuffer[0] = data;
+		gServoRxReadMode = RM_READ_LENGTH;
+	}else if(gServoRxReadMode == RM_READ_LENGTH)
+	{
+		gServoRxBuffer[1] = data;
+		// TODO: add check for correct length maybe?
+		gServoLengthCounter = data;
+		gServoRxReadMode = RM_READ_ERROR;	
+	}else if(gServoRxReadMode == RM_READ_ERROR)
+	{
+		gServoRxBuffer[2] = data;
+		gServoRxReadMode = RM_READ_PARAMETERS;
+		--gServoLengthCounter;
+	}else if(gServoRxReadMode == RM_READ_PARAMETERS)
+	{
+		if(gServoLengthCounter == 2)  
+		{
+			gServoRxReadMode = RM_READ_CHECKSUM;
+		}
+	// TODO: figure out how to get the index for gbuffer correct...
+	}
+}
+
