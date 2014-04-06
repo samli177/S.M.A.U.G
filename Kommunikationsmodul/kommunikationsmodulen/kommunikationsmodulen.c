@@ -26,17 +26,9 @@ uint16_t gRxBufferIndex;
 
 // -- Global variables from TWI --
 int my_adress;
-char message[255];
-int message_counter;
 bool instruction;
 int current_instruction;
-int settings;
-int buffer[8];
-int sensors[8];
-int servo;
-int sensor;
-int command[3];
-int current_command;
+
 
 // -- FIFO --
 
@@ -401,172 +393,58 @@ ISR (USART0_RX_vect)
 }
 
 
-
 // -- interrupt vector from TWI --
-
-//TWI Interrupt vector to exist in every module
 ISR(TWI_vect)
 {
-	switch(my_adress)
+	
+	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 	{
-		// ----------------------------------------------------------------------------- Communications
-		case(C_ADRESS):
+		instruction = true;
+		
+	}
+	else if(CONTROL == DATA_SLAW)
+	{
+		if(instruction)
 		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-			{
-				instruction = true;
-			}
-			else if(CONTROL == DATA_SLAW)
-			{
-				if(instruction)
-				{
-					current_instruction = get_data();
-					instruction = false;
-				}
-				else
-				{
-					switch(current_instruction)
-					{
-						case(I_SETTINGS):
-						{
-							PORTA |= (1<<PORTA1);
-							settings = get_data();
-							break;
-						}
-						case(I_STRING):
-						{
-							message[message_counter] = get_data();
-							message_counter += 1;
-							break;
-						}
-					}
-				}
-			}
-			else if (CONTROL == DATA_GENERAL)
-			{
-				if(sensor == 8)
-				{
-					for(int i = 0; i < sizeof(sensors)/sizeof(int);++i)
-					{
-						sensors[i] = buffer[i];
-					}
-					servo = get_data();
-				}
-				else
-				{
-					buffer[sensor] = get_data();
-					sensor += 1;
-				}
-			}
-			else if (CONTROL == STOP)
-			{
-				sensor = 0;
-				//Do something smart with the message.
-				
-				
-				
-				message_counter = 0;
-			}
-			break;
+			current_instruction = get_data();
+			instruction = false;
 		}
-		// ----------------------------------------------------------------------------- Sensors
-		case(S_ADRESS):
+		else
 		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+			switch(current_instruction)
 			{
-				instruction = true;
-			}
-			else if(CONTROL == DATA_SLAW)
-			{
-				if(instruction)
+				case(I_SETTINGS):
 				{
-					current_instruction = get_data();
-					instruction = false;
+					get_settings_from_bus();
+					break;
 				}
-				else
+				case(I_STRING):
 				{
-					switch(current_instruction)
-					{
-						case(I_SWEEP):
-						{
-							//sweep = get_data(); ? :O
-							break;
-						}
-						case(I_STRING):
-						{
-							message[message_counter] = get_data();
-							message_counter += 1;
-							break;
-						}
-					}
+					get_char_from_bus();
+					break;
 				}
-			}
-			else if (CONTROL == STOP)
-			{
-				//Gör något smart med message
-				message_counter = 0;
-			}
-			break;
-		}
-		// ----------------------------------------------------------------------------- Steer
-		case(ST_ADRESS):
-		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-			{
-				instruction = true;
-			}
-			else if(CONTROL == DATA_SLAW)
-			{
-				if(instruction)
-				{
-					current_instruction = get_data();
-					instruction = false;
-				}
-				else
-				{
-					switch(current_instruction)
-					{
-						case(I_COMMAND):
-						{
-							command[current_command] = get_data();
-							current_command += 1;
-							break;
-						}
-						case(I_STRING):
-						{
-							message[message_counter] = get_data();
-							message_counter += 1;
-							break;
-						}
-					}
-				}
-			}
-			else if (CONTROL == DATA_GENERAL)
-			{
-				if(sensor == 8)
-				{
-					for(int i = 0; i < sizeof(sensors)/sizeof(int);++i)
-					{
-						sensors[i] = buffer[i];
-					}
-					servo = get_data();
-				}
-				else
-				{
-					buffer[sensor] = get_data();
-					sensor += 1;
-				}
-			}
-			else if (CONTROL == STOP)
-			{
-				sensor = 0;
-				current_command = 0;
-				//Do something with the commands.
-				//Nothing to do with a string here really...
-				message_counter = 0;
 			}
 		}
-		break;
+	}
+	else if (CONTROL == DATA_GENERAL)
+	{
+		get_sensor_from_bus();
+	}
+	else if (CONTROL == STOP)
+	{
+		switch(current_instruction)
+		{
+			case(I_SETTINGS):
+			{
+				get_settings();
+				break;
+			}
+			case(I_STRING):
+			{
+				//get_char(1);
+				break;
+			}
+		}
 	}
 	reset_TWI();
 }
