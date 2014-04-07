@@ -17,8 +17,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include "twi.h"
+#include "fifo.h"
 
-// -- Global variables --
+// -- Global variables form USART --
 uint8_t gTxPayload [255];
 uint8_t gTxBuffer [517]; // if there are only control octets in data it needs to be 255 + 7 + 255 = 517
 uint8_t gRxBuffer [517];
@@ -38,62 +39,8 @@ int sensor;
 int command[3];
 int current_command;
 
-// -- FIFO --
-
-struct fifo {
-	uint16_t size;           /* size of buffer in bytes */
-	uint16_t read;           /* read pointer */
-	uint16_t write;          /* write pointer */
-	unsigned char buffer[]; /* fifo ring buffer */
-};
-
-// define a FIFO type for 'size' bytes 
-#define MK_FIFO(size) \
-struct fifo_ ## size {                  \
-	struct fifo f;                      \
-	unsigned char buffer_bytes[size];   \
-}
-
-// define a fifo (type: struct fifo *) with name 'name' for 's' bytes 
-#define DEFINE_FIFO(name, s)                                \
-struct fifo_##s _raw_##name = { .f = { .size = s } };   \
-struct fifo *name = &_raw_##name.f;
-
-uint8_t FifoDataLength (struct fifo *fifo)
-{
-	return (fifo->write - fifo->read) & (fifo->size -1);
-};
-
-uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
-{
-	// fifo full : error
-	if (FifoDataLength(fifo) == (fifo->size - 1))
-	{
-		return 1;
-	}
-	// write data & increment write pointer
-	fifo->buffer[fifo->write] = data;
-	fifo->write = (fifo->write + 1) & (fifo->size - 1);
-	return 0;
-};
 
 
-uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
-{
-	// fifo empty : error
-	if (FifoDataLength(fifo) == 0)
-	{
-		return 1;
-	}
-	// read data & increment read pointer
-	*data = fifo->buffer[fifo->read];
-	fifo->read = (fifo->read + 1) & (fifo->size - 1);
-	return 0;
-};
-
-// define FIFO for received packets (USART)
-MK_FIFO(4096); // use 4 kB 
-DEFINE_FIFO(gRxFIFO, 4096);
 
 void init()
 {
@@ -101,7 +48,15 @@ void init()
 	gRxBufferIndex = 0;
 }
 
-void initSerial()
+// -- USART Stuff --
+
+
+// define FIFO for received packets (USART)
+MK_FIFO(4096); // use 4 kB 
+DEFINE_FIFO(gRxFIFO, 4096);
+
+
+void USART_init()
 {
 	//set baud rate
 	//typecasting of "int" to byte truncates to the lowest uint8_t
@@ -116,24 +71,24 @@ void initSerial()
 
 }
 
-uint8_t CheckRxComplete()
+uint8_t USART_CheckRxComplete()
 {
 	return (UCSR0A & (1<<RXC0)); // zero if no data is available to read
 }
 
-uint8_t CheckTxReady()
+uint8_t USART_CheckTxReady()
 {
 	return (UCSR0A & (1<<UDRE0)); // zero if transmit register is not ready to receive new data
 }
 
-void WriteByte(uint8_t DataByteOut)
+void USART_WriteByte(uint8_t DataByteOut)
 {
-	while(CheckTxReady() == 0)
+	while(USART_CheckTxReady() == 0)
 	{;;} // wait until ready to transmit NOTE: Can probably be optimized using interrupts
 	UDR0 = DataByteOut;
 }
 
-uint8_t ReadByte()
+uint8_t USART_ReadByte()
 {
 	// NOTE: check if data is available before calling this function. Should probably be implemented w. interrupt.
 	return UDR0;
@@ -141,10 +96,8 @@ uint8_t ReadByte()
 }
 
 
-
-
 // calculate crc for packet
-uint16_t crc16(uint8_t tag, uint8_t length)
+uint16_t USART_crc16(uint8_t tag, uint8_t length)
 {
 	int count;
 	uint16_t data, i;
@@ -190,7 +143,7 @@ uint16_t crc16(uint8_t tag, uint8_t length)
 	return (crc);
 }
 
-void SendPacket(char tag, uint8_t length)
+void USART_SendPacket(char tag, uint8_t length)
 {
 	int count, offset, buffersize;
 	uint16_t crc;
@@ -217,7 +170,7 @@ void SendPacket(char tag, uint8_t length)
 		}	
 	}
 	
-	crc = crc16(tag, length);
+	crc = USART_crc16(tag, length);
 	
 	gTxBuffer[count+offset] = (uint8_t)(crc >> 8);
 	++count;
@@ -231,37 +184,22 @@ void SendPacket(char tag, uint8_t length)
 	
 	for(count = 0; count < buffersize + 1; ++count)
 	{
-		WriteByte(gTxBuffer[count]);
+		USART_WriteByte(gTxBuffer[count]);
 	}
 }
 
-void SerialSendMessage(char msg[])
+void USART_SendMessage(char msg[])
 {
 	for(int i = 0; i < strlen(msg); ++i )
 	{
 		gTxPayload[i] = msg[i];
 	}
 	
-	SendPacket('M', strlen(msg));
+	USART_SendPacket('M', strlen(msg));
 }
 	
 
-void SendPacket2(char tag, uint8_t length)
-{
-	WriteByte(0x7e);
-	WriteByte(tag);
-	WriteByte(length);
-	for (int i = 0; i < length; ++i)
-	{
-		WriteByte(gTxPayload[i]);
-	}
-	WriteByte(0x00);
-	WriteByte(0x00);
-	WriteByte(0x7e);
-	
-}
-
-uint8_t DecodeMessageRxFIFO()
+uint8_t USART_DecodeMessageRxFIFO()
 {
 	
 	uint8_t *len = 0;
@@ -297,7 +235,7 @@ uint8_t DecodeMessageRxFIFO()
 	return 0;
 }
 
-void DecodeRxFIFO()
+void USART_DecodeRxFIFO()
 {
 	uint8_t *tag = 0;
 	
@@ -306,7 +244,7 @@ void DecodeRxFIFO()
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{
-				if(DecodeMessageRxFIFO()) // if decoding failed
+				if(USART_DecodeMessageRxFIFO()) // if decoding failed
 				{
 					// TODO: flush buffer?
 					return;
@@ -318,15 +256,17 @@ void DecodeRxFIFO()
 	}
 }
 
-void bounce()
+void USART_Bounce()
 {
 	for(int i = 0; i < gRxBuffer[1]; i++)
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
 	}
-	SendPacket(gRxBuffer[0], gRxBuffer[1]);
+	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
 }
 
+
+// -- END USART stuff --
 
 
 
@@ -339,7 +279,7 @@ void bounce()
 int main(void)
 {
 	init();
-	initSerial();
+	USART_init();
 	
 	// init TWI
 	my_adress = C_ADRESS;
@@ -352,14 +292,14 @@ int main(void)
     {
 		PORTA ^= (1<<PORTA0);
 		
-		DecodeRxFIFO();
+		USART_DecodeRxFIFO();
 		
 		_delay_ms(1000);
 		
     }
 }
 
-
+// --  END MAIN --
 
 
 
@@ -380,7 +320,7 @@ ISR (USART0_RX_vect)
 			 PORTA ^= (1<<PORTA1); // turn on/off led
 			//temp		
 			
-			bounce();
+			USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)

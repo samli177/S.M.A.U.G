@@ -31,16 +31,16 @@ sensors             0x10              kommunikationsmodulen.o
 Discarded input sections
 
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
+ .text          0x00000000        0x0 fifo.o
+ .bss           0x00000000        0x0 fifo.o
  .text          0x00000000        0x0 kommunikationsmodulen.o
  .bss           0x00000000        0x0 kommunikationsmodulen.o
- .text.CheckRxComplete
+ .text.USART_CheckRxComplete
                 0x00000000        0x8 kommunikationsmodulen.o
- .text.ReadByte
+ .text.USART_ReadByte
                 0x00000000        0x6 kommunikationsmodulen.o
- .text.SerialSendMessage
+ .text.USART_SendMessage
                 0x00000000       0x44 kommunikationsmodulen.o
- .text.SendPacket2
-                0x00000000       0x54 kommunikationsmodulen.o
  .text          0x00000000        0x0 twi.o
  .bss           0x00000000        0x0 twi.o
  .text.send_status
@@ -111,6 +111,7 @@ Linker script and memory map
 
 Address of section .data set to 0x800100
 LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
+LOAD fifo.o
 LOAD kommunikationsmodulen.o
 LOAD twi.o
 START GROUP
@@ -302,38 +303,40 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
                 0x000000c8                . = ALIGN (0x2)
  *(.text.*)
  .text.FifoDataLength
-                0x000000c8       0x10 kommunikationsmodulen.o
+                0x000000c8       0x10 fifo.o
                 0x000000c8                FifoDataLength
  .text.FifoWrite
-                0x000000d8       0x40 kommunikationsmodulen.o
+                0x000000d8       0x40 fifo.o
                 0x000000d8                FifoWrite
  .text.FifoRead
-                0x00000118       0x46 kommunikationsmodulen.o
+                0x00000118       0x46 fifo.o
                 0x00000118                FifoRead
  .text.init     0x0000015e       0x10 kommunikationsmodulen.o
                 0x0000015e                init
- .text.initSerial
+ .text.USART_init
                 0x0000016e       0x18 kommunikationsmodulen.o
-                0x0000016e                initSerial
- .text.CheckTxReady
+                0x0000016e                USART_init
+ .text.USART_CheckTxReady
                 0x00000186        0x8 kommunikationsmodulen.o
-                0x00000186                CheckTxReady
- .text.WriteByte
+                0x00000186                USART_CheckTxReady
+ .text.USART_WriteByte
                 0x0000018e       0x12 kommunikationsmodulen.o
-                0x0000018e                WriteByte
- .text.crc16    0x000001a0       0xb2 kommunikationsmodulen.o
-                0x000001a0                crc16
- .text.SendPacket
+                0x0000018e                USART_WriteByte
+ .text.USART_crc16
+                0x000001a0       0xb2 kommunikationsmodulen.o
+                0x000001a0                USART_crc16
+ .text.USART_SendPacket
                 0x00000252       0xc0 kommunikationsmodulen.o
-                0x00000252                SendPacket
- .text.DecodeMessageRxFIFO
+                0x00000252                USART_SendPacket
+ .text.USART_DecodeMessageRxFIFO
                 0x00000312       0xee kommunikationsmodulen.o
-                0x00000312                DecodeMessageRxFIFO
- .text.DecodeRxFIFO
+                0x00000312                USART_DecodeMessageRxFIFO
+ .text.USART_DecodeRxFIFO
                 0x00000400       0x1e kommunikationsmodulen.o
-                0x00000400                DecodeRxFIFO
- .text.bounce   0x0000041e       0x2c kommunikationsmodulen.o
-                0x0000041e                bounce
+                0x00000400                USART_DecodeRxFIFO
+ .text.USART_Bounce
+                0x0000041e       0x2c kommunikationsmodulen.o
+                0x0000041e                USART_Bounce
  .text.main     0x0000044a       0x32 kommunikationsmodulen.o
                 0x0000044a                main
  .text.__vector_20
@@ -411,6 +414,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
+ .data          0x00800100        0x0 fifo.o
  .data          0x00800100        0x0 kommunikationsmodulen.o
  .data          0x00800100        0x0 twi.o
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
@@ -506,8 +510,9 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 
 .comment        0x00000000       0x2f
  *(.comment)
- .comment       0x00000000       0x2f kommunikationsmodulen.o
+ .comment       0x00000000       0x2f fifo.o
                                  0x30 (size before relaxing)
+ .comment       0x00000000       0x30 kommunikationsmodulen.o
  .comment       0x00000000       0x30 twi.o
 
 .debug
@@ -522,48 +527,57 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x160
+.debug_aranges  0x00000000      0x170
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0xb0 kommunikationsmodulen.o
+                0x00000000       0x30 fifo.o
  .debug_aranges
-                0x000000b0       0xb0 twi.o
+                0x00000030       0x90 kommunikationsmodulen.o
+ .debug_aranges
+                0x000000c0       0xb0 twi.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x151a
+.debug_info     0x00000000     0x155b
  *(.debug_info)
- .debug_info    0x00000000      0xaa6 kommunikationsmodulen.o
- .debug_info    0x00000aa6      0xa74 twi.o
+ .debug_info    0x00000000      0x1b1 fifo.o
+ .debug_info    0x000001b1      0x936 kommunikationsmodulen.o
+ .debug_info    0x00000ae7      0xa74 twi.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0x55a
+.debug_abbrev   0x00000000      0x631
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x341 kommunikationsmodulen.o
- .debug_abbrev  0x00000341      0x219 twi.o
+ .debug_abbrev  0x00000000       0xce fifo.o
+ .debug_abbrev  0x000000ce      0x34a kommunikationsmodulen.o
+ .debug_abbrev  0x00000418      0x219 twi.o
 
-.debug_line     0x00000000     0x1092
+.debug_line     0x00000000     0x1108
  *(.debug_line)
- .debug_line    0x00000000      0x816 kommunikationsmodulen.o
- .debug_line    0x00000816      0x87c twi.o
+ .debug_line    0x00000000      0x14f fifo.o
+ .debug_line    0x0000014f      0x73d kommunikationsmodulen.o
+ .debug_line    0x0000088c      0x87c twi.o
 
-.debug_frame    0x00000000      0x4bc
+.debug_frame    0x00000000      0x4ac
  *(.debug_frame)
- .debug_frame   0x00000000      0x2c0 kommunikationsmodulen.o
- .debug_frame   0x000002c0      0x1fc twi.o
+ .debug_frame   0x00000000       0x68 fifo.o
+ .debug_frame   0x00000068      0x248 kommunikationsmodulen.o
+ .debug_frame   0x000002b0      0x1fc twi.o
 
-.debug_str      0x00000000      0x41a
+.debug_str      0x00000000      0x44b
  *(.debug_str)
- .debug_str     0x00000000      0x32f kommunikationsmodulen.o
-                                0x3a6 (size before relaxing)
- .debug_str     0x0000032f       0xeb twi.o
+ .debug_str     0x00000000       0xf6 fifo.o
+                                0x134 (size before relaxing)
+ .debug_str     0x000000f6      0x26a kommunikationsmodulen.o
+                                0x3c1 (size before relaxing)
+ .debug_str     0x00000360       0xeb twi.o
                                 0x272 (size before relaxing)
 
-.debug_loc      0x00000000     0x1043
+.debug_loc      0x00000000      0xf8e
  *(.debug_loc)
- .debug_loc     0x00000000      0xa2c kommunikationsmodulen.o
- .debug_loc     0x00000a2c      0x617 twi.o
+ .debug_loc     0x00000000      0x17b fifo.o
+ .debug_loc     0x0000017b      0x7fc kommunikationsmodulen.o
+ .debug_loc     0x00000977      0x617 twi.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -573,7 +587,8 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 
 .debug_ranges   0x00000000      0x158
  *(.debug_ranges)
- .debug_ranges  0x00000000       0xa0 kommunikationsmodulen.o
+ .debug_ranges  0x00000000       0x20 fifo.o
+ .debug_ranges  0x00000020       0x80 kommunikationsmodulen.o
  .debug_ranges  0x000000a0       0xb8 twi.o
 
 .debug_macro

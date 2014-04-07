@@ -109,6 +109,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="fifo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="fifo.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="kommunikationsmodulen.c">
       <SubType>compile</SubType>
     </Compile>

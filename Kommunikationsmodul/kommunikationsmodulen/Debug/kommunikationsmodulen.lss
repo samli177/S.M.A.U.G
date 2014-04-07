@@ -15,21 +15,21 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   5 .comment      0000002f  00000000  00000000  0000229f  2**0
                   CONTENTS, READONLY
-  6 .debug_aranges 00000160  00000000  00000000  000022ce  2**0
+  6 .debug_aranges 00000170  00000000  00000000  000022ce  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   0000151a  00000000  00000000  0000242e  2**0
+  7 .debug_info   0000155b  00000000  00000000  0000243e  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 0000055a  00000000  00000000  00003948  2**0
+  8 .debug_abbrev 00000631  00000000  00000000  00003999  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00001092  00000000  00000000  00003ea2  2**0
+  9 .debug_line   00001108  00000000  00000000  00003fca  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  000004bc  00000000  00000000  00004f34  2**2
+ 10 .debug_frame  000004ac  00000000  00000000  000050d4  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    0000041a  00000000  00000000  000053f0  2**0
+ 11 .debug_str    0000044b  00000000  00000000  00005580  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00001043  00000000  00000000  0000580a  2**0
+ 12 .debug_loc    00000f8e  00000000  00000000  000059cb  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000158  00000000  00000000  0000684d  2**0
+ 13 .debug_ranges 00000158  00000000  00000000  00006959  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -149,27 +149,34 @@ Disassembly of section .text:
   c6:	9c cf       	rjmp	.-200    	; 0x0 <__vectors>
 
 000000c8 <FifoDataLength>:
-	}
-	WriteByte(0x00);
-	WriteByte(0x00);
-	WriteByte(0x7e);
-	
-}
+
+#include <avr/io.h>
+#include "fifo.h"
+
+uint8_t FifoDataLength (struct fifo *fifo)
+{
   c8:	fc 01       	movw	r30, r24
+	return (fifo->write - fifo->read) & (fifo->size -1);
   ca:	90 81       	ld	r25, Z
   cc:	91 50       	subi	r25, 0x01	; 1
   ce:	84 81       	ldd	r24, Z+4	; 0x04
   d0:	22 81       	ldd	r18, Z+2	; 0x02
   d2:	82 1b       	sub	r24, r18
+};
   d4:	89 23       	and	r24, r25
   d6:	08 95       	ret
 
 000000d8 <FifoWrite>:
+
+uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
+{
   d8:	1f 93       	push	r17
   da:	cf 93       	push	r28
   dc:	df 93       	push	r29
   de:	ec 01       	movw	r28, r24
   e0:	16 2f       	mov	r17, r22
+	// fifo full : error
+	if (FifoDataLength(fifo) == (fifo->size - 1))
   e2:	f2 df       	rcall	.-28     	; 0xc8 <FifoDataLength>
   e4:	28 81       	ld	r18, Y
   e6:	39 81       	ldd	r19, Y+1	; 0x01
@@ -179,35 +186,65 @@ Disassembly of section .text:
   ee:	82 17       	cp	r24, r18
   f0:	93 07       	cpc	r25, r19
   f2:	69 f0       	breq	.+26     	; 0x10e <FifoWrite+0x36>
+	{
+		return 1;
+	}
+	// write data & increment write pointer
+	fifo->buffer[fifo->write] = data;
   f4:	8c 81       	ldd	r24, Y+4	; 0x04
   f6:	9d 81       	ldd	r25, Y+5	; 0x05
   f8:	fe 01       	movw	r30, r28
   fa:	e8 0f       	add	r30, r24
   fc:	f9 1f       	adc	r31, r25
   fe:	16 83       	std	Z+6, r17	; 0x06
+	fifo->write = (fifo->write + 1) & (fifo->size - 1);
  100:	01 96       	adiw	r24, 0x01	; 1
  102:	28 23       	and	r18, r24
  104:	39 23       	and	r19, r25
  106:	3d 83       	std	Y+5, r19	; 0x05
  108:	2c 83       	std	Y+4, r18	; 0x04
+	return 0;
  10a:	80 e0       	ldi	r24, 0x00	; 0
  10c:	01 c0       	rjmp	.+2      	; 0x110 <FifoWrite+0x38>
+uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
+{
+	// fifo full : error
+	if (FifoDataLength(fifo) == (fifo->size - 1))
+	{
+		return 1;
  10e:	81 e0       	ldi	r24, 0x01	; 1
+	}
+	// write data & increment write pointer
+	fifo->buffer[fifo->write] = data;
+	fifo->write = (fifo->write + 1) & (fifo->size - 1);
+	return 0;
+};
  110:	df 91       	pop	r29
  112:	cf 91       	pop	r28
  114:	1f 91       	pop	r17
  116:	08 95       	ret
 
 00000118 <FifoRead>:
+
+
+uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
+{
  118:	0f 93       	push	r16
  11a:	1f 93       	push	r17
  11c:	cf 93       	push	r28
  11e:	df 93       	push	r29
  120:	ec 01       	movw	r28, r24
  122:	8b 01       	movw	r16, r22
+	// fifo empty : error
+	if (FifoDataLength(fifo) == 0)
  124:	d1 df       	rcall	.-94     	; 0xc8 <FifoDataLength>
  126:	88 23       	and	r24, r24
  128:	a1 f0       	breq	.+40     	; 0x152 <FifoRead+0x3a>
+	{
+		return 1;
+	}
+	// read data & increment read pointer
+	*data = fifo->buffer[fifo->read];
  12a:	ea 81       	ldd	r30, Y+2	; 0x02
  12c:	fb 81       	ldd	r31, Y+3	; 0x03
  12e:	ec 0f       	add	r30, r28
@@ -215,6 +252,7 @@ Disassembly of section .text:
  132:	86 81       	ldd	r24, Z+6	; 0x06
  134:	f8 01       	movw	r30, r16
  136:	80 83       	st	Z, r24
+	fifo->read = (fifo->read + 1) & (fifo->size - 1);
  138:	28 81       	ld	r18, Y
  13a:	39 81       	ldd	r19, Y+1	; 0x01
  13c:	21 50       	subi	r18, 0x01	; 1
@@ -226,9 +264,21 @@ Disassembly of section .text:
  148:	93 23       	and	r25, r19
  14a:	9b 83       	std	Y+3, r25	; 0x03
  14c:	8a 83       	std	Y+2, r24	; 0x02
+	return 0;
  14e:	80 e0       	ldi	r24, 0x00	; 0
  150:	01 c0       	rjmp	.+2      	; 0x154 <FifoRead+0x3c>
+uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
+{
+	// fifo empty : error
+	if (FifoDataLength(fifo) == 0)
+	{
+		return 1;
  152:	81 e0       	ldi	r24, 0x01	; 1
+	}
+	// read data & increment read pointer
+	*data = fifo->buffer[fifo->read];
+	fifo->read = (fifo->read + 1) & (fifo->size - 1);
+	return 0;
  154:	df 91       	pop	r29
  156:	cf 91       	pop	r28
  158:	1f 91       	pop	r17
@@ -236,6 +286,12 @@ Disassembly of section .text:
  15c:	08 95       	ret
 
 0000015e <init>:
+	{
+		gTxPayload[i] = msg[i];
+	}
+	
+	USART_SendPacket('M', strlen(msg));
+}
  15e:	81 b1       	in	r24, 0x01	; 1
  160:	83 60       	ori	r24, 0x03	; 3
  162:	81 b9       	out	0x01, r24	; 1
@@ -243,7 +299,7 @@ Disassembly of section .text:
  168:	10 92 6b 17 	sts	0x176B, r1
  16c:	08 95       	ret
 
-0000016e <initSerial>:
+0000016e <USART_init>:
  16e:	10 92 c5 00 	sts	0x00C5, r1
  172:	89 e0       	ldi	r24, 0x09	; 9
  174:	80 93 c4 00 	sts	0x00C4, r24
@@ -253,22 +309,22 @@ Disassembly of section .text:
  180:	80 93 c2 00 	sts	0x00C2, r24
  184:	08 95       	ret
 
-00000186 <CheckTxReady>:
+00000186 <USART_CheckTxReady>:
  186:	80 91 c0 00 	lds	r24, 0x00C0
  18a:	80 72       	andi	r24, 0x20	; 32
  18c:	08 95       	ret
 
-0000018e <WriteByte>:
+0000018e <USART_WriteByte>:
  18e:	cf 93       	push	r28
  190:	c8 2f       	mov	r28, r24
- 192:	f9 df       	rcall	.-14     	; 0x186 <CheckTxReady>
+ 192:	f9 df       	rcall	.-14     	; 0x186 <USART_CheckTxReady>
  194:	88 23       	and	r24, r24
- 196:	e9 f3       	breq	.-6      	; 0x192 <WriteByte+0x4>
+ 196:	e9 f3       	breq	.-6      	; 0x192 <USART_WriteByte+0x4>
  198:	c0 93 c6 00 	sts	0x00C6, r28
  19c:	cf 91       	pop	r28
  19e:	08 95       	ret
 
-000001a0 <crc16>:
+000001a0 <USART_crc16>:
  1a0:	cf 92       	push	r12
  1a2:	df 92       	push	r13
  1a4:	ef 92       	push	r14
@@ -278,8 +334,8 @@ Disassembly of section .text:
  1ac:	cf 93       	push	r28
  1ae:	df 93       	push	r29
  1b0:	66 23       	and	r22, r22
- 1b2:	09 f4       	brne	.+2      	; 0x1b6 <crc16+0x16>
- 1b4:	3e c0       	rjmp	.+124    	; 0x232 <crc16+0x92>
+ 1b2:	09 f4       	brne	.+2      	; 0x1b6 <USART_crc16+0x16>
+ 1b4:	3e c0       	rjmp	.+124    	; 0x232 <USART_crc16+0x92>
  1b6:	06 2f       	mov	r16, r22
  1b8:	10 e0       	ldi	r17, 0x00	; 0
  1ba:	4f ef       	ldi	r20, 0xFF	; 255
@@ -295,60 +351,60 @@ Disassembly of section .text:
  1ce:	ee 3f       	cpi	r30, 0xFE	; 254
  1d0:	6f ef       	ldi	r22, 0xFF	; 255
  1d2:	f6 07       	cpc	r31, r22
- 1d4:	19 f4       	brne	.+6      	; 0x1dc <crc16+0x3c>
+ 1d4:	19 f4       	brne	.+6      	; 0x1dc <USART_crc16+0x3c>
  1d6:	8e 2d       	mov	r24, r14
  1d8:	9f 2d       	mov	r25, r15
- 1da:	30 c0       	rjmp	.+96     	; 0x23c <crc16+0x9c>
+ 1da:	30 c0       	rjmp	.+96     	; 0x23c <USART_crc16+0x9c>
  1dc:	ef 3f       	cpi	r30, 0xFF	; 255
  1de:	8f ef       	ldi	r24, 0xFF	; 255
  1e0:	f8 07       	cpc	r31, r24
- 1e2:	19 f4       	brne	.+6      	; 0x1ea <crc16+0x4a>
+ 1e2:	19 f4       	brne	.+6      	; 0x1ea <USART_crc16+0x4a>
  1e4:	8c 2d       	mov	r24, r12
  1e6:	9d 2d       	mov	r25, r13
- 1e8:	29 c0       	rjmp	.+82     	; 0x23c <crc16+0x9c>
+ 1e8:	29 c0       	rjmp	.+82     	; 0x23c <USART_crc16+0x9c>
  1ea:	df 01       	movw	r26, r30
  1ec:	ab 59       	subi	r26, 0x9B	; 155
  1ee:	bb 4e       	sbci	r27, 0xEB	; 235
  1f0:	8c 91       	ld	r24, X
  1f2:	90 e0       	ldi	r25, 0x00	; 0
- 1f4:	23 c0       	rjmp	.+70     	; 0x23c <crc16+0x9c>
+ 1f4:	23 c0       	rjmp	.+70     	; 0x23c <USART_crc16+0x9c>
  1f6:	ba 01       	movw	r22, r20
  1f8:	68 27       	eor	r22, r24
  1fa:	79 27       	eor	r23, r25
  1fc:	60 ff       	sbrs	r22, 0
- 1fe:	07 c0       	rjmp	.+14     	; 0x20e <crc16+0x6e>
+ 1fe:	07 c0       	rjmp	.+14     	; 0x20e <USART_crc16+0x6e>
  200:	56 95       	lsr	r21
  202:	47 95       	ror	r20
  204:	68 e0       	ldi	r22, 0x08	; 8
  206:	46 27       	eor	r20, r22
  208:	64 e8       	ldi	r22, 0x84	; 132
  20a:	56 27       	eor	r21, r22
- 20c:	02 c0       	rjmp	.+4      	; 0x212 <crc16+0x72>
+ 20c:	02 c0       	rjmp	.+4      	; 0x212 <USART_crc16+0x72>
  20e:	56 95       	lsr	r21
  210:	47 95       	ror	r20
  212:	96 95       	lsr	r25
  214:	87 95       	ror	r24
  216:	21 50       	subi	r18, 0x01	; 1
  218:	31 09       	sbc	r19, r1
- 21a:	69 f7       	brne	.-38     	; 0x1f6 <crc16+0x56>
+ 21a:	69 f7       	brne	.-38     	; 0x1f6 <USART_crc16+0x56>
  21c:	31 96       	adiw	r30, 0x01	; 1
  21e:	e0 17       	cp	r30, r16
  220:	f1 07       	cpc	r31, r17
- 222:	a9 f6       	brne	.-86     	; 0x1ce <crc16+0x2e>
+ 222:	a9 f6       	brne	.-86     	; 0x1ce <USART_crc16+0x2e>
  224:	9a 01       	movw	r18, r20
  226:	20 95       	com	r18
  228:	30 95       	com	r19
  22a:	32 27       	eor	r19, r18
  22c:	23 27       	eor	r18, r19
  22e:	32 27       	eor	r19, r18
- 230:	02 c0       	rjmp	.+4      	; 0x236 <crc16+0x96>
+ 230:	02 c0       	rjmp	.+4      	; 0x236 <USART_crc16+0x96>
  232:	20 e0       	ldi	r18, 0x00	; 0
  234:	30 e0       	ldi	r19, 0x00	; 0
  236:	82 2f       	mov	r24, r18
  238:	93 2f       	mov	r25, r19
- 23a:	02 c0       	rjmp	.+4      	; 0x240 <crc16+0xa0>
+ 23a:	02 c0       	rjmp	.+4      	; 0x240 <USART_crc16+0xa0>
  23c:	9e 01       	movw	r18, r28
- 23e:	db cf       	rjmp	.-74     	; 0x1f6 <crc16+0x56>
+ 23e:	db cf       	rjmp	.-74     	; 0x1f6 <USART_crc16+0x56>
  240:	df 91       	pop	r29
  242:	cf 91       	pop	r28
  244:	1f 91       	pop	r17
@@ -359,7 +415,7 @@ Disassembly of section .text:
  24e:	cf 90       	pop	r12
  250:	08 95       	ret
 
-00000252 <SendPacket>:
+00000252 <USART_SendPacket>:
  252:	0f 93       	push	r16
  254:	1f 93       	push	r17
  256:	cf 93       	push	r28
@@ -372,7 +428,7 @@ Disassembly of section .text:
  26a:	30 e0       	ldi	r19, 0x00	; 0
  26c:	12 16       	cp	r1, r18
  26e:	13 06       	cpc	r1, r19
- 270:	4c f5       	brge	.+82     	; 0x2c4 <SendPacket+0x72>
+ 270:	4c f5       	brge	.+82     	; 0x2c4 <USART_SendPacket+0x72>
  272:	e5 e6       	ldi	r30, 0x65	; 101
  274:	f4 e1       	ldi	r31, 0x14	; 20
  276:	03 e0       	ldi	r16, 0x03	; 3
@@ -385,7 +441,7 @@ Disassembly of section .text:
  284:	49 2f       	mov	r20, r25
  286:	4d 57       	subi	r20, 0x7D	; 125
  288:	42 30       	cpi	r20, 0x02	; 2
- 28a:	80 f4       	brcc	.+32     	; 0x2ac <SendPacket+0x5a>
+ 28a:	80 f4       	brcc	.+32     	; 0x2ac <USART_SendPacket+0x5a>
  28c:	d8 01       	movw	r26, r16
  28e:	ac 59       	subi	r26, 0x9C	; 156
  290:	ba 4e       	sbci	r27, 0xEA	; 234
@@ -401,7 +457,7 @@ Disassembly of section .text:
  2a4:	bd 1f       	adc	r27, r29
  2a6:	95 27       	eor	r25, r21
  2a8:	9c 93       	st	X, r25
- 2aa:	06 c0       	rjmp	.+12     	; 0x2b8 <SendPacket+0x66>
+ 2aa:	06 c0       	rjmp	.+12     	; 0x2b8 <USART_SendPacket+0x66>
  2ac:	d8 01       	movw	r26, r16
  2ae:	ac 59       	subi	r26, 0x9C	; 156
  2b0:	ba 4e       	sbci	r27, 0xEA	; 234
@@ -412,13 +468,13 @@ Disassembly of section .text:
  2ba:	31 96       	adiw	r30, 0x01	; 1
  2bc:	c2 17       	cp	r28, r18
  2be:	d3 07       	cpc	r29, r19
- 2c0:	01 f7       	brne	.-64     	; 0x282 <SendPacket+0x30>
- 2c2:	04 c0       	rjmp	.+8      	; 0x2cc <SendPacket+0x7a>
+ 2c0:	01 f7       	brne	.-64     	; 0x282 <USART_SendPacket+0x30>
+ 2c2:	04 c0       	rjmp	.+8      	; 0x2cc <USART_SendPacket+0x7a>
  2c4:	03 e0       	ldi	r16, 0x03	; 3
  2c6:	10 e0       	ldi	r17, 0x00	; 0
  2c8:	c0 e0       	ldi	r28, 0x00	; 0
  2ca:	d0 e0       	ldi	r29, 0x00	; 0
- 2cc:	69 df       	rcall	.-302    	; 0x1a0 <crc16>
+ 2cc:	69 df       	rcall	.-302    	; 0x1a0 <USART_crc16>
  2ce:	f8 01       	movw	r30, r16
  2d0:	ec 59       	subi	r30, 0x9C	; 156
  2d2:	fa 4e       	sbci	r31, 0xEA	; 234
@@ -438,25 +494,26 @@ Disassembly of section .text:
  2ee:	01 96       	adiw	r24, 0x01	; 1
  2f0:	18 16       	cp	r1, r24
  2f2:	19 06       	cpc	r1, r25
- 2f4:	4c f4       	brge	.+18     	; 0x308 <SendPacket+0xb6>
+ 2f4:	4c f4       	brge	.+18     	; 0x308 <USART_SendPacket+0xb6>
  2f6:	c4 e6       	ldi	r28, 0x64	; 100
  2f8:	d5 e1       	ldi	r29, 0x15	; 21
  2fa:	0b 59       	subi	r16, 0x9B	; 155
  2fc:	1a 4e       	sbci	r17, 0xEA	; 234
  2fe:	89 91       	ld	r24, Y+
- 300:	46 df       	rcall	.-372    	; 0x18e <WriteByte>
+ 300:	46 df       	rcall	.-372    	; 0x18e <USART_WriteByte>
  302:	c0 17       	cp	r28, r16
  304:	d1 07       	cpc	r29, r17
- 306:	d9 f7       	brne	.-10     	; 0x2fe <SendPacket+0xac>
+ 306:	d9 f7       	brne	.-10     	; 0x2fe <USART_SendPacket+0xac>
  308:	df 91       	pop	r29
  30a:	cf 91       	pop	r28
  30c:	1f 91       	pop	r17
  30e:	0f 91       	pop	r16
  310:	08 95       	ret
 
-00000312 <DecodeMessageRxFIFO>:
+00000312 <USART_DecodeMessageRxFIFO>:
+	
 
-uint8_t DecodeMessageRxFIFO()
+uint8_t USART_DecodeMessageRxFIFO()
 {
  312:	8f 92       	push	r8
  314:	9f 92       	push	r9
@@ -492,7 +549,7 @@ uint8_t DecodeMessageRxFIFO()
  33a:	90 91 01 01 	lds	r25, 0x0101
  33e:	ec de       	rcall	.-552    	; 0x118 <FifoRead>
  340:	88 23       	and	r24, r24
- 342:	39 f0       	breq	.+14     	; 0x352 <DecodeMessageRxFIFO+0x40>
+ 342:	39 f0       	breq	.+14     	; 0x352 <USART_DecodeMessageRxFIFO+0x40>
 	{
 		send_string(S_ADRESS, "RxFIFO ERROR: LEN MISSING");
  344:	68 e0       	ldi	r22, 0x08	; 8
@@ -502,7 +559,7 @@ uint8_t DecodeMessageRxFIFO()
  34c:	f2 d2       	rcall	.+1508   	; 0x932 <send_string>
 		return 1; // error
  34e:	81 e0       	ldi	r24, 0x01	; 1
- 350:	45 c0       	rjmp	.+138    	; 0x3dc <DecodeMessageRxFIFO+0xca>
+ 350:	45 c0       	rjmp	.+138    	; 0x3dc <USART_DecodeMessageRxFIFO+0xca>
 	}
 	
 	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
@@ -526,7 +583,7 @@ uint8_t DecodeMessageRxFIFO()
  360:	90 e0       	ldi	r25, 0x00	; 0
  362:	c1 14       	cp	r12, r1
  364:	d1 04       	cpc	r13, r1
- 366:	11 f0       	breq	.+4      	; 0x36c <DecodeMessageRxFIFO+0x5a>
+ 366:	11 f0       	breq	.+4      	; 0x36c <USART_DecodeMessageRxFIFO+0x5a>
  368:	80 e0       	ldi	r24, 0x00	; 0
  36a:	90 e0       	ldi	r25, 0x00	; 0
 	uint8_t msg[length-1+ifzero];
@@ -550,7 +607,7 @@ uint8_t DecodeMessageRxFIFO()
 	for(int i = 0; i < length; ++i)
  38c:	1c 14       	cp	r1, r12
  38e:	1d 04       	cpc	r1, r13
- 390:	f4 f4       	brge	.+60     	; 0x3ce <DecodeMessageRxFIFO+0xbc>
+ 390:	f4 f4       	brge	.+60     	; 0x3ce <USART_DecodeMessageRxFIFO+0xbc>
  392:	e8 2e       	mov	r14, r24
  394:	f9 2e       	mov	r15, r25
  396:	00 e0       	ldi	r16, 0x00	; 0
@@ -563,7 +620,7 @@ uint8_t DecodeMessageRxFIFO()
  3a2:	90 91 01 01 	lds	r25, 0x0101
  3a6:	b8 de       	rcall	.-656    	; 0x118 <FifoRead>
  3a8:	88 23       	and	r24, r24
- 3aa:	39 f0       	breq	.+14     	; 0x3ba <DecodeMessageRxFIFO+0xa8>
+ 3aa:	39 f0       	breq	.+14     	; 0x3ba <USART_DecodeMessageRxFIFO+0xa8>
 		{
 			send_string(S_ADRESS, "RxFIFO ERROR: DATA MISSING");
  3ac:	62 e2       	ldi	r22, 0x22	; 34
@@ -573,7 +630,7 @@ uint8_t DecodeMessageRxFIFO()
  3b4:	be d2       	rcall	.+1404   	; 0x932 <send_string>
 			return 1; // error
  3b6:	81 e0       	ldi	r24, 0x01	; 1
- 3b8:	11 c0       	rjmp	.+34     	; 0x3dc <DecodeMessageRxFIFO+0xca>
+ 3b8:	11 c0       	rjmp	.+34     	; 0x3dc <USART_DecodeMessageRxFIFO+0xca>
 		}
 
 		msg[i] = *character;
@@ -591,7 +648,7 @@ uint8_t DecodeMessageRxFIFO()
  3c6:	1f 4f       	sbci	r17, 0xFF	; 255
  3c8:	0c 15       	cp	r16, r12
  3ca:	1d 05       	cpc	r17, r13
- 3cc:	34 f3       	brlt	.-52     	; 0x39a <DecodeMessageRxFIFO+0x88>
+ 3cc:	34 f3       	brlt	.-52     	; 0x39a <USART_DecodeMessageRxFIFO+0x88>
 		msg[i] = *character;
 	}
 	
@@ -626,9 +683,9 @@ uint8_t DecodeMessageRxFIFO()
  3fc:	8f 90       	pop	r8
  3fe:	08 95       	ret
 
-00000400 <DecodeRxFIFO>:
+00000400 <USART_DecodeRxFIFO>:
 
-void DecodeRxFIFO()
+void USART_DecodeRxFIFO()
 {
 	uint8_t *tag = 0;
 	
@@ -639,23 +696,23 @@ void DecodeRxFIFO()
  408:	90 91 01 01 	lds	r25, 0x0101
  40c:	85 de       	rcall	.-758    	; 0x118 <FifoRead>
  40e:	81 11       	cpse	r24, r1
- 410:	05 c0       	rjmp	.+10     	; 0x41c <DecodeRxFIFO+0x1c>
+ 410:	05 c0       	rjmp	.+10     	; 0x41c <USART_DecodeRxFIFO+0x1c>
 	{
 		switch(*tag){
  412:	80 91 00 00 	lds	r24, 0x0000
  416:	8d 34       	cpi	r24, 0x4D	; 77
- 418:	09 f4       	brne	.+2      	; 0x41c <DecodeRxFIFO+0x1c>
+ 418:	09 f4       	brne	.+2      	; 0x41c <USART_DecodeRxFIFO+0x1c>
 			case('M'): // if 'tag' is 'M'
 			{
-				if(DecodeMessageRxFIFO()) // if decoding failed
- 41a:	7b cf       	rjmp	.-266    	; 0x312 <DecodeMessageRxFIFO>
+				if(USART_DecodeMessageRxFIFO()) // if decoding failed
+ 41a:	7b cf       	rjmp	.-266    	; 0x312 <USART_DecodeMessageRxFIFO>
  41c:	08 95       	ret
 
-0000041e <bounce>:
+0000041e <USART_Bounce>:
 	}
 }
 
-void bounce()
+void USART_Bounce()
 {
 	for(int i = 0; i < gRxBuffer[1]; i++)
  41e:	60 91 3f 11 	lds	r22, 0x113F
@@ -663,7 +720,7 @@ void bounce()
  424:	30 e0       	ldi	r19, 0x00	; 0
  426:	12 16       	cp	r1, r18
  428:	13 06       	cpc	r1, r19
- 42a:	64 f4       	brge	.+24     	; 0x444 <bounce+0x26>
+ 42a:	64 f4       	brge	.+24     	; 0x444 <USART_Bounce+0x26>
  42c:	a0 e4       	ldi	r26, 0x40	; 64
  42e:	b1 e1       	ldi	r27, 0x11	; 17
  430:	e5 e6       	ldi	r30, 0x65	; 101
@@ -677,19 +734,19 @@ void bounce()
 	}
 }
 
-void bounce()
+void USART_Bounce()
 {
 	for(int i = 0; i < gRxBuffer[1]; i++)
  43c:	01 96       	adiw	r24, 0x01	; 1
  43e:	82 17       	cp	r24, r18
  440:	93 07       	cpc	r25, r19
- 442:	d4 f3       	brlt	.-12     	; 0x438 <bounce+0x1a>
+ 442:	d4 f3       	brlt	.-12     	; 0x438 <USART_Bounce+0x1a>
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
 	}
-	SendPacket(gRxBuffer[0], gRxBuffer[1]);
+	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
  444:	80 91 3e 11 	lds	r24, 0x113E
- 448:	04 cf       	rjmp	.-504    	; 0x252 <SendPacket>
+ 448:	04 cf       	rjmp	.-504    	; 0x252 <USART_SendPacket>
 
 0000044a <main>:
 
@@ -699,8 +756,8 @@ int main(void)
 {
 	init();
  44a:	89 de       	rcall	.-750    	; 0x15e <init>
-	initSerial();
- 44c:	90 de       	rcall	.-736    	; 0x16e <initSerial>
+	USART_init();
+ 44c:	90 de       	rcall	.-736    	; 0x16e <USART_init>
 	
 	// init TWI
 	my_adress = C_ADRESS;
@@ -723,8 +780,8 @@ int main(void)
  462:	8c 27       	eor	r24, r28
  464:	82 b9       	out	0x02, r24	; 2
 		
-		DecodeRxFIFO();
- 466:	cc df       	rcall	.-104    	; 0x400 <DecodeRxFIFO>
+		USART_DecodeRxFIFO();
+ 466:	cc df       	rcall	.-104    	; 0x400 <USART_DecodeRxFIFO>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
@@ -806,8 +863,8 @@ ISR (USART0_RX_vect)
  4da:	82 b9       	out	0x02, r24	; 2
 			//temp		
 			
-			bounce();
- 4dc:	a0 df       	rcall	.-192    	; 0x41e <bounce>
+			USART_Bounce();
+ 4dc:	a0 df       	rcall	.-192    	; 0x41e <USART_Bounce>
  4de:	0e e3       	ldi	r16, 0x3E	; 62
  4e0:	11 e1       	ldi	r17, 0x11	; 17
 			
@@ -831,7 +888,7 @@ ISR (USART0_RX_vect)
  500:	eb dd       	rcall	.-1066   	; 0xd8 <FifoWrite>
 			//temp		
 			
-			bounce();
+			USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
