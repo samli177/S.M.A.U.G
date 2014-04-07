@@ -16,6 +16,7 @@
 #include <avr/interrupt.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 #include "twi.h"
 #include "fifo.h"
 
@@ -24,6 +25,7 @@ uint8_t gTxPayload [255];
 uint8_t gTxBuffer [517]; // if there are only control octets in data it needs to be 255 + 7 + 255 = 517
 uint8_t gRxBuffer [517];
 uint16_t gRxBufferIndex;
+uint16_t gInvertNextFlag = 0;
 
 // -- Global variables from TWI --
 int my_adress;
@@ -231,17 +233,17 @@ void USART_SendMessage(char msg[])
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('M', strlen(msg));
+	USART_SendPacket('S', strlen(msg));
 }
 	
 void USART_SendSensors()
 {
 	for(int i = 0; i < 7; i++)
 	{
-		gTxPayload[i] = get_sensor(i);
+		gTxPayload[i] = 40 + rand() % 5;
 	}
 	
-	USART_SendPacket('S', 7);
+	USART_SendPacket('M', 7);
 }
 
 uint8_t USART_DecodeMessageRxFIFO()
@@ -327,6 +329,11 @@ ISR (USART0_RX_vect)
 	{
 		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
 		{
+			if(gInvertNextFlag)
+			{
+				data = (1<<5)^data;
+				gInvertNextFlag = 0;
+			}
 			
 			USART_Bounce();
 			
@@ -339,6 +346,9 @@ ISR (USART0_RX_vect)
 		
 		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read 
 		
+	}else if(data == 0x7d)
+	{
+		gInvertNextFlag = 1;
 	}else
 	{
 		gRxBuffer[gRxBufferIndex] = data;
