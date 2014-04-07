@@ -36,6 +36,8 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
+../uart.c \
+../fifo.c \
 ../kommunikationsmodulen.c \
 ../twi.c
 
@@ -47,18 +49,26 @@ ASM_SRCS +=
 
 
 OBJS +=  \
+uart.o \
+fifo.o \
 kommunikationsmodulen.o \
 twi.o
 
 OBJS_AS_ARGS +=  \
+uart.o \
+fifo.o \
 kommunikationsmodulen.o \
 twi.o
 
 C_DEPS +=  \
+uart.d \
+fifo.d \
 kommunikationsmodulen.d \
 twi.d
 
 C_DEPS_AS_ARGS +=  \
+uart.d \
+fifo.d \
 kommunikationsmodulen.d \
 twi.d
 
@@ -73,6 +83,10 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 

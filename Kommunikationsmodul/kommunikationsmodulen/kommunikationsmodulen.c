@@ -16,84 +16,69 @@
 #include <avr/interrupt.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 #include "twi.h"
+#include "fifo.h"
 
-// -- Global variables --
+// -- Global variables form USART --
 uint8_t gTxPayload [255];
 uint8_t gTxBuffer [517]; // if there are only control octets in data it needs to be 255 + 7 + 255 = 517
 uint8_t gRxBuffer [517];
 uint16_t gRxBufferIndex;
+uint16_t gInvertNextFlag = 0;
 
 // -- Global variables from TWI --
 int my_adress;
-char message[255];
-int message_counter;
 bool instruction;
 int current_instruction;
-int settings;
-int buffer[8];
-int sensors[8];
-int servo;
-int sensor;
-int command[3];
-int current_command;
 
-// -- FIFO --
 
-struct fifo {
-	uint16_t size;           /* size of buffer in bytes */
-	uint16_t read;           /* read pointer */
-	uint16_t write;          /* write pointer */
-	unsigned char buffer[]; /* fifo ring buffer */
-};
+// -- Declarations --
+void init();
+void USART_init();
+uint8_t USART_CheckRxComplete();
+uint8_t USART_CheckTxReady();
+void USART_WriteByte(uint8_t DataByteOut);
+uint8_t USART_ReadByte();
+uint16_t USART_crc16(uint8_t tag, uint8_t length);
+void USART_SendPacket(char tag, uint8_t length);
+void USART_SendMessage(char msg[]);
+void USART_SendSensors();
+uint8_t USART_DecodeMessageRxFIFO();
+void USART_DecodeRxFIFO();
+void USART_Bounce();
 
-// define a FIFO type for 'size' bytes 
-#define MK_FIFO(size) \
-struct fifo_ ## size {                  \
-	struct fifo f;                      \
-	unsigned char buffer_bytes[size];   \
+
+// -- MAIN --
+
+
+
+int main(void)
+{
+	init();
+	USART_init();
+	
+	// init TWI
+	my_adress = C_ADRESS;
+	init_TWI(my_adress);
+	
+	sei();
+
+	
+	while(1)
+	{
+		PORTA ^= (1<<PORTA0);
+		
+		USART_DecodeRxFIFO();
+		USART_SendSensors();
+				
+		_delay_ms(1000);
+		
+	}
 }
 
-// define a fifo (type: struct fifo *) with name 'name' for 's' bytes 
-#define DEFINE_FIFO(name, s)                                \
-struct fifo_##s _raw_##name = { .f = { .size = s } };   \
-struct fifo *name = &_raw_##name.f;
+// --  END MAIN --
 
-uint8_t FifoDataLength (struct fifo *fifo)
-{
-	return (fifo->write - fifo->read) & (fifo->size -1);
-};
-
-uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
-{
-	// fifo full : error
-	if (FifoDataLength(fifo) == (fifo->size - 1))
-	{
-		return 1;
-	}
-	// write data & increment write pointer
-	fifo->buffer[fifo->write] = data;
-	fifo->write = (fifo->write + 1) & (fifo->size - 1);
-	return 0;
-};
-
-
-uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
-{
-	// fifo empty : error
-	if (FifoDataLength(fifo) == 0)
-	{
-		return 1;
-	}
-	// read data & increment read pointer
-	*data = fifo->buffer[fifo->read];
-	fifo->read = (fifo->read + 1) & (fifo->size - 1);
-	return 0;
-};
-
-// define FIFO for received packets (USART)
-MK_FIFO(4096); // use 4 kB 
-DEFINE_FIFO(gRxFIFO, 4096);
 
 void init()
 {
@@ -101,7 +86,15 @@ void init()
 	gRxBufferIndex = 0;
 }
 
-void initSerial()
+// -- USART Stuff --
+
+
+// define FIFO for received packets (USART)
+MK_FIFO(4096); // use 4 kB 
+DEFINE_FIFO(gRxFIFO, 4096);
+
+
+void USART_init()
 {
 	//set baud rate
 	//typecasting of "int" to byte truncates to the lowest uint8_t
@@ -116,24 +109,24 @@ void initSerial()
 
 }
 
-uint8_t CheckRxComplete()
+uint8_t USART_CheckRxComplete()
 {
 	return (UCSR0A & (1<<RXC0)); // zero if no data is available to read
 }
 
-uint8_t CheckTxReady()
+uint8_t USART_CheckTxReady()
 {
 	return (UCSR0A & (1<<UDRE0)); // zero if transmit register is not ready to receive new data
 }
 
-void WriteByte(uint8_t DataByteOut)
+void USART_WriteByte(uint8_t DataByteOut)
 {
-	while(CheckTxReady() == 0)
+	while(USART_CheckTxReady() == 0)
 	{;;} // wait until ready to transmit NOTE: Can probably be optimized using interrupts
 	UDR0 = DataByteOut;
 }
 
-uint8_t ReadByte()
+uint8_t USART_ReadByte()
 {
 	// NOTE: check if data is available before calling this function. Should probably be implemented w. interrupt.
 	return UDR0;
@@ -141,10 +134,8 @@ uint8_t ReadByte()
 }
 
 
-
-
 // calculate crc for packet
-uint16_t crc16(uint8_t tag, uint8_t length)
+uint16_t USART_crc16(uint8_t tag, uint8_t length)
 {
 	int count;
 	uint16_t data, i;
@@ -190,7 +181,7 @@ uint16_t crc16(uint8_t tag, uint8_t length)
 	return (crc);
 }
 
-void SendPacket(char tag, uint8_t length)
+void USART_SendPacket(char tag, uint8_t length)
 {
 	int count, offset, buffersize;
 	uint16_t crc;
@@ -217,7 +208,7 @@ void SendPacket(char tag, uint8_t length)
 		}	
 	}
 	
-	crc = crc16(tag, length);
+	crc = USART_crc16(tag, length);
 	
 	gTxBuffer[count+offset] = (uint8_t)(crc >> 8);
 	++count;
@@ -231,37 +222,31 @@ void SendPacket(char tag, uint8_t length)
 	
 	for(count = 0; count < buffersize + 1; ++count)
 	{
-		WriteByte(gTxBuffer[count]);
+		USART_WriteByte(gTxBuffer[count]);
 	}
 }
 
-void SerialSendMessage(char msg[])
+void USART_SendMessage(char msg[])
 {
 	for(int i = 0; i < strlen(msg); ++i )
 	{
 		gTxPayload[i] = msg[i];
 	}
 	
-	SendPacket('M', strlen(msg));
+	USART_SendPacket('S', strlen(msg));
 }
 	
-
-void SendPacket2(char tag, uint8_t length)
+void USART_SendSensors()
 {
-	WriteByte(0x7e);
-	WriteByte(tag);
-	WriteByte(length);
-	for (int i = 0; i < length; ++i)
+	for(int i = 0; i < 7; i++)
 	{
-		WriteByte(gTxPayload[i]);
+		gTxPayload[i] = 40 + rand() % 5;
 	}
-	WriteByte(0x00);
-	WriteByte(0x00);
-	WriteByte(0x7e);
 	
+	USART_SendPacket('M', 7);
 }
 
-uint8_t DecodeMessageRxFIFO()
+uint8_t USART_DecodeMessageRxFIFO()
 {
 	
 	uint8_t *len = 0;
@@ -297,7 +282,7 @@ uint8_t DecodeMessageRxFIFO()
 	return 0;
 }
 
-void DecodeRxFIFO()
+void USART_DecodeRxFIFO()
 {
 	uint8_t *tag = 0;
 	
@@ -306,7 +291,7 @@ void DecodeRxFIFO()
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{
-				if(DecodeMessageRxFIFO()) // if decoding failed
+				if(USART_DecodeMessageRxFIFO()) // if decoding failed
 				{
 					// TODO: flush buffer?
 					return;
@@ -318,49 +303,17 @@ void DecodeRxFIFO()
 	}
 }
 
-void bounce()
+void USART_Bounce()
 {
 	for(int i = 0; i < gRxBuffer[1]; i++)
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
 	}
-	SendPacket(gRxBuffer[0], gRxBuffer[1]);
+	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
 }
 
 
-
-
-// -- MAIN --
-
-
-
-
-
-int main(void)
-{
-	init();
-	initSerial();
-	
-	// init TWI
-	my_adress = C_ADRESS;
-	init_TWI(my_adress);
-	
-	sei();
-
-	
-    while(1)
-    {
-		PORTA ^= (1<<PORTA0);
-		
-		DecodeRxFIFO();
-		
-		_delay_ms(1000);
-		
-    }
-}
-
-
-
+// -- END USART stuff --
 
 
 // -- Interrupts -- 
@@ -376,11 +329,13 @@ ISR (USART0_RX_vect)
 	{
 		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
 		{
-			//temp
-			 PORTA ^= (1<<PORTA1); // turn on/off led
-			//temp		
+			if(gInvertNextFlag)
+			{
+				data = (1<<5)^data;
+				gInvertNextFlag = 0;
+			}
 			
-			bounce();
+			USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
@@ -391,6 +346,9 @@ ISR (USART0_RX_vect)
 		
 		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read 
 		
+	}else if(data == 0x7d)
+	{
+		gInvertNextFlag = 1;
 	}else
 	{
 		gRxBuffer[gRxBufferIndex] = data;
@@ -401,172 +359,119 @@ ISR (USART0_RX_vect)
 }
 
 
-
 // -- interrupt vector from TWI --
-
-//TWI Interrupt vector to exist in every module
+/*
 ISR(TWI_vect)
 {
-	switch(my_adress)
+	
+	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 	{
-		// ----------------------------------------------------------------------------- Communications
-		case(C_ADRESS):
+		instruction = true;
+		
+	}
+	else if(CONTROL == DATA_SLAW)
+	{
+		if(instruction)
 		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-			{
-				instruction = true;
-			}
-			else if(CONTROL == DATA_SLAW)
-			{
-				if(instruction)
-				{
-					current_instruction = get_data();
-					instruction = false;
-				}
-				else
-				{
-					switch(current_instruction)
-					{
-						case(I_SETTINGS):
-						{
-							PORTA |= (1<<PORTA1);
-							settings = get_data();
-							break;
-						}
-						case(I_STRING):
-						{
-							message[message_counter] = get_data();
-							message_counter += 1;
-							break;
-						}
-					}
-				}
-			}
-			else if (CONTROL == DATA_GENERAL)
-			{
-				if(sensor == 8)
-				{
-					for(int i = 0; i < sizeof(sensors)/sizeof(int);++i)
-					{
-						sensors[i] = buffer[i];
-					}
-					servo = get_data();
-				}
-				else
-				{
-					buffer[sensor] = get_data();
-					sensor += 1;
-				}
-			}
-			else if (CONTROL == STOP)
-			{
-				sensor = 0;
-				//Do something smart with the message.
-				
-				
-				
-				message_counter = 0;
-			}
-			break;
+			current_instruction = get_data();
+			instruction = false;
 		}
-		// ----------------------------------------------------------------------------- Sensors
-		case(S_ADRESS):
+		else
 		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+			switch(current_instruction)
 			{
-				instruction = true;
-			}
-			else if(CONTROL == DATA_SLAW)
-			{
-				if(instruction)
+				case(I_SETTINGS):
 				{
-					current_instruction = get_data();
-					instruction = false;
+					get_settings_from_bus();
+					break;
 				}
-				else
+				case(I_STRING):
 				{
-					switch(current_instruction)
-					{
-						case(I_SWEEP):
-						{
-							//sweep = get_data(); ? :O
-							break;
-						}
-						case(I_STRING):
-						{
-							message[message_counter] = get_data();
-							message_counter += 1;
-							break;
-						}
-					}
+					get_char_from_bus();
+					break;
 				}
-			}
-			else if (CONTROL == STOP)
-			{
-				//Gör något smart med message
-				message_counter = 0;
-			}
-			break;
-		}
-		// ----------------------------------------------------------------------------- Steer
-		case(ST_ADRESS):
-		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-			{
-				instruction = true;
-			}
-			else if(CONTROL == DATA_SLAW)
-			{
-				if(instruction)
-				{
-					current_instruction = get_data();
-					instruction = false;
-				}
-				else
-				{
-					switch(current_instruction)
-					{
-						case(I_COMMAND):
-						{
-							command[current_command] = get_data();
-							current_command += 1;
-							break;
-						}
-						case(I_STRING):
-						{
-							message[message_counter] = get_data();
-							message_counter += 1;
-							break;
-						}
-					}
-				}
-			}
-			else if (CONTROL == DATA_GENERAL)
-			{
-				if(sensor == 8)
-				{
-					for(int i = 0; i < sizeof(sensors)/sizeof(int);++i)
-					{
-						sensors[i] = buffer[i];
-					}
-					servo = get_data();
-				}
-				else
-				{
-					buffer[sensor] = get_data();
-					sensor += 1;
-				}
-			}
-			else if (CONTROL == STOP)
-			{
-				sensor = 0;
-				current_command = 0;
-				//Do something with the commands.
-				//Nothing to do with a string here really...
-				message_counter = 0;
 			}
 		}
-		break;
+	}
+	else if (CONTROL == DATA_GENERAL)
+	{
+		get_sensor_from_bus();
+	}
+	else if (CONTROL == STOP)
+	{
+		switch(current_instruction)
+		{
+			case(I_SETTINGS):
+			{
+				get_settings();
+				break;
+			}
+			case(I_STRING):
+			{
+				//get_char(1);
+				break;
+			}
+		}
+	}
+	reset_TWI();
+}
+*/
+
+ISR(TWI_vect)
+{
+	
+	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+	{
+		instruction = true;
+		
+	}
+	else if(CONTROL == DATA_SLAW)
+	{
+		if(instruction)
+		{
+			current_instruction = get_data();
+			instruction = false;
+		}
+		else
+		{
+			switch(current_instruction)
+			{
+				case(I_SETTINGS):
+				{
+					get_settings_from_bus();
+					break;
+				}
+				case(I_STRING):
+				{
+					get_char_from_bus();
+					break;
+				}
+			}
+		}
+	}
+	else if (CONTROL == DATA_GENERAL)
+	{
+		//temp
+		PORTA |= (1<<PORTA1); // turn on/off led
+		//temp
+		
+		get_sensor_from_bus();
+	}
+	else if (CONTROL == STOP)
+	{
+		switch(current_instruction)
+		{
+			case(I_SETTINGS):
+			{
+				get_settings();
+				break;
+			}
+			case(I_STRING):
+			{
+				//get_char(1);
+				break;
+			}
+		}
 	}
 	reset_TWI();
 }
