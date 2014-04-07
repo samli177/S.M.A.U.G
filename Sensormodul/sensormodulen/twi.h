@@ -54,23 +54,34 @@
 #define G_ADRESS 0
 
 //Declarations
-void init_TWI(int);
+void init_TWI(int module_adress);
 void set_twi_reciever_enable();
 void Error();
 void start_bus();
 void stop_bus();
 void clear_int();
-void set_data(int);
+void set_data(int adr);
 int get_data();
 void send_bus();
 void wait_for_bus();
 bool send_status(int);
-bool send_settings();
-bool send_command(int,int,int);
-bool send_sensors();
-bool send_sweep(int);
-bool send_string(int,char[]);
-bool send_something(int,int,int);
+bool send_settings(int set);
+bool send_command(int direction, int rot_elev, int speed);
+bool send_sensors(int sens[8], int serv);
+bool send_sweep(int pos);
+bool send_string(int adr, char str[]);
+bool send_something(int adr, int instruction, int packet);
 void reset_TWI();
+void get_settings_from_bus();
+int get_settings();
+void get_char_from_bus();
+int get_message_length();
+char get_char(int i);
+void get_sensor_from_bus();
+int get_sensor(int i);
+int get_servo();
+int get_sweep();
+void get_command_from_bus();
+int get_command(int i);
 
 #endif
