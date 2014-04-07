@@ -31,7 +31,7 @@ public class UpperPanel extends JPanel {
         ultraSound = new ArrayList<>();
     }
 
-    public void updatePoints(float angle, float length, MainWindow.SENSOR sensor) {
+    public void updatePoints(float length, float angle, MainWindow.SENSOR sensor) {
         if (sensor == MainWindow.SENSOR.VERTICAL) {
             Point2D newPoint = new Point2D.Float(angle, length);
             vertical.add(newPoint);
