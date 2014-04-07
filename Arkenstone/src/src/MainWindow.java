@@ -1,6 +1,7 @@
 package src;
 
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import javax.swing.text.DefaultCaret;
@@ -30,7 +31,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     SerialPort comPort;
     LinkedList<byte[]> messageBuffer;
-    Object lock;
+    final Object lock;
+
+    boolean keyUpPressed, keyDownPressed, keyLeftPressed, keyRightPressed, keyOnePressed, keyShiftPressed;
 
     /**
      * Creates new form MainWindow
@@ -111,9 +114,13 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         setTitle("Arkenstone");
         setBackground(new java.awt.Color(0, 0, 0));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
+        setName("mainFrame"); // NOI18N
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                formKeyReleased(evt);
             }
         });
 
@@ -540,17 +547,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        // Om COM-porten är öppen, stäng den!
-        if (comPort != null && comPort.isOpened()) {
-            try {
-                comPort.closePort();
-            } catch (SerialPortException ex) {
-                System.out.println(ex);
-            }
-        }
-    }//GEN-LAST:event_formWindowClosing
-
     private void autoLeftRadioButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_autoLeftRadioButtonItemStateChanged
         if (evt.getStateChange() == ItemEvent.SELECTED) {
             writeMessage("Vänsteralgoritm körs");
@@ -562,6 +558,64 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             writeMessage("Högeralgoritm körs");
         }
     }//GEN-LAST:event_autoRightRadioButtonItemStateChanged
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                if (!keyUpPressed) {
+                    keyUpPressed = true;
+                }
+                break;
+            case KeyEvent.VK_DOWN:
+                if (!keyDownPressed) {
+                    keyDownPressed = true;
+                }
+                break;
+            case KeyEvent.VK_LEFT:
+                if (!keyLeftPressed) {
+                    keyLeftPressed = true;
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                if (!keyRightPressed) {
+                    keyRightPressed = true;
+                }
+                break;
+            case KeyEvent.VK_NUMPAD1:
+                if (!keyOnePressed) {
+                    keyOnePressed = true;
+                }
+                break;
+            case KeyEvent.VK_SHIFT:
+                if (!keyShiftPressed) {
+                    keyShiftPressed = true;
+                }
+                break;
+        }
+    }//GEN-LAST:event_formKeyPressed
+
+    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                keyUpPressed = false;
+                break;
+            case KeyEvent.VK_DOWN:
+                keyDownPressed = false;
+                break;
+            case KeyEvent.VK_LEFT:
+                keyLeftPressed = false;
+                break;
+            case KeyEvent.VK_RIGHT:
+                keyRightPressed = false;
+                break;
+            case KeyEvent.VK_NUMPAD1:
+                keyOnePressed = false;
+                break;
+            case KeyEvent.VK_SHIFT:
+                keyShiftPressed = false;
+                break;
+        }
+    }//GEN-LAST:event_formKeyReleased
 
     /**
      * @param args the command line arguments
@@ -681,7 +735,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     public void serialEvent(SerialPortEvent serialPortEvent) {
         try {
             byte[] indata = comPort.readBytes(1);
-
+            
             if (indata[0] == 0x7E) {
 
                 ArrayList<Byte> bytes = new ArrayList();
@@ -695,6 +749,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                         System.out.println("Timeout");
                         return;
                     }
+                    
                     b = indata[0];
 
                     if (b == 0x7D) {
@@ -828,14 +883,13 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     public void run() {
         while (true) {
-
             upperDrawArea.repaint();
             lowerDrawArea.repaint();
 
             if (hasMessage()) {
                 decodeMessage();
             }
-
+            
             try {
                 Thread.sleep(50);
             } catch (InterruptedException ex) {
@@ -876,7 +930,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     private void settingsUpdate(byte[] data) {
-        
+
     }
 
     private void messageRecieved(byte[] data) {
@@ -890,33 +944,41 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     private void sensorUpdate(byte[] data) {
-        int sensor = data[0];
-        int length = data[1];
-        switch (sensor) {
-            case 0:
-                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_FRONT);
-                break;
-            case 1:
-                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.RIGHT_FRONT);
-                break;
-            case 2:
-                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_BACK);
-                break;
-            case 3:
-                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.RIGHT_BACK);
-                break;
-            case 4:
-                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.FRONT);
-                break;
-            case 5:
-                ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.BACK);
-                break;
-            case 6:
-                ((UpperPanel) upperDrawArea).updatePoints(length, data[2], SENSOR.VERTICAL);
-                break;
-            case 7:
-                ((UpperPanel) upperDrawArea).updatePoints(length, 20, SENSOR.ULTRA_SOUND);
-                break;
+        for (int sensor = 0; sensor < data.length - 1; sensor++) {
+            int length = data[sensor];
+            switch (sensor) {
+                case 0:
+                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_FRONT);
+                    irLeftFrontTextField.setText("" + length);
+                    break;
+                case 1:
+                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.RIGHT_FRONT);
+                    irRightFrontTextField.setText("" + length);
+                    break;
+                case 2:
+                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_BACK);
+                    irLeftBackTextField.setText("" + length);
+                    break;
+                case 3:
+                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.RIGHT_BACK);
+                    irRightBackTextField.setText("" + length);
+                    break;
+                case 4:
+                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.FRONT);
+                    irLeftFrontAngleTextField.setText("" + length);
+                    break;
+                case 5:
+                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.BACK);
+                    irRightFrontAngleTextField.setText("" + length);
+                    break;
+                case 6:
+                    ((UpperPanel) upperDrawArea).updatePoints(length, data[data.length - 1], SENSOR.VERTICAL);
+                    irVerticalTextField.setText("" + length);
+                    break;
+                case 7:
+                    ((UpperPanel) upperDrawArea).updatePoints(length, 20, SENSOR.ULTRA_SOUND);
+                    break;
+            }
         }
     }
 }
