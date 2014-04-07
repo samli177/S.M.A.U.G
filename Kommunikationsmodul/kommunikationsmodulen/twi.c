@@ -309,6 +309,41 @@ bool send_sensors(int sens[7], int serv)
 	return true;
 }
 
+bool send_string_fixed_length(int adr, uint8_t str[], int length)
+{
+	start_bus();
+	wait_for_bus();
+	if(CONTROL != START)
+	{
+		Error();
+		return false;
+	}
+	set_data(adr);
+	send_bus();
+	wait_for_bus();
+	if(CONTROL != ADRESS_W)
+	{
+		Error();
+		return false;
+	}
+	set_data(I_STRING);
+	send_bus();
+	wait_for_bus();
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	for(int i = 0; i < length; ++i)
+	{
+		set_data(str[i]);
+		send_bus();
+		wait_for_bus();
+	}
+	stop_bus();
+	return true;
+}
+
 bool send_string(int adr, char str[])
 {
 	start_bus();

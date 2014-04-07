@@ -16,6 +16,7 @@
 #include <avr/interrupt.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 #include "twi.h"
 #include "fifo.h"
 
@@ -24,6 +25,7 @@ uint8_t gTxPayload [255];
 uint8_t gTxBuffer [517]; // if there are only control octets in data it needs to be 255 + 7 + 255 = 517
 uint8_t gRxBuffer [517];
 uint16_t gRxBufferIndex;
+uint16_t gInvertNextFlag = 0;
 
 // -- Global variables from TWI --
 int my_adress;
@@ -31,7 +33,51 @@ bool instruction;
 int current_instruction;
 
 
+// -- Declarations --
+void init();
+void USART_init();
+uint8_t USART_CheckRxComplete();
+uint8_t USART_CheckTxReady();
+void USART_WriteByte(uint8_t DataByteOut);
+uint8_t USART_ReadByte();
+uint16_t USART_crc16(uint8_t tag, uint8_t length);
+void USART_SendPacket(char tag, uint8_t length);
+void USART_SendMessage(char msg[]);
+void USART_SendSensors();
+uint8_t USART_DecodeMessageRxFIFO();
+void USART_DecodeRxFIFO();
+void USART_Bounce();
 
+
+// -- MAIN --
+
+
+
+int main(void)
+{
+	init();
+	USART_init();
+	
+	// init TWI
+	my_adress = C_ADRESS;
+	init_TWI(my_adress);
+	
+	sei();
+
+	
+	while(1)
+	{
+		PORTA ^= (1<<PORTA0);
+		
+		USART_DecodeRxFIFO();
+		USART_SendSensors();
+				
+		_delay_ms(1000);
+		
+	}
+}
+
+// --  END MAIN --
 
 
 void init()
@@ -187,9 +233,18 @@ void USART_SendMessage(char msg[])
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('M', strlen(msg));
+	USART_SendPacket('S', strlen(msg));
 }
 	
+void USART_SendSensors()
+{
+	for(int i = 0; i < 7; i++)
+	{
+		gTxPayload[i] = 40 + rand() % 5;
+	}
+	
+	USART_SendPacket('M', 7);
+}
 
 uint8_t USART_DecodeMessageRxFIFO()
 {
@@ -261,40 +316,6 @@ void USART_Bounce()
 // -- END USART stuff --
 
 
-
-// -- MAIN --
-
-
-
-
-
-int main(void)
-{
-	init();
-	USART_init();
-	
-	// init TWI
-	my_adress = C_ADRESS;
-	init_TWI(my_adress);
-	
-	sei();
-
-	
-    while(1)
-    {
-		PORTA ^= (1<<PORTA0);
-		
-		USART_DecodeRxFIFO();
-		
-		_delay_ms(1000);
-		
-    }
-}
-
-// --  END MAIN --
-
-
-
 // -- Interrupts -- 
 
 ISR (USART0_RX_vect)
@@ -308,9 +329,11 @@ ISR (USART0_RX_vect)
 	{
 		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
 		{
-			//temp
-			 PORTA ^= (1<<PORTA1); // turn on/off led
-			//temp		
+			if(gInvertNextFlag)
+			{
+				data = (1<<5)^data;
+				gInvertNextFlag = 0;
+			}
 			
 			USART_Bounce();
 			
@@ -323,6 +346,9 @@ ISR (USART0_RX_vect)
 		
 		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read 
 		
+	}else if(data == 0x7d)
+	{
+		gInvertNextFlag = 1;
 	}else
 	{
 		gRxBuffer[gRxBufferIndex] = data;
@@ -334,6 +360,7 @@ ISR (USART0_RX_vect)
 
 
 // -- interrupt vector from TWI --
+/*
 ISR(TWI_vect)
 {
 	
@@ -368,6 +395,66 @@ ISR(TWI_vect)
 	}
 	else if (CONTROL == DATA_GENERAL)
 	{
+		get_sensor_from_bus();
+	}
+	else if (CONTROL == STOP)
+	{
+		switch(current_instruction)
+		{
+			case(I_SETTINGS):
+			{
+				get_settings();
+				break;
+			}
+			case(I_STRING):
+			{
+				//get_char(1);
+				break;
+			}
+		}
+	}
+	reset_TWI();
+}
+*/
+
+ISR(TWI_vect)
+{
+	
+	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+	{
+		instruction = true;
+		
+	}
+	else if(CONTROL == DATA_SLAW)
+	{
+		if(instruction)
+		{
+			current_instruction = get_data();
+			instruction = false;
+		}
+		else
+		{
+			switch(current_instruction)
+			{
+				case(I_SETTINGS):
+				{
+					get_settings_from_bus();
+					break;
+				}
+				case(I_STRING):
+				{
+					get_char_from_bus();
+					break;
+				}
+			}
+		}
+	}
+	else if (CONTROL == DATA_GENERAL)
+	{
+		//temp
+		PORTA |= (1<<PORTA1); // turn on/off led
+		//temp
+		
 		get_sensor_from_bus();
 	}
 	else if (CONTROL == STOP)
