@@ -53,7 +53,7 @@ int main(void)
 	init_mux();
 	
 	adc_init();
-	//init_tables();
+	init_tables();
 	
 	sei();
 	
@@ -158,7 +158,7 @@ int voltage_to_cm(float voltage)
 ISR(ADC_vect)
 {
 	clear_display();
-	print_line(0, "ADC complete");	set_display_pos(1, 0);		uint8_t adcValue = ADCH;	float vin = adcValue * 500.0 / 256.0; 	print_value((int) vin);}
+	print_line(0, "ADC complete");	set_display_pos(1, 0);		uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0; 	print_value(voltage_to_cm(vin));	print_text(", ");	print_value((int)(vin*100));}
 
 void init_mux()
 {
