@@ -31,7 +31,51 @@ bool instruction;
 int current_instruction;
 
 
+// -- Declarations --
+void init();
+void USART_init();
+uint8_t USART_CheckRxComplete();
+uint8_t USART_CheckTxReady();
+void USART_WriteByte(uint8_t DataByteOut);
+uint8_t USART_ReadByte();
+uint16_t USART_crc16(uint8_t tag, uint8_t length);
+void USART_SendPacket(char tag, uint8_t length);
+void USART_SendMessage(char msg[]);
+void USART_SendSensors();
+uint8_t USART_DecodeMessageRxFIFO();
+void USART_DecodeRxFIFO();
+void USART_Bounce();
 
+
+// -- MAIN --
+
+
+
+int main(void)
+{
+	init();
+	USART_init();
+	
+	// init TWI
+	my_adress = C_ADRESS;
+	init_TWI(my_adress);
+	
+	sei();
+
+	
+	while(1)
+	{
+		PORTA ^= (1<<PORTA0);
+		
+		USART_DecodeRxFIFO();
+		USART_SendSensors();
+				
+		_delay_ms(1000);
+		
+	}
+}
+
+// --  END MAIN --
 
 
 void init()
@@ -190,6 +234,15 @@ void USART_SendMessage(char msg[])
 	USART_SendPacket('M', strlen(msg));
 }
 	
+void USART_SendSensors()
+{
+	for(int i = 0; i < 7; i++)
+	{
+		gTxPayload[i] = get_sensor(i);
+	}
+	
+	USART_SendPacket('S', 7);
+}
 
 uint8_t USART_DecodeMessageRxFIFO()
 {
@@ -261,40 +314,6 @@ void USART_Bounce()
 // -- END USART stuff --
 
 
-
-// -- MAIN --
-
-
-
-
-
-int main(void)
-{
-	init();
-	USART_init();
-	
-	// init TWI
-	my_adress = C_ADRESS;
-	init_TWI(my_adress);
-	
-	sei();
-
-	
-    while(1)
-    {
-		PORTA ^= (1<<PORTA0);
-		
-		USART_DecodeRxFIFO();
-		
-		_delay_ms(1000);
-		
-    }
-}
-
-// --  END MAIN --
-
-
-
 // -- Interrupts -- 
 
 ISR (USART0_RX_vect)
@@ -308,9 +327,6 @@ ISR (USART0_RX_vect)
 	{
 		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
 		{
-			//temp
-			 PORTA ^= (1<<PORTA1); // turn on/off led
-			//temp		
 			
 			USART_Bounce();
 			
@@ -334,6 +350,7 @@ ISR (USART0_RX_vect)
 
 
 // -- interrupt vector from TWI --
+/*
 ISR(TWI_vect)
 {
 	
@@ -368,6 +385,66 @@ ISR(TWI_vect)
 	}
 	else if (CONTROL == DATA_GENERAL)
 	{
+		get_sensor_from_bus();
+	}
+	else if (CONTROL == STOP)
+	{
+		switch(current_instruction)
+		{
+			case(I_SETTINGS):
+			{
+				get_settings();
+				break;
+			}
+			case(I_STRING):
+			{
+				//get_char(1);
+				break;
+			}
+		}
+	}
+	reset_TWI();
+}
+*/
+
+ISR(TWI_vect)
+{
+	
+	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+	{
+		instruction = true;
+		
+	}
+	else if(CONTROL == DATA_SLAW)
+	{
+		if(instruction)
+		{
+			current_instruction = get_data();
+			instruction = false;
+		}
+		else
+		{
+			switch(current_instruction)
+			{
+				case(I_SETTINGS):
+				{
+					get_settings_from_bus();
+					break;
+				}
+				case(I_STRING):
+				{
+					get_char_from_bus();
+					break;
+				}
+			}
+		}
+	}
+	else if (CONTROL == DATA_GENERAL)
+	{
+		//temp
+		PORTA |= (1<<PORTA1); // turn on/off led
+		//temp
+		
 		get_sensor_from_bus();
 	}
 	else if (CONTROL == STOP)

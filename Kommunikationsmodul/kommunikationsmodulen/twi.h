@@ -70,6 +70,7 @@ bool send_command(int direction, int rot_elev, int speed);
 bool send_sensors(int sens[8], int serv);
 bool send_sweep(int pos);
 bool send_string(int adr, char str[]);
+bool send_string_fixed_length(int adr, uint8_t str[], int length);
 bool send_something(int adr, int instruction, int packet);
 void reset_TWI();
 void get_settings_from_bus();

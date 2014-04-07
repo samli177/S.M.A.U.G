@@ -67,7 +67,7 @@ void wait_for_bus();
 bool send_status(int);
 bool send_settings(int set);
 bool send_command(int direction, int rot_elev, int speed);
-bool send_sensors(int sens[8], int serv);
+bool send_sensors(int sens[7], int serv);
 bool send_sweep(int pos);
 bool send_string(int adr, char str[]);
 bool send_something(int adr, int instruction, int packet);
@@ -81,6 +81,7 @@ void get_sensor_from_bus();
 int get_sensor(int i);
 int get_servo();
 int get_sweep();
+void get_sweep_from_bus();
 void get_command_from_bus();
 int get_command(int i);
 

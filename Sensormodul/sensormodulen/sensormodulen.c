@@ -149,7 +149,7 @@ int voltage_to_cm(float voltage)
 ISR(ADC_vect)
 {
 	clear_display();
-	print_line(0, "ADC complete");	set_display_pos(1, 0);		uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0; 	print_value(voltage_to_cm(vin));	print_text(", ");	print_value((int)(vin*100));}
+	print_line(0, "ADC complete");	set_display_pos(1, 0);		uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0; 	print_value(voltage_to_cm(vin));	print_text(", ");	print_value((int)(vin*100));		int sensors[8];	sensors[0] = voltage_to_cm(vin);	send_sensors(sensors,0);}
 
 void init_mux()
 {
@@ -241,12 +241,7 @@ void select_sensor(int sensor)
 	}
 }
 
-void get_sensor()
-{
-	//return (PORTA & (1<<PORTA0));
-	
-	
-}
+
 
 unsigned int UL_sensor()
 {
@@ -303,7 +298,8 @@ ISR(TWI_vect)
 		{
 			case(I_SWEEP):
 			{
-				get_sweep();
+				// TODO: change to get_sweep_from_bus() or implement get_sweep()...
+				//get_sweep();
 				break;
 			}
 			case(I_STRING):
@@ -311,7 +307,8 @@ ISR(TWI_vect)
 				clear_display();
 				for(int i = 0; i < get_message_length(); ++i)
 				{
-					print_char(get_char(i));
+					// TODO: change to get_char_from_bus() or implement get_char()...
+					//print_char(get_char(i));
 				}
 				
 				break;
