@@ -185,14 +185,14 @@ void LegOneGoto(int x,int y,int z, int servospeed)
 	alpha = acos((femur*femur-tibia*tibia+d*d)/(2*femur*d))-asin(z/d);
 	
 	servoGoto(8, gamma, servospeed);
-	servoGoto(10,alpha + femurAngleAddition,servospeed);
+	servoGoto(10, alpha + femurAngleAddition,servospeed);
 	servoGoto(12, -beta + tibiaAngleAddition,servospeed);
 }
 
 void LegOneGotoHelp(int x, int y, int z, int servospeed) //Help function to describe position of leg in standard base x,y,z
 {
-	int a = (x - centerToFrontLegsX)*cos(-3*3.1415/4)-(-y-centerToFrontLegsY)*sin(-3*3.1415/4);
-	int b = (x - centerToFrontLegsX)*sin(-3*3.1415/4)+(-y - centerToFrontLegsY)*cos(-3*3.1415/4);
+	int a = -(x - centerToFrontLegsX)*sin(-3*3.1415/4)+(y+centerToFrontLegsY)*cos(-3*3.1415/4);
+	int b = (x - centerToFrontLegsX)*cos(-3*3.1415/4)+(y+centerToFrontLegsY)*sin(-3*3.1415/4);
 	LegOneGoto(a, b, z, servospeed);
 }
 
@@ -260,11 +260,11 @@ int main(void)
 	
 	_delay_ms(5000);
 	
-	LegOneGotoHelp(250, -70, 50, 50);
+	LegOneGotoHelp(300, -70, 50, 50);
 	
 	_delay_ms(2500);
 	
-	LegOneGotoHelp(120, -200, 50, 50);
+	LegOneGotoHelp(120, -250, 50, 50);
 	
 	
 	
