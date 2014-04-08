@@ -734,26 +734,70 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     public void serialEvent(SerialPortEvent serialPortEvent) {
         try {
+            ArrayList<Byte> bytes = new ArrayList();
             byte[] indata = comPort.readBytes(1);
-            
+
             if (indata[0] == 0x7E) {
 
-                ArrayList<Byte> bytes = new ArrayList();
                 boolean ceo = false;
                 byte b;
                 byte b2;
-                do {
+                
+                while (true) {
                     try {
                         indata = comPort.readBytes(1, 100);
                     } catch (SerialPortTimeoutException ex) {
                         System.out.println("Timeout");
                         return;
                     }
-                    
+
                     b = indata[0];
 
                     if (b == 0x7D) {
                         ceo = true;
+                    } else if (b == 0x7E) {
+                        // Säger om meddelandet är korrekt
+                        boolean correct = true;
+
+                        // Kontrollera rätt längd på paketet och CRC
+                        if (bytes.size() < 4) {
+                            correct = false;
+                        } else if (bytes.size() != 4 + bytes.get(1)) {
+                            correct = false;
+                        }
+                        /* else {
+                         byte[] crcIndata = new byte[length + 2];
+                         for(int i = 0; i < length + 2; i++){
+                         crcIndata[i] = bytes.get(i);
+                         }
+                         int crc = crc16(length, crcIndata);
+                         byte crc1 = (byte) (crc & 0x00FF);
+                         byte crc2 = (byte) ((crc & 0xFF00) >> 8);
+                         System.out.println("CRC: " + crc1 + ", " + crc2);
+                         if (crc1 != bytes.get(length + 2) || crc2 != bytes.get(length + 3)){
+                         correct = false;
+                         }
+                         }*/
+
+                        /*for (byte byte1 : bytes) {
+                         System.out.println(byte1);
+                         }*/
+                        
+                        if (correct) {
+                            int length = bytes.get(1);
+                            byte[] relevantData = new byte[length + 2];
+                            for (int i = 0; i < length + 2; i++) {
+                                relevantData[i] = bytes.get(i);
+                            }
+                            // Synkronisera skrivning och läsning till och från buffern
+                            synchronized (lock) {
+                                messageBuffer.addLast(relevantData);
+                            }
+                            return;
+                        } else {
+                            System.out.println("Felaktigt meddelande");
+                            bytes.clear();
+                        }
                     } else {
                         if (ceo) {
                             b2 = (byte) (b ^ 0x20);
@@ -763,49 +807,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                             bytes.add(b);
                         }
                     }
-                } while (b != 0x7E);
-
-                // Ta bort stopbiten
-                bytes.remove(bytes.size() - 1);
-
-                // Säger om meddelandet är korrekt
-                boolean correct = true;
-
-                // Kontrollera rätt längd på paketet och CRC
-                if (bytes.size() < 4) {
-                    correct = false;
-                } else if (bytes.size() != 4 + bytes.get(1)) {
-                    correct = false;
-                }/* else {
-                 byte[] crcIndata = new byte[length + 2];
-                 for(int i = 0; i < length + 2; i++){
-                 crcIndata[i] = bytes.get(i);
-                 }
-                 int crc = crc16(length, crcIndata);
-                 byte crc1 = (byte) (crc & 0x00FF);
-                 byte crc2 = (byte) ((crc & 0xFF00) >> 8);
-                 System.out.println("CRC: " + crc1 + ", " + crc2);
-                 if (crc1 != bytes.get(length + 2) || crc2 != bytes.get(length + 3)){
-                 correct = false;
-                 }
-                 }*/
-
-                for (byte byte1 : bytes) {
-                    System.out.println(byte1);
-                }
-
-                if (correct) {
-                    int length = bytes.get(1);
-                    byte[] relevantData = new byte[length + 2];
-                    for (int i = 0; i < length + 2; i++) {
-                        relevantData[i] = bytes.get(i);
-                    }
-                    // Synkronisera skrivning och läsning till och från buffern
-                    synchronized (lock) {
-                        messageBuffer.addLast(relevantData);
-                    }
-                } else {
-                    System.out.println("Felaktigt meddelande\n");
                 }
             }
         } catch (SerialPortException ex) {
@@ -889,7 +890,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             if (hasMessage()) {
                 decodeMessage();
             }
-            
+
             try {
                 Thread.sleep(50);
             } catch (InterruptedException ex) {
@@ -945,7 +946,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void sensorUpdate(byte[] data) {
         for (int sensor = 0; sensor < data.length - 1; sensor++) {
-            int length = data[sensor];
+            long length = data[sensor];
+            System.out.println("Sensor: " + sensor + ", " + length);
             switch (sensor) {
                 case 0:
                     ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_FRONT);
@@ -965,11 +967,11 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                     break;
                 case 4:
                     ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.FRONT);
-                    irLeftFrontAngleTextField.setText("" + length);
+                    irVerticalAngleTextField.setText("" + length);
                     break;
                 case 5:
                     ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.BACK);
-                    irRightFrontAngleTextField.setText("" + length);
+                    irMiddleBackTextField.setText("" + length);
                     break;
                 case 6:
                     ((UpperPanel) upperDrawArea).updatePoints(length, data[data.length - 1], SENSOR.VERTICAL);
@@ -977,8 +979,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                     break;
                 case 7:
                     ((UpperPanel) upperDrawArea).updatePoints(length, 20, SENSOR.ULTRA_SOUND);
+                    ultraSoundTextField.setText("" + length);
                     break;
             }
         }
+        System.out.println("");
     }
 }
