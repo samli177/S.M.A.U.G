@@ -58,8 +58,6 @@ Discarded input sections
                 0x00000000        0xa twi.o
  .text.get_char
                 0x00000000        0xa twi.o
- .text.get_servo
-                0x00000000        0xa twi.o
  .text.get_sweep_from_bus
                 0x00000000        0xe twi.o
  .text.get_sweep
@@ -229,7 +227,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x942
+.text           0x00000000      0x958
  *(.vectors)
  .vectors       0x00000000       0x8c c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
                 0x00000000                __vector_default
@@ -386,47 +384,50 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .text.get_sensor
                 0x000004f0       0x10 twi.o
                 0x000004f0                get_sensor
+ .text.get_servo
+                0x00000500        0xa twi.o
+                0x00000500                get_servo
  .text.stop_twi
-                0x00000500       0x1a twi.o
-                0x00000500                stop_twi
+                0x0000050a       0x1a twi.o
+                0x0000050a                stop_twi
  .text.reset_TWI
-                0x0000051a        0xc twi.o
-                0x0000051a                reset_TWI
+                0x00000524        0xc twi.o
+                0x00000524                reset_TWI
  .text.USART_init
-                0x00000526       0x18 usart.o
-                0x00000526                USART_init
+                0x00000530       0x18 usart.o
+                0x00000530                USART_init
  .text.USART_CheckTxReady
-                0x0000053e        0x8 usart.o
-                0x0000053e                USART_CheckTxReady
+                0x00000548        0x8 usart.o
+                0x00000548                USART_CheckTxReady
  .text.USART_WriteByte
-                0x00000546       0x12 usart.o
-                0x00000546                USART_WriteByte
+                0x00000550       0x12 usart.o
+                0x00000550                USART_WriteByte
  .text.USART_crc16
-                0x00000558       0xb2 usart.o
-                0x00000558                USART_crc16
+                0x00000562       0xb2 usart.o
+                0x00000562                USART_crc16
  .text.USART_SendPacket
-                0x0000060a       0xc0 usart.o
-                0x0000060a                USART_SendPacket
+                0x00000614       0xc0 usart.o
+                0x00000614                USART_SendPacket
  .text.USART_SendSensors
-                0x000006ca       0x32 usart.o
-                0x000006ca                USART_SendSensors
+                0x000006d4       0x3e usart.o
+                0x000006d4                USART_SendSensors
  .text.USART_DecodeMessageRxFIFO
-                0x000006fc       0xee usart.o
-                0x000006fc                USART_DecodeMessageRxFIFO
+                0x00000712       0xee usart.o
+                0x00000712                USART_DecodeMessageRxFIFO
  .text.USART_DecodeRxFIFO
-                0x000007ea       0x1e usart.o
-                0x000007ea                USART_DecodeRxFIFO
+                0x00000800       0x1e usart.o
+                0x00000800                USART_DecodeRxFIFO
  .text.USART_Bounce
-                0x00000808       0x2c usart.o
-                0x00000808                USART_Bounce
+                0x0000081e       0x2c usart.o
+                0x0000081e                USART_Bounce
  .text.__vector_20
-                0x00000834      0x10a usart.o
-                0x00000834                __vector_20
-                0x0000093e                . = ALIGN (0x2)
+                0x0000084a      0x10a usart.o
+                0x0000084a                __vector_20
+                0x00000954                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000093e        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
-                0x0000093e                _exit
-                0x0000093e                exit
+ .fini9         0x00000954        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+                0x00000954                _exit
+                0x00000954                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -445,11 +446,11 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000093e        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+ .fini0         0x00000954        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000942                _etext = .
+                0x00000958                _etext = .
 
-.data           0x00800100     0x103e load address 0x00000942
+.data           0x00800100     0x103e load address 0x00000958
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
@@ -508,8 +509,8 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
                 0x0080147b                gTxPayload
                 0x0080157a                gTxBuffer
                 0x0080177f                PROVIDE (__bss_end, .)
-                0x00000942                __data_load_start = LOADADDR (.data)
-                0x00001980                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000958                __data_load_start = LOADADDR (.data)
+                0x00001996                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0080177f        0x0
                 0x0080177f                PROVIDE (__noinit_start, .)
@@ -591,27 +592,27 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x18e5
+.debug_info     0x00000000     0x1903
  *(.debug_info)
  .debug_info    0x00000000      0x1b1 fifo.o
  .debug_info    0x000001b1      0x2d1 kommunikationsmodulen.o
  .debug_info    0x00000482      0xdad twi.o
- .debug_info    0x0000122f      0x6b6 usart.o
+ .debug_info    0x0000122f      0x6d4 usart.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0x73e
+.debug_abbrev   0x00000000      0x77f
  *(.debug_abbrev)
  .debug_abbrev  0x00000000       0xce fifo.o
  .debug_abbrev  0x000000ce      0x184 kommunikationsmodulen.o
  .debug_abbrev  0x00000252      0x293 twi.o
- .debug_abbrev  0x000004e5      0x259 usart.o
+ .debug_abbrev  0x000004e5      0x29a usart.o
 
-.debug_line     0x00000000     0x12a9
+.debug_line     0x00000000     0x12b5
  *(.debug_line)
  .debug_line    0x00000000      0x14f fifo.o
  .debug_line    0x0000014f      0x29b kommunikationsmodulen.o
  .debug_line    0x000003ea      0xa23 twi.o
- .debug_line    0x00000e0d      0x49c usart.o
+ .debug_line    0x00000e0d      0x4a8 usart.o
 
 .debug_frame    0x00000000      0x5dc
  *(.debug_frame)
@@ -620,16 +621,16 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x000000f4      0x2fc twi.o
  .debug_frame   0x000003f0      0x1ec usart.o
 
-.debug_str      0x00000000      0x52e
+.debug_str      0x00000000      0x571
  *(.debug_str)
- .debug_str     0x00000000       0xf6 fifo.o
-                                0x134 (size before relaxing)
- .debug_str     0x000000f6      0x143 kommunikationsmodulen.o
-                                0x239 (size before relaxing)
- .debug_str     0x00000239      0x1a7 twi.o
+ .debug_str     0x00000000       0xe1 fifo.o
+                                0x11f (size before relaxing)
+ .debug_str     0x000000e1      0x143 kommunikationsmodulen.o
+                                0x224 (size before relaxing)
+ .debug_str     0x00000224      0x1ff twi.o
                                 0x3cb (size before relaxing)
- .debug_str     0x000003e0      0x14e usart.o
-                                0x2e1 (size before relaxing)
+ .debug_str     0x00000423      0x14e usart.o
+                                0x2d6 (size before relaxing)
 
 .debug_loc      0x00000000     0x1197
  *(.debug_loc)

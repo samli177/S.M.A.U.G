@@ -282,8 +282,6 @@ bool send_command(int direction, int rot_elev, int speed)
 
 bool send_sensors(int sens[7], int serv)
 {
-	print_text(", ");
-	print_char('1');
 	start_bus();
 	wait_for_bus();
 	if(CONTROL != START)
@@ -291,7 +289,6 @@ bool send_sensors(int sens[7], int serv)
 		Error();
 		return false;
 	}
-	print_char('2');
 	set_data(G_ADRESS); //General Call, NO instruction byte, NO NACK control of data
 	send_bus();
 	wait_for_bus();
@@ -300,14 +297,12 @@ bool send_sensors(int sens[7], int serv)
 		Error();
 		return false;
 	}
-	print_char('3');
 	for(int i=0; i < 7; ++i) //7 Sensors?
 	{
 		set_data((uint8_t)sens[i]);
 		send_bus();
 		wait_for_bus();
 	}
-	print_char('4');
 	set_data(serv);
 	send_bus();
 	wait_for_bus();

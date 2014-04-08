@@ -3,33 +3,33 @@ kommunikationsmodulen.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         0000103e  00800100  00000942  000009d6  2**0
+  0 .data         0000103e  00800100  00000958  000009ec  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000942  00000000  00000000  00000094  2**1
+  1 .text         00000958  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000641  0080113e  0080113e  00001a14  2**0
+  2 .bss          00000641  0080113e  0080113e  00001a2a  2**0
                   ALLOC
-  3 .stab         000006cc  00000000  00000000  00001a14  2**2
+  3 .stab         000006cc  00000000  00000000  00001a2c  2**2
                   CONTENTS, READONLY, DEBUGGING
-  4 .stabstr      00000097  00000000  00000000  000020e0  2**0
+  4 .stabstr      00000097  00000000  00000000  000020f8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .comment      0000002f  00000000  00000000  00002177  2**0
+  5 .comment      0000002f  00000000  00000000  0000218f  2**0
                   CONTENTS, READONLY
-  6 .debug_aranges 000001f8  00000000  00000000  000021a6  2**0
+  6 .debug_aranges 000001f8  00000000  00000000  000021be  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   000018e5  00000000  00000000  0000239e  2**0
+  7 .debug_info   00001903  00000000  00000000  000023b6  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 0000073e  00000000  00000000  00003c83  2**0
+  8 .debug_abbrev 0000077f  00000000  00000000  00003cb9  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   000012a9  00000000  00000000  000043c1  2**0
+  9 .debug_line   000012b5  00000000  00000000  00004438  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  000005dc  00000000  00000000  0000566c  2**2
+ 10 .debug_frame  000005dc  00000000  00000000  000056f0  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    0000052e  00000000  00000000  00005c48  2**0
+ 11 .debug_str    00000571  00000000  00000000  00005ccc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00001197  00000000  00000000  00006176  2**0
+ 12 .debug_loc    00001197  00000000  00000000  0000623d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 000001d0  00000000  00000000  0000730d  2**0
+ 13 .debug_ranges 000001d0  00000000  00000000  000073d4  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -75,7 +75,7 @@ Disassembly of section .text:
   4a:	00 00       	nop
   4c:	3c c0       	rjmp	.+120    	; 0xc6 <__bad_interrupt>
   4e:	00 00       	nop
-  50:	f1 c3       	rjmp	.+2018   	; 0x834 <__vector_20>
+  50:	fc c3       	rjmp	.+2040   	; 0x84a <__vector_20>
   52:	00 00       	nop
   54:	38 c0       	rjmp	.+112    	; 0xc6 <__bad_interrupt>
   56:	00 00       	nop
@@ -118,7 +118,7 @@ Disassembly of section .text:
   98:	11 e1       	ldi	r17, 0x11	; 17
   9a:	a0 e0       	ldi	r26, 0x00	; 0
   9c:	b1 e0       	ldi	r27, 0x01	; 1
-  9e:	e2 e4       	ldi	r30, 0x42	; 66
+  9e:	e8 e5       	ldi	r30, 0x58	; 88
   a0:	f9 e0       	ldi	r31, 0x09	; 9
   a2:	00 e0       	ldi	r16, 0x00	; 0
   a4:	0b bf       	out	0x3b, r16	; 59
@@ -143,7 +143,7 @@ Disassembly of section .text:
   be:	b2 07       	cpc	r27, r18
   c0:	e1 f7       	brne	.-8      	; 0xba <.do_clear_bss_loop>
   c2:	51 d0       	rcall	.+162    	; 0x166 <main>
-  c4:	3c c4       	rjmp	.+2168   	; 0x93e <_exit>
+  c4:	47 c4       	rjmp	.+2190   	; 0x954 <_exit>
 
 000000c6 <__bad_interrupt>:
   c6:	9c cf       	rjmp	.-200    	; 0x0 <__vectors>
@@ -299,14 +299,14 @@ void init()
 
 00000166 <main>:
 
-
+// -- MAIN --
 
 int main(void)
 {
 	init();
  166:	fb df       	rcall	.-10     	; 0x15e <init>
 	USART_init();
- 168:	de d1       	rcall	.+956    	; 0x526 <USART_init>
+ 168:	e3 d1       	rcall	.+966    	; 0x530 <USART_init>
 	
 	// init TWI
 	my_adress = C_ADRESS;
@@ -330,9 +330,9 @@ int main(void)
  180:	82 b9       	out	0x02, r24	; 2
 		
 		USART_DecodeRxFIFO();
- 182:	33 d3       	rcall	.+1638   	; 0x7ea <USART_DecodeRxFIFO>
+ 182:	3e d3       	rcall	.+1660   	; 0x800 <USART_DecodeRxFIFO>
 		USART_SendSensors();
- 184:	a2 d2       	rcall	.+1348   	; 0x6ca <USART_SendSensors>
+ 184:	a7 d2       	rcall	.+1358   	; 0x6d4 <USART_SendSensors>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
@@ -351,9 +351,9 @@ int main(void)
  198:	f1 cf       	rjmp	.-30     	; 0x17c <main+0x16>
 
 0000019a <__vector_26>:
-	reset_TWI();
-}
-*/
+// -- Interrupts -- 
+
+
 
 ISR(TWI_vect)
 {
@@ -479,10 +479,10 @@ ISR(TWI_vect)
 			}
 		}
 		stop_twi();
- 244:	5d d1       	rcall	.+698    	; 0x500 <stop_twi>
+ 244:	62 d1       	rcall	.+708    	; 0x50a <stop_twi>
 	}
 	reset_TWI();
- 246:	69 d1       	rcall	.+722    	; 0x51a <reset_TWI>
+ 246:	6e d1       	rcall	.+732    	; 0x524 <reset_TWI>
 	sei();
  248:	78 94       	sei
  24a:	ff 91       	pop	r31
@@ -506,12 +506,6 @@ ISR(TWI_vect)
  26e:	18 95       	reti
 
 00000270 <set_twi_reciever_enable>:
-
-int get_sweep()
-{
-	return sweep;
-}
-
  270:	85 e4       	ldi	r24, 0x45	; 69
  272:	80 93 bc 00 	sts	0x00BC, r24
  276:	08 95       	ret
@@ -831,703 +825,705 @@ int get_sweep()
  4fc:	91 81       	ldd	r25, Z+1	; 0x01
  4fe:	08 95       	ret
 
-00000500 <stop_twi>:
-void stop_twi()
-{
-	current_command = 0;
-	sensor = 0;
- 500:	10 92 51 12 	sts	0x1251, r1
- 504:	10 92 50 12 	sts	0x1250, r1
-	message_counter = 0;
- 508:	10 92 67 12 	sts	0x1267, r1
- 50c:	10 92 66 12 	sts	0x1266, r1
-}
- 510:	10 92 61 12 	sts	0x1261, r1
- 514:	10 92 60 12 	sts	0x1260, r1
- 518:	08 95       	ret
+00000500 <get_servo>:
+ 500:	80 91 62 12 	lds	r24, 0x1262
+ 504:	90 91 63 12 	lds	r25, 0x1263
+ 508:	08 95       	ret
 
-0000051a <reset_TWI>:
+0000050a <stop_twi>:
+ 50a:	10 92 51 12 	sts	0x1251, r1
+ 50e:	10 92 50 12 	sts	0x1250, r1
+ 512:	10 92 67 12 	sts	0x1267, r1
+ 516:	10 92 66 12 	sts	0x1266, r1
+ 51a:	10 92 61 12 	sts	0x1261, r1
+ 51e:	10 92 60 12 	sts	0x1260, r1
+ 522:	08 95       	ret
 
-void reset_TWI()
-{
-	TWCR |= (1<<TWINT) | (1<<TWEA);
-}
- 51a:	ec eb       	ldi	r30, 0xBC	; 188
- 51c:	f0 e0       	ldi	r31, 0x00	; 0
- 51e:	80 81       	ld	r24, Z
- 520:	80 6c       	ori	r24, 0xC0	; 192
- 522:	80 83       	st	Z, r24
- 524:	08 95       	ret
+00000524 <reset_TWI>:
+ 524:	ec eb       	ldi	r30, 0xBC	; 188
+ 526:	f0 e0       	ldi	r31, 0x00	; 0
+ 528:	80 81       	ld	r24, Z
+ 52a:	80 6c       	ori	r24, 0xC0	; 192
+ 52c:	80 83       	st	Z, r24
+ 52e:	08 95       	ret
 
-00000526 <USART_init>:
+00000530 <USART_init>:
 	{
 		gTxPayload[i] = msg[i];
 	}
 	
 	USART_SendPacket('S', strlen(msg));
 }
- 526:	10 92 c5 00 	sts	0x00C5, r1
- 52a:	89 e0       	ldi	r24, 0x09	; 9
- 52c:	80 93 c4 00 	sts	0x00C4, r24
- 530:	88 e9       	ldi	r24, 0x98	; 152
- 532:	80 93 c1 00 	sts	0x00C1, r24
- 536:	86 e0       	ldi	r24, 0x06	; 6
- 538:	80 93 c2 00 	sts	0x00C2, r24
- 53c:	08 95       	ret
+ 530:	10 92 c5 00 	sts	0x00C5, r1
+ 534:	89 e0       	ldi	r24, 0x09	; 9
+ 536:	80 93 c4 00 	sts	0x00C4, r24
+ 53a:	88 e9       	ldi	r24, 0x98	; 152
+ 53c:	80 93 c1 00 	sts	0x00C1, r24
+ 540:	86 e0       	ldi	r24, 0x06	; 6
+ 542:	80 93 c2 00 	sts	0x00C2, r24
+ 546:	08 95       	ret
 
-0000053e <USART_CheckTxReady>:
- 53e:	80 91 c0 00 	lds	r24, 0x00C0
- 542:	80 72       	andi	r24, 0x20	; 32
- 544:	08 95       	ret
+00000548 <USART_CheckTxReady>:
+ 548:	80 91 c0 00 	lds	r24, 0x00C0
+ 54c:	80 72       	andi	r24, 0x20	; 32
+ 54e:	08 95       	ret
 
-00000546 <USART_WriteByte>:
- 546:	cf 93       	push	r28
- 548:	c8 2f       	mov	r28, r24
- 54a:	f9 df       	rcall	.-14     	; 0x53e <USART_CheckTxReady>
- 54c:	88 23       	and	r24, r24
- 54e:	e9 f3       	breq	.-6      	; 0x54a <USART_WriteByte+0x4>
- 550:	c0 93 c6 00 	sts	0x00C6, r28
- 554:	cf 91       	pop	r28
- 556:	08 95       	ret
+00000550 <USART_WriteByte>:
+ 550:	cf 93       	push	r28
+ 552:	c8 2f       	mov	r28, r24
+ 554:	f9 df       	rcall	.-14     	; 0x548 <USART_CheckTxReady>
+ 556:	88 23       	and	r24, r24
+ 558:	e9 f3       	breq	.-6      	; 0x554 <USART_WriteByte+0x4>
+ 55a:	c0 93 c6 00 	sts	0x00C6, r28
+ 55e:	cf 91       	pop	r28
+ 560:	08 95       	ret
 
-00000558 <USART_crc16>:
- 558:	cf 92       	push	r12
- 55a:	df 92       	push	r13
- 55c:	ef 92       	push	r14
- 55e:	ff 92       	push	r15
- 560:	0f 93       	push	r16
- 562:	1f 93       	push	r17
- 564:	cf 93       	push	r28
- 566:	df 93       	push	r29
- 568:	66 23       	and	r22, r22
- 56a:	09 f4       	brne	.+2      	; 0x56e <USART_crc16+0x16>
- 56c:	3e c0       	rjmp	.+124    	; 0x5ea <USART_crc16+0x92>
- 56e:	06 2f       	mov	r16, r22
- 570:	10 e0       	ldi	r17, 0x00	; 0
- 572:	4f ef       	ldi	r20, 0xFF	; 255
- 574:	5f ef       	ldi	r21, 0xFF	; 255
- 576:	ee ef       	ldi	r30, 0xFE	; 254
- 578:	ff ef       	ldi	r31, 0xFF	; 255
- 57a:	c6 2e       	mov	r12, r22
- 57c:	d1 2c       	mov	r13, r1
- 57e:	e8 2e       	mov	r14, r24
- 580:	f1 2c       	mov	r15, r1
- 582:	c8 e0       	ldi	r28, 0x08	; 8
- 584:	d0 e0       	ldi	r29, 0x00	; 0
- 586:	ee 3f       	cpi	r30, 0xFE	; 254
- 588:	6f ef       	ldi	r22, 0xFF	; 255
- 58a:	f6 07       	cpc	r31, r22
- 58c:	19 f4       	brne	.+6      	; 0x594 <USART_crc16+0x3c>
- 58e:	8e 2d       	mov	r24, r14
- 590:	9f 2d       	mov	r25, r15
- 592:	30 c0       	rjmp	.+96     	; 0x5f4 <USART_crc16+0x9c>
- 594:	ef 3f       	cpi	r30, 0xFF	; 255
- 596:	8f ef       	ldi	r24, 0xFF	; 255
- 598:	f8 07       	cpc	r31, r24
- 59a:	19 f4       	brne	.+6      	; 0x5a2 <USART_crc16+0x4a>
- 59c:	8c 2d       	mov	r24, r12
- 59e:	9d 2d       	mov	r25, r13
- 5a0:	29 c0       	rjmp	.+82     	; 0x5f4 <USART_crc16+0x9c>
- 5a2:	df 01       	movw	r26, r30
- 5a4:	a5 58       	subi	r26, 0x85	; 133
- 5a6:	bb 4e       	sbci	r27, 0xEB	; 235
- 5a8:	8c 91       	ld	r24, X
- 5aa:	90 e0       	ldi	r25, 0x00	; 0
- 5ac:	23 c0       	rjmp	.+70     	; 0x5f4 <USART_crc16+0x9c>
- 5ae:	ba 01       	movw	r22, r20
- 5b0:	68 27       	eor	r22, r24
- 5b2:	79 27       	eor	r23, r25
- 5b4:	60 ff       	sbrs	r22, 0
- 5b6:	07 c0       	rjmp	.+14     	; 0x5c6 <USART_crc16+0x6e>
- 5b8:	56 95       	lsr	r21
- 5ba:	47 95       	ror	r20
- 5bc:	68 e0       	ldi	r22, 0x08	; 8
- 5be:	46 27       	eor	r20, r22
- 5c0:	64 e8       	ldi	r22, 0x84	; 132
- 5c2:	56 27       	eor	r21, r22
- 5c4:	02 c0       	rjmp	.+4      	; 0x5ca <USART_crc16+0x72>
- 5c6:	56 95       	lsr	r21
- 5c8:	47 95       	ror	r20
- 5ca:	96 95       	lsr	r25
- 5cc:	87 95       	ror	r24
- 5ce:	21 50       	subi	r18, 0x01	; 1
- 5d0:	31 09       	sbc	r19, r1
- 5d2:	69 f7       	brne	.-38     	; 0x5ae <USART_crc16+0x56>
- 5d4:	31 96       	adiw	r30, 0x01	; 1
- 5d6:	e0 17       	cp	r30, r16
- 5d8:	f1 07       	cpc	r31, r17
- 5da:	a9 f6       	brne	.-86     	; 0x586 <USART_crc16+0x2e>
- 5dc:	9a 01       	movw	r18, r20
- 5de:	20 95       	com	r18
- 5e0:	30 95       	com	r19
- 5e2:	32 27       	eor	r19, r18
- 5e4:	23 27       	eor	r18, r19
- 5e6:	32 27       	eor	r19, r18
- 5e8:	02 c0       	rjmp	.+4      	; 0x5ee <USART_crc16+0x96>
- 5ea:	20 e0       	ldi	r18, 0x00	; 0
- 5ec:	30 e0       	ldi	r19, 0x00	; 0
- 5ee:	82 2f       	mov	r24, r18
- 5f0:	93 2f       	mov	r25, r19
- 5f2:	02 c0       	rjmp	.+4      	; 0x5f8 <USART_crc16+0xa0>
- 5f4:	9e 01       	movw	r18, r28
- 5f6:	db cf       	rjmp	.-74     	; 0x5ae <USART_crc16+0x56>
- 5f8:	df 91       	pop	r29
- 5fa:	cf 91       	pop	r28
- 5fc:	1f 91       	pop	r17
- 5fe:	0f 91       	pop	r16
- 600:	ff 90       	pop	r15
- 602:	ef 90       	pop	r14
- 604:	df 90       	pop	r13
- 606:	cf 90       	pop	r12
- 608:	08 95       	ret
+00000562 <USART_crc16>:
+ 562:	cf 92       	push	r12
+ 564:	df 92       	push	r13
+ 566:	ef 92       	push	r14
+ 568:	ff 92       	push	r15
+ 56a:	0f 93       	push	r16
+ 56c:	1f 93       	push	r17
+ 56e:	cf 93       	push	r28
+ 570:	df 93       	push	r29
+ 572:	66 23       	and	r22, r22
+ 574:	09 f4       	brne	.+2      	; 0x578 <USART_crc16+0x16>
+ 576:	3e c0       	rjmp	.+124    	; 0x5f4 <USART_crc16+0x92>
+ 578:	06 2f       	mov	r16, r22
+ 57a:	10 e0       	ldi	r17, 0x00	; 0
+ 57c:	4f ef       	ldi	r20, 0xFF	; 255
+ 57e:	5f ef       	ldi	r21, 0xFF	; 255
+ 580:	ee ef       	ldi	r30, 0xFE	; 254
+ 582:	ff ef       	ldi	r31, 0xFF	; 255
+ 584:	c6 2e       	mov	r12, r22
+ 586:	d1 2c       	mov	r13, r1
+ 588:	e8 2e       	mov	r14, r24
+ 58a:	f1 2c       	mov	r15, r1
+ 58c:	c8 e0       	ldi	r28, 0x08	; 8
+ 58e:	d0 e0       	ldi	r29, 0x00	; 0
+ 590:	ee 3f       	cpi	r30, 0xFE	; 254
+ 592:	6f ef       	ldi	r22, 0xFF	; 255
+ 594:	f6 07       	cpc	r31, r22
+ 596:	19 f4       	brne	.+6      	; 0x59e <USART_crc16+0x3c>
+ 598:	8e 2d       	mov	r24, r14
+ 59a:	9f 2d       	mov	r25, r15
+ 59c:	30 c0       	rjmp	.+96     	; 0x5fe <USART_crc16+0x9c>
+ 59e:	ef 3f       	cpi	r30, 0xFF	; 255
+ 5a0:	8f ef       	ldi	r24, 0xFF	; 255
+ 5a2:	f8 07       	cpc	r31, r24
+ 5a4:	19 f4       	brne	.+6      	; 0x5ac <USART_crc16+0x4a>
+ 5a6:	8c 2d       	mov	r24, r12
+ 5a8:	9d 2d       	mov	r25, r13
+ 5aa:	29 c0       	rjmp	.+82     	; 0x5fe <USART_crc16+0x9c>
+ 5ac:	df 01       	movw	r26, r30
+ 5ae:	a5 58       	subi	r26, 0x85	; 133
+ 5b0:	bb 4e       	sbci	r27, 0xEB	; 235
+ 5b2:	8c 91       	ld	r24, X
+ 5b4:	90 e0       	ldi	r25, 0x00	; 0
+ 5b6:	23 c0       	rjmp	.+70     	; 0x5fe <USART_crc16+0x9c>
+ 5b8:	ba 01       	movw	r22, r20
+ 5ba:	68 27       	eor	r22, r24
+ 5bc:	79 27       	eor	r23, r25
+ 5be:	60 ff       	sbrs	r22, 0
+ 5c0:	07 c0       	rjmp	.+14     	; 0x5d0 <USART_crc16+0x6e>
+ 5c2:	56 95       	lsr	r21
+ 5c4:	47 95       	ror	r20
+ 5c6:	68 e0       	ldi	r22, 0x08	; 8
+ 5c8:	46 27       	eor	r20, r22
+ 5ca:	64 e8       	ldi	r22, 0x84	; 132
+ 5cc:	56 27       	eor	r21, r22
+ 5ce:	02 c0       	rjmp	.+4      	; 0x5d4 <USART_crc16+0x72>
+ 5d0:	56 95       	lsr	r21
+ 5d2:	47 95       	ror	r20
+ 5d4:	96 95       	lsr	r25
+ 5d6:	87 95       	ror	r24
+ 5d8:	21 50       	subi	r18, 0x01	; 1
+ 5da:	31 09       	sbc	r19, r1
+ 5dc:	69 f7       	brne	.-38     	; 0x5b8 <USART_crc16+0x56>
+ 5de:	31 96       	adiw	r30, 0x01	; 1
+ 5e0:	e0 17       	cp	r30, r16
+ 5e2:	f1 07       	cpc	r31, r17
+ 5e4:	a9 f6       	brne	.-86     	; 0x590 <USART_crc16+0x2e>
+ 5e6:	9a 01       	movw	r18, r20
+ 5e8:	20 95       	com	r18
+ 5ea:	30 95       	com	r19
+ 5ec:	32 27       	eor	r19, r18
+ 5ee:	23 27       	eor	r18, r19
+ 5f0:	32 27       	eor	r19, r18
+ 5f2:	02 c0       	rjmp	.+4      	; 0x5f8 <USART_crc16+0x96>
+ 5f4:	20 e0       	ldi	r18, 0x00	; 0
+ 5f6:	30 e0       	ldi	r19, 0x00	; 0
+ 5f8:	82 2f       	mov	r24, r18
+ 5fa:	93 2f       	mov	r25, r19
+ 5fc:	02 c0       	rjmp	.+4      	; 0x602 <USART_crc16+0xa0>
+ 5fe:	9e 01       	movw	r18, r28
+ 600:	db cf       	rjmp	.-74     	; 0x5b8 <USART_crc16+0x56>
+ 602:	df 91       	pop	r29
+ 604:	cf 91       	pop	r28
+ 606:	1f 91       	pop	r17
+ 608:	0f 91       	pop	r16
+ 60a:	ff 90       	pop	r15
+ 60c:	ef 90       	pop	r14
+ 60e:	df 90       	pop	r13
+ 610:	cf 90       	pop	r12
+ 612:	08 95       	ret
 
-0000060a <USART_SendPacket>:
- 60a:	0f 93       	push	r16
- 60c:	1f 93       	push	r17
- 60e:	cf 93       	push	r28
- 610:	df 93       	push	r29
- 612:	9e e7       	ldi	r25, 0x7E	; 126
- 614:	90 93 7a 15 	sts	0x157A, r25
- 618:	80 93 7b 15 	sts	0x157B, r24
- 61c:	60 93 7c 15 	sts	0x157C, r22
- 620:	26 2f       	mov	r18, r22
- 622:	30 e0       	ldi	r19, 0x00	; 0
- 624:	12 16       	cp	r1, r18
- 626:	13 06       	cpc	r1, r19
- 628:	4c f5       	brge	.+82     	; 0x67c <USART_SendPacket+0x72>
- 62a:	eb e7       	ldi	r30, 0x7B	; 123
- 62c:	f4 e1       	ldi	r31, 0x14	; 20
- 62e:	03 e0       	ldi	r16, 0x03	; 3
- 630:	10 e0       	ldi	r17, 0x00	; 0
- 632:	c0 e0       	ldi	r28, 0x00	; 0
- 634:	d0 e0       	ldi	r29, 0x00	; 0
- 636:	7d e7       	ldi	r23, 0x7D	; 125
- 638:	50 e2       	ldi	r21, 0x20	; 32
- 63a:	90 81       	ld	r25, Z
- 63c:	49 2f       	mov	r20, r25
- 63e:	4d 57       	subi	r20, 0x7D	; 125
- 640:	42 30       	cpi	r20, 0x02	; 2
- 642:	80 f4       	brcc	.+32     	; 0x664 <USART_SendPacket+0x5a>
- 644:	d8 01       	movw	r26, r16
- 646:	a6 58       	subi	r26, 0x86	; 134
- 648:	ba 4e       	sbci	r27, 0xEA	; 234
- 64a:	ac 0f       	add	r26, r28
- 64c:	bd 1f       	adc	r27, r29
- 64e:	7c 93       	st	X, r23
- 650:	0f 5f       	subi	r16, 0xFF	; 255
- 652:	1f 4f       	sbci	r17, 0xFF	; 255
- 654:	d8 01       	movw	r26, r16
- 656:	a6 58       	subi	r26, 0x86	; 134
- 658:	ba 4e       	sbci	r27, 0xEA	; 234
- 65a:	ac 0f       	add	r26, r28
- 65c:	bd 1f       	adc	r27, r29
- 65e:	95 27       	eor	r25, r21
- 660:	9c 93       	st	X, r25
- 662:	06 c0       	rjmp	.+12     	; 0x670 <USART_SendPacket+0x66>
- 664:	d8 01       	movw	r26, r16
- 666:	a6 58       	subi	r26, 0x86	; 134
- 668:	ba 4e       	sbci	r27, 0xEA	; 234
- 66a:	ac 0f       	add	r26, r28
- 66c:	bd 1f       	adc	r27, r29
- 66e:	9c 93       	st	X, r25
- 670:	21 96       	adiw	r28, 0x01	; 1
- 672:	31 96       	adiw	r30, 0x01	; 1
- 674:	c2 17       	cp	r28, r18
- 676:	d3 07       	cpc	r29, r19
- 678:	01 f7       	brne	.-64     	; 0x63a <USART_SendPacket+0x30>
- 67a:	04 c0       	rjmp	.+8      	; 0x684 <USART_SendPacket+0x7a>
- 67c:	03 e0       	ldi	r16, 0x03	; 3
- 67e:	10 e0       	ldi	r17, 0x00	; 0
- 680:	c0 e0       	ldi	r28, 0x00	; 0
- 682:	d0 e0       	ldi	r29, 0x00	; 0
- 684:	69 df       	rcall	.-302    	; 0x558 <USART_crc16>
- 686:	f8 01       	movw	r30, r16
- 688:	e6 58       	subi	r30, 0x86	; 134
- 68a:	fa 4e       	sbci	r31, 0xEA	; 234
- 68c:	ec 0f       	add	r30, r28
- 68e:	fd 1f       	adc	r31, r29
- 690:	90 83       	st	Z, r25
- 692:	81 83       	std	Z+1, r24	; 0x01
- 694:	22 96       	adiw	r28, 0x02	; 2
- 696:	0c 0f       	add	r16, r28
- 698:	1d 1f       	adc	r17, r29
- 69a:	f8 01       	movw	r30, r16
- 69c:	e6 58       	subi	r30, 0x86	; 134
- 69e:	fa 4e       	sbci	r31, 0xEA	; 234
- 6a0:	8e e7       	ldi	r24, 0x7E	; 126
- 6a2:	80 83       	st	Z, r24
- 6a4:	c8 01       	movw	r24, r16
- 6a6:	01 96       	adiw	r24, 0x01	; 1
- 6a8:	18 16       	cp	r1, r24
- 6aa:	19 06       	cpc	r1, r25
- 6ac:	4c f4       	brge	.+18     	; 0x6c0 <USART_SendPacket+0xb6>
- 6ae:	ca e7       	ldi	r28, 0x7A	; 122
- 6b0:	d5 e1       	ldi	r29, 0x15	; 21
- 6b2:	05 58       	subi	r16, 0x85	; 133
- 6b4:	1a 4e       	sbci	r17, 0xEA	; 234
- 6b6:	89 91       	ld	r24, Y+
- 6b8:	46 df       	rcall	.-372    	; 0x546 <USART_WriteByte>
- 6ba:	c0 17       	cp	r28, r16
- 6bc:	d1 07       	cpc	r29, r17
- 6be:	d9 f7       	brne	.-10     	; 0x6b6 <USART_SendPacket+0xac>
- 6c0:	df 91       	pop	r29
- 6c2:	cf 91       	pop	r28
- 6c4:	1f 91       	pop	r17
- 6c6:	0f 91       	pop	r16
- 6c8:	08 95       	ret
+00000614 <USART_SendPacket>:
+ 614:	0f 93       	push	r16
+ 616:	1f 93       	push	r17
+ 618:	cf 93       	push	r28
+ 61a:	df 93       	push	r29
+ 61c:	9e e7       	ldi	r25, 0x7E	; 126
+ 61e:	90 93 7a 15 	sts	0x157A, r25
+ 622:	80 93 7b 15 	sts	0x157B, r24
+ 626:	60 93 7c 15 	sts	0x157C, r22
+ 62a:	26 2f       	mov	r18, r22
+ 62c:	30 e0       	ldi	r19, 0x00	; 0
+ 62e:	12 16       	cp	r1, r18
+ 630:	13 06       	cpc	r1, r19
+ 632:	4c f5       	brge	.+82     	; 0x686 <USART_SendPacket+0x72>
+ 634:	eb e7       	ldi	r30, 0x7B	; 123
+ 636:	f4 e1       	ldi	r31, 0x14	; 20
+ 638:	03 e0       	ldi	r16, 0x03	; 3
+ 63a:	10 e0       	ldi	r17, 0x00	; 0
+ 63c:	c0 e0       	ldi	r28, 0x00	; 0
+ 63e:	d0 e0       	ldi	r29, 0x00	; 0
+ 640:	7d e7       	ldi	r23, 0x7D	; 125
+ 642:	50 e2       	ldi	r21, 0x20	; 32
+ 644:	90 81       	ld	r25, Z
+ 646:	49 2f       	mov	r20, r25
+ 648:	4d 57       	subi	r20, 0x7D	; 125
+ 64a:	42 30       	cpi	r20, 0x02	; 2
+ 64c:	80 f4       	brcc	.+32     	; 0x66e <USART_SendPacket+0x5a>
+ 64e:	d8 01       	movw	r26, r16
+ 650:	a6 58       	subi	r26, 0x86	; 134
+ 652:	ba 4e       	sbci	r27, 0xEA	; 234
+ 654:	ac 0f       	add	r26, r28
+ 656:	bd 1f       	adc	r27, r29
+ 658:	7c 93       	st	X, r23
+ 65a:	0f 5f       	subi	r16, 0xFF	; 255
+ 65c:	1f 4f       	sbci	r17, 0xFF	; 255
+ 65e:	d8 01       	movw	r26, r16
+ 660:	a6 58       	subi	r26, 0x86	; 134
+ 662:	ba 4e       	sbci	r27, 0xEA	; 234
+ 664:	ac 0f       	add	r26, r28
+ 666:	bd 1f       	adc	r27, r29
+ 668:	95 27       	eor	r25, r21
+ 66a:	9c 93       	st	X, r25
+ 66c:	06 c0       	rjmp	.+12     	; 0x67a <USART_SendPacket+0x66>
+ 66e:	d8 01       	movw	r26, r16
+ 670:	a6 58       	subi	r26, 0x86	; 134
+ 672:	ba 4e       	sbci	r27, 0xEA	; 234
+ 674:	ac 0f       	add	r26, r28
+ 676:	bd 1f       	adc	r27, r29
+ 678:	9c 93       	st	X, r25
+ 67a:	21 96       	adiw	r28, 0x01	; 1
+ 67c:	31 96       	adiw	r30, 0x01	; 1
+ 67e:	c2 17       	cp	r28, r18
+ 680:	d3 07       	cpc	r29, r19
+ 682:	01 f7       	brne	.-64     	; 0x644 <USART_SendPacket+0x30>
+ 684:	04 c0       	rjmp	.+8      	; 0x68e <USART_SendPacket+0x7a>
+ 686:	03 e0       	ldi	r16, 0x03	; 3
+ 688:	10 e0       	ldi	r17, 0x00	; 0
+ 68a:	c0 e0       	ldi	r28, 0x00	; 0
+ 68c:	d0 e0       	ldi	r29, 0x00	; 0
+ 68e:	69 df       	rcall	.-302    	; 0x562 <USART_crc16>
+ 690:	f8 01       	movw	r30, r16
+ 692:	e6 58       	subi	r30, 0x86	; 134
+ 694:	fa 4e       	sbci	r31, 0xEA	; 234
+ 696:	ec 0f       	add	r30, r28
+ 698:	fd 1f       	adc	r31, r29
+ 69a:	90 83       	st	Z, r25
+ 69c:	81 83       	std	Z+1, r24	; 0x01
+ 69e:	22 96       	adiw	r28, 0x02	; 2
+ 6a0:	0c 0f       	add	r16, r28
+ 6a2:	1d 1f       	adc	r17, r29
+ 6a4:	f8 01       	movw	r30, r16
+ 6a6:	e6 58       	subi	r30, 0x86	; 134
+ 6a8:	fa 4e       	sbci	r31, 0xEA	; 234
+ 6aa:	8e e7       	ldi	r24, 0x7E	; 126
+ 6ac:	80 83       	st	Z, r24
+ 6ae:	c8 01       	movw	r24, r16
+ 6b0:	01 96       	adiw	r24, 0x01	; 1
+ 6b2:	18 16       	cp	r1, r24
+ 6b4:	19 06       	cpc	r1, r25
+ 6b6:	4c f4       	brge	.+18     	; 0x6ca <USART_SendPacket+0xb6>
+ 6b8:	ca e7       	ldi	r28, 0x7A	; 122
+ 6ba:	d5 e1       	ldi	r29, 0x15	; 21
+ 6bc:	05 58       	subi	r16, 0x85	; 133
+ 6be:	1a 4e       	sbci	r17, 0xEA	; 234
+ 6c0:	89 91       	ld	r24, Y+
+ 6c2:	46 df       	rcall	.-372    	; 0x550 <USART_WriteByte>
+ 6c4:	c0 17       	cp	r28, r16
+ 6c6:	d1 07       	cpc	r29, r17
+ 6c8:	d9 f7       	brne	.-10     	; 0x6c0 <USART_SendPacket+0xac>
+ 6ca:	df 91       	pop	r29
+ 6cc:	cf 91       	pop	r28
+ 6ce:	1f 91       	pop	r17
+ 6d0:	0f 91       	pop	r16
+ 6d2:	08 95       	ret
 
-000006ca <USART_SendSensors>:
+000006d4 <USART_SendSensors>:
 
 void USART_SendSensors()
 {
- 6ca:	0f 93       	push	r16
- 6cc:	1f 93       	push	r17
- 6ce:	cf 93       	push	r28
- 6d0:	df 93       	push	r29
- 6d2:	0b e7       	ldi	r16, 0x7B	; 123
- 6d4:	14 e1       	ldi	r17, 0x14	; 20
+ 6d4:	0f 93       	push	r16
+ 6d6:	1f 93       	push	r17
+ 6d8:	cf 93       	push	r28
+ 6da:	df 93       	push	r29
+ 6dc:	0b e7       	ldi	r16, 0x7B	; 123
+ 6de:	14 e1       	ldi	r17, 0x14	; 20
 	for(int i = 0; i < 7; i++)
- 6d6:	c0 e0       	ldi	r28, 0x00	; 0
- 6d8:	d0 e0       	ldi	r29, 0x00	; 0
+ 6e0:	c0 e0       	ldi	r28, 0x00	; 0
+ 6e2:	d0 e0       	ldi	r29, 0x00	; 0
 	{
 		gTxPayload[i] = get_sensor(i);
- 6da:	ce 01       	movw	r24, r28
- 6dc:	09 df       	rcall	.-494    	; 0x4f0 <get_sensor>
- 6de:	f8 01       	movw	r30, r16
- 6e0:	81 93       	st	Z+, r24
- 6e2:	8f 01       	movw	r16, r30
+ 6e4:	ce 01       	movw	r24, r28
+ 6e6:	04 df       	rcall	.-504    	; 0x4f0 <get_sensor>
+ 6e8:	f8 01       	movw	r30, r16
+ 6ea:	81 93       	st	Z+, r24
+ 6ec:	8f 01       	movw	r16, r30
 	USART_SendPacket('S', strlen(msg));
 }
 
 void USART_SendSensors()
 {
 	for(int i = 0; i < 7; i++)
- 6e4:	21 96       	adiw	r28, 0x01	; 1
- 6e6:	c7 30       	cpi	r28, 0x07	; 7
- 6e8:	d1 05       	cpc	r29, r1
- 6ea:	b9 f7       	brne	.-18     	; 0x6da <USART_SendSensors+0x10>
-	{
+ 6ee:	21 96       	adiw	r28, 0x01	; 1
+ 6f0:	c7 30       	cpi	r28, 0x07	; 7
+ 6f2:	d1 05       	cpc	r29, r1
+ 6f4:	b9 f7       	brne	.-18     	; 0x6e4 <USART_SendSensors+0x10>
 		gTxPayload[i] = get_sensor(i);
 	}
 	
-	USART_SendPacket('S', 7);
- 6ec:	67 e0       	ldi	r22, 0x07	; 7
- 6ee:	83 e5       	ldi	r24, 0x53	; 83
- 6f0:	8c df       	rcall	.-232    	; 0x60a <USART_SendPacket>
+	//UL sensor
+	
+	gTxPayload[7] = 254;
+ 6f6:	8e ef       	ldi	r24, 0xFE	; 254
+ 6f8:	80 93 82 14 	sts	0x1482, r24
+	gTxPayload[8] = get_servo();
+ 6fc:	01 df       	rcall	.-510    	; 0x500 <get_servo>
+ 6fe:	80 93 83 14 	sts	0x1483, r24
+	
+	USART_SendPacket('S', 9);
+ 702:	69 e0       	ldi	r22, 0x09	; 9
+ 704:	83 e5       	ldi	r24, 0x53	; 83
+ 706:	86 df       	rcall	.-244    	; 0x614 <USART_SendPacket>
 }
- 6f2:	df 91       	pop	r29
- 6f4:	cf 91       	pop	r28
- 6f6:	1f 91       	pop	r17
- 6f8:	0f 91       	pop	r16
- 6fa:	08 95       	ret
+ 708:	df 91       	pop	r29
+ 70a:	cf 91       	pop	r28
+ 70c:	1f 91       	pop	r17
+ 70e:	0f 91       	pop	r16
+ 710:	08 95       	ret
 
-000006fc <USART_DecodeMessageRxFIFO>:
+00000712 <USART_DecodeMessageRxFIFO>:
 
 uint8_t USART_DecodeMessageRxFIFO()
 {
- 6fc:	8f 92       	push	r8
- 6fe:	9f 92       	push	r9
- 700:	af 92       	push	r10
- 702:	bf 92       	push	r11
- 704:	cf 92       	push	r12
- 706:	df 92       	push	r13
- 708:	ef 92       	push	r14
- 70a:	ff 92       	push	r15
- 70c:	0f 93       	push	r16
- 70e:	1f 93       	push	r17
- 710:	cf 93       	push	r28
- 712:	df 93       	push	r29
- 714:	cd b7       	in	r28, 0x3d	; 61
- 716:	de b7       	in	r29, 0x3e	; 62
+ 712:	8f 92       	push	r8
+ 714:	9f 92       	push	r9
+ 716:	af 92       	push	r10
+ 718:	bf 92       	push	r11
+ 71a:	cf 92       	push	r12
+ 71c:	df 92       	push	r13
+ 71e:	ef 92       	push	r14
+ 720:	ff 92       	push	r15
+ 722:	0f 93       	push	r16
+ 724:	1f 93       	push	r17
+ 726:	cf 93       	push	r28
+ 728:	df 93       	push	r29
+ 72a:	cd b7       	in	r28, 0x3d	; 61
+ 72c:	de b7       	in	r29, 0x3e	; 62
 	
 	// TODO: send to relevant party... the display for now
 	send_string_fixed_length(S_ADRESS, msg, length);
 	
 	return 0;
 }
- 718:	ad b6       	in	r10, 0x3d	; 61
- 71a:	be b6       	in	r11, 0x3e	; 62
+ 72e:	ad b6       	in	r10, 0x3d	; 61
+ 730:	be b6       	in	r11, 0x3e	; 62
 {
 	
 	uint8_t *len = 0;
 	uint8_t *character = 0;
 	
 	if(FifoRead(gRxFIFO, len))
- 71c:	60 e0       	ldi	r22, 0x00	; 0
- 71e:	70 e0       	ldi	r23, 0x00	; 0
- 720:	80 91 00 01 	lds	r24, 0x0100
- 724:	90 91 01 01 	lds	r25, 0x0101
- 728:	f7 dc       	rcall	.-1554   	; 0x118 <FifoRead>
- 72a:	88 23       	and	r24, r24
- 72c:	39 f0       	breq	.+14     	; 0x73c <USART_DecodeMessageRxFIFO+0x40>
+ 732:	60 e0       	ldi	r22, 0x00	; 0
+ 734:	70 e0       	ldi	r23, 0x00	; 0
+ 736:	80 91 00 01 	lds	r24, 0x0100
+ 73a:	90 91 01 01 	lds	r25, 0x0101
+ 73e:	ec dc       	rcall	.-1576   	; 0x118 <FifoRead>
+ 740:	88 23       	and	r24, r24
+ 742:	39 f0       	breq	.+14     	; 0x752 <USART_DecodeMessageRxFIFO+0x40>
 	{
 		send_string(S_ADRESS, "RxFIFO ERROR: LEN MISSING");
- 72e:	68 e0       	ldi	r22, 0x08	; 8
- 730:	71 e1       	ldi	r23, 0x11	; 17
- 732:	80 e4       	ldi	r24, 0x40	; 64
- 734:	90 e0       	ldi	r25, 0x00	; 0
- 736:	f4 dd       	rcall	.-1048   	; 0x320 <send_string>
+ 744:	68 e0       	ldi	r22, 0x08	; 8
+ 746:	71 e1       	ldi	r23, 0x11	; 17
+ 748:	80 e4       	ldi	r24, 0x40	; 64
+ 74a:	90 e0       	ldi	r25, 0x00	; 0
+ 74c:	e9 dd       	rcall	.-1070   	; 0x320 <send_string>
 		return 1; // error
- 738:	81 e0       	ldi	r24, 0x01	; 1
- 73a:	45 c0       	rjmp	.+138    	; 0x7c6 <USART_DecodeMessageRxFIFO+0xca>
+ 74e:	81 e0       	ldi	r24, 0x01	; 1
+ 750:	45 c0       	rjmp	.+138    	; 0x7dc <USART_DecodeMessageRxFIFO+0xca>
 	}
 	
 	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
- 73c:	c0 90 00 00 	lds	r12, 0x0000
- 740:	d1 2c       	mov	r13, r1
+ 752:	c0 90 00 00 	lds	r12, 0x0000
+ 756:	d1 2c       	mov	r13, r1
 	
 	//NOTE: there has to be a better way of doing this...
 	int ifzero = 0;
 	if(length == 0) ifzero = 1;
 	uint8_t msg[length-1+ifzero];
- 742:	96 01       	movw	r18, r12
- 744:	21 50       	subi	r18, 0x01	; 1
- 746:	31 09       	sbc	r19, r1
+ 758:	96 01       	movw	r18, r12
+ 75a:	21 50       	subi	r18, 0x01	; 1
+ 75c:	31 09       	sbc	r19, r1
 	
 	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
 	
 	//NOTE: there has to be a better way of doing this...
 	int ifzero = 0;
 	if(length == 0) ifzero = 1;
- 748:	81 e0       	ldi	r24, 0x01	; 1
- 74a:	90 e0       	ldi	r25, 0x00	; 0
- 74c:	c1 14       	cp	r12, r1
- 74e:	d1 04       	cpc	r13, r1
- 750:	11 f0       	breq	.+4      	; 0x756 <USART_DecodeMessageRxFIFO+0x5a>
- 752:	80 e0       	ldi	r24, 0x00	; 0
- 754:	90 e0       	ldi	r25, 0x00	; 0
+ 75e:	81 e0       	ldi	r24, 0x01	; 1
+ 760:	90 e0       	ldi	r25, 0x00	; 0
+ 762:	c1 14       	cp	r12, r1
+ 764:	d1 04       	cpc	r13, r1
+ 766:	11 f0       	breq	.+4      	; 0x76c <USART_DecodeMessageRxFIFO+0x5a>
+ 768:	80 e0       	ldi	r24, 0x00	; 0
+ 76a:	90 e0       	ldi	r25, 0x00	; 0
 	uint8_t msg[length-1+ifzero];
- 756:	82 0f       	add	r24, r18
- 758:	93 1f       	adc	r25, r19
- 75a:	2d b7       	in	r18, 0x3d	; 61
- 75c:	3e b7       	in	r19, 0x3e	; 62
- 75e:	28 1b       	sub	r18, r24
- 760:	39 0b       	sbc	r19, r25
- 762:	0f b6       	in	r0, 0x3f	; 63
- 764:	f8 94       	cli
- 766:	3e bf       	out	0x3e, r19	; 62
- 768:	0f be       	out	0x3f, r0	; 63
- 76a:	2d bf       	out	0x3d, r18	; 61
- 76c:	8d b7       	in	r24, 0x3d	; 61
- 76e:	9e b7       	in	r25, 0x3e	; 62
- 770:	01 96       	adiw	r24, 0x01	; 1
- 772:	88 2e       	mov	r8, r24
- 774:	99 2e       	mov	r9, r25
+ 76c:	82 0f       	add	r24, r18
+ 76e:	93 1f       	adc	r25, r19
+ 770:	2d b7       	in	r18, 0x3d	; 61
+ 772:	3e b7       	in	r19, 0x3e	; 62
+ 774:	28 1b       	sub	r18, r24
+ 776:	39 0b       	sbc	r19, r25
+ 778:	0f b6       	in	r0, 0x3f	; 63
+ 77a:	f8 94       	cli
+ 77c:	3e bf       	out	0x3e, r19	; 62
+ 77e:	0f be       	out	0x3f, r0	; 63
+ 780:	2d bf       	out	0x3d, r18	; 61
+ 782:	8d b7       	in	r24, 0x3d	; 61
+ 784:	9e b7       	in	r25, 0x3e	; 62
+ 786:	01 96       	adiw	r24, 0x01	; 1
+ 788:	88 2e       	mov	r8, r24
+ 78a:	99 2e       	mov	r9, r25
 
 	for(int i = 0; i < length; ++i)
- 776:	1c 14       	cp	r1, r12
- 778:	1d 04       	cpc	r1, r13
- 77a:	f4 f4       	brge	.+60     	; 0x7b8 <USART_DecodeMessageRxFIFO+0xbc>
- 77c:	e8 2e       	mov	r14, r24
- 77e:	f9 2e       	mov	r15, r25
- 780:	00 e0       	ldi	r16, 0x00	; 0
- 782:	10 e0       	ldi	r17, 0x00	; 0
+ 78c:	1c 14       	cp	r1, r12
+ 78e:	1d 04       	cpc	r1, r13
+ 790:	f4 f4       	brge	.+60     	; 0x7ce <USART_DecodeMessageRxFIFO+0xbc>
+ 792:	e8 2e       	mov	r14, r24
+ 794:	f9 2e       	mov	r15, r25
+ 796:	00 e0       	ldi	r16, 0x00	; 0
+ 798:	10 e0       	ldi	r17, 0x00	; 0
 	{
 		if(FifoRead(gRxFIFO, character))
- 784:	60 e0       	ldi	r22, 0x00	; 0
- 786:	70 e0       	ldi	r23, 0x00	; 0
- 788:	80 91 00 01 	lds	r24, 0x0100
- 78c:	90 91 01 01 	lds	r25, 0x0101
- 790:	c3 dc       	rcall	.-1658   	; 0x118 <FifoRead>
- 792:	88 23       	and	r24, r24
- 794:	39 f0       	breq	.+14     	; 0x7a4 <USART_DecodeMessageRxFIFO+0xa8>
+ 79a:	60 e0       	ldi	r22, 0x00	; 0
+ 79c:	70 e0       	ldi	r23, 0x00	; 0
+ 79e:	80 91 00 01 	lds	r24, 0x0100
+ 7a2:	90 91 01 01 	lds	r25, 0x0101
+ 7a6:	b8 dc       	rcall	.-1680   	; 0x118 <FifoRead>
+ 7a8:	88 23       	and	r24, r24
+ 7aa:	39 f0       	breq	.+14     	; 0x7ba <USART_DecodeMessageRxFIFO+0xa8>
 		{
 			send_string(S_ADRESS, "RxFIFO ERROR: DATA MISSING");
- 796:	62 e2       	ldi	r22, 0x22	; 34
- 798:	71 e1       	ldi	r23, 0x11	; 17
- 79a:	80 e4       	ldi	r24, 0x40	; 64
- 79c:	90 e0       	ldi	r25, 0x00	; 0
- 79e:	c0 dd       	rcall	.-1152   	; 0x320 <send_string>
+ 7ac:	62 e2       	ldi	r22, 0x22	; 34
+ 7ae:	71 e1       	ldi	r23, 0x11	; 17
+ 7b0:	80 e4       	ldi	r24, 0x40	; 64
+ 7b2:	90 e0       	ldi	r25, 0x00	; 0
+ 7b4:	b5 dd       	rcall	.-1174   	; 0x320 <send_string>
 			return 1; // error
- 7a0:	81 e0       	ldi	r24, 0x01	; 1
- 7a2:	11 c0       	rjmp	.+34     	; 0x7c6 <USART_DecodeMessageRxFIFO+0xca>
+ 7b6:	81 e0       	ldi	r24, 0x01	; 1
+ 7b8:	11 c0       	rjmp	.+34     	; 0x7dc <USART_DecodeMessageRxFIFO+0xca>
 		}
 
 		msg[i] = *character;
- 7a4:	80 91 00 00 	lds	r24, 0x0000
- 7a8:	f7 01       	movw	r30, r14
- 7aa:	81 93       	st	Z+, r24
- 7ac:	7f 01       	movw	r14, r30
+ 7ba:	80 91 00 00 	lds	r24, 0x0000
+ 7be:	f7 01       	movw	r30, r14
+ 7c0:	81 93       	st	Z+, r24
+ 7c2:	7f 01       	movw	r14, r30
 	//NOTE: there has to be a better way of doing this...
 	int ifzero = 0;
 	if(length == 0) ifzero = 1;
 	uint8_t msg[length-1+ifzero];
 
 	for(int i = 0; i < length; ++i)
- 7ae:	0f 5f       	subi	r16, 0xFF	; 255
- 7b0:	1f 4f       	sbci	r17, 0xFF	; 255
- 7b2:	0c 15       	cp	r16, r12
- 7b4:	1d 05       	cpc	r17, r13
- 7b6:	34 f3       	brlt	.-52     	; 0x784 <USART_DecodeMessageRxFIFO+0x88>
+ 7c4:	0f 5f       	subi	r16, 0xFF	; 255
+ 7c6:	1f 4f       	sbci	r17, 0xFF	; 255
+ 7c8:	0c 15       	cp	r16, r12
+ 7ca:	1d 05       	cpc	r17, r13
+ 7cc:	34 f3       	brlt	.-52     	; 0x79a <USART_DecodeMessageRxFIFO+0x88>
 		msg[i] = *character;
 	}
 	
 	
 	// TODO: send to relevant party... the display for now
 	send_string_fixed_length(S_ADRESS, msg, length);
- 7b8:	a6 01       	movw	r20, r12
- 7ba:	68 2d       	mov	r22, r8
- 7bc:	79 2d       	mov	r23, r9
- 7be:	80 e4       	ldi	r24, 0x40	; 64
- 7c0:	90 e0       	ldi	r25, 0x00	; 0
- 7c2:	fc dd       	rcall	.-1032   	; 0x3bc <send_string_fixed_length>
+ 7ce:	a6 01       	movw	r20, r12
+ 7d0:	68 2d       	mov	r22, r8
+ 7d2:	79 2d       	mov	r23, r9
+ 7d4:	80 e4       	ldi	r24, 0x40	; 64
+ 7d6:	90 e0       	ldi	r25, 0x00	; 0
+ 7d8:	f1 dd       	rcall	.-1054   	; 0x3bc <send_string_fixed_length>
 	
 	return 0;
- 7c4:	80 e0       	ldi	r24, 0x00	; 0
+ 7da:	80 e0       	ldi	r24, 0x00	; 0
 }
- 7c6:	0f b6       	in	r0, 0x3f	; 63
- 7c8:	f8 94       	cli
- 7ca:	be be       	out	0x3e, r11	; 62
- 7cc:	0f be       	out	0x3f, r0	; 63
- 7ce:	ad be       	out	0x3d, r10	; 61
- 7d0:	df 91       	pop	r29
- 7d2:	cf 91       	pop	r28
- 7d4:	1f 91       	pop	r17
- 7d6:	0f 91       	pop	r16
- 7d8:	ff 90       	pop	r15
- 7da:	ef 90       	pop	r14
- 7dc:	df 90       	pop	r13
- 7de:	cf 90       	pop	r12
- 7e0:	bf 90       	pop	r11
- 7e2:	af 90       	pop	r10
- 7e4:	9f 90       	pop	r9
- 7e6:	8f 90       	pop	r8
- 7e8:	08 95       	ret
+ 7dc:	0f b6       	in	r0, 0x3f	; 63
+ 7de:	f8 94       	cli
+ 7e0:	be be       	out	0x3e, r11	; 62
+ 7e2:	0f be       	out	0x3f, r0	; 63
+ 7e4:	ad be       	out	0x3d, r10	; 61
+ 7e6:	df 91       	pop	r29
+ 7e8:	cf 91       	pop	r28
+ 7ea:	1f 91       	pop	r17
+ 7ec:	0f 91       	pop	r16
+ 7ee:	ff 90       	pop	r15
+ 7f0:	ef 90       	pop	r14
+ 7f2:	df 90       	pop	r13
+ 7f4:	cf 90       	pop	r12
+ 7f6:	bf 90       	pop	r11
+ 7f8:	af 90       	pop	r10
+ 7fa:	9f 90       	pop	r9
+ 7fc:	8f 90       	pop	r8
+ 7fe:	08 95       	ret
 
-000007ea <USART_DecodeRxFIFO>:
+00000800 <USART_DecodeRxFIFO>:
 
 void USART_DecodeRxFIFO()
 {
 	uint8_t *tag = 0;
 	
 	if(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
- 7ea:	60 e0       	ldi	r22, 0x00	; 0
- 7ec:	70 e0       	ldi	r23, 0x00	; 0
- 7ee:	80 91 00 01 	lds	r24, 0x0100
- 7f2:	90 91 01 01 	lds	r25, 0x0101
- 7f6:	90 dc       	rcall	.-1760   	; 0x118 <FifoRead>
- 7f8:	81 11       	cpse	r24, r1
- 7fa:	05 c0       	rjmp	.+10     	; 0x806 <USART_DecodeRxFIFO+0x1c>
+ 800:	60 e0       	ldi	r22, 0x00	; 0
+ 802:	70 e0       	ldi	r23, 0x00	; 0
+ 804:	80 91 00 01 	lds	r24, 0x0100
+ 808:	90 91 01 01 	lds	r25, 0x0101
+ 80c:	85 dc       	rcall	.-1782   	; 0x118 <FifoRead>
+ 80e:	81 11       	cpse	r24, r1
+ 810:	05 c0       	rjmp	.+10     	; 0x81c <USART_DecodeRxFIFO+0x1c>
 	{
 		switch(*tag){
- 7fc:	80 91 00 00 	lds	r24, 0x0000
- 800:	8d 34       	cpi	r24, 0x4D	; 77
- 802:	09 f4       	brne	.+2      	; 0x806 <USART_DecodeRxFIFO+0x1c>
+ 812:	80 91 00 00 	lds	r24, 0x0000
+ 816:	8d 34       	cpi	r24, 0x4D	; 77
+ 818:	09 f4       	brne	.+2      	; 0x81c <USART_DecodeRxFIFO+0x1c>
 			case('M'): // if 'tag' is 'M'
 			{
 				if(USART_DecodeMessageRxFIFO()) // if decoding failed
- 804:	7b cf       	rjmp	.-266    	; 0x6fc <USART_DecodeMessageRxFIFO>
- 806:	08 95       	ret
+ 81a:	7b cf       	rjmp	.-266    	; 0x712 <USART_DecodeMessageRxFIFO>
+ 81c:	08 95       	ret
 
-00000808 <USART_Bounce>:
+0000081e <USART_Bounce>:
 	}
 }
 
 void USART_Bounce()
 {
 	for(int i = 0; i < gRxBuffer[1]; i++)
- 808:	60 91 77 12 	lds	r22, 0x1277
- 80c:	26 2f       	mov	r18, r22
- 80e:	30 e0       	ldi	r19, 0x00	; 0
- 810:	12 16       	cp	r1, r18
- 812:	13 06       	cpc	r1, r19
- 814:	64 f4       	brge	.+24     	; 0x82e <USART_Bounce+0x26>
- 816:	a8 e7       	ldi	r26, 0x78	; 120
- 818:	b2 e1       	ldi	r27, 0x12	; 18
- 81a:	eb e7       	ldi	r30, 0x7B	; 123
- 81c:	f4 e1       	ldi	r31, 0x14	; 20
- 81e:	80 e0       	ldi	r24, 0x00	; 0
- 820:	90 e0       	ldi	r25, 0x00	; 0
+ 81e:	60 91 77 12 	lds	r22, 0x1277
+ 822:	26 2f       	mov	r18, r22
+ 824:	30 e0       	ldi	r19, 0x00	; 0
+ 826:	12 16       	cp	r1, r18
+ 828:	13 06       	cpc	r1, r19
+ 82a:	64 f4       	brge	.+24     	; 0x844 <USART_Bounce+0x26>
+ 82c:	a8 e7       	ldi	r26, 0x78	; 120
+ 82e:	b2 e1       	ldi	r27, 0x12	; 18
+ 830:	eb e7       	ldi	r30, 0x7B	; 123
+ 832:	f4 e1       	ldi	r31, 0x14	; 20
+ 834:	80 e0       	ldi	r24, 0x00	; 0
+ 836:	90 e0       	ldi	r25, 0x00	; 0
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
- 822:	4d 91       	ld	r20, X+
- 824:	41 93       	st	Z+, r20
+ 838:	4d 91       	ld	r20, X+
+ 83a:	41 93       	st	Z+, r20
 	}
 }
 
 void USART_Bounce()
 {
 	for(int i = 0; i < gRxBuffer[1]; i++)
- 826:	01 96       	adiw	r24, 0x01	; 1
- 828:	82 17       	cp	r24, r18
- 82a:	93 07       	cpc	r25, r19
- 82c:	d4 f3       	brlt	.-12     	; 0x822 <USART_Bounce+0x1a>
+ 83c:	01 96       	adiw	r24, 0x01	; 1
+ 83e:	82 17       	cp	r24, r18
+ 840:	93 07       	cpc	r25, r19
+ 842:	d4 f3       	brlt	.-12     	; 0x838 <USART_Bounce+0x1a>
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
 	}
 	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
- 82e:	80 91 76 12 	lds	r24, 0x1276
- 832:	eb ce       	rjmp	.-554    	; 0x60a <USART_SendPacket>
+ 844:	80 91 76 12 	lds	r24, 0x1276
+ 848:	e5 ce       	rjmp	.-566    	; 0x614 <USART_SendPacket>
 
-00000834 <__vector_20>:
+0000084a <__vector_20>:
 }
 
 
 ISR (USART0_RX_vect)
 {
- 834:	1f 92       	push	r1
- 836:	0f 92       	push	r0
- 838:	0f b6       	in	r0, 0x3f	; 63
- 83a:	0f 92       	push	r0
- 83c:	11 24       	eor	r1, r1
- 83e:	0b b6       	in	r0, 0x3b	; 59
- 840:	0f 92       	push	r0
- 842:	ef 92       	push	r14
- 844:	ff 92       	push	r15
- 846:	0f 93       	push	r16
- 848:	1f 93       	push	r17
- 84a:	2f 93       	push	r18
- 84c:	3f 93       	push	r19
- 84e:	4f 93       	push	r20
- 850:	5f 93       	push	r21
- 852:	6f 93       	push	r22
- 854:	7f 93       	push	r23
- 856:	8f 93       	push	r24
- 858:	9f 93       	push	r25
- 85a:	af 93       	push	r26
- 85c:	bf 93       	push	r27
- 85e:	cf 93       	push	r28
- 860:	df 93       	push	r29
- 862:	ef 93       	push	r30
- 864:	ff 93       	push	r31
+ 84a:	1f 92       	push	r1
+ 84c:	0f 92       	push	r0
+ 84e:	0f b6       	in	r0, 0x3f	; 63
+ 850:	0f 92       	push	r0
+ 852:	11 24       	eor	r1, r1
+ 854:	0b b6       	in	r0, 0x3b	; 59
+ 856:	0f 92       	push	r0
+ 858:	ef 92       	push	r14
+ 85a:	ff 92       	push	r15
+ 85c:	0f 93       	push	r16
+ 85e:	1f 93       	push	r17
+ 860:	2f 93       	push	r18
+ 862:	3f 93       	push	r19
+ 864:	4f 93       	push	r20
+ 866:	5f 93       	push	r21
+ 868:	6f 93       	push	r22
+ 86a:	7f 93       	push	r23
+ 86c:	8f 93       	push	r24
+ 86e:	9f 93       	push	r25
+ 870:	af 93       	push	r26
+ 872:	bf 93       	push	r27
+ 874:	cf 93       	push	r28
+ 876:	df 93       	push	r29
+ 878:	ef 93       	push	r30
+ 87a:	ff 93       	push	r31
 	uint8_t data;
 	data = UDR0; // read data from buffer TODO: add check for overflow
- 866:	20 91 c6 00 	lds	r18, 0x00C6
+ 87c:	20 91 c6 00 	lds	r18, 0x00C6
 	
 	
 	
 	if(data == 0x7e)
- 86a:	2e 37       	cpi	r18, 0x7E	; 126
- 86c:	c9 f5       	brne	.+114    	; 0x8e0 <__vector_20+0xac>
+ 880:	2e 37       	cpi	r18, 0x7E	; 126
+ 882:	c9 f5       	brne	.+114    	; 0x8f6 <__vector_20+0xac>
 	{
 		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
- 86e:	80 91 40 11 	lds	r24, 0x1140
- 872:	90 91 41 11 	lds	r25, 0x1141
- 876:	84 30       	cpi	r24, 0x04	; 4
- 878:	91 05       	cpc	r25, r1
- 87a:	40 f4       	brcc	.+16     	; 0x88c <__vector_20+0x58>
- 87c:	20 91 77 12 	lds	r18, 0x1277
- 880:	30 e0       	ldi	r19, 0x00	; 0
- 882:	2c 5f       	subi	r18, 0xFC	; 252
- 884:	3f 4f       	sbci	r19, 0xFF	; 255
- 886:	82 17       	cp	r24, r18
- 888:	93 07       	cpc	r25, r19
- 88a:	29 f5       	brne	.+74     	; 0x8d6 <__vector_20+0xa2>
+ 884:	80 91 40 11 	lds	r24, 0x1140
+ 888:	90 91 41 11 	lds	r25, 0x1141
+ 88c:	84 30       	cpi	r24, 0x04	; 4
+ 88e:	91 05       	cpc	r25, r1
+ 890:	40 f4       	brcc	.+16     	; 0x8a2 <__vector_20+0x58>
+ 892:	20 91 77 12 	lds	r18, 0x1277
+ 896:	30 e0       	ldi	r19, 0x00	; 0
+ 898:	2c 5f       	subi	r18, 0xFC	; 252
+ 89a:	3f 4f       	sbci	r19, 0xFF	; 255
+ 89c:	82 17       	cp	r24, r18
+ 89e:	93 07       	cpc	r25, r19
+ 8a0:	29 f5       	brne	.+74     	; 0x8ec <__vector_20+0xa2>
 		{
 			if(gInvertNextFlag)
- 88c:	80 91 3e 11 	lds	r24, 0x113E
- 890:	90 91 3f 11 	lds	r25, 0x113F
- 894:	89 2b       	or	r24, r25
- 896:	21 f0       	breq	.+8      	; 0x8a0 <__vector_20+0x6c>
+ 8a2:	80 91 3e 11 	lds	r24, 0x113E
+ 8a6:	90 91 3f 11 	lds	r25, 0x113F
+ 8aa:	89 2b       	or	r24, r25
+ 8ac:	21 f0       	breq	.+8      	; 0x8b6 <__vector_20+0x6c>
 			{
 				data = (1<<5)^data;
 				gInvertNextFlag = 0;
- 898:	10 92 3f 11 	sts	0x113F, r1
- 89c:	10 92 3e 11 	sts	0x113E, r1
+ 8ae:	10 92 3f 11 	sts	0x113F, r1
+ 8b2:	10 92 3e 11 	sts	0x113E, r1
 			}
 			
 			USART_Bounce();
- 8a0:	b3 df       	rcall	.-154    	; 0x808 <USART_Bounce>
- 8a2:	06 e7       	ldi	r16, 0x76	; 118
- 8a4:	12 e1       	ldi	r17, 0x12	; 18
+ 8b6:	b3 df       	rcall	.-154    	; 0x81e <USART_Bounce>
+ 8b8:	06 e7       	ldi	r16, 0x76	; 118
+ 8ba:	12 e1       	ldi	r17, 0x12	; 18
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
- 8a6:	c0 e0       	ldi	r28, 0x00	; 0
- 8a8:	d0 e0       	ldi	r29, 0x00	; 0
- 8aa:	0f 2e       	mov	r0, r31
- 8ac:	f7 e7       	ldi	r31, 0x77	; 119
- 8ae:	ef 2e       	mov	r14, r31
- 8b0:	f2 e1       	ldi	r31, 0x12	; 18
- 8b2:	ff 2e       	mov	r15, r31
- 8b4:	f0 2d       	mov	r31, r0
+ 8bc:	c0 e0       	ldi	r28, 0x00	; 0
+ 8be:	d0 e0       	ldi	r29, 0x00	; 0
+ 8c0:	0f 2e       	mov	r0, r31
+ 8c2:	f7 e7       	ldi	r31, 0x77	; 119
+ 8c4:	ef 2e       	mov	r14, r31
+ 8c6:	f2 e1       	ldi	r31, 0x12	; 18
+ 8c8:	ff 2e       	mov	r15, r31
+ 8ca:	f0 2d       	mov	r31, r0
 			{
 				FifoWrite(gRxFIFO, gRxBuffer[i]);
- 8b6:	f8 01       	movw	r30, r16
- 8b8:	61 91       	ld	r22, Z+
- 8ba:	8f 01       	movw	r16, r30
- 8bc:	80 91 00 01 	lds	r24, 0x0100
- 8c0:	90 91 01 01 	lds	r25, 0x0101
- 8c4:	09 dc       	rcall	.-2030   	; 0xd8 <FifoWrite>
+ 8cc:	f8 01       	movw	r30, r16
+ 8ce:	61 91       	ld	r22, Z+
+ 8d0:	8f 01       	movw	r16, r30
+ 8d2:	80 91 00 01 	lds	r24, 0x0100
+ 8d6:	90 91 01 01 	lds	r25, 0x0101
+ 8da:	fe db       	rcall	.-2052   	; 0xd8 <FifoWrite>
 			}
 			
 			USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
- 8c6:	21 96       	adiw	r28, 0x01	; 1
- 8c8:	f7 01       	movw	r30, r14
- 8ca:	80 81       	ld	r24, Z
- 8cc:	90 e0       	ldi	r25, 0x00	; 0
- 8ce:	02 96       	adiw	r24, 0x02	; 2
- 8d0:	c8 17       	cp	r28, r24
- 8d2:	d9 07       	cpc	r29, r25
- 8d4:	84 f3       	brlt	.-32     	; 0x8b6 <__vector_20+0x82>
+ 8dc:	21 96       	adiw	r28, 0x01	; 1
+ 8de:	f7 01       	movw	r30, r14
+ 8e0:	80 81       	ld	r24, Z
+ 8e2:	90 e0       	ldi	r25, 0x00	; 0
+ 8e4:	02 96       	adiw	r24, 0x02	; 2
+ 8e6:	c8 17       	cp	r28, r24
+ 8e8:	d9 07       	cpc	r29, r25
+ 8ea:	84 f3       	brlt	.-32     	; 0x8cc <__vector_20+0x82>
 			{
 				FifoWrite(gRxFIFO, gRxBuffer[i]);
 			}
 		}
 		
 		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read
- 8d6:	10 92 41 11 	sts	0x1141, r1
- 8da:	10 92 40 11 	sts	0x1140, r1
- 8de:	16 c0       	rjmp	.+44     	; 0x90c <__vector_20+0xd8>
+ 8ec:	10 92 41 11 	sts	0x1141, r1
+ 8f0:	10 92 40 11 	sts	0x1140, r1
+ 8f4:	16 c0       	rjmp	.+44     	; 0x922 <__vector_20+0xd8>
 		
 	}else if(data == 0x7d)
- 8e0:	2d 37       	cpi	r18, 0x7D	; 125
- 8e2:	39 f4       	brne	.+14     	; 0x8f2 <__vector_20+0xbe>
+ 8f6:	2d 37       	cpi	r18, 0x7D	; 125
+ 8f8:	39 f4       	brne	.+14     	; 0x908 <__vector_20+0xbe>
 	{
 		gInvertNextFlag = 1;
- 8e4:	81 e0       	ldi	r24, 0x01	; 1
- 8e6:	90 e0       	ldi	r25, 0x00	; 0
- 8e8:	90 93 3f 11 	sts	0x113F, r25
- 8ec:	80 93 3e 11 	sts	0x113E, r24
- 8f0:	0d c0       	rjmp	.+26     	; 0x90c <__vector_20+0xd8>
+ 8fa:	81 e0       	ldi	r24, 0x01	; 1
+ 8fc:	90 e0       	ldi	r25, 0x00	; 0
+ 8fe:	90 93 3f 11 	sts	0x113F, r25
+ 902:	80 93 3e 11 	sts	0x113E, r24
+ 906:	0d c0       	rjmp	.+26     	; 0x922 <__vector_20+0xd8>
 	}else
 	{
 		gRxBuffer[gRxBufferIndex] = data;
- 8f2:	80 91 40 11 	lds	r24, 0x1140
- 8f6:	90 91 41 11 	lds	r25, 0x1141
- 8fa:	fc 01       	movw	r30, r24
- 8fc:	ea 58       	subi	r30, 0x8A	; 138
- 8fe:	fd 4e       	sbci	r31, 0xED	; 237
- 900:	20 83       	st	Z, r18
+ 908:	80 91 40 11 	lds	r24, 0x1140
+ 90c:	90 91 41 11 	lds	r25, 0x1141
+ 910:	fc 01       	movw	r30, r24
+ 912:	ea 58       	subi	r30, 0x8A	; 138
+ 914:	fd 4e       	sbci	r31, 0xED	; 237
+ 916:	20 83       	st	Z, r18
 		++gRxBufferIndex;
- 902:	01 96       	adiw	r24, 0x01	; 1
- 904:	90 93 41 11 	sts	0x1141, r25
- 908:	80 93 40 11 	sts	0x1140, r24
+ 918:	01 96       	adiw	r24, 0x01	; 1
+ 91a:	90 93 41 11 	sts	0x1141, r25
+ 91e:	80 93 40 11 	sts	0x1140, r24
 	}
 	
 	
 }
- 90c:	ff 91       	pop	r31
- 90e:	ef 91       	pop	r30
- 910:	df 91       	pop	r29
- 912:	cf 91       	pop	r28
- 914:	bf 91       	pop	r27
- 916:	af 91       	pop	r26
- 918:	9f 91       	pop	r25
- 91a:	8f 91       	pop	r24
- 91c:	7f 91       	pop	r23
- 91e:	6f 91       	pop	r22
- 920:	5f 91       	pop	r21
- 922:	4f 91       	pop	r20
- 924:	3f 91       	pop	r19
- 926:	2f 91       	pop	r18
- 928:	1f 91       	pop	r17
- 92a:	0f 91       	pop	r16
- 92c:	ff 90       	pop	r15
- 92e:	ef 90       	pop	r14
- 930:	0f 90       	pop	r0
- 932:	0b be       	out	0x3b, r0	; 59
- 934:	0f 90       	pop	r0
- 936:	0f be       	out	0x3f, r0	; 63
- 938:	0f 90       	pop	r0
- 93a:	1f 90       	pop	r1
- 93c:	18 95       	reti
+ 922:	ff 91       	pop	r31
+ 924:	ef 91       	pop	r30
+ 926:	df 91       	pop	r29
+ 928:	cf 91       	pop	r28
+ 92a:	bf 91       	pop	r27
+ 92c:	af 91       	pop	r26
+ 92e:	9f 91       	pop	r25
+ 930:	8f 91       	pop	r24
+ 932:	7f 91       	pop	r23
+ 934:	6f 91       	pop	r22
+ 936:	5f 91       	pop	r21
+ 938:	4f 91       	pop	r20
+ 93a:	3f 91       	pop	r19
+ 93c:	2f 91       	pop	r18
+ 93e:	1f 91       	pop	r17
+ 940:	0f 91       	pop	r16
+ 942:	ff 90       	pop	r15
+ 944:	ef 90       	pop	r14
+ 946:	0f 90       	pop	r0
+ 948:	0b be       	out	0x3b, r0	; 59
+ 94a:	0f 90       	pop	r0
+ 94c:	0f be       	out	0x3f, r0	; 63
+ 94e:	0f 90       	pop	r0
+ 950:	1f 90       	pop	r1
+ 952:	18 95       	reti
 
-0000093e <_exit>:
- 93e:	f8 94       	cli
+00000954 <_exit>:
+ 954:	f8 94       	cli
 
-00000940 <__stop_program>:
- 940:	ff cf       	rjmp	.-2      	; 0x940 <__stop_program>
+00000956 <__stop_program>:
+ 956:	ff cf       	rjmp	.-2      	; 0x956 <__stop_program>

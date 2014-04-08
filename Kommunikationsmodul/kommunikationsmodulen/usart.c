@@ -179,7 +179,12 @@ void USART_SendSensors()
 		gTxPayload[i] = get_sensor(i);
 	}
 	
-	USART_SendPacket('S', 7);
+	//UL sensor
+	
+	gTxPayload[7] = 254;
+	gTxPayload[8] = get_servo();
+	
+	USART_SendPacket('S', 9);
 }
 
 uint8_t USART_DecodeMessageRxFIFO()
