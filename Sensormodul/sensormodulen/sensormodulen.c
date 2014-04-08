@@ -24,15 +24,22 @@ void adc_start();
 void init_mux();
 void select_sensor(int sensor);
 void init_tables();
+unsigned int UL_sensor();
+void init_UL();
 int voltage_to_cm(float voltage);
 
 // -- Global variables --
+
+uint8_t gSelectedSensor = 0;
+int gSensorBuffer[7]; // NOTE: should probably be uint8_t
 
 float IR_short[13][2];
 
 int my_adress;
 bool instruction;
 int current_instruction;
+
+int UL;
 
 int main(void)
 {
@@ -41,7 +48,7 @@ int main(void)
 	my_adress = S_ADRESS;
 	init_TWI(my_adress);
 	
-	init_mux();
+	
 	
 	adc_init();
 	init_tables();
@@ -52,11 +59,31 @@ int main(void)
 	
 	print_text("Testing ADC");
 	_delay_ms(1000);
-	select_sensor(6);
+	init_mux();
+	init_UL();
 	while(1)
 	{
-		adc_start();
-		_delay_ms(2000);
+		UL_sensor();
+		_delay_ms(3000);
+		clear_display();
+		print_value(UL);
+		/*for(int i = 0; i < 8; ++i)
+		{
+			select_sensor(i);
+			adc_start();
+			_delay_ms(10);
+		}*/
+		
+		//send_sensors(gSensorBuffer, 0);
+		
+		//clear_display();
+		//print_text("Sensors sent");
+		/*for(int i = 0; i < 8; ++i)
+		{
+			print_value(gSensorBuffer[i]);
+			print_text(", ");
+			
+		}*/
 	}
 	
 	//displaytest();
@@ -67,10 +94,6 @@ int main(void)
 	send_string(C_ADRESS, "kom fram");
 	clear_display();
 	print_text("skickas");*/
-	while(1)
-	{
-		
-	}
 }
 
 void init_tables()
@@ -113,16 +136,17 @@ void init_tables()
 	
 	IR_short[12][0] = 0.41;
 	IR_short[12][1] = 80;
+	
 }
 
-int voltage_to_cm(float voltage)
+int voltage_to_mm(float voltage)
 {
 	if(voltage >= IR_short[0][0])
 	{
-		return IR_short[0][1];
+		return IR_short[0][1]*10;
 	} else if(voltage <= IR_short[12][0])
 	{
-		return IR_short[12][1];
+		return IR_short[12][1]*10;
 	}
 	
 	for(int i = 0; i < 13; ++i)
@@ -131,11 +155,11 @@ int voltage_to_cm(float voltage)
 		float next = IR_short[i+1][0];
 		if(next == voltage)
 		{
-			return IR_short[i+1][1];
+			return IR_short[i+1][1]*10;
 		} else if(prev > voltage && next < voltage)
 		{
-			int high = IR_short[i][1];
-			int low = IR_short[i+1][1];
+			int high = IR_short[i][1]*10;
+			int low = IR_short[i+1][1]*10;
 			int diff = high - low;
 			float diff_to_prev = prev - voltage;
 			float volt_diff = prev - next;
@@ -146,23 +170,29 @@ int voltage_to_cm(float voltage)
 	return 0;
 }
 
+
 ISR(ADC_vect)
 {
+	cli();
+	/*
 	clear_display();
-	print_line(0, "ADC complete");	set_display_pos(1, 0);		uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0; 	print_value(voltage_to_cm(vin));	print_text(", ");	print_value((int)(vin*100));		int sensors[8];	sensors[0] = voltage_to_cm(vin);	send_sensors(sensors,0);}
+	print_line(0, "ADC complete");	set_display_pos(1, 0);	 	print_value(voltage_to_mm(vin));	print_text(", ");	print_value((int)(vin*100));	*/	clear_display();	print_value(gSelectedSensor);		uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;		gSensorBuffer[gSelectedSensor] = voltage_to_mm(vin)/10;	print_text(", ");	print_value(voltage_to_mm(vin)/10);	sei();}
 
 void init_mux()
 {
 	DDRA |= 0b00111110;
-	DDRA &= !(1<<PORTA0);
-	PORTA &= !(1<<PORTA5);
-	PORTA &= 0b11100001;
+	DDRA &= ~(1<<PORTA0);
+	PORTA &= ~(1<<PORTA5);
+	//PORTA &= 0b11100001;
 }
 
 void init_UL()
 {
+	DDRD |= 1;
+	PCICR = 1;
+	PCMSK0 = (1<<PCINT6);
 	DDRA |= (1<<PORTA7);
-	DDRA &= !(1<<PORTA6);
+	DDRA &= ~(1<<PORTA6);
 	TCCR0B = 0x05;
 }
 
@@ -171,7 +201,7 @@ void adc_init()
 	// ADC enabled, enable interupt, set division factor for clock to be 128
 	ADCSRA = (1<<ADEN | 1<<ADIE | 1<<ADPS2 | 1<<ADPS1 | 1<<ADPS0);
 	// Disable auto trigger
-	// ADCSRA &= !(1<<ADATE);
+	// ADCSRA &= ~(1<<ADATE);
 	
 	// Left adjust, set voltage reference selection
 	ADMUX = 1<<ADLAR | 1<<REFS0;
@@ -196,48 +226,37 @@ void adc_start()
 
 void select_sensor(int sensor)
 {
-	PORTA &= 0b11100001;
+	gSelectedSensor = sensor;
+	PORTA &= ~((1<<PORTA1) | (1<<PORTA2) | (1<<PORTA3) | (1<<PORTA4));
 	switch(sensor)
 	{
-		case(8):
-		{
+		case(0):
+			// Do nothing
 			break;
-		}
-		case(7):
-		{
-			PORTA |= 0b00000010;
+		case(1):
+			PORTA |= 1<<PORTA1;
 			break;
-		}
-		case(6):
-		{
-			PORTA |= 0b00001110;
-			break;
-		}
-		case(5):
-		{
-			PORTA |= 0b00001100;
-			break;
-		}
-		case(4):
-		{
-			PORTA |= 0b00001010;
-			break;
-		}
-		case(3):
-		{
-			PORTA |= 0b00001000;
-			break;
-		}
 		case(2):
-		{
-			PORTA |= 0b00000110;
+			PORTA |= 1<<PORTA2;
 			break;
-		}
+		case(3):
+			PORTA |= 1<<PORTA1 | 1<<PORTA2;
+			break;
+		case(4):
+			PORTA |= 1<<PORTA3;
+			break;
+		case(5):
+			PORTA |= 1<<PORTA1 | 1<<PORTA3;
+			break;
+		case(6):
+			PORTA |= 1<<PORTA2 | 1<< PORTA3;
+			break;
+		case(7):
+			PORTA |= 1<<PORTA1 | 1<<PORTA2 | 1<<PORTA3;
+			break;
 		default:
-		{
-			PORTA |= 0b00000100;
+			// Do nothing
 			break;
-		}
 	}
 }
 
@@ -245,15 +264,37 @@ void select_sensor(int sensor)
 
 unsigned int UL_sensor()
 {
-	unsigned int i;
+	//unsigned int i;
+	TCNT0 = 0;
 	PORTA |= (1<<PORTA7);
 	_delay_us(15);
-	PORTA &= !(1<<PORTA7);
-	//while(!(PORTA & (1<<PORTA6)));
-	TCNT0 = 0;
-	while((PORTA & (1<<PORTA6)));
-	i = TCNT0;
-	return i;
+	PORTA &= ~(1<<PORTA7);
+	
+	/*TCNT0 = 0;
+	if(PORTA & (1<<PORTA6))
+		while((PORTA & (1<<PORTA6)));
+	else
+	{
+		while(!(PORTA & (1<<PORTA6)));
+		while((PORTA & (1<<PORTA6)));
+	}
+	i = TCNT0;*/
+	return 1;
+}
+
+ISR(PCINT0_vect)
+{
+	if(PINA & (1<<PINA6))
+	{
+		TCNT0 = 0;
+		PORTD |= (1<<PORTD0);
+	}
+	else
+	{
+		UL = TCNT0;
+		UL = (UL * 340 / (2 * 15625));
+		PORTD &= ~(1<<PORTD0);
+	}
 }
 
 void displaytest(void)
@@ -264,6 +305,7 @@ void displaytest(void)
 // TWI interrupt vector
 ISR(TWI_vect)
 {
+	cli();
 	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 	{
 		instruction = true;
@@ -299,7 +341,7 @@ ISR(TWI_vect)
 			case(I_SWEEP):
 			{
 				// TODO: change to get_sweep_from_bus() or implement get_sweep()...
-				//get_sweep();
+				print_value(get_sweep());
 				break;
 			}
 			case(I_STRING):
@@ -308,12 +350,14 @@ ISR(TWI_vect)
 				for(int i = 0; i < get_message_length(); ++i)
 				{
 					// TODO: change to get_char_from_bus() or implement get_char()...
-					//print_char(get_char(i));
+					print_char(get_char(i));
 				}
 				
 				break;
 			}
 		}
+		stop_twi();
 	}
 	reset_TWI();
+	sei();
 }

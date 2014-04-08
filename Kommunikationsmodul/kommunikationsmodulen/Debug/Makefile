@@ -36,10 +36,10 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../uart.c \
 ../fifo.c \
 ../kommunikationsmodulen.c \
-../twi.c
+../twi.c \
+../usart.c
 
 
 PREPROCESSING_SRCS += 
@@ -49,28 +49,28 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-uart.o \
 fifo.o \
 kommunikationsmodulen.o \
-twi.o
+twi.o \
+usart.o
 
 OBJS_AS_ARGS +=  \
-uart.o \
 fifo.o \
 kommunikationsmodulen.o \
-twi.o
+twi.o \
+usart.o
 
 C_DEPS +=  \
-uart.d \
 fifo.d \
 kommunikationsmodulen.d \
-twi.d
+twi.d \
+usart.d
 
 C_DEPS_AS_ARGS +=  \
-uart.d \
 fifo.d \
 kommunikationsmodulen.d \
-twi.d
+twi.d \
+usart.d
 
 OUTPUT_FILE_PATH +=kommunikationsmodulen.elf
 
