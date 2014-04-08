@@ -28,6 +28,9 @@ int voltage_to_cm(float voltage);
 
 // -- Global variables --
 
+uint8_t gSelectedSensor = 0;
+int gSensorBuffer[7]; // NOTE: should probably be uint8_t
+
 float IR_short[13][2];
 
 int my_adress;
@@ -52,11 +55,26 @@ int main(void)
 	
 	print_text("Testing ADC");
 	_delay_ms(1000);
-	select_sensor(6);
 	while(1)
 	{
-		adc_start();
+		for(int i = 0; i < 7; ++i)
+		{
+			select_sensor(4);
+			_delay_ms(100);
+			adc_start();
+			_delay_ms(100); // Note: figure out lowest value that works
+		}
+
 		_delay_ms(2000);
+		send_sensors(gSensorBuffer, 0);
+		clear_display();
+		print_text("Sensors sent");
+		/*for(int i = 0; i < 8; ++i)
+		{
+			print_value(gSensorBuffer[i]);
+			print_text(", ");
+			
+		}*/
 	}
 	
 	//displaytest();
@@ -67,10 +85,6 @@ int main(void)
 	send_string(C_ADRESS, "kom fram");
 	clear_display();
 	print_text("skickas");*/
-	while(1)
-	{
-		
-	}
 }
 
 void init_tables()
@@ -115,14 +129,14 @@ void init_tables()
 	IR_short[12][1] = 80;
 }
 
-int voltage_to_cm(float voltage)
+int voltage_to_mm(float voltage)
 {
 	if(voltage >= IR_short[0][0])
 	{
-		return IR_short[0][1];
+		return IR_short[0][1]*10;
 	} else if(voltage <= IR_short[12][0])
 	{
-		return IR_short[12][1];
+		return IR_short[12][1]*10;
 	}
 	
 	for(int i = 0; i < 13; ++i)
@@ -131,11 +145,11 @@ int voltage_to_cm(float voltage)
 		float next = IR_short[i+1][0];
 		if(next == voltage)
 		{
-			return IR_short[i+1][1];
+			return IR_short[i+1][1]*10;
 		} else if(prev > voltage && next < voltage)
 		{
-			int high = IR_short[i][1];
-			int low = IR_short[i+1][1];
+			int high = IR_short[i][1]*10;
+			int low = IR_short[i+1][1]*10;
 			int diff = high - low;
 			float diff_to_prev = prev - voltage;
 			float volt_diff = prev - next;
@@ -146,10 +160,13 @@ int voltage_to_cm(float voltage)
 	return 0;
 }
 
+
 ISR(ADC_vect)
 {
+	cli();
+	/*
 	clear_display();
-	print_line(0, "ADC complete");	set_display_pos(1, 0);		uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0; 	print_value(voltage_to_cm(vin));	print_text(", ");	print_value((int)(vin*100));		int sensors[8];	sensors[0] = voltage_to_cm(vin);	send_sensors(sensors,0);}
+	print_line(0, "ADC complete");	set_display_pos(1, 0);	 	print_value(voltage_to_mm(vin));	print_text(", ");	print_value((int)(vin*100));	*/	clear_display();	print_value(gSelectedSensor);		uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;		gSensorBuffer[gSelectedSensor] = voltage_to_mm(vin)/10;	print_text(", ");	print_value(voltage_to_mm(vin)/10);	sei();}
 
 void init_mux()
 {
@@ -196,48 +213,37 @@ void adc_start()
 
 void select_sensor(int sensor)
 {
+	gSelectedSensor = sensor;
 	PORTA &= 0b11100001;
 	switch(sensor)
 	{
-		case(8):
-		{
+		case(0):
+			// Do nothing
 			break;
-		}
-		case(7):
-		{
-			PORTA |= 0b00000010;
+		case(1):
+			PORTA |= 1<<PORTA1;
 			break;
-		}
-		case(6):
-		{
-			PORTA |= 0b00001110;
-			break;
-		}
-		case(5):
-		{
-			PORTA |= 0b00001100;
-			break;
-		}
-		case(4):
-		{
-			PORTA |= 0b00001010;
-			break;
-		}
-		case(3):
-		{
-			PORTA |= 0b00001000;
-			break;
-		}
 		case(2):
-		{
-			PORTA |= 0b00000110;
+			PORTA |= 1<<PORTA2;
 			break;
-		}
+		case(3):
+			PORTA |= 1<<PORTA1 | 1<<PORTA2;
+			break;
+		case(4):
+			PORTA |= 1<<PORTA3;
+			break;
+		case(5):
+			PORTA |= 1<<PORTA1 | 1<<PORTA3;
+			break;
+		case(6):
+			PORTA |= 1<<PORTA2 | 1<< PORTA3;
+			break;
+		case(7):
+			PORTA |= 1<<PORTA1 | 1<<PORTA2 | 1<<PORTA3;
+			break;
 		default:
-		{
-			PORTA |= 0b00000100;
+			// Do nothing
 			break;
-		}
 	}
 }
 
@@ -264,6 +270,7 @@ void displaytest(void)
 // TWI interrupt vector
 ISR(TWI_vect)
 {
+	cli();
 	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 	{
 		instruction = true;
@@ -299,7 +306,7 @@ ISR(TWI_vect)
 			case(I_SWEEP):
 			{
 				// TODO: change to get_sweep_from_bus() or implement get_sweep()...
-				//get_sweep();
+				print_value(get_sweep());
 				break;
 			}
 			case(I_STRING):
@@ -308,12 +315,14 @@ ISR(TWI_vect)
 				for(int i = 0; i < get_message_length(); ++i)
 				{
 					// TODO: change to get_char_from_bus() or implement get_char()...
-					//print_char(get_char(i));
+					print_char(get_char(i));
 				}
 				
 				break;
 			}
 		}
+		stop_twi();
 	}
 	reset_TWI();
+	sei();
 }

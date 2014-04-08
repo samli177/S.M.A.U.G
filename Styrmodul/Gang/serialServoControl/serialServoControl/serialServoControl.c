@@ -164,8 +164,15 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 #define femur 66;
 #define tibia 131;
 #define femurAngleAddition 0.2426;
-#define tibiaAngleAddition 3.1415/4;
-void LegOneGoto(int x,int y,int z, int servospeed)
+#define tibiaAngleAddition 3.1415/4;/*
+#define centerToFrontLegsX 120;
+#define centerToSideLegs 100;
+#define centerToFrontLegs 135;
+#define centerToFrontLegsY = 61.85;
+#define sinAngleToFrontLegs = centerToFrontLegsY / centerToFrontLegs;
+#define cosAngleToFrontLegs = centerToFrontLegsX / centerToFrontLegs;*/
+
+/*void LegOneGoto(int x,int y,int z, int servospeed)
 {
 	double alpha;
 	double beta;
@@ -180,7 +187,14 @@ void LegOneGoto(int x,int y,int z, int servospeed)
 	servoGoto(8, gamma, servospeed);
 	servoGoto(10,alpha + femurAngleAddition,servospeed);
 	servoGoto(12, -beta + tibiaAngleAddition,servospeed);
-}
+}*/
+/*
+void LegOneGotoHelp(int x, int y, int z, int servospeed) //Help function to describe position of leg in standard base x,y,z
+{
+	int a= -sinAngleToFrontLegs*x + cosAngleToFrontLegs*y - centerToFrontLegsX;
+	int b= cosAngleToFrontLegs*x + sinAngleToFrontLegs*y - centerToFrontLegsY;
+	LegOneGoto(a, b, z, servospeed);
+}*/
 
 
 int main(void)
@@ -246,7 +260,15 @@ int main(void)
 	
 	_delay_ms(5000);
 	
-	while(1)
+	//LegOneGotoHelp(250, 200, 50, 50);
+	
+	_delay_ms(2500);
+	
+	//LegOneGotoHelp(250, 150, 100, 50);
+	
+	
+	
+	/*while(1)
 	{
 		LegOneGoto(0,150,80,200);
 		_delay_ms(900);
@@ -254,7 +276,7 @@ int main(void)
 		_delay_ms(900);
 		LegOneGoto(-100,100,0,200);
 		_delay_ms(900);
-	}
+	}*/
 	
 	//This dummy code puts robot in disco mode, use with care
 	//It spins on the spot flashing its LEDs

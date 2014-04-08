@@ -240,10 +240,10 @@ void USART_SendSensors()
 {
 	for(int i = 0; i < 7; i++)
 	{
-		gTxPayload[i] = 40 + rand() % 5;
+		gTxPayload[i] = get_sensor(i);
 	}
 	
-	USART_SendPacket('M', 7);
+	USART_SendPacket('S', 7);
 }
 
 uint8_t USART_DecodeMessageRxFIFO()
@@ -279,6 +279,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	// TODO: send to relevant party... the display for now
 	send_string_fixed_length(S_ADRESS, msg, length);
+	
 	return 0;
 }
 
@@ -419,7 +420,7 @@ ISR(TWI_vect)
 
 ISR(TWI_vect)
 {
-	
+	cli();
 	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 	{
 		instruction = true;
@@ -472,6 +473,8 @@ ISR(TWI_vect)
 				break;
 			}
 		}
+		stop_twi();
 	}
 	reset_TWI();
+	sei();
 }

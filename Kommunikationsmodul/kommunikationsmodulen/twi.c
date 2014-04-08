@@ -27,6 +27,7 @@ int sweep;
 int sensor;
 int command[3];
 int current_command;
+int message_length;
 
 //Global variables to exist in the module
 bool instruction;
@@ -90,7 +91,6 @@ void clear_int()
 
 void start_bus()
 {
-	_delay_ms(100);
 	TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN);
 }
 
@@ -309,41 +309,6 @@ bool send_sensors(int sens[7], int serv)
 	return true;
 }
 
-bool send_string_fixed_length(int adr, uint8_t str[], int length)
-{
-	start_bus();
-	wait_for_bus();
-	if(CONTROL != START)
-	{
-		Error();
-		return false;
-	}
-	set_data(adr);
-	send_bus();
-	wait_for_bus();
-	if(CONTROL != ADRESS_W)
-	{
-		Error();
-		return false;
-	}
-	set_data(I_STRING);
-	send_bus();
-	wait_for_bus();
-	if(CONTROL != DATA_W)
-	{
-		Error();
-		return false;
-	}
-	for(int i = 0; i < length; ++i)
-	{
-		set_data(str[i]);
-		send_bus();
-		wait_for_bus();
-	}
-	stop_bus();
-	return true;
-}
-
 bool send_string(int adr, char str[])
 {
 	start_bus();
@@ -370,6 +335,41 @@ bool send_string(int adr, char str[])
 		return false;
 	}
 	for(int i = 0; i < strlen(str); ++i)
+	{
+		set_data(str[i]);
+		send_bus();
+		wait_for_bus();
+	}
+	stop_bus();
+	return true;
+}
+
+bool send_string_fixed_length(int adr, uint8_t str[], int length)
+{
+	start_bus();
+	wait_for_bus();
+	if(CONTROL != START)
+	{
+		Error();
+		return false;
+	}
+	set_data(adr);
+	send_bus();
+	wait_for_bus();
+	if(CONTROL != ADRESS_W)
+	{
+		Error();
+		return false;
+	}
+	set_data(I_STRING);
+	send_bus();
+	wait_for_bus();
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	for(int i = 0; i < length; ++i)
 	{
 		set_data(str[i]);
 		send_bus();
@@ -432,6 +432,7 @@ void get_char_from_bus()
 {
 	message[message_counter] = get_data();
 	message_counter += 1;
+	message_length = message_counter;
 }
 
 void get_command_from_bus()
@@ -447,10 +448,10 @@ int get_command(int i)
 
 int get_message_length()
 {
-	return strlen(message);
+	return message_length;
 }
 
-char get_message(int i)
+char get_char(int i)
 {
 	return message[i];
 }
@@ -487,11 +488,20 @@ void get_sweep_from_bus()
 	sweep = get_data();
 }
 
-void reset_TWI()
+int get_sweep()
+{
+	return sweep;
+}
+
+void stop_twi()
 {
 	current_command = 0;
 	sensor = 0;
 	message_counter = 0;
+}
+
+void reset_TWI()
+{
 	TWCR |= (1<<TWINT) | (1<<TWEA);
 }
 
