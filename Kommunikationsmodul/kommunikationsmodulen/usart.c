@@ -5,13 +5,29 @@
  *  Author: samli177
  */ 
 
-// -- USART Stuff --
-
-
-
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <string.h>
+#include <stdbool.h>
 #include "fifo.h"
 #include "usart.h"
+#include "twi.h"
+
+
+// -- USART Stuff --
+
+// -- Global variables form USART --
+uint8_t gTxPayload [255];
+uint8_t gTxBuffer [517]; // if there are only control octets in data it needs to be 255 + 7 + 255 = 517
+uint8_t gRxBuffer [517];
+uint16_t gRxBufferIndex = 0;
+uint16_t gInvertNextFlag = 0;
+
+
+
+// define FIFO for received packets (USART)
+MK_FIFO(4096); // use 4 kB
+DEFINE_FIFO(gRxFIFO, 4096);
 
 
 void USART_init()
@@ -153,9 +169,18 @@ void USART_SendMessage(char msg[])
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('M', strlen(msg));
+	USART_SendPacket('S', strlen(msg));
 }
 
+void USART_SendSensors()
+{
+	for(int i = 0; i < 7; i++)
+	{
+		gTxPayload[i] = get_sensor(i);
+	}
+	
+	USART_SendPacket('S', 7);
+}
 
 uint8_t USART_DecodeMessageRxFIFO()
 {
@@ -190,6 +215,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	// TODO: send to relevant party... the display for now
 	send_string_fixed_length(S_ADRESS, msg, length);
+	
 	return 0;
 }
 
@@ -223,5 +249,45 @@ void USART_Bounce()
 	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
 }
 
+
+ISR (USART0_RX_vect)
+{
+	uint8_t data;
+	data = UDR0; // read data from buffer TODO: add check for overflow
+	
+	
+	
+	if(data == 0x7e)
+	{
+		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
+		{
+			if(gInvertNextFlag)
+			{
+				data = (1<<5)^data;
+				gInvertNextFlag = 0;
+			}
+			
+			USART_Bounce();
+			
+			// Add packet (no crc) to fifo-buffer to cue it for decoding
+			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
+			{
+				FifoWrite(gRxFIFO, gRxBuffer[i]);
+			}
+		}
+		
+		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read
+		
+	}else if(data == 0x7d)
+	{
+		gInvertNextFlag = 1;
+	}else
+	{
+		gRxBuffer[gRxBufferIndex] = data;
+		++gRxBufferIndex;
+	}
+	
+	
+}
 
 // -- END USART stuff --
