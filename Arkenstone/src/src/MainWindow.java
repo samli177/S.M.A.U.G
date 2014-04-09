@@ -12,8 +12,11 @@ import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
+import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
+import net.java.games.input.Event;
+import net.java.games.input.EventQueue;
 
 /**
  *
@@ -37,6 +40,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     LinkedList<byte[]> messageBuffer;
     final Object lock;
     Controller controller;
+    EventQueue eventQueue;
 
     boolean keyUpPressed, keyDownPressed, keyLeftPressed, keyRightPressed, keyZeroPressed, keyControlPressed;
 
@@ -606,8 +610,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void searchControllersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchControllersButtonActionPerformed
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
-        for(Controller c: controllers){
-            if(c.getType() == Controller.Type.STICK){
+        for (Controller c : controllers) {
+            if (c.getType() == Controller.Type.GAMEPAD) {
                 controllersComboBox.addItem(c);
             }
         }
@@ -615,9 +619,14 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void connectControllerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectControllerButtonActionPerformed
         Controller c = (Controller) controllersComboBox.getSelectedItem();
-        if(c != null){
+        if (c != null) {
             controller = c;
+            eventQueue = c.getEventQueue();
             chosenControllerLabel.setText(c.getName());
+
+            for (Component comp : c.getComponents()) {
+                System.out.println(comp.getName());
+            }
         }
     }//GEN-LAST:event_connectControllerButtonActionPerformed
 
@@ -751,7 +760,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 boolean ceo = false;
                 byte b;
                 byte b2;
-                
+
                 while (true) {
                     try {
                         indata = comPort.readBytes(1, 100);
@@ -791,7 +800,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                         /*for (byte byte1 : bytes) {
                          System.out.println(byte1);
                          }*/
-                        
                         if (correct) {
                             int length = bytes.get(1);
                             byte[] relevantData = new byte[length + 2];
@@ -898,6 +906,14 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
             if (hasMessage()) {
                 decodeMessage();
+            }
+
+            if (controller != null) {
+                controller.poll();
+                Event event = new Event();
+                while (eventQueue.getNextEvent(event)) {
+                    handleControlInput(event);
+                }
             }
 
             try {
@@ -1022,7 +1038,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         int direction = (int) Math.toDegrees(Math.atan2(walk, strafe));
 
         int speed = 1;
-        if(walk == 0 && strafe == 0){
+        if (walk == 0 && strafe == 0) {
             speed = 0;
         }
         // Send package with direction, speed and rot.
@@ -1101,5 +1117,39 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             return false;
         }
         return true;
+    }
+
+    private void handleControlInput(Event event) {
+        float value = event.getValue();
+        //if (value == 0 || Math.abs(value) >= 0.2) {
+            String comp = event.getComponent().getName();
+            switch(comp){
+                case "X-axeln":
+                case "Y-axeln":
+                    System.out.println(getLeftStickAngle());
+                    break;
+            }
+        //}
+    }
+    
+    private float getLeftStickAngle(){
+        float x = 0, y = 0;
+        for(Component c: controller.getComponents()){
+            if(c.getName().equals("X-axeln")){
+                x = c.getPollData();
+                System.out.println("X, " + x);
+            } else if(c.getName().equals("Y-axeln")){
+                y = c.getPollData();
+                System.out.println("Y, " + y);
+            }
+        }
+        
+        float angle = (float) Math.toDegrees(Math.atan2(x,y)) - 180;
+        if(angle < 0){
+            angle += 360;
+        } else if(angle >= 360){
+            angle -= 360;
+        }
+        return angle;
     }
 }
