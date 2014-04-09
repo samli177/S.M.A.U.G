@@ -34,7 +34,7 @@ uint8_t gSelectedSensor = 0;
 int gSensorBuffer[7]; // NOTE: should probably be uint8_t
 
 float IR_short[13][2];
-char display_buffer[][20];
+char display_buffer[64][20];
 int buffer_size = 0;
 
 int my_adress;
