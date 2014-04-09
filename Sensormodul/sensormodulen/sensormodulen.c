@@ -34,6 +34,8 @@ uint8_t gSelectedSensor = 0;
 int gSensorBuffer[7]; // NOTE: should probably be uint8_t
 
 float IR_short[13][2];
+char display_buffer[][20];
+int buffer_size = 0;
 
 int my_adress;
 bool instruction;
@@ -94,6 +96,36 @@ int main(void)
 	send_string(C_ADRESS, "kom fram");
 	clear_display();
 	print_text("skickas");*/
+	
+	//display top in buffer and sensordata
+	clear_display();
+	if(buffer_size > 0)
+	{
+		//Display top row:
+		for(int i = 0; i < display_buffer[0][0]; ++i)
+		{
+			print_char(display_buffer[i+1][0]);
+		}
+		//Delete top row:
+		for(int it_row = 0; it_row <= buffer_size; ++it_row)
+		{
+			for(int it_col = 0; it_col <= display_buffer[0][it_row + 1]; ++it_col)
+			{
+				display_buffer[it_col][it_row] = display_buffer[it_col][it_row + 1];
+			}
+		}
+		buffer_size = buffer_size - 1;
+	}
+	else
+	{
+		//display sensordata
+		for(int i = 0; i < 8; ++i)
+		{
+			print_value(gSensorBuffer[i]);
+			print_text(", ");
+			
+		}
+	}
 }
 
 void init_tables()
@@ -346,13 +378,14 @@ ISR(TWI_vect)
 			}
 			case(I_STRING):
 			{
-				clear_display();
+				display_buffer[0][buffer_size] = get_message_length();
 				for(int i = 0; i < get_message_length(); ++i)
 				{
 					// TODO: change to get_char_from_bus() or implement get_char()...
-					print_char(get_char(i));
+					//Take char and put in display_buffer in top empty row
+					display_buffer[i+1][buffer_size] = get_char(i);
 				}
-				
+				buffer_size = buffer_size + 1;
 				break;
 			}
 		}
