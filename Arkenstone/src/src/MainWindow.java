@@ -1,5 +1,7 @@
 package src;
 
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -10,12 +12,14 @@ import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
+import net.java.games.input.Controller;
+import net.java.games.input.ControllerEnvironment;
 
 /**
  *
  * @author Martin
  */
-public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPortEventListener {
+public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPortEventListener, KeyEventDispatcher {
 
     public static enum SENSOR {
 
@@ -32,8 +36,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     SerialPort comPort;
     LinkedList<byte[]> messageBuffer;
     final Object lock;
+    Controller controller;
 
-    boolean keyUpPressed, keyDownPressed, keyLeftPressed, keyRightPressed, keyOnePressed, keyShiftPressed;
+    boolean keyUpPressed, keyDownPressed, keyLeftPressed, keyRightPressed, keyZeroPressed, keyControlPressed;
 
     /**
      * Creates new form MainWindow
@@ -49,6 +54,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
         Thread t = new Thread(this);
         t.start();
+
+        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(this);
     }
 
     /**
@@ -69,12 +77,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         jPanel4 = new javax.swing.JPanel();
         irLeftFrontTextField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        irLeftFrontAngleTextField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
         irRightFrontTextField = new javax.swing.JTextField();
-        irRightFrontAngleTextField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         irVerticalTextField = new javax.swing.JTextField();
@@ -83,10 +87,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         jLabel7 = new javax.swing.JLabel();
         irRightBackTextField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        irMiddleBackTextField = new javax.swing.JTextField();
+        irBackTextField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         ultraSoundTextField = new javax.swing.JTextField();
+        irFrontTextField = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         autoButton = new javax.swing.JToggleButton();
         autoLeftRadioButton = new javax.swing.JRadioButton();
@@ -106,6 +112,13 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         parameter2TextField = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
         parameter4TextField = new javax.swing.JTextField();
+        jSeparator6 = new javax.swing.JSeparator();
+        jLabel5 = new javax.swing.JLabel();
+        searchControllersButton = new javax.swing.JButton();
+        controllersComboBox = new javax.swing.JComboBox();
+        connectControllerButton = new javax.swing.JButton();
+        jLabel17 = new javax.swing.JLabel();
+        chosenControllerLabel = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         jSeparator4 = new javax.swing.JSeparator();
         jSeparator5 = new javax.swing.JSeparator();
@@ -115,14 +128,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         setBackground(new java.awt.Color(0, 0, 0));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setName("mainFrame"); // NOI18N
-        addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                formKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                formKeyReleased(evt);
-            }
-        });
 
         upperDrawArea.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -162,27 +167,15 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
         jLabel1.setText("IR vänster fram");
 
-        jLabel4.setText("IR vänster fram (vinkel)");
-
-        irLeftFrontAngleTextField.setEditable(false);
-        irLeftFrontAngleTextField.setText("0");
-        irLeftFrontAngleTextField.setFocusable(false);
-
         jLabel2.setText("IR höger fram");
-
-        jLabel5.setText("IR höger fram (vinkel)");
 
         irRightFrontTextField.setEditable(false);
         irRightFrontTextField.setText("0");
         irRightFrontTextField.setFocusable(false);
 
-        irRightFrontAngleTextField.setEditable(false);
-        irRightFrontAngleTextField.setText("0");
-        irRightFrontAngleTextField.setFocusable(false);
-
         jLabel3.setText("IR vertikal fram");
 
-        jLabel6.setText("IR vertikal fram (vinkel)");
+        jLabel6.setText("IR vertikal vinkel");
 
         irVerticalTextField.setEditable(false);
         irVerticalTextField.setText("0");
@@ -204,17 +197,23 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
         jLabel8.setText("IR höger bak");
 
-        irMiddleBackTextField.setEditable(false);
-        irMiddleBackTextField.setText("0");
-        irMiddleBackTextField.setFocusable(false);
+        irBackTextField.setEditable(false);
+        irBackTextField.setText("0");
+        irBackTextField.setFocusable(false);
 
-        jLabel9.setText("IR mitt bak");
+        jLabel9.setText("IR bak");
 
         jLabel10.setText("Ultraljud");
 
         ultraSoundTextField.setEditable(false);
         ultraSoundTextField.setText("0");
         ultraSoundTextField.setFocusable(false);
+
+        irFrontTextField.setEditable(false);
+        irFrontTextField.setText("0");
+        irFrontTextField.setFocusable(false);
+
+        jLabel4.setText("IR fram");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -225,22 +224,16 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(irLeftFrontAngleTextField)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(irLeftFrontTextField, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, Short.MAX_VALUE))
+                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                            .addComponent(irLeftFrontTextField, javax.swing.GroupLayout.Alignment.LEADING))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(irRightFrontAngleTextField)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(irRightFrontTextField, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                            .addComponent(irRightFrontTextField, javax.swing.GroupLayout.Alignment.LEADING))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(irVerticalAngleTextField)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(irVerticalTextField, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(irFrontTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(irLeftBackTextField)
@@ -251,64 +244,71 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                             .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(irMiddleBackTextField)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(irBackTextField)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(irVerticalTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(irVerticalAngleTextField)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(ultraSoundTextField)
                             .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(113, Short.MAX_VALUE))
+                .addContainerGap(252, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(irVerticalTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(irVerticalAngleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel4Layout.createSequentialGroup()
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(irRightFrontTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(irRightFrontAngleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(irRightFrontTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel4Layout.createSequentialGroup()
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(irLeftFrontTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(irLeftFrontAngleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(47, 47, 47)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(irLeftBackTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(irRightBackTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel4Layout.createSequentialGroup()
-                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(irMiddleBackTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(irLeftFrontTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(irFrontTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(irLeftBackTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(irRightBackTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(irBackTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(irVerticalAngleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(irVerticalTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ultraSoundTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(97, Short.MAX_VALUE))
+                .addContainerGap(114, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Sensorvärden", jPanel4);
@@ -374,6 +374,27 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
         parameter4TextField.setText("5");
 
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel5.setText("Koppla upp till handkontroll");
+
+        searchControllersButton.setText("Leta efter kontroller");
+        searchControllersButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchControllersButtonActionPerformed(evt);
+            }
+        });
+
+        connectControllerButton.setText("Använd kontroll");
+        connectControllerButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectControllerButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel17.setText("Vald kontroll:");
+
+        chosenControllerLabel.setText("Ingen");
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -383,9 +404,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSeparator6)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addComponent(autoButton)
                                 .addGap(18, 18, 18)
@@ -398,25 +419,37 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                                 .addComponent(comNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-                                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(parameter3TextField, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.LEADING))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(parameter4TextField, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING)))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel5Layout.createSequentialGroup()
-                                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(parameter1TextField, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(parameter2TextField, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.LEADING)))
-                                .addComponent(changeParametersButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addGap(0, 302, Short.MAX_VALUE)))
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(connectControllerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel17)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(chosenControllerLabel))
+                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(changeParametersButton, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(parameter1TextField, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(parameter2TextField, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(parameter3TextField, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(parameter4TextField, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING))))
+                        .addGap(0, 267, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(searchControllersButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(controllersComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -437,30 +470,42 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(searchControllersButton)
+                    .addComponent(controllersComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(connectControllerButton)
+                    .addComponent(jLabel17)
+                    .addComponent(chosenControllerLabel))
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator6, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(jLabel13)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(parameter1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(jLabel15)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(parameter2TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel14)
+                        .addComponent(jLabel13)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(parameter3TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(parameter1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel16)
+                        .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(parameter4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(29, 29, 29)
+                        .addComponent(parameter2TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                            .addComponent(jLabel14)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(parameter3TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                            .addComponent(jLabel16)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(parameter4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 18, 18)
                 .addComponent(changeParametersButton)
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Inställningar", jPanel5);
@@ -559,63 +604,22 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_autoRightRadioButtonItemStateChanged
 
-    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        switch (evt.getKeyCode()) {
-            case KeyEvent.VK_UP:
-                if (!keyUpPressed) {
-                    keyUpPressed = true;
-                }
-                break;
-            case KeyEvent.VK_DOWN:
-                if (!keyDownPressed) {
-                    keyDownPressed = true;
-                }
-                break;
-            case KeyEvent.VK_LEFT:
-                if (!keyLeftPressed) {
-                    keyLeftPressed = true;
-                }
-                break;
-            case KeyEvent.VK_RIGHT:
-                if (!keyRightPressed) {
-                    keyRightPressed = true;
-                }
-                break;
-            case KeyEvent.VK_NUMPAD1:
-                if (!keyOnePressed) {
-                    keyOnePressed = true;
-                }
-                break;
-            case KeyEvent.VK_SHIFT:
-                if (!keyShiftPressed) {
-                    keyShiftPressed = true;
-                }
-                break;
+    private void searchControllersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchControllersButtonActionPerformed
+        Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
+        for(Controller c: controllers){
+            if(c.getType() == Controller.Type.STICK){
+                controllersComboBox.addItem(c);
+            }
         }
-    }//GEN-LAST:event_formKeyPressed
+    }//GEN-LAST:event_searchControllersButtonActionPerformed
 
-    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
-        switch (evt.getKeyCode()) {
-            case KeyEvent.VK_UP:
-                keyUpPressed = false;
-                break;
-            case KeyEvent.VK_DOWN:
-                keyDownPressed = false;
-                break;
-            case KeyEvent.VK_LEFT:
-                keyLeftPressed = false;
-                break;
-            case KeyEvent.VK_RIGHT:
-                keyRightPressed = false;
-                break;
-            case KeyEvent.VK_NUMPAD1:
-                keyOnePressed = false;
-                break;
-            case KeyEvent.VK_SHIFT:
-                keyShiftPressed = false;
-                break;
+    private void connectControllerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectControllerButtonActionPerformed
+        Controller c = (Controller) controllersComboBox.getSelectedItem();
+        if(c != null){
+            controller = c;
+            chosenControllerLabel.setText(c.getName());
         }
-    }//GEN-LAST:event_formKeyReleased
+    }//GEN-LAST:event_connectControllerButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -658,14 +662,16 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JRadioButton autoRightRadioButton;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton changeParametersButton;
+    private javax.swing.JLabel chosenControllerLabel;
     private javax.swing.JTextField comNameTextField;
     private javax.swing.JButton connectButton;
+    private javax.swing.JButton connectControllerButton;
+    private javax.swing.JComboBox controllersComboBox;
+    private javax.swing.JTextField irBackTextField;
+    private javax.swing.JTextField irFrontTextField;
     private javax.swing.JTextField irLeftBackTextField;
-    private javax.swing.JTextField irLeftFrontAngleTextField;
     private javax.swing.JTextField irLeftFrontTextField;
-    private javax.swing.JTextField irMiddleBackTextField;
     private javax.swing.JTextField irRightBackTextField;
-    private javax.swing.JTextField irRightFrontAngleTextField;
     private javax.swing.JTextField irRightFrontTextField;
     private javax.swing.JTextField irVerticalAngleTextField;
     private javax.swing.JTextField irVerticalTextField;
@@ -677,6 +683,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -693,6 +700,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JPanel lowerDrawArea;
     private javax.swing.JTextArea messageTextArea;
@@ -700,6 +708,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JTextField parameter2TextField;
     private javax.swing.JTextField parameter3TextField;
     private javax.swing.JTextField parameter4TextField;
+    private javax.swing.JButton searchControllersButton;
     private javax.swing.JTextField ultraSoundTextField;
     private javax.swing.JPanel upperDrawArea;
     // End of variables declaration//GEN-END:variables
@@ -967,11 +976,11 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                     break;
                 case 4:
                     ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.FRONT);
-                    irVerticalAngleTextField.setText("" + length);
+                    irFrontTextField.setText("" + length);
                     break;
                 case 5:
                     ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.BACK);
-                    irMiddleBackTextField.setText("" + length);
+                    irBackTextField.setText("" + length);
                     break;
                 case 6:
                     ((UpperPanel) upperDrawArea).updatePoints(length, data[data.length - 1], SENSOR.VERTICAL);
@@ -984,5 +993,113 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             }
         }
         System.out.println("");
+    }
+
+    private void keyUpdate() {
+        int walk = 0;
+        int strafe = 0;
+        int rot = 0;
+
+        if (keyUpPressed) {
+            walk++;
+        }
+        if (keyDownPressed) {
+            walk--;
+        }
+        if (keyRightPressed) {
+            strafe++;
+        }
+        if (keyLeftPressed) {
+            strafe--;
+        }
+        if (keyControlPressed) {
+            rot++;
+        }
+        if (keyZeroPressed) {
+            rot--;
+        }
+
+        int direction = (int) Math.toDegrees(Math.atan2(walk, strafe));
+
+        int speed = 1;
+        if(walk == 0 && strafe == 0){
+            speed = 0;
+        }
+        // Send package with direction, speed and rot.
+        //System.out.println(direction + ", " + speed + ", " + rot);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent evt) {
+        if (evt.getID() == KeyEvent.KEY_PRESSED) {
+            switch (evt.getKeyCode()) {
+                case KeyEvent.VK_UP:
+                    if (!keyUpPressed) {
+                        keyUpPressed = true;
+                        keyUpdate();
+                    }
+                    break;
+                case KeyEvent.VK_DOWN:
+                    if (!keyDownPressed) {
+                        keyDownPressed = true;
+                        keyUpdate();
+                    }
+                    break;
+                case KeyEvent.VK_LEFT:
+                    if (!keyLeftPressed) {
+                        keyLeftPressed = true;
+                        keyUpdate();
+                    }
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    if (!keyRightPressed) {
+                        keyRightPressed = true;
+                        keyUpdate();
+                    }
+                    break;
+                case KeyEvent.VK_NUMPAD0:
+                    if (!keyZeroPressed) {
+                        keyZeroPressed = true;
+                        keyUpdate();
+                    }
+                    break;
+                case KeyEvent.VK_CONTROL:
+                    if (!keyControlPressed) {
+                        keyControlPressed = true;
+                        keyUpdate();
+                    }
+                    break;
+            }
+        } else if (evt.getID() == KeyEvent.KEY_RELEASED) {
+            switch (evt.getKeyCode()) {
+                case KeyEvent.VK_UP:
+                    keyUpPressed = false;
+                    keyUpdate();
+                    break;
+                case KeyEvent.VK_DOWN:
+                    keyDownPressed = false;
+                    keyUpdate();
+                    break;
+                case KeyEvent.VK_LEFT:
+                    keyLeftPressed = false;
+                    keyUpdate();
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    keyRightPressed = false;
+                    keyUpdate();
+                    break;
+                case KeyEvent.VK_NUMPAD0:
+                    keyZeroPressed = false;
+                    keyUpdate();
+                    break;
+                case KeyEvent.VK_CONTROL:
+                    keyControlPressed = false;
+                    keyUpdate();
+                    break;
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 }
