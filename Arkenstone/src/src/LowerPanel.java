@@ -140,5 +140,9 @@ public class LowerPanel extends JPanel {
             l = (float) front.get(front.size() - 1 - i);
             g.fillOval((int) ((xR + xL)/2.0) + (int) (MAX_POINTS * 3.5) - i * 7, yU - (int) l, 5, 5);
         }
+        
+        if(hasFocus()){
+            g.drawString("C", getWidth() - 20, 20);
+        }
     }
 }
