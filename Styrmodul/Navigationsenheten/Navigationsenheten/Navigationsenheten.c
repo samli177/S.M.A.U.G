@@ -36,7 +36,7 @@ int main(void)
 		//send_string(0x40, "I AM DEAD!");
 		PORTA &= ~(1<<PORTA0);
 		_delay_ms(1000);
-		USART_SendCommand();
+		USART_SendMessage("apa");
 		
     }
 }

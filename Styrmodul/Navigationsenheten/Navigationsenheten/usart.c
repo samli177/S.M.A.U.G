@@ -169,7 +169,7 @@ void USART_SendMessage(char msg[])
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('S', strlen(msg));
+	USART_SendPacket('M', strlen(msg));
 }
 
 void USART_SendSensors()
@@ -346,7 +346,7 @@ ISR (USART0_RX_vect)
 				gInvertNextFlag = 0;
 			}
 			
-			USART_Bounce();
+			//USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)

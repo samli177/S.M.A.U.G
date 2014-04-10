@@ -10,6 +10,7 @@
 #include <avr/io.h>
 #include <math.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 #include "serialServoControl.h"
 #include "inverseKinematics.h"
 #include "usart.h"
@@ -19,18 +20,18 @@
 #define centerToSideLegs 100
 #define centerToFrontLegs 135
 #define centerToFrontLegsX 61.85
-int x0_1 = -2000; //standard x pos for leg 1
-int y0_1 = 2200; //standard y pos for leg 1
-int x0_2 = -1800; //standard x pos for leg 2
+int x0_1 = -200; //standard x pos for leg 1
+int y0_1 = 220; //standard y pos for leg 1
+int x0_2 = -180; //standard x pos for leg 2
 int y0_2 = 0; //standard y pos for leg 2
-int x0_3 = -2000; //standard x pos for leg 3
-int y0_3 = -2200; //standard y pos for leg 3
-int x0_4 = 2000; //standard x pos for leg 4
-int y0_4 = -2200; //standard y pos for leg 4
-int x0_5 = 1800; //standard x pos for leg 5
+int x0_3 = -200; //standard x pos for leg 3
+int y0_3 = -220; //standard y pos for leg 3
+int x0_4 = 200; //standard x pos for leg 4
+int y0_4 = -220; //standard y pos for leg 4
+int x0_5 = 180; //standard x pos for leg 5
 int y0_5 = 0; //standard y pos for leg 5
-int x0_6 = -2000; //standard x pos for leg 6
-int y0_6 = 2200; //standard y pos for leg 6
+int x0_6 = -200; //standard x pos for leg 6
+int y0_6 = 220; //standard y pos for leg 6
 
 	
 void moveLeg2too(int x,int y,int z,int speed)
@@ -90,14 +91,16 @@ void moveRobot(int direction,int distance, int rotation, int z, int servoSpeed, 
 int main(void)
 {
 	DDRD |= (1<<PORTD5); //init LED
-	servoTx;
-	initServoSerial(); //Init servos
+	//servoTx;
 	
+	sei();
+	initServoSerial(); //Init servos
+	USART_init();
 	
     while(1)
     {
-		USART_init();
 		USART_DecodeRxFIFO();
+		_delay_ms(1000);
         //TODO:: Please write your application code 
     }
 }

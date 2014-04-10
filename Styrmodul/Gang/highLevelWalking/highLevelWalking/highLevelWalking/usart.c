@@ -168,7 +168,7 @@ void USART_SendMessage(char msg[])
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('S', strlen(msg));
+	USART_SendPacket('M', strlen(msg));
 }
 
 void USART_SendSensors()
@@ -188,7 +188,7 @@ void USART_SendSensors()
 
 uint8_t USART_DecodeMessageRxFIFO()
 {
-	
+	PORTD ^= (1<<PORTD5);
 	uint8_t *len = 0;
 	uint8_t *character = 0;
 	
@@ -219,6 +219,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	// TODO: send to relevant party... the display for now
 	//send_string_fixed_length(S_ADRESS, msg, length);
+	
 	
 	return 0;
 }
@@ -264,7 +265,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 			speed = *data;
 		
 		//send_command(direction, rotation, speed);
-		PORTD ^= (1<<PORTD5);
+		
 
 	}else
 	{
@@ -283,6 +284,7 @@ void USART_DecodeRxFIFO()
 	
 	while(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
 	{
+		
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{
@@ -334,6 +336,7 @@ ISR (USART0_RX_vect)
 				data = (1<<5)^data;
 				gInvertNextFlag = 0;
 			}
+			
 			
 			USART_Bounce();
 			
