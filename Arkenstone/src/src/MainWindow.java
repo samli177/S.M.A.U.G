@@ -1,28 +1,30 @@
 package src;
 
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.text.DefaultCaret;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
+import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
+import net.java.games.input.Event;
+import net.java.games.input.EventQueue;
 
 /**
  *
  * @author Martin
  */
-public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPortEventListener, KeyEventDispatcher {
+public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPortEventListener {
 
     public static enum SENSOR {
-
         LEFT_FRONT,
         RIGHT_FRONT,
         LEFT_BACK,
@@ -33,10 +35,17 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         ULTRA_SOUND
     }
 
+    final int CONTROLL_DELAY = 500; // milli-seconds
+    
     SerialPort comPort;
     LinkedList<byte[]> messageBuffer;
     final Object lock;
+
     Controller controller;
+    EventQueue eventQueue;
+    boolean controllerSticksLocked;
+    Timer controllerTimer;
+    float dPadValue = 0;
 
     boolean keyUpPressed, keyDownPressed, keyLeftPressed, keyRightPressed, keyZeroPressed, keyControlPressed;
 
@@ -52,11 +61,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         messageBuffer = new LinkedList<>();
         lock = new Object();
 
+        controllerTimer = new Timer();
+
         Thread t = new Thread(this);
         t.start();
-
-        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        manager.addKeyEventDispatcher(this);
     }
 
     /**
@@ -143,6 +151,19 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         );
 
         lowerDrawArea.setBackground(new java.awt.Color(255, 255, 255));
+        lowerDrawArea.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lowerDrawAreaMouseClicked(evt);
+            }
+        });
+        lowerDrawArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                lowerDrawAreaKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                lowerDrawAreaKeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout lowerDrawAreaLayout = new javax.swing.GroupLayout(lowerDrawArea);
         lowerDrawArea.setLayout(lowerDrawAreaLayout);
@@ -606,8 +627,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void searchControllersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchControllersButtonActionPerformed
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
-        for(Controller c: controllers){
-            if(c.getType() == Controller.Type.STICK){
+        for (Controller c : controllers) {
+            if (c.getType() == Controller.Type.GAMEPAD) {
                 controllersComboBox.addItem(c);
             }
         }
@@ -615,11 +636,93 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void connectControllerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectControllerButtonActionPerformed
         Controller c = (Controller) controllersComboBox.getSelectedItem();
-        if(c != null){
+        if (c != null) {
             controller = c;
+            eventQueue = c.getEventQueue();
             chosenControllerLabel.setText(c.getName());
+
+            controllerTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    controllerSticksChanged();
+                }
+            }, CONTROLL_DELAY, CONTROLL_DELAY);
         }
     }//GEN-LAST:event_connectControllerButtonActionPerformed
+
+    private void lowerDrawAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lowerDrawAreaKeyPressed
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                if (!keyUpPressed) {
+                    keyUpPressed = true;
+                    keyUpdate();
+                }
+                break;
+            case KeyEvent.VK_DOWN:
+                if (!keyDownPressed) {
+                    keyDownPressed = true;
+                    keyUpdate();
+                }
+                break;
+            case KeyEvent.VK_LEFT:
+                if (!keyLeftPressed) {
+                    keyLeftPressed = true;
+                    keyUpdate();
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                if (!keyRightPressed) {
+                    keyRightPressed = true;
+                    keyUpdate();
+                }
+                break;
+            case KeyEvent.VK_NUMPAD0:
+                if (!keyZeroPressed) {
+                    keyZeroPressed = true;
+                    keyUpdate();
+                }
+                break;
+            case KeyEvent.VK_CONTROL:
+                if (!keyControlPressed) {
+                    keyControlPressed = true;
+                    keyUpdate();
+                }
+                break;
+        }
+    }//GEN-LAST:event_lowerDrawAreaKeyPressed
+
+    private void lowerDrawAreaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lowerDrawAreaKeyReleased
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                keyUpPressed = false;
+                keyUpdate();
+                break;
+            case KeyEvent.VK_DOWN:
+                keyDownPressed = false;
+                keyUpdate();
+                break;
+            case KeyEvent.VK_LEFT:
+                keyLeftPressed = false;
+                keyUpdate();
+                break;
+            case KeyEvent.VK_RIGHT:
+                keyRightPressed = false;
+                keyUpdate();
+                break;
+            case KeyEvent.VK_NUMPAD0:
+                keyZeroPressed = false;
+                keyUpdate();
+                break;
+            case KeyEvent.VK_CONTROL:
+                keyControlPressed = false;
+                keyUpdate();
+                break;
+        }
+    }//GEN-LAST:event_lowerDrawAreaKeyReleased
+
+    private void lowerDrawAreaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lowerDrawAreaMouseClicked
+        lowerDrawArea.requestFocus();
+    }//GEN-LAST:event_lowerDrawAreaMouseClicked
 
     /**
      * @param args the command line arguments
@@ -714,11 +817,17 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     // End of variables declaration//GEN-END:variables
 
     /* ------------------------------------------------
-     Egna funktioner */
+     My own functions, not generated by swing. */
     private void writeMessage(String message) {
         messageTextArea.append("\n" + message);
     }
 
+    /**
+     * Connects to serial port with specified name. Uses Baudrate 115200 Hz, 2
+     * stop bits and no parity.
+     *
+     * @param portName Name of the serial port to be connected.
+     */
     private void connect(String portName) {
         // Skapa ny COM-port
         comPort = new SerialPort(portName);
@@ -751,7 +860,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 boolean ceo = false;
                 byte b;
                 byte b2;
-                
+
                 while (true) {
                     try {
                         indata = comPort.readBytes(1, 100);
@@ -791,7 +900,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                         /*for (byte byte1 : bytes) {
                          System.out.println(byte1);
                          }*/
-                        
                         if (correct) {
                             int length = bytes.get(1);
                             byte[] relevantData = new byte[length + 2];
@@ -893,13 +1001,29 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     public void run() {
         while (true) {
+            // Draw sensor values
             upperDrawArea.repaint();
             lowerDrawArea.repaint();
 
+            // Check buffer
             if (hasMessage()) {
                 decodeMessage();
             }
 
+            // Handle controll, must poll often to
+            // detect lost controller and awoid crash.
+            if (controller != null) {
+                if (controller.poll()) {
+                    handleControlInput();
+                } else {
+                    controllerTimer.cancel();
+                    controller = null;
+                    searchControllersButtonActionPerformed(null);
+                    chosenControllerLabel.setText("Ingen");
+                }
+            }
+
+            // Sleep, can probably be longer
             try {
                 Thread.sleep(50);
             } catch (InterruptedException ex) {
@@ -1022,84 +1146,101 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         int direction = (int) Math.toDegrees(Math.atan2(walk, strafe));
 
         int speed = 1;
-        if(walk == 0 && strafe == 0){
+        if (walk == 0 && strafe == 0) {
             speed = 0;
         }
         // Send package with direction, speed and rot.
         //System.out.println(direction + ", " + speed + ", " + rot);
     }
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent evt) {
-        if (evt.getID() == KeyEvent.KEY_PRESSED) {
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    if (!keyUpPressed) {
-                        keyUpPressed = true;
-                        keyUpdate();
-                    }
+    private void handleControlInput() {
+        Event event = new Event();
+        boolean sticksChanged = false;
+
+        while (eventQueue.getNextEvent(event)) {
+            if (!event.getComponent().isAnalog()) {
+                controllerButtonPressed(event);
+            }
+        }
+    }
+
+    private void controllerButtonPressed(Event event) {
+        switch (event.getComponent().getName()) {
+            case "Button 0":
+                break;
+            case "Button 1":
+                break;
+            case "Button 2":
+                break;
+            case "Button 3":
+                break;
+            case "Button 4":
+                // Left shoulder, send raise
+                break;
+            case "Button 5":
+                // Right shoulder, send lower
+                break;
+            case "Button 6":
+                break;
+            case "Button 7":
+                break;
+            case "Button 8":
+                break;
+            case "Button 9":
+                break;
+            case "Button 10":
+                break;
+            case "Styrknapp":
+                dPadValue = event.getValue();
+                break;
+        }
+    }
+
+    private void controllerSticksChanged() {
+        float x = 0, y = 0, xrot = 0;
+        for (Component c : controller.getComponents()) {
+            switch (c.getName()) {
+                case "X-axeln":
+                    x = c.getPollData();
                     break;
-                case KeyEvent.VK_DOWN:
-                    if (!keyDownPressed) {
-                        keyDownPressed = true;
-                        keyUpdate();
-                    }
+                case "Y-axeln":
+                    y = c.getPollData();
                     break;
-                case KeyEvent.VK_LEFT:
-                    if (!keyLeftPressed) {
-                        keyLeftPressed = true;
-                        keyUpdate();
-                    }
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if (!keyRightPressed) {
-                        keyRightPressed = true;
-                        keyUpdate();
-                    }
-                    break;
-                case KeyEvent.VK_NUMPAD0:
-                    if (!keyZeroPressed) {
-                        keyZeroPressed = true;
-                        keyUpdate();
-                    }
-                    break;
-                case KeyEvent.VK_CONTROL:
-                    if (!keyControlPressed) {
-                        keyControlPressed = true;
-                        keyUpdate();
-                    }
+                case "X-rotation":
+                    xrot = c.getPollData();
                     break;
             }
-        } else if (evt.getID() == KeyEvent.KEY_RELEASED) {
-            switch (evt.getKeyCode()) {
-                case KeyEvent.VK_UP:
-                    keyUpPressed = false;
-                    keyUpdate();
-                    break;
-                case KeyEvent.VK_DOWN:
-                    keyDownPressed = false;
-                    keyUpdate();
-                    break;
-                case KeyEvent.VK_LEFT:
-                    keyLeftPressed = false;
-                    keyUpdate();
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    keyRightPressed = false;
-                    keyUpdate();
-                    break;
-                case KeyEvent.VK_NUMPAD0:
-                    keyZeroPressed = false;
-                    keyUpdate();
-                    break;
-                case KeyEvent.VK_CONTROL:
-                    keyControlPressed = false;
-                    keyUpdate();
-                    break;
+        }
+
+        int speed = 0;
+        float angle = 0;
+        if (dPadValue == 0) {
+            angle = (float) Math.toDegrees(Math.atan2(x, y)) - 180;
+            if (angle < 0) {
+                angle += 360;
+            } else if (angle >= 360) {
+                angle -= 360;
+            }
+            speed = (int) Math.round(Math.sqrt(x * x + y * y) * 100);
+            if (speed < 10) {
+                speed = 0;
             }
         } else {
-            return false;
+            angle = 360 * (1 - dPadValue) + 90;
+            if (angle >= 360) {
+                angle -= 360;
+            }
+            speed = 100;
         }
-        return true;
+
+        int rotation = Math.round(100 * xrot);
+        if (Math.abs(rotation) < 2) {
+            rotation = 0;
+        }
+
+        if (speed > 0 || Math.abs(rotation) > 0) {
+            System.out.println("Direction: " + angle + ", speed: " + speed + ", rotation: " + rotation);
+            // Send package to robot
+        }
     }
 }

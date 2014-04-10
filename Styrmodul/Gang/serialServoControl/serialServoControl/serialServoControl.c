@@ -164,35 +164,35 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 #define femur 66
 #define tibia 131
 #define femurAngleAddition 0.2426
-#define tibiaAngleAddition 3.1415/4
-#define centerToFrontLegsX 120
+#define tibiaAngleAddition -3.1415/6
+#define centerToFrontLegsY 120
 #define centerToSideLegs 100
 #define centerToFrontLegs 135
-#define centerToFrontLegsY 61.85
+#define centerToFrontLegsX 61.85
 double sinAngleToFrontLegs = centerToFrontLegsY / centerToFrontLegs;
 double cosAngleToFrontLegs = centerToFrontLegsX / centerToFrontLegs;
 
-void LegOneGoto(int x,int y,int z, int servospeed)
+void LegOneGoto(double x,double y,double z, int servospeed)
 {
 	double alpha;
 	double beta;
 	double gamma;
 	double d;
 	
-	gamma = atan(x/y);
-	d = sqrt(z*z+pow((x-coxa*sin(gamma)), 2)+pow((y-coxa*cos(gamma)), 2));
+	gamma = atan(y/x);
+	d = sqrt(pow(sqrt(x*x + y*y)-coxa, 2) + z*z);
 	beta = 3.1415 - acos((femur*femur+tibia*tibia-d*d)/(2*femur*tibia));
-	alpha = acos((femur*femur-tibia*tibia+d*d)/(2*femur*d))-asin(z/d);
+	alpha = acos((femur*femur-tibia*tibia+d*d)/(2*femur*d))-asin(fabs(z)/d);
 	
 	servoGoto(8, gamma, servospeed);
 	servoGoto(10, alpha + femurAngleAddition,servospeed);
 	servoGoto(12, -beta + tibiaAngleAddition,servospeed);
 }
 
-void LegOneGotoHelp(int x, int y, int z, int servospeed) //Help function to describe position of leg in standard base x,y,z
+void LegOneGotoHelp(double x, double y, double z, int servospeed) //Help function to describe position of leg in standard base x,y,z
 {
-	int a = -(x - centerToFrontLegsX)*sin(-3*3.1415/4)+(y+centerToFrontLegsY)*cos(-3*3.1415/4);
-	int b = (x - centerToFrontLegsX)*cos(-3*3.1415/4)+(y+centerToFrontLegsY)*sin(-3*3.1415/4);
+	double a = (x + centerToFrontLegsX)*cos(-3*3.1415/4)-(y-centerToFrontLegsY)*sin(-3*3.1415/4);
+	double b = (x + centerToFrontLegsX)*sin(-3*3.1415/4)+(y-centerToFrontLegsY)*cos(-3*3.1415/4);
 	LegOneGoto(a, b, z, servospeed);
 }
 
@@ -236,7 +236,7 @@ int main(void)
 	servoGoto(1, 0, speed);
 	servoGoto(2, 0, speed);
 	servoGoto(7, 0, speed);
-	servoGoto(8, 0, speed);
+	servoGoto(8, 0.7854, speed);
 	servoGoto(13, 0, speed);
 	servoGoto(14, 0, speed);
 	
@@ -247,11 +247,11 @@ int main(void)
 	servoGoto(9, -alpha, speed);
 	servoGoto(16, alpha, speed);
 	servoGoto(4, alpha, speed);
-	servoGoto(10, alpha, speed);
+	servoGoto(10, 0.9141+femurAngleAddition, speed);
 	
 	_delay_ms(100);
 	
-	servoGoto(12, -beta, speed);
+	servoGoto(12, -1.81+tibiaAngleAddition, speed);
 	servoGoto(18, -beta, speed);
 	servoGoto(6, -beta, speed);
 	servoGoto(5, beta, speed);
@@ -259,15 +259,16 @@ int main(void)
 	servoGoto(17, beta, speed);
 	
 	_delay_ms(5000);
+	for(int i=0; i<5; ++i){
+		LegOneGotoHelp(-61.85-150, 270, -50, 150);
 	
-	LegOneGotoHelp(300, -70, 50, 50);
+		_delay_ms(2500);
 	
-	_delay_ms(2500);
+		LegOneGotoHelp(-100, 180, -100, 150);
 	
-	LegOneGotoHelp(120, -250, 50, 50);
+		_delay_ms(2500);
 	
-	
-	
+	}
 	/*while(1)
 	{
 		LegOneGoto(0,150,80,200);

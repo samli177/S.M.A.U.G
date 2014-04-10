@@ -506,164 +506,131 @@ void reset_TWI()
 	TWCR |= (1<<TWINT) | (1<<TWEA);
 }
 
-/*
-//TWI Interrupt vector to exist in respective module
+
+//TWI Interrupt vector MUHAHAHAHA
 // ----------------------------------------------------------------------------- Communications
 ISR(TWI_vect)
 {
-	
-	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+	switch(my_adress)
 	{
-		instruction = true;
-		
-	}
-	else if(CONTROL == DATA_SLAW)
-	{
-		if(instruction)
+		case(C_ADRESS):
 		{
-			current_instruction = get_data();
-			instruction = false;
-		}
-		else
-		{
-			switch(current_instruction)
+			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 			{
-				case(I_SETTINGS):
+				instruction = true;
+				
+			}
+			else if(CONTROL == DATA_SLAW)
+			{
+				if(instruction)
 				{
-					get_settings_from_bus();
-					break;
+					current_instruction = get_data();
+					instruction = false;
 				}
-				case(I_STRING):
+				else
 				{
-					get_char_from_bus();
-					break;
+					switch(current_instruction)
+					{
+						case(I_SETTINGS):
+						{
+							get_settings_from_bus();
+							break;
+						}
+						case(I_STRING):
+						{
+							get_char_from_bus();
+							break;
+						}
+					}
 				}
 			}
+			else if (CONTROL == DATA_GENERAL)
+			{
+				get_sensor_from_bus();
+			}
+			else if (CONTROL == STOP)
+			{
+				stop_twi();
+			}
+			reset_TWI();
 		}
-	}
-	else if (CONTROL == DATA_GENERAL)
-	{
-		get_sensor_from_bus();
-	}
-	else if (CONTROL == STOP)
-	{
-		switch(current_instruction)
+		// ----------------------------------------------------------------------------- Sensors
+		case(S_ADRESS):
 		{
-			case(I_SETTINGS):
+			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 			{
-				get_settings();
-				break;
+				instruction = true;
 			}
-			case(I_STRING):
+			else if(CONTROL == DATA_SLAW)
 			{
-				//get_char(1);
-				break;
+				if(instruction)
+				{
+					current_instruction = get_data();
+					instruction = false;
+				}
+				else
+				{
+					switch(current_instruction)
+					{
+						case(I_SWEEP):
+						{
+							get_sweep_from_bus();
+							break;
+						}
+						case(I_STRING):
+						{
+							get_char_from_bus();
+							break;
+						}
+					}
+				}
 			}
+			else if (CONTROL == STOP)
+			{
+				stop_twi();
+			}
+			reset_TWI();
+		}
+		// ----------------------------------------------------------------------------- Steer
+		case(ST_ADRESS):
+		{
+			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+			{
+				instruction = true;
+			}
+			else if(CONTROL == DATA_SLAW)
+			{
+				if(instruction)
+				{
+					current_instruction = get_data();
+					instruction = false;
+				}
+				else
+				{
+					switch(current_instruction)
+					{
+						case(I_COMMAND):
+						{
+							get_command_from_bus();
+							break;
+						}
+						case(I_STRING):
+						{
+							get_char_from_bus();
+							break;
+						}
+					}
+				}
+			}
+			else if (CONTROL == DATA_GENERAL)
+			{
+				get_sensor_from_bus();
+			}
+			else if (CONTROL == STOP)
+			{
+				stop_twi();
+			}
+			reset_TWI();
 		}
 	}
-	reset_TWI();
 }
-// ----------------------------------------------------------------------------- Sensors
-ISR(TWI_vect)
-{
-	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-	{
-		instruction = true;
-	}
-	else if(CONTROL == DATA_SLAW)
-	{
-		if(instruction)
-		{
-			current_instruction = get_data();
-			instruction = false;
-		}
-		else
-		{
-			switch(current_instruction)
-			{
-				case(I_SWEEP):
-				{
-					get_sweep_from_bus();
-					break;
-				}
-				case(I_STRING):
-				{
-					get_char_from_bus();
-					break;
-				}
-			}
-		}
-	}
-	else if (CONTROL == STOP)
-	{
-		switch(current_instruction)
-		{
-			case(I_SWEEP):
-			{
-				get_sweep();
-				break;
-			}
-			case(I_STRING):
-			{
-				//get_char(i);
-				break;
-			}
-		}
-	}
-	reset_TWI();
-}
-// ----------------------------------------------------------------------------- Steer
-ISR(TWI_vect)
-{
-	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-	{
-		instruction = true;
-	}
-	else if(CONTROL == DATA_SLAW)
-	{
-		if(instruction)
-		{
-			current_instruction = get_data();
-			instruction = false;
-		}
-		else
-		{
-			switch(current_instruction)
-			{
-				case(I_COMMAND):
-				{
-					get_command_from_bus();
-					break;
-				}
-				case(I_STRING):
-				{
-					get_char_from_bus();
-					break;
-				}
-			}
-		}
-	}
-	else if (CONTROL == DATA_GENERAL)
-	{
-		get_sensor_from_bus();
-	}
-	else if (CONTROL == STOP)
-	{
-		switch(current_instruction)
-		{
-			case(I_COMMAND):
-			{
-				//get_command(1);
-				break;
-			}
-			case(I_STRING):
-			{
-				//get_char(1);
-				break;
-			}
-		}
-	}
-	reset_TWI();
-}
-
-*/
