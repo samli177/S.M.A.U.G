@@ -26,8 +26,8 @@ void initServoSerial()
 {
 	//set baud rate
 	//typecasting of "int" to byte truncates to the lowest uint8_t
-	UBRR1H = (uint8_t) (((F_CPU / 16 / BaudRate ) - 1)>>8);
-	UBRR1L = (uint8_t) ((F_CPU / 16 / BaudRate ) - 1) ;
+	UBRR1H = (uint8_t) (((F_CPU / 16 / ServoBaudRate ) - 1)>>8);
+	UBRR1L = (uint8_t) ((F_CPU / 16 / ServoBaudRate ) - 1) ;
 	
 	//enable receiver and transmitter and enable interrupts
 	UCSR1B = (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1);
@@ -160,17 +160,6 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 	sendServoPacket(ID, INST_WRITE, 5);	
 }
 
-#define coxa 56
-#define femur 66
-#define tibia 131
-#define femurAngleAddition 0.2426
-#define tibiaAngleAddition -3.1415/6
-#define centerToFrontLegsY 120
-#define centerToSideLegs 100
-#define centerToFrontLegs 135
-#define centerToFrontLegsX 61.85
-double sinAngleToFrontLegs = centerToFrontLegsY / centerToFrontLegs;
-double cosAngleToFrontLegs = centerToFrontLegsX / centerToFrontLegs;
 
 /*void LegOneGoto(double x,double y,double z, int servospeed)
 {

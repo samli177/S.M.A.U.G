@@ -95,16 +95,34 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="fifo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="fifo.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="highLevelWalking.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="highLevelWalking.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="inverseKinematics.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inverseKinematics.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="serialServoControl.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="serialServoControl.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usart.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

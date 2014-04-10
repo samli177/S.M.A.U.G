@@ -10,7 +10,7 @@
 #define INCFILE1_H_
 
 #define F_CPU 16000000
-#define BaudRate 1000000
+#define ServoBaudRate 1000000
 
 
 // -- Direction control (tristate buffer) --

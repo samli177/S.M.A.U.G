@@ -5,11 +5,15 @@
  *  Author: jonha860
  */ 
 
+#define F_CPU 16000000 
 
 #include <avr/io.h>
 #include <math.h>
+#include <util/delay.h>
 #include "serialServoControl.h"
-#include "inverseKinematics.c"
+#include "inverseKinematics.h"
+#include "usart.h"
+
 #define frontLegDistance 200
 #define centerToFrontLegsY 120
 #define centerToSideLegs 100

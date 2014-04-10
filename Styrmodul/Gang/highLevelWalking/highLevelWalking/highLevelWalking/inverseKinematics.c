@@ -21,6 +21,7 @@
 #define centerToSideLegs 100
 #define centerToFrontLegs 135
 #define centerToFrontLegsX 61.85
+
 double sinAngleToFrontLegs = centerToFrontLegsY / centerToFrontLegs;
 double cosAngleToFrontLegs = centerToFrontLegsX / centerToFrontLegs;
 
