@@ -12,9 +12,11 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "display.h"
 #include "twi.h"
+#include "../../Kommunikationsmodul/kommunikationsmodulen/fifo.h"
 
 void send_data(void);
 void init_TWI_sensor(void);
@@ -42,6 +44,14 @@ bool instruction;
 int current_instruction;
 
 int UL;
+void init_display_timer();
+
+// define FIFO for received packets (USART)
+MK_FIFO(4096); // use 4 kB
+DEFINE_FIFO(gRxFIFO, 4096);
+
+uint8_t decode_message_RxFIFO();
+// uint8_t Write_to_FIFO(char);
 
 int main(void)
 {
@@ -99,24 +109,7 @@ int main(void)
 	
 	//display top in buffer and sensordata
 	clear_display();
-	if(buffer_size > 0)
-	{
-		//Display top row:
-		for(int i = 0; i < display_buffer[0][0]; ++i)
-		{
-			print_char(display_buffer[i+1][0]);
-		}
-		//Delete top row:
-		for(int it_row = 0; it_row <= buffer_size; ++it_row)
-		{
-			for(int it_col = 0; it_col <= display_buffer[0][it_row + 1]; ++it_col)
-			{
-				display_buffer[it_col][it_row] = display_buffer[it_col][it_row + 1];
-			}
-		}
-		buffer_size = buffer_size - 1;
-	}
-	else
+	if(decode_message_RxFIFO())
 	{
 		//display sensordata
 		for(int i = 0; i < 8; ++i)
@@ -228,6 +221,29 @@ void init_UL()
 	TCCR0B = 0x05;
 }
 
+void init_display_timer()
+{
+	// WGMn3:0 = 4 (OCRnA) or 12 (OCRn), where top value is read from.
+	TCCR1A |= (1<<WGM12); // CTC (Clear Timer on Compare Match) mode with control value at OCR1A.
+	TCCR1B |= 0b00000011; // Choosing clock. (clkI/O/64)
+	
+	// value for interrupt:
+	OCR1AH = 0x0F; 
+	OCR1AL = 0x00;
+	
+	TIMSK1 |= 0b00000010; // Enable interrupts when OCF1A, in FIFR1, is set. 
+	TIMSK1 |= 0b00100000; // Enable interrupts when ICF1, in FIFR1, is set. 
+	// OCF1A (or ICFn) Flag, in TIFR1, can be used to generate interrupts.
+}
+/*
+ISR(OCF1A)
+{
+	if(decode_message_RxFIFO())
+	{
+		// display_sensordata();
+	}
+}
+*/
 void adc_init()
 {
 	// ADC enabled, enable interupt, set division factor for clock to be 128
@@ -378,14 +394,7 @@ ISR(TWI_vect)
 			}
 			case(I_STRING):
 			{
-				display_buffer[0][buffer_size] = get_message_length();
-				for(int i = 0; i < get_message_length(); ++i)
-				{
-					// TODO: change to get_char_from_bus() or implement get_char()...
-					//Take char and put in display_buffer in top empty row
-					display_buffer[i+1][buffer_size] = get_char(i);
-				}
-				buffer_size = buffer_size + 1;
+				// Write_to_FIFO(I_STRING);
 				break;
 			}
 		}
@@ -394,3 +403,54 @@ ISR(TWI_vect)
 	reset_TWI();
 	sei();
 }
+
+uint8_t decode_message_RxFIFO()
+{
+	
+	uint8_t *len = 0;
+	uint8_t *character = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		//print_text("RxFIFO ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
+	
+	//NOTE: there has to be a better way of doing this...
+	int ifzero = 0;
+	if(length == 0) ifzero = 1;
+	char msg[length-1+ifzero];
+
+	for(int i = 0; i < length; ++i)
+	{
+		if(FifoRead(gRxFIFO, character))
+		{
+			//print_text("RxFIFO ERROR: DATA MISSING");
+			return 1; // error
+		}
+
+		msg[i] = *character;
+	}
+	
+	
+	// TODO: send to relevant party... the display for now
+	print_text(msg);
+	
+	return 0;
+}
+/*
+uint8_t Write_to_FIFO(char msg[])
+{
+	for(int i = 0; i < strlen(msg); ++i)
+	{
+		if(FifoWrite(gRxFIFO, msg[i]))
+		{
+			print_text("RxFIFO ERROR: WRITING IMPOSSIBLE");
+			return 1;
+		}
+	}
+	return 0;
+}
+*/
