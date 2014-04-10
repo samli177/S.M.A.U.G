@@ -13,29 +13,57 @@
 #include <stdbool.h>
 #include <string.h>
 #include "twi.h"
-#include "display.h"
+
+
+static void set_twi_reciever_enable();
+static void Error();
+static void start_bus();
+static void stop_bus();
+static void clear_int();
+static uint8_t get_data();
+static void send_data_and_wait(uint8_t data);
+
+static void stop_twi();
+static void reset_TWI();
+static void get_control_settings_from_bus();
+static void get_autonom_settings_from_bus();
+static void get_char_from_bus();
+static void get_sweep_from_bus();
+static void get_command_from_bus();
+static void get_sensor_from_bus();
+static void get_elevation_from_bus();
 
 
 // Global variables for response functions
-int my_adress;
+uint8_t my_adress;
 char message[255];
 int message_counter;
-int settings;
-int buffer[7];
-int sensors[7];
-int servo;
-int sweep;
+uint8_t control_settings[3]; //KP, KI, KD
+uint8_t sensor_buffer[7];
+uint8_t sensors[7];
+uint8_t servo;
+uint8_t sweep;
 int sensor;
-int command[3];
+uint8_t command[3];
 int current_command;
 int message_length;
+uint8_t autonom_settings;
+int current_setting;
+int elevation;
 
-//Global variables to exist in the module
+//Global variables for the interrupts
 bool instruction;
 int current_instruction;
-int my_adress;
 
-void init_TWI(int module_adress)
+//Flags for new data, should be set false when read true
+bool sensor_flag_ = false;
+bool command_flag_ = false;
+bool control_settings_flag_ = false;
+bool autonom_settings_flag_ = false;
+bool elevation_flag_ = false;
+bool sweep_flag_ = false;
+
+void TWI_init(uint8_t module_adress)
 {
 	my_adress = module_adress;
 	switch(module_adress)
@@ -45,13 +73,13 @@ void init_TWI(int module_adress)
 			PORTC = 0x03; // Pull up, only 1!
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
-			TWBR = 0b00111111; //bit rate 27 => clk = 79.448 kHz
+			TWBR = 0b00111111; //bit rate 27
 			TWAR = (1<<TWA6) | (1<<TWGCE); // Address 100 0000, General Call Accepted
 			break;
 		}
 		case(S_ADRESS):
 		{
-			TWBR = 0b00111111; //bit rate 23 => clk = 80.0 kHz
+			TWBR = 0b00111111; //bit rate 23
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
 			TWAR = (1<<TWA5); // Address 010 0000, General Call Not Accepted
@@ -59,7 +87,7 @@ void init_TWI(int module_adress)
 		}
 		case(ST_ADRESS):
 		{
-			TWBR = 0b00111111; //bit rate 23 => clk = 80.0 kHz
+			TWBR = 0b00111111; //bit rate
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
 			TWAR = (1<<TWA4) | (1<<TWGCE); // Address 001 0000, General Call Accepted
@@ -97,90 +125,78 @@ void start_bus()
 
 void stop_bus()
 {
-	TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEN) | (1<<TWEA) | (1<<TWIE);
+	TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEA) | (1<<TWEN) | (1<<TWIE);
 }
 
-void set_data(uint8_t b)
-{
-	TWDR = b;
-}
-
-int get_data()
+uint8_t get_data()
 {
 	return TWDR;
 }
 
-void send_bus()
+void send_data_and_wait(uint8_t data)
 {
+	TWDR = data;
 	TWCR = (1<<TWINT) | (1<<TWEN);
-}
-
-void wait_for_bus()
-{
 	while (!(TWCR & (1<<TWINT)));
 }
 
-bool send_status(int adr)
+bool TWI_send_status(uint8_t adr)
 {
 	start_bus();
-	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
-	set_data(adr);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(adr);
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(I_STATUS);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(I_STATUS);
 	if(CONTROL == ARBITRATION)
 	{
+		clear_int();
 		return true;
 	}
-	else if(CONTROL != DATA_W)
-	{
-		Error();
-		return false;
-	}
 	stop_bus();
 	return true;
 }
 
-bool send_settings(int set)
+bool TWI_send_control_settings(uint8_t adr, uint8_t KP,uint8_t KI,uint8_t KD)
 {
 	start_bus();
-	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
-	set_data(C_ADRESS);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(adr);
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(I_SETTINGS);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(I_SETTINGS);
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(set);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(KP);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(KI);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(KD);
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -190,34 +206,27 @@ bool send_settings(int set)
 	return true;
 }
 
-bool send_sweep(int pos)
+bool TWI_send_autonom_settings(uint8_t adr,uint8_t autoset)
 {
 	start_bus();
-	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
-	set_data(S_ADRESS);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(adr);
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(I_SWEEP);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(I_AUTONOM);
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(pos);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(autoset);
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -227,50 +236,27 @@ bool send_sweep(int pos)
 	return true;
 }
 
-bool send_command(int direction, int rot_elev, int speed)
+bool TWI_send_sweep(uint8_t pos)
 {
 	start_bus();
-	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
-	set_data(ST_ADRESS);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(S_ADRESS);
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(I_COMMAND);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(I_SWEEP);
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(direction);
-	send_bus();
-	wait_for_bus();
-	if(CONTROL != DATA_W)
-	{
-		Error();
-		return false;
-	}
-	set_data(rot_elev);
-	send_bus();
-	wait_for_bus();
-	if(CONTROL != DATA_W)
-	{
-		Error();
-		return false;
-	}
-	set_data(speed);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(pos);
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -280,18 +266,87 @@ bool send_command(int direction, int rot_elev, int speed)
 	return true;
 }
 
-bool send_sensors(int sens[7], int serv)
+bool TWI_send_command(uint8_t direction, uint8_t rotation, uint8_t speed)
 {
 	start_bus();
-	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
-	set_data(G_ADRESS); //General Call, NO instruction byte, NO NACK control of data
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(ST_ADRESS);
+	if(CONTROL != ADRESS_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(I_COMMAND);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(direction);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(rotation);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(speed);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	stop_bus();
+	return true;
+}
+
+bool TWI_send_elevation(uint8_t elevation)
+{
+	start_bus();
+	if(CONTROL != START)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(ST_ADRESS);
+	if(CONTROL != ADRESS_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(I_ELEVATION);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(elevation);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	stop_bus();
+	return true;
+}
+
+bool TWI_send_sensors(uint8_t sens[7], uint8_t serv)
+{
+	start_bus();
+	if(CONTROL != START)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(G_ADRESS);//General Call, NO instruction byte, NO NACK control of data
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
@@ -299,37 +354,28 @@ bool send_sensors(int sens[7], int serv)
 	}
 	for(int i=0; i < 7; ++i) //7 Sensors?
 	{
-		set_data((uint8_t)sens[i]);
-		send_bus();
-		wait_for_bus();
+		send_data_and_wait(sens[i]);
 	}
-	set_data(serv);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(serv);
 	stop_bus();
 	return true;
 }
 
-bool send_string(int adr, char str[])
+bool TWI_send_string(uint8_t adr, char str[])
 {
 	start_bus();
-	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
-	set_data(adr);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(adr);
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(I_STRING);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(I_STRING);
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -337,34 +383,27 @@ bool send_string(int adr, char str[])
 	}
 	for(int i = 0; i < strlen(str); ++i)
 	{
-		set_data(str[i]);
-		send_bus();
-		wait_for_bus();
+		send_data_and_wait(str[i]);
 	}
 	stop_bus();
 	return true;
 }
 
-bool send_string_fixed_length(int adr, uint8_t str[], int length)
+bool TWI_send_string_fixed_length(uint8_t adr, uint8_t str[], int length)
 {
 	start_bus();
-	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
-	set_data(adr);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(adr);
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(I_STRING);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(I_STRING);
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -372,42 +411,33 @@ bool send_string_fixed_length(int adr, uint8_t str[], int length)
 	}
 	for(int i = 0; i < length; ++i)
 	{
-		set_data(str[i]);
-		send_bus();
-		wait_for_bus();
+		send_data_and_wait(str[i]);
 	}
 	stop_bus();
 	return true;
 }
 
-bool send_something(int adr, int instruction, int packet)
+bool TWI_send_something(uint8_t adr, uint8_t instruction, uint8_t packet)
 {
 	start_bus();
-	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
-	set_data(adr);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(adr);
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(instruction);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(instruction);
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
-	set_data(packet);
-	send_bus();
-	wait_for_bus();
+	send_data_and_wait(packet);
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -417,16 +447,53 @@ bool send_something(int adr, int instruction, int packet)
 	return true;
 }
 
+//------------------------------------------------------------------------------------------
 
-
-void get_settings_from_bus()
+void stop_twi()
 {
-	settings = get_data();
+	current_command = 0;
+	sensor = 0;
+	message_counter = 0;
+	current_setting = 0;
 }
 
-int get_settings()
+void reset_TWI()
 {
-	return settings;
+	TWCR |= (1<<TWINT) | (1<<TWEA);
+}
+
+void get_sensor_from_bus()
+{
+	if(sensor == 7)
+	{
+		for(int i = 0; i < sensor;++i)
+		{
+			sensors[i] = sensor_buffer[i];
+		}
+		servo = get_data();
+		sensor_flag_ = true;
+	}
+	else
+	{
+		sensor_buffer[sensor] = get_data();
+		sensor += 1;
+	}
+}
+
+void get_sweep_from_bus()
+{
+	sweep = get_data();
+}
+
+void get_control_settings_from_bus()
+{
+	control_settings[current_setting] = get_data();
+	current_setting = 0;
+}
+
+void get_autonom_settings_from_bus()
+{
+	autonom_settings = get_data();
 }
 
 void get_char_from_bus()
@@ -442,228 +509,316 @@ void get_command_from_bus()
 	current_command += 1;
 }
 
-int get_command(int i)
+void get_elevation_from_bus()
+{
+	elevation += get_data();
+	if(elevation < 1)
+		elevation = 1;
+	else if(elevation > 7) // 7 nivåer?!
+		elevation = 7;
+}
+
+
+//------------------------------------------------------------------------------------------
+uint8_t TWI_get_command(int i)
 {
 	return command[i];
 }
 
-int get_message_length()
+uint8_t TWI_get_message_length()
 {
 	return message_length;
 }
 
-char get_char(int i)
+char TWI_get_char(int i)
 {
 	return message[i];
 }
 
-void get_sensor_from_bus()
-{
-	if(sensor == 7)
-	{
-		for(int i = 0; i < sensor;++i)
-		{
-			sensors[i] = buffer[i];
-		}
-		servo = get_data();
-	}
-	else
-	{
-		buffer[sensor] = get_data();
-		sensor += 1;
-	}
-}
-
-int get_sensor(int i)
+uint8_t TWI_get_sensor(int i)
 {
 	return sensors[i];
 }
 
-int get_servo()
+uint8_t TWI_get_servo()
 {
 	return servo;
 }
 
-void get_sweep_from_bus()
-{
-	sweep = get_data();
-}
-
-int get_sweep()
+uint8_t TWI_get_sweep()
 {
 	return sweep;
 }
 
-void stop_twi()
+uint8_t TWI_get_control_setting(int i)
 {
-	current_command = 0;
-	sensor = 0;
-	message_counter = 0;
+	return control_settings[i];
 }
 
-void reset_TWI()
+uint8_t TWI_get_autonom_settings()
 {
-	TWCR |= (1<<TWINT) | (1<<TWEA);
+	return autonom_settings;
 }
 
-/*
-//TWI Interrupt vector to exist in respective module
+uint8_t TWI_get_elevation()
+{
+	return elevation;
+}
+
+//----------------------Flags----------------------------------------------------------------
+bool TWI_sensor_flag()
+{
+	if(sensor_flag_)
+	{
+		sensor_flag_ = false;
+		return true;
+	}
+	return false;
+}
+
+bool TWI_command_flag()
+{
+	if(command_flag_)
+	{
+		command_flag_ = false;
+		return true;
+	}
+	return false;
+}
+
+bool TWI_control_settings_flag()
+{
+	if(control_settings_flag_)
+	{
+		control_settings_flag_ = false;
+		return true;
+	}
+	return false;
+}
+
+bool TWI_autonom_settings_flag()
+{
+	if(autonom_settings_flag_)
+	{
+		autonom_settings_flag_ = false;
+		return true;
+	}
+	return false;
+}
+
+bool TWI_elevation_flag()
+{
+	if(elevation_flag_)
+	{
+		elevation_flag_ = false;
+		return true;
+	}
+	return false;
+}
+
+bool TWI_sweep_flag()
+{
+	if(sweep_flag_)
+	{
+		sweep_flag_ = false;
+		return true;
+	}
+	return false;
+}
+
+//TWI Interrupt vector MUHAHAHAHA
 // ----------------------------------------------------------------------------- Communications
 ISR(TWI_vect)
 {
-	
-	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+	switch(my_adress)
 	{
-		instruction = true;
-		
-	}
-	else if(CONTROL == DATA_SLAW)
-	{
-		if(instruction)
+		case(C_ADRESS):
 		{
-			current_instruction = get_data();
-			instruction = false;
-		}
-		else
-		{
-			switch(current_instruction)
+			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 			{
-				case(I_SETTINGS):
-				{
-					get_settings_from_bus();
-					break;
-				}
-				case(I_STRING):
-				{
-					get_char_from_bus();
-					break;
-				}
+				instruction = true;
+				
 			}
-		}
-	}
-	else if (CONTROL == DATA_GENERAL)
-	{
-		get_sensor_from_bus();
-	}
-	else if (CONTROL == STOP)
-	{
-		switch(current_instruction)
-		{
-			case(I_SETTINGS):
+			else if(CONTROL == DATA_SLAW)
 			{
-				get_settings();
-				break;
-			}
-			case(I_STRING):
-			{
-				//get_char(1);
-				break;
-			}
-		}
-	}
-	reset_TWI();
-}
-// ----------------------------------------------------------------------------- Sensors
-ISR(TWI_vect)
-{
-	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-	{
-		instruction = true;
-	}
-	else if(CONTROL == DATA_SLAW)
-	{
-		if(instruction)
-		{
-			current_instruction = get_data();
-			instruction = false;
-		}
-		else
-		{
-			switch(current_instruction)
-			{
-				case(I_SWEEP):
+				if(instruction)
 				{
-					get_sweep_from_bus();
-					break;
+					current_instruction = get_data();
+					instruction = false;
 				}
-				case(I_STRING):
+				else
 				{
-					get_char_from_bus();
-					break;
+					switch(current_instruction)
+					{
+						case(I_SETTINGS):
+						{
+							get_control_settings_from_bus();
+							break;
+						}
+						case(I_AUTONOM):
+						{
+							get_autonom_settings_from_bus();
+							break;
+						}
+						case(I_STRING):
+						{
+							get_char_from_bus();
+							break;
+						}
+					}
 				}
 			}
-		}
-	}
-	else if (CONTROL == STOP)
-	{
-		switch(current_instruction)
-		{
-			case(I_SWEEP):
+			else if (CONTROL == DATA_GENERAL)
 			{
-				get_sweep();
-				break;
+				get_sensor_from_bus();
 			}
-			case(I_STRING):
+			else if (CONTROL == STOP)
 			{
-				//get_char(i);
-				break;
+				stop_twi();
+				switch(current_instruction)
+				{
+					case(I_SETTINGS):
+					{
+						control_settings_flag_ = true;
+						break;
+					}
+					case(I_AUTONOM):
+					{
+						autonom_settings_flag_ = true;
+						break;
+					}
+					case(I_STRING):
+					{
+						//Add message to buffer
+						break;
+					}
+				}
 			}
+			reset_TWI();
+			break;
 		}
-	}
-	reset_TWI();
-}
-// ----------------------------------------------------------------------------- Steer
-ISR(TWI_vect)
-{
-	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-	{
-		instruction = true;
-	}
-	else if(CONTROL == DATA_SLAW)
-	{
-		if(instruction)
+		// ----------------------------------------------------------------------------- Sensors
+		case(S_ADRESS):
 		{
-			current_instruction = get_data();
-			instruction = false;
-		}
-		else
-		{
-			switch(current_instruction)
+			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 			{
+				instruction = true;
+			}
+			else if(CONTROL == DATA_SLAW)
+			{
+				if(instruction)
+				{
+					current_instruction = get_data();
+					instruction = false;
+				}
+				else
+				{
+					switch(current_instruction)
+					{
+						case(I_SWEEP):
+						{
+							get_sweep_from_bus();
+							break;
+						}
+						case(I_STRING):
+						{
+							get_char_from_bus();
+							break;
+						}
+					}
+				}
+			}
+			else if (CONTROL == STOP)
+			{
+				stop_twi();
+				switch(current_instruction)
+				{
+					case(I_SWEEP):
+					{
+						sweep_flag_ = true;
+						break;
+					}
+					case(I_STRING):
+					{
+						//Add message to buffer
+						break;
+					}
+				}
+			}
+			reset_TWI();
+			break;
+		}
+		// ----------------------------------------------------------------------------- Steer
+		case(ST_ADRESS):
+		{
+			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+			{
+				instruction = true;
+			}
+			else if(CONTROL == DATA_SLAW)
+			{
+				if(instruction)
+				{
+					current_instruction = get_data();
+					instruction = false;
+				}
+				else
+				{
+					switch(current_instruction)
+					{
+						case(I_COMMAND):
+						{
+							get_command_from_bus();
+							break;
+						}
+						case(I_ELEVATION):
+						{
+							get_elevation_from_bus();
+							break;
+						}
+						case(I_SETTINGS):
+						{
+							get_control_settings_from_bus();
+							break;
+						}
+						case(I_AUTONOM):
+						{
+							get_autonom_settings_from_bus();
+							break;
+						}
+					}
+				}
+			}
+			else if (CONTROL == DATA_GENERAL)
+			{
+				get_sensor_from_bus();
+			}
+			else if (CONTROL == STOP)
+			{
+				stop_twi();
 				case(I_COMMAND):
 				{
-					get_command_from_bus();
+					command_flag_ = true;
 					break;
 				}
-				case(I_STRING):
+				case(I_ELEVATION):
 				{
-					get_char_from_bus();
+					elevation_flag_ = true;
+					break;
+				}
+				case(I_SETTINGS):
+				{
+					control_settings_flag_ = true;
+					break;
+				}
+				case(I_AUTONOM):
+				{
+					autonom_settings_flag_ = true;
 					break;
 				}
 			}
+			reset_TWI();
+			break;
 		}
 	}
-	else if (CONTROL == DATA_GENERAL)
-	{
-		get_sensor_from_bus();
-	}
-	else if (CONTROL == STOP)
-	{
-		switch(current_instruction)
-		{
-			case(I_COMMAND):
-			{
-				//get_command(1);
-				break;
-			}
-			case(I_STRING):
-			{
-				//get_char(1);
-				break;
-			}
-		}
-	}
-	reset_TWI();
 }
-
-*/

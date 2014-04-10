@@ -37,20 +37,13 @@ float IR_short[13][2];
 char display_buffer[64][20];
 int buffer_size = 0;
 
-int my_adress;
-bool instruction;
-int current_instruction;
-
 int UL;
 
 int main(void)
 {
 	init_display();
 	// init TWI
-	my_adress = S_ADRESS;
-	init_TWI(my_adress);
-	
-	
+	TWI_init(S_ADRESS);
 	
 	adc_init();
 	init_tables();
@@ -86,7 +79,7 @@ int main(void)
 			print_text(", ");
 			
 		}*/
-		send_settings(5);
+		TWI_send_autonom_settings(C_ADRESS, 5);
 		_delay_ms(680);
 	}
 	
@@ -334,64 +327,4 @@ ISR(PCINT0_vect)
 void displaytest(void)
 {
 	print_line(0, "Initiating AI");
-}
-
-// TWI interrupt vector
-ISR(TWI_vect)
-{
-	cli();
-	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-	{
-		instruction = true;
-	}
-	else if(CONTROL == DATA_SLAW)
-	{
-		if(instruction)
-		{
-			current_instruction = get_data();
-			instruction = false;
-		}
-		else
-		{
-			switch(current_instruction)
-			{
-				case(I_SWEEP):
-				{
-					get_sweep_from_bus();
-					break;
-				}
-				case(I_STRING):
-				{
-					get_char_from_bus();
-					break;
-				}
-			}
-		}
-	}
-	else if (CONTROL == STOP)
-	{
-		switch(current_instruction)
-		{
-			case(I_SWEEP):
-			{
-				//print_value(get_sweep());
-				break;
-			}
-			case(I_STRING):
-			{
-				display_buffer[0][buffer_size] = get_message_length();
-				for(int i = 0; i < get_message_length(); ++i)
-				{
-					// TODO: change to get_char_from_bus() or implement get_char()...
-					//Take char and put in display_buffer in top empty row
-					display_buffer[i+1][buffer_size] = get_char(i);
-				}
-				buffer_size = buffer_size + 1;
-				break;
-			}
-		}
-		stop_twi();
-	}
-	reset_TWI();
-	sei();
 }
