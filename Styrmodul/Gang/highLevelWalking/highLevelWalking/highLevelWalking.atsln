@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Atmel Studio Solution File, Format Version 11.00
 Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "highLevelWalking", "highLevelWalking\highLevelWalking.cproj", "{5AC55127-5DFF-4E0A-A0C3-3AF894D9172A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B850B81D-55E7-4B36-BC28-D225D1BBD591}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AVR = Debug|AVR
