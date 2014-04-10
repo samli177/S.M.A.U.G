@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "twi.h"
+#include "usart.h"
 
 //Global variables for TWI
 bool instruction;
@@ -21,6 +22,7 @@ int my_adress;
 
 int main(void)
 {
+	USART_init();
 	sei();
 	my_adress = ST_ADRESS;
 	init_TWI(my_adress);
@@ -34,6 +36,8 @@ int main(void)
 		//send_string(0x40, "I AM DEAD!");
 		PORTA &= ~(1<<PORTA0);
 		_delay_ms(1000);
+		USART_SendCommand();
+		
     }
 }
 

@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include "fifo.h"
 #include "usart.h"
+#include "twi.h"
 
 
 // -- USART Stuff --
@@ -175,15 +176,26 @@ void USART_SendSensors()
 {
 	for(int i = 0; i < 7; i++)
 	{
-		//gTxPayload[i] = get_sensor(i);
+		gTxPayload[i] = get_sensor(i);
 	}
 	
 	//UL sensor
 	
 	gTxPayload[7] = 254;
-	//gTxPayload[8] = get_servo();
+	gTxPayload[8] = get_servo();
 	
 	USART_SendPacket('S', 9);
+}
+
+void USART_SendCommand()
+{
+	for(int i = 0; i < 3; i++)
+	{
+		gTxPayload[i] = get_command(i);
+	}
+	
+	USART_SendPacket('C', 3);
+	
 }
 
 uint8_t USART_DecodeMessageRxFIFO()
@@ -194,31 +206,31 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		//send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: LEN MISSING");
+		send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
 	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
 	
 	//NOTE: there has to be a better way of doing this...
-	//int ifzero = 0;
-	//if(length == 0) ifzero = 1;
-	//uint8_t msg[length-1+ifzero];
+	int ifzero = 0;
+	if(length == 0) ifzero = 1;
+	uint8_t msg[length-1+ifzero];
 
 	for(int i = 0; i < length; ++i)
 	{
 		if(FifoRead(gRxFIFO, character))
 		{
-			//send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: DATA MISSING");
+			send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: DATA MISSING");
 			return 1; // error
 		}
 
-		//msg[i] = *character;
+		msg[i] = *character;
 	}
 	
 	
 	// TODO: send to relevant party... the display for now
-	//send_string_fixed_length(S_ADRESS, msg, length);
+	send_string_fixed_length(S_ADRESS, msg, length);
 	
 	return 0;
 }
@@ -230,7 +242,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		//send_string(S_ADRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		send_string(S_ADRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -242,14 +254,14 @@ uint8_t USART_DecodeCommandRxFIFO()
 		
 			if(FifoRead(gRxFIFO, data))
 			{
-				//send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
 				return 1; // error
 			}
 			direction = *data;
 			
 			if(FifoRead(gRxFIFO, data))
 			{
-				//send_string(S_ADRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
 				return 1; // error
 			}
 			
@@ -257,18 +269,17 @@ uint8_t USART_DecodeCommandRxFIFO()
 			
 			if(FifoRead(gRxFIFO, data))
 			{
-				//send_string(S_ADRESS, "RxFIFO COMMAND ERROR: SPEED MISSING");
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: SPEED MISSING");
 				return 1; // error
 			}
 			
 			speed = *data;
 		
-		//send_command(direction, rotation, speed);
-		PORTD ^= (1<<PORTD5);
+		send_command(direction, rotation, speed);
 
 	}else
 	{
-		//send_string(S_ADRESS, "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
+		send_string(S_ADRESS, "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
 		return 1;
 	}
 
@@ -342,7 +353,7 @@ ISR (USART0_RX_vect)
 			{
 				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
 				{
-					//send_string(S_ADRESS,"U_FIFO-full");
+					send_string(S_ADRESS,"U_FIFO-full");
 				}
 			}
 		}

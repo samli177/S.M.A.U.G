@@ -96,6 +96,8 @@ int main(void)
 	
     while(1)
     {
+		USART_init();
+		USART_DecodeRxFIFO();
         //TODO:: Please write your application code 
     }
 }
