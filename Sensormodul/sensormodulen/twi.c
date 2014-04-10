@@ -45,13 +45,13 @@ void init_TWI(int module_adress)
 			PORTC = 0x03; // Pull up, only 1!
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
-			TWBR = 0b00011011; //bit rate 27 => clk = 79.448 kHz
+			TWBR = 0b00111111; //bit rate 27 => clk = 79.448 kHz
 			TWAR = (1<<TWA6) | (1<<TWGCE); // Address 100 0000, General Call Accepted
 			break;
 		}
 		case(S_ADRESS):
 		{
-			TWBR = 0b00010111; //bit rate 23 => clk = 80.0 kHz
+			TWBR = 0b00111111; //bit rate 23 => clk = 80.0 kHz
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
 			TWAR = (1<<TWA5); // Address 010 0000, General Call Not Accepted
@@ -59,7 +59,7 @@ void init_TWI(int module_adress)
 		}
 		case(ST_ADRESS):
 		{
-			TWBR = 0b00010111; //bit rate 23 => clk = 80.0 kHz
+			TWBR = 0b00111111; //bit rate 23 => clk = 80.0 kHz
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
 			TWAR = (1<<TWA4) | (1<<TWGCE); // Address 001 0000, General Call Accepted
@@ -97,7 +97,7 @@ void start_bus()
 
 void stop_bus()
 {
-	TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEA) | (1<<TWEN) | (1<<TWIE);
+	TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEN) | (1<<TWEA) | (1<<TWIE);
 }
 
 void set_data(uint8_t b)
@@ -282,8 +282,6 @@ bool send_command(int direction, int rot_elev, int speed)
 
 bool send_sensors(int sens[7], int serv)
 {
-	print_text(", ");
-	print_char('1');
 	start_bus();
 	wait_for_bus();
 	if(CONTROL != START)
@@ -291,7 +289,6 @@ bool send_sensors(int sens[7], int serv)
 		Error();
 		return false;
 	}
-	print_char('2');
 	set_data(G_ADRESS); //General Call, NO instruction byte, NO NACK control of data
 	send_bus();
 	wait_for_bus();
@@ -300,14 +297,12 @@ bool send_sensors(int sens[7], int serv)
 		Error();
 		return false;
 	}
-	print_char('3');
 	for(int i=0; i < 7; ++i) //7 Sensors?
 	{
 		set_data((uint8_t)sens[i]);
 		send_bus();
 		wait_for_bus();
 	}
-	print_char('4');
 	set_data(serv);
 	send_bus();
 	wait_for_bus();

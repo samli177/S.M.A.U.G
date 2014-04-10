@@ -24,6 +24,8 @@ void adc_start();
 void init_mux();
 void select_sensor(int sensor);
 void init_tables();
+unsigned int UL_sensor();
+void init_UL();
 int voltage_to_cm(float voltage);
 
 // -- Global variables --
@@ -37,6 +39,8 @@ int my_adress;
 bool instruction;
 int current_instruction;
 
+int UL;
+
 int main(void)
 {
 	init_display();
@@ -44,7 +48,7 @@ int main(void)
 	my_adress = S_ADRESS;
 	init_TWI(my_adress);
 	
-	init_mux();
+	
 	
 	adc_init();
 	init_tables();
@@ -55,26 +59,33 @@ int main(void)
 	
 	print_text("Testing ADC");
 	_delay_ms(1000);
+	init_mux();
+	init_UL();
 	while(1)
 	{
-		for(int i = 0; i < 7; ++i)
-		{
-			select_sensor(4);
-			_delay_ms(100);
-			adc_start();
-			_delay_ms(100); // Note: figure out lowest value that works
-		}
-
-		_delay_ms(2000);
-		send_sensors(gSensorBuffer, 0);
+		/*UL_sensor();
+		_delay_ms(3000);
 		clear_display();
-		print_text("Sensors sent");
+		print_value(UL);*/
+		/*for(int i = 0; i < 8; ++i)
+		{
+			select_sensor(i);
+			adc_start();
+			_delay_ms(10);
+		}*/
+		
+		//send_sensors(gSensorBuffer, 0);
+		
+		//clear_display();
+		//print_text("Sensors sent");
 		/*for(int i = 0; i < 8; ++i)
 		{
 			print_value(gSensorBuffer[i]);
 			print_text(", ");
 			
 		}*/
+		send_settings(5);
+		_delay_ms(680);
 	}
 	
 	//displaytest();
@@ -127,6 +138,7 @@ void init_tables()
 	
 	IR_short[12][0] = 0.41;
 	IR_short[12][1] = 80;
+	
 }
 
 int voltage_to_mm(float voltage)
@@ -171,15 +183,18 @@ ISR(ADC_vect)
 void init_mux()
 {
 	DDRA |= 0b00111110;
-	DDRA &= !(1<<PORTA0);
-	PORTA &= !(1<<PORTA5);
-	PORTA &= 0b11100001;
+	DDRA &= ~(1<<PORTA0);
+	PORTA &= ~(1<<PORTA5);
+	//PORTA &= 0b11100001;
 }
 
 void init_UL()
 {
+	DDRD |= 1;
+	PCICR = 1;
+	PCMSK0 = (1<<PCINT6);
 	DDRA |= (1<<PORTA7);
-	DDRA &= !(1<<PORTA6);
+	DDRA &= ~(1<<PORTA6);
 	TCCR0B = 0x05;
 }
 
@@ -188,7 +203,7 @@ void adc_init()
 	// ADC enabled, enable interupt, set division factor for clock to be 128
 	ADCSRA = (1<<ADEN | 1<<ADIE | 1<<ADPS2 | 1<<ADPS1 | 1<<ADPS0);
 	// Disable auto trigger
-	// ADCSRA &= !(1<<ADATE);
+	// ADCSRA &= ~(1<<ADATE);
 	
 	// Left adjust, set voltage reference selection
 	ADMUX = 1<<ADLAR | 1<<REFS0;
@@ -214,7 +229,7 @@ void adc_start()
 void select_sensor(int sensor)
 {
 	gSelectedSensor = sensor;
-	PORTA &= 0b11100001;
+	PORTA &= ~((1<<PORTA1) | (1<<PORTA2) | (1<<PORTA3) | (1<<PORTA4));
 	switch(sensor)
 	{
 		case(0):
@@ -251,15 +266,37 @@ void select_sensor(int sensor)
 
 unsigned int UL_sensor()
 {
-	unsigned int i;
+	//unsigned int i;
+	TCNT0 = 0;
 	PORTA |= (1<<PORTA7);
 	_delay_us(15);
-	PORTA &= !(1<<PORTA7);
-	//while(!(PORTA & (1<<PORTA6)));
-	TCNT0 = 0;
-	while((PORTA & (1<<PORTA6)));
-	i = TCNT0;
-	return i;
+	PORTA &= ~(1<<PORTA7);
+	
+	/*TCNT0 = 0;
+	if(PORTA & (1<<PORTA6))
+		while((PORTA & (1<<PORTA6)));
+	else
+	{
+		while(!(PORTA & (1<<PORTA6)));
+		while((PORTA & (1<<PORTA6)));
+	}
+	i = TCNT0;*/
+	return 1;
+}
+
+ISR(PCINT0_vect)
+{
+	cli();
+	if(PINA & (1<<PINA6))
+	{
+		TCNT0 = 0;
+	}
+	else
+	{
+		UL = TCNT0;
+		//UL = (UL * 340 / (2 * 15625));
+	}
+	sei();
 }
 
 void displaytest(void)
@@ -305,16 +342,14 @@ ISR(TWI_vect)
 		{
 			case(I_SWEEP):
 			{
-				// TODO: change to get_sweep_from_bus() or implement get_sweep()...
-				print_value(get_sweep());
+				//print_value(get_sweep());
 				break;
 			}
 			case(I_STRING):
 			{
-				clear_display();
+				
 				for(int i = 0; i < get_message_length(); ++i)
 				{
-					// TODO: change to get_char_from_bus() or implement get_char()...
 					print_char(get_char(i));
 				}
 				

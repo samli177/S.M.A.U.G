@@ -36,6 +36,7 @@ int my_adress;
 
 void init_TWI(int module_adress)
 {
+	DDRB |= (1<<PORTB0);
 	my_adress = module_adress;
 	switch(module_adress)
 	{
@@ -44,13 +45,13 @@ void init_TWI(int module_adress)
 			PORTC = 0x03; // Pull up, only 1!
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
-			TWBR = 0b00011011; //bit rate 27 => clk = 79.448 kHz
+			TWBR = 0b00111111; //bit rate 27 => clk = 79.448 kHz
 			TWAR = (1<<TWA6) | (1<<TWGCE); // Address 100 0000, General Call Accepted
 			break;
 		}
 		case(S_ADRESS):
 		{
-			TWBR = 0b00010111; //bit rate 23 => clk = 80.0 kHz
+			TWBR = 0b00111111; //bit rate 23 => clk = 80.0 kHz
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
 			TWAR = (1<<TWA5); // Address 010 0000, General Call Not Accepted
@@ -58,7 +59,7 @@ void init_TWI(int module_adress)
 		}
 		case(ST_ADRESS):
 		{
-			TWBR = 0b00010111; //bit rate 23 => clk = 80.0 kHz
+			TWBR = 0b00111111; //bit rate 23 => clk = 80.0 kHz
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
 			TWAR = (1<<TWA4) | (1<<TWGCE); // Address 001 0000, General Call Accepted
@@ -96,7 +97,7 @@ void start_bus()
 
 void stop_bus()
 {
-	TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEA) | (1<<TWEN) | (1<<TWIE);
+	TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEN) | (1<<TWEA) | (1<<TWIE);
 }
 
 void set_data(int b)

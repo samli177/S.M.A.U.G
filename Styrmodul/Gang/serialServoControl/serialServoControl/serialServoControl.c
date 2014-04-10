@@ -160,19 +160,19 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 	sendServoPacket(ID, INST_WRITE, 5);	
 }
 
-#define coxa 56;
-#define femur 66;
-#define tibia 131;
-#define femurAngleAddition 0.2426;
-#define tibiaAngleAddition 3.1415/4;/*
-#define centerToFrontLegsX 120;
-#define centerToSideLegs 100;
-#define centerToFrontLegs 135;
-#define centerToFrontLegsY = 61.85;
-#define sinAngleToFrontLegs = centerToFrontLegsY / centerToFrontLegs;
-#define cosAngleToFrontLegs = centerToFrontLegsX / centerToFrontLegs;*/
+#define coxa 56
+#define femur 66
+#define tibia 131
+#define femurAngleAddition 0.2426
+#define tibiaAngleAddition 3.1415/4
+#define centerToFrontLegsX 120
+#define centerToSideLegs 100
+#define centerToFrontLegs 135
+#define centerToFrontLegsY 61.85
+double sinAngleToFrontLegs = centerToFrontLegsY / centerToFrontLegs;
+double cosAngleToFrontLegs = centerToFrontLegsX / centerToFrontLegs;
 
-/*void LegOneGoto(int x,int y,int z, int servospeed)
+void LegOneGoto(int x,int y,int z, int servospeed)
 {
 	double alpha;
 	double beta;
@@ -185,16 +185,16 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 	alpha = acos((femur*femur-tibia*tibia+d*d)/(2*femur*d))-asin(z/d);
 	
 	servoGoto(8, gamma, servospeed);
-	servoGoto(10,alpha + femurAngleAddition,servospeed);
+	servoGoto(10, alpha + femurAngleAddition,servospeed);
 	servoGoto(12, -beta + tibiaAngleAddition,servospeed);
-}*/
-/*
+}
+
 void LegOneGotoHelp(int x, int y, int z, int servospeed) //Help function to describe position of leg in standard base x,y,z
 {
-	int a= -sinAngleToFrontLegs*x + cosAngleToFrontLegs*y - centerToFrontLegsX;
-	int b= cosAngleToFrontLegs*x + sinAngleToFrontLegs*y - centerToFrontLegsY;
+	int a = -(x - centerToFrontLegsX)*sin(-3*3.1415/4)+(y+centerToFrontLegsY)*cos(-3*3.1415/4);
+	int b = (x - centerToFrontLegsX)*cos(-3*3.1415/4)+(y+centerToFrontLegsY)*sin(-3*3.1415/4);
 	LegOneGoto(a, b, z, servospeed);
-}*/
+}
 
 
 int main(void)
@@ -260,11 +260,11 @@ int main(void)
 	
 	_delay_ms(5000);
 	
-	//LegOneGotoHelp(250, 200, 50, 50);
+	LegOneGotoHelp(300, -70, 50, 50);
 	
 	_delay_ms(2500);
 	
-	//LegOneGotoHelp(250, 150, 100, 50);
+	LegOneGotoHelp(120, -250, 50, 50);
 	
 	
 	
