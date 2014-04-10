@@ -45,7 +45,6 @@
 #define I_SETTINGS 1
 #define I_SWEEP 2
 #define I_STATUS 3
-#define I_ELEVATION 4;
 #define I_STRING 25
 
 //Module Adresses
@@ -61,11 +60,13 @@ void Error();
 void start_bus();
 void stop_bus();
 void clear_int();
+void set_data(int b);
 int get_data();
-void send_data_and_wait(uint8_t data);
-bool send_status(uint8_t status);
-bool send_settings(uint8_t set);
-bool send_command(uint8_t direction, uint8_t rot_elev, uint8_t speed);
+void send_bus();
+void wait_for_bus();
+bool send_status(int);
+bool send_settings(int adr, int set);
+bool send_command(int direction, int rot_elev, int speed);
 bool send_sensors(int sens[7], int serv);
 bool send_sweep(int pos);
 bool send_string(int adr, char str[]);

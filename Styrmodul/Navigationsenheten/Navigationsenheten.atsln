@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "Navigationsenheten", "Navigationsenheten\Navigationsenheten.cproj", "{508410F8-2E00-4D39-9D6C-BB328B8F85BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{508410F8-2E00-4D39-9D6C-BB328B8F85BB}.Debug|AVR.ActiveCfg = Debug|AVR
+		{508410F8-2E00-4D39-9D6C-BB328B8F85BB}.Debug|AVR.Build.0 = Debug|AVR
+		{508410F8-2E00-4D39-9D6C-BB328B8F85BB}.Release|AVR.ActiveCfg = Release|AVR
+		{508410F8-2E00-4D39-9D6C-BB328B8F85BB}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -44,13 +44,13 @@ void init_TWI(int module_adress)
 			PORTC = 0x03; // Pull up, only 1!
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
-			TWBR = 0b00011011; //bit rate 27 => clk = 79.448 kHz
+			TWBR = 0b00111111; //bit rate
 			TWAR = (1<<TWA6) | (1<<TWGCE); // Address 100 0000, General Call Accepted
 			break;
 		}
 		case(S_ADRESS):
 		{
-			TWBR = 0b00010111; //bit rate 23 => clk = 80.0 kHz
+			TWBR = 0b00111111; //bit rate
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
 			TWAR = (1<<TWA5); // Address 010 0000, General Call Not Accepted
@@ -58,7 +58,7 @@ void init_TWI(int module_adress)
 		}
 		case(ST_ADRESS):
 		{
-			TWBR = 0b00010111; //bit rate 23 => clk = 80.0 kHz
+			TWBR = 0b00111111; //bit rate
 			set_twi_reciever_enable();
 			//TWSR = (0<<TWPS0) | (0<<TWPS1); //Prescaler 0 0 -> 1
 			TWAR = (1<<TWA4) | (1<<TWGCE); // Address 001 0000, General Call Accepted
@@ -96,7 +96,7 @@ void start_bus()
 
 void stop_bus()
 {
-	TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEA) | (1<<TWEN) | (1<<TWIE);
+	TWCR = (1<<TWINT) | (1<<TWSTO) | (1<<TWEN) | (1<<TWEA) | (1<<TWIE);
 }
 
 void set_data(int b)
@@ -109,33 +109,36 @@ int get_data()
 	return TWDR;
 }
 
-void send_bus_and_wait()
+void send_bus()
 {
 	TWCR = (1<<TWINT) | (1<<TWEN);
-	while (!(TWCR & (1<<TWINT)));
 }
 
+void wait_for_bus()
+{
+	while (!(TWCR & (1<<TWINT)));
+}
 
 bool send_status(int adr)
 {
 	start_bus();
-	
+	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
 	set_data(adr);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(I_STATUS);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL == ARBITRATION)
 	{
 		return true;
@@ -149,34 +152,34 @@ bool send_status(int adr)
 	return true;
 }
 
-bool send_settings(int set)
+bool send_settings(int adr, int set)
 {
 	start_bus();
-	
+	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
-	set_data(C_ADRESS);
-	send_bus_and_wait();
-	
+	set_data(adr);
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(I_SETTINGS);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(set);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -189,27 +192,31 @@ bool send_settings(int set)
 bool send_sweep(int pos)
 {
 	start_bus();
+	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
 	set_data(S_ADRESS);
-	send_bus_and_wait();
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(I_SWEEP);
-	send_bus_and_wait();
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(pos);
-	send_bus_and_wait();
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -219,84 +226,50 @@ bool send_sweep(int pos)
 	return true;
 }
 
-bool send_command(int direction, int rotation, int speed)
+bool send_command(int direction, int rot_elev, int speed)
 {
 	start_bus();
+	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
 	set_data(ST_ADRESS);
-	send_bus_and_wait();
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(I_COMMAND);
-	send_bus_and_wait();
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(direction);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(rot_elev);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(speed);
-	send_bus_and_wait();
-	
-	if(CONTROL != DATA_W)
-	{
-		Error();
-		return false;
-	}
-	stop_bus();
-	return true;
-}
-
-bool send_elevation(int elevation)
-{
-	start_bus();
-	
-	if(CONTROL != START)
-	{
-		Error();
-		return false;
-	}
-	set_data(ST_ADRESS);
-	send_bus_and_wait();
-	
-	if(CONTROL != ADRESS_W)
-	{
-		Error();
-		return false;
-	}
-	set_data(I_ELEVATION);
-	send_bus_and_wait();
-	
-	if(CONTROL != DATA_W)
-	{
-		Error();
-		return false;
-	}
-	set_data(elevation);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -309,15 +282,15 @@ bool send_elevation(int elevation)
 bool send_sensors(int sens[7], int serv)
 {
 	start_bus();
-	
+	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
 	set_data(G_ADRESS); //General Call, NO instruction byte, NO NACK control of data
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
@@ -325,13 +298,13 @@ bool send_sensors(int sens[7], int serv)
 	}
 	for(int i=0; i < 7; ++i) //7 Sensors?
 	{
-		set_data(sens[i]);
-		send_bus_and_wait();
-		
+		set_data((uint8_t)sens[i]);
+		send_bus();
+		wait_for_bus();
 	}
 	set_data(serv);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	stop_bus();
 	return true;
 }
@@ -339,23 +312,23 @@ bool send_sensors(int sens[7], int serv)
 bool send_string(int adr, char str[])
 {
 	start_bus();
-	
+	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
 	set_data(adr);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(I_STRING);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -364,8 +337,8 @@ bool send_string(int adr, char str[])
 	for(int i = 0; i < strlen(str); ++i)
 	{
 		set_data(str[i]);
-		send_bus_and_wait();
-		
+		send_bus();
+		wait_for_bus();
 	}
 	stop_bus();
 	return true;
@@ -374,23 +347,23 @@ bool send_string(int adr, char str[])
 bool send_string_fixed_length(int adr, uint8_t str[], int length)
 {
 	start_bus();
-	
+	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
 	set_data(adr);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(I_STRING);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -399,8 +372,8 @@ bool send_string_fixed_length(int adr, uint8_t str[], int length)
 	for(int i = 0; i < length; ++i)
 	{
 		set_data(str[i]);
-		send_bus_and_wait();
-		
+		send_bus();
+		wait_for_bus();
 	}
 	stop_bus();
 	return true;
@@ -409,31 +382,31 @@ bool send_string_fixed_length(int adr, uint8_t str[], int length)
 bool send_something(int adr, int instruction, int packet)
 {
 	start_bus();
-	
+	wait_for_bus();
 	if(CONTROL != START)
 	{
 		Error();
 		return false;
 	}
 	set_data(adr);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != ADRESS_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(instruction);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
 		return false;
 	}
 	set_data(packet);
-	send_bus_and_wait();
-	
+	send_bus();
+	wait_for_bus();
 	if(CONTROL != DATA_W)
 	{
 		Error();
@@ -532,142 +505,164 @@ void reset_TWI()
 	TWCR |= (1<<TWINT) | (1<<TWEA);
 }
 
-
-//TWI Interrupt vector MUHAHAHAHA
+/*
+//TWI Interrupt vector to exist in respective module
 // ----------------------------------------------------------------------------- Communications
 ISR(TWI_vect)
 {
-	switch(my_adress)
+	
+	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 	{
-		case(C_ADRESS):
+		instruction = true;
+		
+	}
+	else if(CONTROL == DATA_SLAW)
+	{
+		if(instruction)
 		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-			{
-				instruction = true;
-				
-			}
-			else if(CONTROL == DATA_SLAW)
-			{
-				if(instruction)
-				{
-					current_instruction = get_data();
-					instruction = false;
-				}
-				else
-				{
-					switch(current_instruction)
-					{
-						case(I_SETTINGS):
-						{
-							get_settings_from_bus();
-							break;
-						}
-						case(I_STRING):
-						{
-							get_char_from_bus();
-							break;
-						}
-					}
-				}
-			}
-			else if (CONTROL == DATA_GENERAL)
-			{
-				get_sensor_from_bus();
-			}
-			else if (CONTROL == STOP)
-			{
-				stop_twi();
-			}
-			reset_TWI();
-			break;
+			current_instruction = get_data();
+			instruction = false;
 		}
-		// ----------------------------------------------------------------------------- Sensors
-		case(S_ADRESS):
+		else
 		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+			switch(current_instruction)
 			{
-				instruction = true;
-			}
-			else if(CONTROL == DATA_SLAW)
-			{
-				if(instruction)
+				case(I_SETTINGS):
 				{
-					current_instruction = get_data();
-					instruction = false;
+					get_settings_from_bus();
+					break;
 				}
-				else
+				case(I_STRING):
 				{
-					switch(current_instruction)
-					{
-						case(I_SWEEP):
-						{
-							get_sweep_from_bus();
-							break;
-						}
-						case(I_STRING):
-						{
-							get_char_from_bus();
-							break;
-						}
-					}
+					get_char_from_bus();
+					break;
 				}
 			}
-			else if (CONTROL == STOP)
-			{
-				stop_twi();
-				switch(current_instruction)
-				{
-					case(I_STRING):
-					{
-						get_char_from_bus();
-						break;
-					}
-				}
-			}
-			reset_TWI();
-			break;
-		}
-		// ----------------------------------------------------------------------------- Steer
-		case(ST_ADRESS):
-		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-			{
-				instruction = true;
-			}
-			else if(CONTROL == DATA_SLAW)
-			{
-				if(instruction)
-				{
-					current_instruction = get_data();
-					instruction = false;
-				}
-				else
-				{
-					switch(current_instruction)
-					{
-						case(I_COMMAND):
-						{
-							get_command_from_bus();
-							break;
-						}
-						case(I_STRING):
-						{
-							get_char_from_bus();
-							break;
-						}
-					}
-				}
-			}
-			else if (CONTROL == DATA_GENERAL)
-			{
-				get_sensor_from_bus();
-			}
-			else if (CONTROL == STOP)
-			{
-				stop_twi();
-			}
-			reset_TWI();
-			break;
 		}
 	}
+	else if (CONTROL == DATA_GENERAL)
+	{
+		get_sensor_from_bus();
+	}
+	else if (CONTROL == STOP)
+	{
+		switch(current_instruction)
+		{
+			case(I_SETTINGS):
+			{
+				get_settings();
+				break;
+			}
+			case(I_STRING):
+			{
+				//get_char(1);
+				break;
+			}
+		}
+	}
+	reset_TWI();
 }
+// ----------------------------------------------------------------------------- Sensors
+ISR(TWI_vect)
+{
+	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+	{
+		instruction = true;
+	}
+	else if(CONTROL == DATA_SLAW)
+	{
+		if(instruction)
+		{
+			current_instruction = get_data();
+			instruction = false;
+		}
+		else
+		{
+			switch(current_instruction)
+			{
+				case(I_SWEEP):
+				{
+					get_sweep_from_bus();
+					break;
+				}
+				case(I_STRING):
+				{
+					get_char_from_bus();
+					break;
+				}
+			}
+		}
+	}
+	else if (CONTROL == STOP)
+	{
+		switch(current_instruction)
+		{
+			case(I_SWEEP):
+			{
+				get_sweep();
+				break;
+			}
+			case(I_STRING):
+			{
+				//get_char(i);
+				break;
+			}
+		}
+	}
+	reset_TWI();
+}
+// ----------------------------------------------------------------------------- Steer
+ISR(TWI_vect)
+{
+	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+	{
+		instruction = true;
+	}
+	else if(CONTROL == DATA_SLAW)
+	{
+		if(instruction)
+		{
+			current_instruction = get_data();
+			instruction = false;
+		}
+		else
+		{
+			switch(current_instruction)
+			{
+				case(I_COMMAND):
+				{
+					get_command_from_bus();
+					break;
+				}
+				case(I_STRING):
+				{
+					get_char_from_bus();
+					break;
+				}
+			}
+		}
+	}
+	else if (CONTROL == DATA_GENERAL)
+	{
+		get_sensor_from_bus();
+	}
+	else if (CONTROL == STOP)
+	{
+		switch(current_instruction)
+		{
+			case(I_COMMAND):
+			{
+				//get_command(1);
+				break;
+			}
+			case(I_STRING):
+			{
+				//get_char(1);
+				break;
+			}
+		}
+	}
+	reset_TWI();
+}
+
+*/
