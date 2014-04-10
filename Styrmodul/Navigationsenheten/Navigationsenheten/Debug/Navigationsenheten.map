@@ -3,41 +3,89 @@ Archive member included because of file (symbol)
 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
                               c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o (exit)
 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_copy_data.o)
-                              highLevelWalking.o (__do_copy_data)
+                              usart.o (__do_copy_data)
 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_clear_bss.o)
-                              highLevelWalking.o (__do_clear_bss)
+                              Navigationsenheten.o (__do_clear_bss)
+
+Allocating common symbols
+Common symbol       size              file
+
+gRxBuffer           0x205             usart.o
+message_length      0x2               twi.o
+settings            0x2               twi.o
+current_instruction
+                    0x2               Navigationsenheten.o
+command             0x6               twi.o
+message             0xff              twi.o
+instruction         0x1               Navigationsenheten.o
+current_command     0x2               twi.o
+buffer              0xe               twi.o
+message_counter     0x2               twi.o
+servo               0x2               twi.o
+my_adress           0x2               Navigationsenheten.o
+gTxPayload          0xff              usart.o
+sweep               0x2               twi.o
+gTxBuffer           0x205             usart.o
+sensor              0x2               twi.o
+sensors             0xe               twi.o
 
 Discarded input sections
 
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
- .text          0x00000000        0x0 highLevelWalking.o
- .bss           0x00000000        0x0 highLevelWalking.o
- .text.moveLeg1too
-                0x00000000        0x2 highLevelWalking.o
- .text.moveLeg2too
-                0x00000000        0x2 highLevelWalking.o
- .text.moveLeg3too
-                0x00000000        0x2 highLevelWalking.o
- .text.moveLeg4too
-                0x00000000        0x2 highLevelWalking.o
- .text.moveLeg5too
-                0x00000000        0x2 highLevelWalking.o
- .text.moveLeg6too
-                0x00000000        0x2 highLevelWalking.o
- .text.moveRobot
-                0x00000000       0x22 highLevelWalking.o
- .data.y0_6     0x00000000        0x2 highLevelWalking.o
- .data.x0_6     0x00000000        0x2 highLevelWalking.o
- .bss.y0_5      0x00000000        0x2 highLevelWalking.o
- .data.x0_5     0x00000000        0x2 highLevelWalking.o
- .data.y0_4     0x00000000        0x2 highLevelWalking.o
- .data.x0_4     0x00000000        0x2 highLevelWalking.o
- .data.y0_3     0x00000000        0x2 highLevelWalking.o
- .data.x0_3     0x00000000        0x2 highLevelWalking.o
- .bss.y0_2      0x00000000        0x2 highLevelWalking.o
- .data.x0_2     0x00000000        0x2 highLevelWalking.o
- .data.y0_1     0x00000000        0x2 highLevelWalking.o
- .data.x0_1     0x00000000        0x2 highLevelWalking.o
+ .text          0x00000000        0x0 fifo.o
+ .bss           0x00000000        0x0 fifo.o
+ .text.FifoRead
+                0x00000000       0x48 fifo.o
+ .text          0x00000000        0x0 Navigationsenheten.o
+ .bss           0x00000000        0x0 Navigationsenheten.o
+ .text          0x00000000        0x0 twi.o
+ .bss           0x00000000        0x0 twi.o
+ .text.send_status
+                0x00000000       0x7c twi.o
+ .text.send_settings
+                0x00000000       0x98 twi.o
+ .text.send_sweep
+                0x00000000       0x90 twi.o
+ .text.send_command
+                0x00000000       0xe4 twi.o
+ .text.send_sensors
+                0x00000000       0x96 twi.o
+ .text.send_string_fixed_length
+                0x00000000       0xaa twi.o
+ .text.send_something
+                0x00000000       0xa0 twi.o
+ .text.get_settings_from_bus
+                0x00000000        0xe twi.o
+ .text.get_settings
+                0x00000000        0xa twi.o
+ .text.get_message_length
+                0x00000000        0xa twi.o
+ .text.get_char
+                0x00000000        0xa twi.o
+ .text.get_sensor
+                0x00000000       0x10 twi.o
+ .text.get_servo
+                0x00000000        0xa twi.o
+ .text.get_sweep_from_bus
+                0x00000000        0xe twi.o
+ .text.get_sweep
+                0x00000000        0xa twi.o
+ .text          0x00000000        0x0 usart.o
+ .bss           0x00000000        0x0 usart.o
+ .text.USART_CheckRxComplete
+                0x00000000        0x8 usart.o
+ .text.USART_ReadByte
+                0x00000000        0x6 usart.o
+ .text.USART_SendMessage
+                0x00000000       0x44 usart.o
+ .text.USART_SendSensors
+                0x00000000       0x44 usart.o
+ .text.USART_DecodeMessageRxFIFO
+                0x00000000       0xf8 usart.o
+ .text.USART_DecodeCommandRxFIFO
+                0x00000000       0xd0 usart.o
+ .text.USART_DecodeRxFIFO
+                0x00000000       0x36 usart.o
  .text          0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
  .text.libgcc.mul
@@ -94,7 +142,10 @@ Linker script and memory map
 
 Address of section .data set to 0x800100
 LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
-LOAD highLevelWalking.o
+LOAD fifo.o
+LOAD Navigationsenheten.o
+LOAD twi.o
+LOAD usart.o
 START GROUP
 LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a
 END GROUP
@@ -192,7 +243,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000       0xce
+.text           0x00000000      0x78c
  *(.vectors)
  .vectors       0x00000000       0x8c c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
                 0x00000000                __vector_default
@@ -277,21 +328,102 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
                 0x000000c6                __vector_15
                 0x000000c6                __vector_29
                 0x000000c6                __vector_8
-                0x000000c6                __vector_26
                 0x000000c6                __vector_14
                 0x000000c6                __vector_10
                 0x000000c6                __vector_16
                 0x000000c6                __vector_18
-                0x000000c6                __vector_20
                 0x000000c8                . = ALIGN (0x2)
  *(.text.*)
- .text.main     0x000000c8        0x2 highLevelWalking.o
-                0x000000c8                main
-                0x000000ca                . = ALIGN (0x2)
+ .text.FifoDataLength
+                0x000000c8       0x10 fifo.o
+                0x000000c8                FifoDataLength
+ .text.FifoWrite
+                0x000000d8       0x40 fifo.o
+                0x000000d8                FifoWrite
+ .text.main     0x00000118       0x56 Navigationsenheten.o
+                0x00000118                main
+ .text.__vector_26
+                0x0000016e       0xd8 Navigationsenheten.o
+                0x0000016e                __vector_26
+ .text.set_twi_reciever_enable
+                0x00000246        0x8 twi.o
+                0x00000246                set_twi_reciever_enable
+ .text.init_TWI
+                0x0000024e       0x4e twi.o
+                0x0000024e                init_TWI
+ .text.clear_int
+                0x0000029c        0x8 twi.o
+                0x0000029c                clear_int
+ .text.start_bus
+                0x000002a4        0x8 twi.o
+                0x000002a4                start_bus
+ .text.stop_bus
+                0x000002ac        0x8 twi.o
+                0x000002ac                stop_bus
+ .text.Error    0x000002b4        0xe twi.o
+                0x000002b4                Error
+ .text.set_data
+                0x000002c2        0x6 twi.o
+                0x000002c2                set_data
+ .text.get_data
+                0x000002c8        0x8 twi.o
+                0x000002c8                get_data
+ .text.send_bus
+                0x000002d0        0x8 twi.o
+                0x000002d0                send_bus
+ .text.wait_for_bus
+                0x000002d8        0xc twi.o
+                0x000002d8                wait_for_bus
+ .text.send_string
+                0x000002e4       0x9c twi.o
+                0x000002e4                send_string
+ .text.get_char_from_bus
+                0x00000380       0x34 twi.o
+                0x00000380                get_char_from_bus
+ .text.get_command_from_bus
+                0x000003b4       0x32 twi.o
+                0x000003b4                get_command_from_bus
+ .text.get_command
+                0x000003e6       0x10 twi.o
+                0x000003e6                get_command
+ .text.get_sensor_from_bus
+                0x000003f6       0x5e twi.o
+                0x000003f6                get_sensor_from_bus
+ .text.stop_twi
+                0x00000454       0x1a twi.o
+                0x00000454                stop_twi
+ .text.reset_TWI
+                0x0000046e        0xc twi.o
+                0x0000046e                reset_TWI
+ .text.USART_init
+                0x0000047a       0x18 usart.o
+                0x0000047a                USART_init
+ .text.USART_CheckTxReady
+                0x00000492        0x8 usart.o
+                0x00000492                USART_CheckTxReady
+ .text.USART_WriteByte
+                0x0000049a       0x12 usart.o
+                0x0000049a                USART_WriteByte
+ .text.USART_crc16
+                0x000004ac       0xb2 usart.o
+                0x000004ac                USART_crc16
+ .text.USART_SendPacket
+                0x0000055e       0xc0 usart.o
+                0x0000055e                USART_SendPacket
+ .text.USART_SendCommand
+                0x0000061e       0x24 usart.o
+                0x0000061e                USART_SendCommand
+ .text.USART_Bounce
+                0x00000642       0x2c usart.o
+                0x00000642                USART_Bounce
+ .text.__vector_20
+                0x0000066e      0x11a usart.o
+                0x0000066e                __vector_20
+                0x00000788                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000000ca        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
-                0x000000ca                _exit
-                0x000000ca                exit
+ .fini9         0x00000788        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+                0x00000788                _exit
+                0x00000788                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -310,41 +442,78 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000000ca        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+ .fini0         0x00000788        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
  *(.fini0)
-                0x000000ce                _etext = .
+                0x0000078c                _etext = .
 
-.data           0x00800100        0x0 load address 0x000000ce
+.data           0x00800100     0x1116 load address 0x0000078c
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
- .data          0x00800100        0x0 highLevelWalking.o
+ .data          0x00800100        0x0 fifo.o
+ .data          0x00800100        0x0 Navigationsenheten.o
+ .data          0x00800100        0x0 twi.o
+ .data          0x00800100        0x0 usart.o
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_copy_data.o)
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_clear_bss.o)
  *(.data*)
+ .data.gRxFIFO  0x00800100        0x2 usart.o
+                0x00800100                gRxFIFO
+ .data._raw_gRxFIFO
+                0x00800102     0x1006 usart.o
+                0x00800102                _raw_gRxFIFO
  *(.rodata)
  *(.rodata*)
+ .rodata.str1.1
+                0x00801108      0x10d usart.o
  *(.gnu.linkonce.d*)
-                0x00800100                . = ALIGN (0x2)
-                0x00800100                _edata = .
-                0x00800100                PROVIDE (__data_end, .)
+                0x00801216                . = ALIGN (0x2)
+ *fill*         0x00801215        0x1 
+                0x00801216                _edata = .
+                0x00801216                PROVIDE (__data_end, .)
 
-.bss            0x00800100        0x0
-                0x00800100                PROVIDE (__bss_start, .)
+.bss            0x00801216      0x641
+                0x00801216                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
+ .bss.gInvertNextFlag
+                0x00801216        0x2 usart.o
+                0x00801216                gInvertNextFlag
+ .bss.gRxBufferIndex
+                0x00801218        0x2 usart.o
+                0x00801218                gRxBufferIndex
  *(COMMON)
-                0x00800100                PROVIDE (__bss_end, .)
-                0x000000ce                __data_load_start = LOADADDR (.data)
-                0x000000ce                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x0080121a        0x5 Navigationsenheten.o
+                0x0080121a                current_instruction
+                0x0080121c                instruction
+                0x0080121d                my_adress
+ COMMON         0x0080121f      0x12f twi.o
+                0x0080121f                message_length
+                0x00801221                settings
+                0x00801223                command
+                0x00801229                message
+                0x00801328                current_command
+                0x0080132a                buffer
+                0x00801338                message_counter
+                0x0080133a                servo
+                0x0080133c                sweep
+                0x0080133e                sensor
+                0x00801340                sensors
+ COMMON         0x0080134e      0x509 usart.o
+                0x0080134e                gRxBuffer
+                0x00801553                gTxPayload
+                0x00801652                gTxBuffer
+                0x00801857                PROVIDE (__bss_end, .)
+                0x0000078c                __data_load_start = LOADADDR (.data)
+                0x000018a2                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800100        0x0
-                0x00800100                PROVIDE (__noinit_start, .)
+.noinit         0x00801857        0x0
+                0x00801857                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00800100                PROVIDE (__noinit_end, .)
-                0x00800100                _end = .
-                0x00800100                PROVIDE (__heap_start, .)
+                0x00801857                PROVIDE (__noinit_end, .)
+                0x00801857                _end = .
+                0x00801857                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -387,8 +556,11 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 
 .comment        0x00000000       0x2f
  *(.comment)
- .comment       0x00000000       0x2f highLevelWalking.o
+ .comment       0x00000000       0x2f fifo.o
                                  0x30 (size before relaxing)
+ .comment       0x00000000       0x30 Navigationsenheten.o
+ .comment       0x00000000       0x30 twi.o
+ .comment       0x00000000       0x30 usart.o
 
 .debug
  *(.debug)
@@ -402,39 +574,66 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000       0x58
+.debug_aranges  0x00000000      0x200
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0x58 highLevelWalking.o
+                0x00000000       0x30 fifo.o
+ .debug_aranges
+                0x00000030       0x28 Navigationsenheten.o
+ .debug_aranges
+                0x00000058      0x118 twi.o
+ .debug_aranges
+                0x00000170       0x90 usart.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x4da
+.debug_info     0x00000000     0x1b1f
  *(.debug_info)
- .debug_info    0x00000000      0x4da highLevelWalking.o
+ .debug_info    0x00000000      0x1b1 fifo.o
+ .debug_info    0x000001b1      0x2f8 Navigationsenheten.o
+ .debug_info    0x000004a9      0xd14 twi.o
+ .debug_info    0x000011bd      0x962 usart.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0x107
+.debug_abbrev   0x00000000      0x713
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x107 highLevelWalking.o
+ .debug_abbrev  0x00000000       0xce fifo.o
+ .debug_abbrev  0x000000ce      0x16e Navigationsenheten.o
+ .debug_abbrev  0x0000023c      0x216 twi.o
+ .debug_abbrev  0x00000452      0x2c1 usart.o
 
-.debug_line     0x00000000       0xce
+.debug_line     0x00000000     0x12bb
  *(.debug_line)
- .debug_line    0x00000000       0xce highLevelWalking.o
+ .debug_line    0x00000000      0x14f fifo.o
+ .debug_line    0x0000014f      0x295 Navigationsenheten.o
+ .debug_line    0x000003e4      0x97b twi.o
+ .debug_line    0x00000d5f      0x55c usart.o
 
-.debug_frame    0x00000000       0x94
+.debug_frame    0x00000000      0x600
  *(.debug_frame)
- .debug_frame   0x00000000       0x94 highLevelWalking.o
+ .debug_frame   0x00000000       0x68 fifo.o
+ .debug_frame   0x00000068       0x7c Navigationsenheten.o
+ .debug_frame   0x000000e4      0x304 twi.o
+ .debug_frame   0x000003e8      0x218 usart.o
 
-.debug_str      0x00000000      0x1d7
+.debug_str      0x00000000      0x5b0
  *(.debug_str)
- .debug_str     0x00000000      0x1d7 highLevelWalking.o
-                                0x21e (size before relaxing)
+ .debug_str     0x00000000       0xfc fifo.o
+                                0x13a (size before relaxing)
+ .debug_str     0x000000fc      0x11f Navigationsenheten.o
+                                0x20d (size before relaxing)
+ .debug_str     0x0000021b      0x1ff twi.o
+                                0x361 (size before relaxing)
+ .debug_str     0x0000041a      0x196 usart.o
+                                0x34f (size before relaxing)
 
-.debug_loc      0x00000000       0x98
+.debug_loc      0x00000000     0x12e3
  *(.debug_loc)
- .debug_loc     0x00000000       0x98 highLevelWalking.o
+ .debug_loc     0x00000000      0x17b fifo.o
+ .debug_loc     0x0000017b       0xcb Navigationsenheten.o
+ .debug_loc     0x00000246      0x810 twi.o
+ .debug_loc     0x00000a56      0x88d usart.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -442,11 +641,14 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000       0x48
+.debug_ranges   0x00000000      0x1d8
  *(.debug_ranges)
- .debug_ranges  0x00000000       0x48 highLevelWalking.o
+ .debug_ranges  0x00000000       0x20 fifo.o
+ .debug_ranges  0x00000020       0x18 Navigationsenheten.o
+ .debug_ranges  0x00000038      0x120 twi.o
+ .debug_ranges  0x00000158       0x80 usart.o
 
 .debug_macro
  *(.debug_macro)
-OUTPUT(highLevelWalking.elf elf32-avr)
+OUTPUT(Navigationsenheten.elf elf32-avr)
 LOAD linker stubs

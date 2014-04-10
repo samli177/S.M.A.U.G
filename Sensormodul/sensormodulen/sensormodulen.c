@@ -65,10 +65,10 @@ int main(void)
 	init_UL();
 	while(1)
 	{
-		UL_sensor();
+		/*UL_sensor();
 		_delay_ms(3000);
 		clear_display();
-		print_value(UL);
+		print_value(UL);*/
 		/*for(int i = 0; i < 8; ++i)
 		{
 			select_sensor(i);
@@ -86,6 +86,8 @@ int main(void)
 			print_text(", ");
 			
 		}*/
+		send_settings(5);
+		_delay_ms(680);
 	}
 	
 	//displaytest();
@@ -316,17 +318,17 @@ unsigned int UL_sensor()
 
 ISR(PCINT0_vect)
 {
+	cli();
 	if(PINA & (1<<PINA6))
 	{
 		TCNT0 = 0;
-		PORTD |= (1<<PORTD0);
 	}
 	else
 	{
 		UL = TCNT0;
-		UL = (UL * 340 / (2 * 15625));
-		PORTD &= ~(1<<PORTD0);
+		//UL = (UL * 340 / (2 * 15625));
 	}
+	sei();
 }
 
 void displaytest(void)
@@ -372,8 +374,7 @@ ISR(TWI_vect)
 		{
 			case(I_SWEEP):
 			{
-				// TODO: change to get_sweep_from_bus() or implement get_sweep()...
-				print_value(get_sweep());
+				//print_value(get_sweep());
 				break;
 			}
 			case(I_STRING):

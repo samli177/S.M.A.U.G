@@ -5,9 +5,15 @@
  *  Author: jonha860
  */ 
 
+#define F_CPU 16000000 
 
 #include <avr/io.h>
 #include <math.h>
+#include <util/delay.h>
+#include "serialServoControl.h"
+#include "inverseKinematics.h"
+#include "usart.h"
+
 #define frontLegDistance 200
 #define centerToFrontLegsY 120
 #define centerToSideLegs 100
@@ -26,8 +32,6 @@ int y0_5 = 0; //standard y pos for leg 5
 int x0_6 = -2000; //standard x pos for leg 6
 int y0_6 = 2200; //standard y pos for leg 6
 
-void moveLeg1too(int x,int y,int z,int speed)
-{}
 	
 void moveLeg2too(int x,int y,int z,int speed)
 {}
@@ -54,9 +58,9 @@ void moveRobot(int direction,int distance, int rotation, int z, int servoSpeed, 
 	double sinaroundy = cos(rotationY);
 	
 	//First state-------------------
-	/*servoGoto(4, 3.1415/4, servoSpeed);
+	servoGoto(4, 3.1415/4, servoSpeed); //raise legs
 	servoGoto(10, 3.1415/4, servoSpeed);
-	servoGoto(15, -3.1415/4, servoSpeed);*/
+	servoGoto(15, -3.1415/4, servoSpeed);
 	_delay_ms(50);
 	moveLeg1too(x0_1*cosrotation-y0_1*sinrotation-sindirection*distance, y0_1*cosrotation-x0_1*sinrotation+cosdirection*distance, z+sinaroundy*centerToFrontLegsX+sinaroundx*centerToFrontLegsY, servoSpeed);
 	moveLeg3too(x0_3*cosrotation-y0_3*sinrotation-sindirection*distance, y0_3*cosrotation-x0_3*sinrotation+cosdirection*distance, z+sinaroundy*centerToFrontLegsX-sinaroundx*centerToFrontLegsY, servoSpeed);
@@ -64,9 +68,9 @@ void moveRobot(int direction,int distance, int rotation, int z, int servoSpeed, 
 	_delay_ms(1000);
 		
 	//Second state-------------------
-	/*servoGoto(3, -3.1415/4, servoSpeed);
+	servoGoto(3, -3.1415/4, servoSpeed); //raise legs
 	servoGoto(9, -3.1415/4, servoSpeed);
-	servoGoto(16, 3.1415/4, servoSpeed);*/
+	servoGoto(16, 3.1415/4, servoSpeed);
 	_delay_ms(50);
 	moveLeg2too(x0_2*cosrotation-y0_2*sinrotation-sindirection*distance, y0_2*cosrotation+x0_2*sinrotation+cosdirection*distance, z+centerToSideLegs*sinaroundy, servoSpeed);
 	moveLeg4too(x0_4*cosrotation-y0_4*sinrotation-sindirection*distance, y0_4*cosrotation-x0_4*sinrotation+cosdirection*distance, z-sinaroundy*centerToFrontLegsX-sinaroundx*centerToFrontLegsY, servoSpeed);
@@ -85,8 +89,15 @@ void moveRobot(int direction,int distance, int rotation, int z, int servoSpeed, 
 
 int main(void)
 {
+	DDRD |= (1<<PORTD5); //init LED
+	servoTx;
+	initServoSerial(); //Init servos
+	
+	
     while(1)
     {
+		USART_init();
+		USART_DecodeRxFIFO();
         //TODO:: Please write your application code 
     }
 }

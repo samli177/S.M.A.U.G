@@ -45,17 +45,17 @@ int main(void)
 	init_TWI(my_adress);
 	
 	sei();
-
-	
+	_delay_ms(500);
 	while(1)
 	{
 		PORTA ^= (1<<PORTA0);
 		
+		
 		USART_DecodeRxFIFO();
 		USART_SendSensors();
-				
-		_delay_ms(1000);
 		
+		_delay_ms(1000);
+		send_status(S_ADRESS);
 	}
 }
 
@@ -116,11 +116,12 @@ ISR(TWI_vect)
 	}
 	else if (CONTROL == STOP)
 	{
+		PORTA ^= (1<<PORTA1);
 		switch(current_instruction)
 		{
 			case(I_SETTINGS):
 			{
-				get_settings();
+				//get_settings();
 				break;
 			}
 			case(I_STRING):

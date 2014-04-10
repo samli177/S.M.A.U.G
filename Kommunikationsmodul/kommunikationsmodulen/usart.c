@@ -195,7 +195,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		send_string(S_ADRESS, "RxFIFO ERROR: LEN MISSING");
+		send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -210,7 +210,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	{
 		if(FifoRead(gRxFIFO, character))
 		{
-			send_string(S_ADRESS, "RxFIFO ERROR: DATA MISSING");
+			send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: DATA MISSING");
 			return 1; // error
 		}
 
@@ -224,11 +224,64 @@ uint8_t USART_DecodeMessageRxFIFO()
 	return 0;
 }
 
+uint8_t USART_DecodeCommandRxFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		send_string(S_ADRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	uint8_t direction, rotation, speed;
+	
+	if(length == 3)
+	{
+		
+			if(FifoRead(gRxFIFO, data))
+			{
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
+				return 1; // error
+			}
+			direction = *data;
+			
+			if(FifoRead(gRxFIFO, data))
+			{
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
+				return 1; // error
+			}
+			
+			rotation = *data;
+			
+			if(FifoRead(gRxFIFO, data))
+			{
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: SPEED MISSING");
+				return 1; // error
+			}
+			
+			speed = *data;
+		
+		send_command(direction, rotation, speed);
+
+	}else
+	{
+		send_string(S_ADRESS, "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
+		return 1;
+	}
+
+	return 0;
+	
+}
+
+
 void USART_DecodeRxFIFO()
 {
 	uint8_t *tag = 0;
 	
-	if(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
+	while(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
 	{
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
@@ -241,9 +294,19 @@ void USART_DecodeRxFIFO()
 				
 				break;
 			}
+			case('C'): // 
+			{
+				if(USART_DecodeCommandRxFIFO())
+				{
+					// TODO: flush buffet?
+					return;
+				}
+			}
 		}
 	}
 }
+
+
 
 void USART_Bounce()
 {
@@ -277,7 +340,10 @@ ISR (USART0_RX_vect)
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
 			{
-				FifoWrite(gRxFIFO, gRxBuffer[i]);
+				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
+				{
+					send_string(S_ADRESS,"U_FIFO-full");
+				}
 			}
 		}
 		
