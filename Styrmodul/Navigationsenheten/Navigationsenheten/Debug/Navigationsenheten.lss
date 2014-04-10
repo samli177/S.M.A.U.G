@@ -3,33 +3,33 @@ Navigationsenheten.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00000318  000003ac  2**0
+  0 .data         00000000  00800100  00000324  000003b8  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000318  00000000  00000000  00000094  2**1
+  1 .text         00000324  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000134  00800100  00800100  000003ac  2**0
+  2 .bss          00000134  00800100  00800100  000003b8  2**0
                   ALLOC
-  3 .stab         000006cc  00000000  00000000  000003ac  2**2
+  3 .stab         000006cc  00000000  00000000  000003b8  2**2
                   CONTENTS, READONLY, DEBUGGING
-  4 .stabstr      00000097  00000000  00000000  00000a78  2**0
+  4 .stabstr      00000097  00000000  00000000  00000a84  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .comment      0000002f  00000000  00000000  00000b0f  2**0
+  5 .comment      0000002f  00000000  00000000  00000b1b  2**0
                   CONTENTS, READONLY
-  6 .debug_aranges 00000140  00000000  00000000  00000b3e  2**0
+  6 .debug_aranges 00000140  00000000  00000000  00000b4a  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00000fd8  00000000  00000000  00000c7e  2**0
+  7 .debug_info   00000fd8  00000000  00000000  00000c8a  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00000382  00000000  00000000  00001c56  2**0
+  8 .debug_abbrev 00000382  00000000  00000000  00001c62  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00000bec  00000000  00000000  00001fd8  2**0
+  9 .debug_line   00000bf2  00000000  00000000  00001fe4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  00000380  00000000  00000000  00002bc4  2**2
+ 10 .debug_frame  00000380  00000000  00000000  00002bd8  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    000003bf  00000000  00000000  00002f44  2**0
+ 11 .debug_str    000003bf  00000000  00000000  00002f58  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    000008db  00000000  00000000  00003303  2**0
+ 12 .debug_loc    000008db  00000000  00000000  00003317  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000138  00000000  00000000  00003bde  2**0
+ 13 .debug_ranges 00000138  00000000  00000000  00003bf2  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -128,7 +128,7 @@ Disassembly of section .text:
   a4:	b2 07       	cpc	r27, r18
   a6:	e1 f7       	brne	.-8      	; 0xa0 <.do_clear_bss_loop>
   a8:	02 d0       	rcall	.+4      	; 0xae <main>
-  aa:	34 c1       	rjmp	.+616    	; 0x314 <_exit>
+  aa:	3a c1       	rjmp	.+628    	; 0x320 <_exit>
 
 000000ac <__bad_interrupt>:
   ac:	a9 cf       	rjmp	.-174    	; 0x0 <__vectors>
@@ -147,7 +147,7 @@ int main(void)
   b4:	90 93 04 01 	sts	0x0104, r25
   b8:	80 93 03 01 	sts	0x0103, r24
 	init_TWI(my_adress);
-  bc:	8b d0       	rcall	.+278    	; 0x1d4 <init_TWI>
+  bc:	91 d0       	rcall	.+290    	; 0x1e0 <init_TWI>
 	DDRA |= (1<<PORTA0 | 1<<PORTA1);
   be:	81 b1       	in	r24, 0x01	; 1
   c0:	83 60       	ori	r24, 0x03	; 3
@@ -225,264 +225,274 @@ ISR(TWI_vect)
  124:	ff 93       	push	r31
 	cli();
  126:	f8 94       	cli
-	PORTA ^= (1<<PORTA1);
- 128:	92 b1       	in	r25, 0x02	; 2
- 12a:	82 e0       	ldi	r24, 0x02	; 2
- 12c:	89 27       	eor	r24, r25
- 12e:	82 b9       	out	0x02, r24	; 2
+	
 	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
- 130:	80 91 b9 00 	lds	r24, 0x00B9
- 134:	88 7f       	andi	r24, 0xF8	; 248
- 136:	80 36       	cpi	r24, 0x60	; 96
- 138:	29 f0       	breq	.+10     	; 0x144 <__vector_26+0x44>
- 13a:	80 91 b9 00 	lds	r24, 0x00B9
- 13e:	88 7f       	andi	r24, 0xF8	; 248
- 140:	88 36       	cpi	r24, 0x68	; 104
- 142:	21 f4       	brne	.+8      	; 0x14c <__vector_26+0x4c>
+ 128:	80 91 b9 00 	lds	r24, 0x00B9
+ 12c:	88 7f       	andi	r24, 0xF8	; 248
+ 12e:	80 36       	cpi	r24, 0x60	; 96
+ 130:	29 f0       	breq	.+10     	; 0x13c <__vector_26+0x3c>
+ 132:	80 91 b9 00 	lds	r24, 0x00B9
+ 136:	88 7f       	andi	r24, 0xF8	; 248
+ 138:	88 36       	cpi	r24, 0x68	; 104
+ 13a:	21 f4       	brne	.+8      	; 0x144 <__vector_26+0x44>
 	{
 		instruction = true;
- 144:	81 e0       	ldi	r24, 0x01	; 1
- 146:	80 93 02 01 	sts	0x0102, r24
- 14a:	2b c0       	rjmp	.+86     	; 0x1a2 <__vector_26+0xa2>
+ 13c:	81 e0       	ldi	r24, 0x01	; 1
+ 13e:	80 93 02 01 	sts	0x0102, r24
+ 142:	35 c0       	rjmp	.+106    	; 0x1ae <__vector_26+0xae>
 	}
 	else if(CONTROL == DATA_SLAW)
- 14c:	80 91 b9 00 	lds	r24, 0x00B9
- 150:	88 7f       	andi	r24, 0xF8	; 248
- 152:	80 38       	cpi	r24, 0x80	; 128
- 154:	c9 f4       	brne	.+50     	; 0x188 <__vector_26+0x88>
+ 144:	80 91 b9 00 	lds	r24, 0x00B9
+ 148:	88 7f       	andi	r24, 0xF8	; 248
+ 14a:	80 38       	cpi	r24, 0x80	; 128
+ 14c:	c9 f4       	brne	.+50     	; 0x180 <__vector_26+0x80>
 	{
 		if(instruction)
- 156:	80 91 02 01 	lds	r24, 0x0102
- 15a:	88 23       	and	r24, r24
- 15c:	41 f0       	breq	.+16     	; 0x16e <__vector_26+0x6e>
+ 14e:	80 91 02 01 	lds	r24, 0x0102
+ 152:	88 23       	and	r24, r24
+ 154:	41 f0       	breq	.+16     	; 0x166 <__vector_26+0x66>
 		{
 			current_instruction = get_data();
- 15e:	61 d0       	rcall	.+194    	; 0x222 <get_data>
- 160:	90 93 01 01 	sts	0x0101, r25
- 164:	80 93 00 01 	sts	0x0100, r24
+ 156:	6b d0       	rcall	.+214    	; 0x22e <get_data>
+ 158:	90 93 01 01 	sts	0x0101, r25
+ 15c:	80 93 00 01 	sts	0x0100, r24
 			instruction = false;
- 168:	10 92 02 01 	sts	0x0102, r1
- 16c:	1a c0       	rjmp	.+52     	; 0x1a2 <__vector_26+0xa2>
+ 160:	10 92 02 01 	sts	0x0102, r1
+ 164:	24 c0       	rjmp	.+72     	; 0x1ae <__vector_26+0xae>
 		}
 		else
 		{
 			switch(current_instruction)
- 16e:	80 91 00 01 	lds	r24, 0x0100
- 172:	90 91 01 01 	lds	r25, 0x0101
- 176:	00 97       	sbiw	r24, 0x00	; 0
- 178:	19 f0       	breq	.+6      	; 0x180 <__vector_26+0x80>
- 17a:	49 97       	sbiw	r24, 0x19	; 25
- 17c:	91 f4       	brne	.+36     	; 0x1a2 <__vector_26+0xa2>
- 17e:	02 c0       	rjmp	.+4      	; 0x184 <__vector_26+0x84>
+ 166:	80 91 00 01 	lds	r24, 0x0100
+ 16a:	90 91 01 01 	lds	r25, 0x0101
+ 16e:	00 97       	sbiw	r24, 0x00	; 0
+ 170:	19 f0       	breq	.+6      	; 0x178 <__vector_26+0x78>
+ 172:	49 97       	sbiw	r24, 0x19	; 25
+ 174:	e1 f4       	brne	.+56     	; 0x1ae <__vector_26+0xae>
+ 176:	02 c0       	rjmp	.+4      	; 0x17c <__vector_26+0x7c>
 			{
 				case(I_COMMAND):
 				{
 					get_command_from_bus();
- 180:	6e d0       	rcall	.+220    	; 0x25e <get_command_from_bus>
+ 178:	78 d0       	rcall	.+240    	; 0x26a <get_command_from_bus>
 					break;
- 182:	0f c0       	rjmp	.+30     	; 0x1a2 <__vector_26+0xa2>
+ 17a:	19 c0       	rjmp	.+50     	; 0x1ae <__vector_26+0xae>
 				}
 				case(I_STRING):
 				{
 					get_char_from_bus();
- 184:	52 d0       	rcall	.+164    	; 0x22a <get_char_from_bus>
+ 17c:	5c d0       	rcall	.+184    	; 0x236 <get_char_from_bus>
 					break;
- 186:	0d c0       	rjmp	.+26     	; 0x1a2 <__vector_26+0xa2>
+ 17e:	17 c0       	rjmp	.+46     	; 0x1ae <__vector_26+0xae>
 				}
 			}
 		}
 	}
 	else if (CONTROL == DATA_GENERAL)
- 188:	80 91 b9 00 	lds	r24, 0x00B9
- 18c:	88 7f       	andi	r24, 0xF8	; 248
- 18e:	80 39       	cpi	r24, 0x90	; 144
- 190:	11 f4       	brne	.+4      	; 0x196 <__vector_26+0x96>
+ 180:	80 91 b9 00 	lds	r24, 0x00B9
+ 184:	88 7f       	andi	r24, 0xF8	; 248
+ 186:	80 39       	cpi	r24, 0x90	; 144
+ 188:	11 f4       	brne	.+4      	; 0x18e <__vector_26+0x8e>
 	{
 		get_sensor_from_bus();
- 192:	7e d0       	rcall	.+252    	; 0x290 <get_sensor_from_bus>
- 194:	06 c0       	rjmp	.+12     	; 0x1a2 <__vector_26+0xa2>
+ 18a:	88 d0       	rcall	.+272    	; 0x29c <get_sensor_from_bus>
+ 18c:	10 c0       	rjmp	.+32     	; 0x1ae <__vector_26+0xae>
 	}
 	else if (CONTROL == STOP)
- 196:	80 91 b9 00 	lds	r24, 0x00B9
- 19a:	88 7f       	andi	r24, 0xF8	; 248
- 19c:	80 3a       	cpi	r24, 0xA0	; 160
- 19e:	09 f4       	brne	.+2      	; 0x1a2 <__vector_26+0xa2>
+ 18e:	80 91 b9 00 	lds	r24, 0x00B9
+ 192:	88 7f       	andi	r24, 0xF8	; 248
+ 194:	80 3a       	cpi	r24, 0xA0	; 160
+ 196:	59 f4       	brne	.+22     	; 0x1ae <__vector_26+0xae>
+	{
+		switch(current_instruction)
+ 198:	80 91 00 01 	lds	r24, 0x0100
+ 19c:	90 91 01 01 	lds	r25, 0x0101
+ 1a0:	89 2b       	or	r24, r25
+ 1a2:	21 f4       	brne	.+8      	; 0x1ac <__vector_26+0xac>
+		{
+			case(I_COMMAND):
+			{
+				PORTA ^= (1<<PORTA1);
+ 1a4:	92 b1       	in	r25, 0x02	; 2
+ 1a6:	82 e0       	ldi	r24, 0x02	; 2
+ 1a8:	89 27       	eor	r24, r25
+ 1aa:	82 b9       	out	0x02, r24	; 2
 			{
 				//get_char(1);
 				break;
 			}
 		}
 		stop_twi();
- 1a0:	a6 d0       	rcall	.+332    	; 0x2ee <stop_twi>
+ 1ac:	a6 d0       	rcall	.+332    	; 0x2fa <stop_twi>
 	}
 	reset_TWI();
- 1a2:	b2 d0       	rcall	.+356    	; 0x308 <reset_TWI>
+ 1ae:	b2 d0       	rcall	.+356    	; 0x314 <reset_TWI>
 	sei();
- 1a4:	78 94       	sei
- 1a6:	ff 91       	pop	r31
- 1a8:	ef 91       	pop	r30
- 1aa:	bf 91       	pop	r27
- 1ac:	af 91       	pop	r26
- 1ae:	9f 91       	pop	r25
- 1b0:	8f 91       	pop	r24
- 1b2:	7f 91       	pop	r23
- 1b4:	6f 91       	pop	r22
- 1b6:	5f 91       	pop	r21
- 1b8:	4f 91       	pop	r20
- 1ba:	3f 91       	pop	r19
- 1bc:	2f 91       	pop	r18
- 1be:	0f 90       	pop	r0
- 1c0:	0b be       	out	0x3b, r0	; 59
- 1c2:	0f 90       	pop	r0
- 1c4:	0f be       	out	0x3f, r0	; 63
- 1c6:	0f 90       	pop	r0
- 1c8:	1f 90       	pop	r1
- 1ca:	18 95       	reti
+ 1b0:	78 94       	sei
+ 1b2:	ff 91       	pop	r31
+ 1b4:	ef 91       	pop	r30
+ 1b6:	bf 91       	pop	r27
+ 1b8:	af 91       	pop	r26
+ 1ba:	9f 91       	pop	r25
+ 1bc:	8f 91       	pop	r24
+ 1be:	7f 91       	pop	r23
+ 1c0:	6f 91       	pop	r22
+ 1c2:	5f 91       	pop	r21
+ 1c4:	4f 91       	pop	r20
+ 1c6:	3f 91       	pop	r19
+ 1c8:	2f 91       	pop	r18
+ 1ca:	0f 90       	pop	r0
+ 1cc:	0b be       	out	0x3b, r0	; 59
+ 1ce:	0f 90       	pop	r0
+ 1d0:	0f be       	out	0x3f, r0	; 63
+ 1d2:	0f 90       	pop	r0
+ 1d4:	1f 90       	pop	r1
+ 1d6:	18 95       	reti
 
-000001cc <set_twi_reciever_enable>:
- 1cc:	85 e4       	ldi	r24, 0x45	; 69
- 1ce:	80 93 bc 00 	sts	0x00BC, r24
- 1d2:	08 95       	ret
+000001d8 <set_twi_reciever_enable>:
+ 1d8:	85 e4       	ldi	r24, 0x45	; 69
+ 1da:	80 93 bc 00 	sts	0x00BC, r24
+ 1de:	08 95       	ret
 
-000001d4 <init_TWI>:
- 1d4:	90 93 04 01 	sts	0x0104, r25
- 1d8:	80 93 03 01 	sts	0x0103, r24
- 1dc:	80 34       	cpi	r24, 0x40	; 64
- 1de:	91 05       	cpc	r25, r1
- 1e0:	81 f0       	breq	.+32     	; 0x202 <init_TWI+0x2e>
- 1e2:	80 38       	cpi	r24, 0x80	; 128
- 1e4:	91 05       	cpc	r25, r1
- 1e6:	19 f0       	breq	.+6      	; 0x1ee <init_TWI+0x1a>
- 1e8:	80 97       	sbiw	r24, 0x20	; 32
- 1ea:	d1 f4       	brne	.+52     	; 0x220 <init_TWI+0x4c>
- 1ec:	12 c0       	rjmp	.+36     	; 0x212 <init_TWI+0x3e>
- 1ee:	83 e0       	ldi	r24, 0x03	; 3
- 1f0:	88 b9       	out	0x08, r24	; 8
- 1f2:	ec df       	rcall	.-40     	; 0x1cc <set_twi_reciever_enable>
- 1f4:	8f e3       	ldi	r24, 0x3F	; 63
- 1f6:	80 93 b8 00 	sts	0x00B8, r24
- 1fa:	81 e8       	ldi	r24, 0x81	; 129
- 1fc:	80 93 ba 00 	sts	0x00BA, r24
- 200:	08 95       	ret
- 202:	8f e3       	ldi	r24, 0x3F	; 63
- 204:	80 93 b8 00 	sts	0x00B8, r24
- 208:	e1 df       	rcall	.-62     	; 0x1cc <set_twi_reciever_enable>
- 20a:	80 e4       	ldi	r24, 0x40	; 64
- 20c:	80 93 ba 00 	sts	0x00BA, r24
- 210:	08 95       	ret
- 212:	8f e3       	ldi	r24, 0x3F	; 63
- 214:	80 93 b8 00 	sts	0x00B8, r24
- 218:	d9 df       	rcall	.-78     	; 0x1cc <set_twi_reciever_enable>
- 21a:	81 e2       	ldi	r24, 0x21	; 33
- 21c:	80 93 ba 00 	sts	0x00BA, r24
- 220:	08 95       	ret
+000001e0 <init_TWI>:
+ 1e0:	90 93 04 01 	sts	0x0104, r25
+ 1e4:	80 93 03 01 	sts	0x0103, r24
+ 1e8:	80 34       	cpi	r24, 0x40	; 64
+ 1ea:	91 05       	cpc	r25, r1
+ 1ec:	81 f0       	breq	.+32     	; 0x20e <init_TWI+0x2e>
+ 1ee:	80 38       	cpi	r24, 0x80	; 128
+ 1f0:	91 05       	cpc	r25, r1
+ 1f2:	19 f0       	breq	.+6      	; 0x1fa <init_TWI+0x1a>
+ 1f4:	80 97       	sbiw	r24, 0x20	; 32
+ 1f6:	d1 f4       	brne	.+52     	; 0x22c <init_TWI+0x4c>
+ 1f8:	12 c0       	rjmp	.+36     	; 0x21e <init_TWI+0x3e>
+ 1fa:	83 e0       	ldi	r24, 0x03	; 3
+ 1fc:	88 b9       	out	0x08, r24	; 8
+ 1fe:	ec df       	rcall	.-40     	; 0x1d8 <set_twi_reciever_enable>
+ 200:	8f e3       	ldi	r24, 0x3F	; 63
+ 202:	80 93 b8 00 	sts	0x00B8, r24
+ 206:	81 e8       	ldi	r24, 0x81	; 129
+ 208:	80 93 ba 00 	sts	0x00BA, r24
+ 20c:	08 95       	ret
+ 20e:	8f e3       	ldi	r24, 0x3F	; 63
+ 210:	80 93 b8 00 	sts	0x00B8, r24
+ 214:	e1 df       	rcall	.-62     	; 0x1d8 <set_twi_reciever_enable>
+ 216:	80 e4       	ldi	r24, 0x40	; 64
+ 218:	80 93 ba 00 	sts	0x00BA, r24
+ 21c:	08 95       	ret
+ 21e:	8f e3       	ldi	r24, 0x3F	; 63
+ 220:	80 93 b8 00 	sts	0x00B8, r24
+ 224:	d9 df       	rcall	.-78     	; 0x1d8 <set_twi_reciever_enable>
+ 226:	81 e2       	ldi	r24, 0x21	; 33
+ 228:	80 93 ba 00 	sts	0x00BA, r24
+ 22c:	08 95       	ret
 
-00000222 <get_data>:
- 222:	80 91 bb 00 	lds	r24, 0x00BB
- 226:	90 e0       	ldi	r25, 0x00	; 0
- 228:	08 95       	ret
+0000022e <get_data>:
+ 22e:	80 91 bb 00 	lds	r24, 0x00BB
+ 232:	90 e0       	ldi	r25, 0x00	; 0
+ 234:	08 95       	ret
 
-0000022a <get_char_from_bus>:
- 22a:	cf 93       	push	r28
- 22c:	df 93       	push	r29
- 22e:	c0 91 1e 02 	lds	r28, 0x021E
- 232:	d0 91 1f 02 	lds	r29, 0x021F
- 236:	f5 df       	rcall	.-22     	; 0x222 <get_data>
- 238:	c1 5f       	subi	r28, 0xF1	; 241
- 23a:	de 4f       	sbci	r29, 0xFE	; 254
- 23c:	88 83       	st	Y, r24
- 23e:	80 91 1e 02 	lds	r24, 0x021E
- 242:	90 91 1f 02 	lds	r25, 0x021F
- 246:	01 96       	adiw	r24, 0x01	; 1
- 248:	90 93 1f 02 	sts	0x021F, r25
- 24c:	80 93 1e 02 	sts	0x021E, r24
- 250:	90 93 06 01 	sts	0x0106, r25
- 254:	80 93 05 01 	sts	0x0105, r24
- 258:	df 91       	pop	r29
- 25a:	cf 91       	pop	r28
- 25c:	08 95       	ret
+00000236 <get_char_from_bus>:
+ 236:	cf 93       	push	r28
+ 238:	df 93       	push	r29
+ 23a:	c0 91 1e 02 	lds	r28, 0x021E
+ 23e:	d0 91 1f 02 	lds	r29, 0x021F
+ 242:	f5 df       	rcall	.-22     	; 0x22e <get_data>
+ 244:	c1 5f       	subi	r28, 0xF1	; 241
+ 246:	de 4f       	sbci	r29, 0xFE	; 254
+ 248:	88 83       	st	Y, r24
+ 24a:	80 91 1e 02 	lds	r24, 0x021E
+ 24e:	90 91 1f 02 	lds	r25, 0x021F
+ 252:	01 96       	adiw	r24, 0x01	; 1
+ 254:	90 93 1f 02 	sts	0x021F, r25
+ 258:	80 93 1e 02 	sts	0x021E, r24
+ 25c:	90 93 06 01 	sts	0x0106, r25
+ 260:	80 93 05 01 	sts	0x0105, r24
+ 264:	df 91       	pop	r29
+ 266:	cf 91       	pop	r28
+ 268:	08 95       	ret
 
-0000025e <get_command_from_bus>:
- 25e:	cf 93       	push	r28
- 260:	df 93       	push	r29
- 262:	c0 91 0e 02 	lds	r28, 0x020E
- 266:	d0 91 0f 02 	lds	r29, 0x020F
- 26a:	db df       	rcall	.-74     	; 0x222 <get_data>
- 26c:	cc 0f       	add	r28, r28
- 26e:	dd 1f       	adc	r29, r29
- 270:	c7 5f       	subi	r28, 0xF7	; 247
- 272:	de 4f       	sbci	r29, 0xFE	; 254
- 274:	99 83       	std	Y+1, r25	; 0x01
- 276:	88 83       	st	Y, r24
- 278:	80 91 0e 02 	lds	r24, 0x020E
- 27c:	90 91 0f 02 	lds	r25, 0x020F
- 280:	01 96       	adiw	r24, 0x01	; 1
- 282:	90 93 0f 02 	sts	0x020F, r25
- 286:	80 93 0e 02 	sts	0x020E, r24
- 28a:	df 91       	pop	r29
- 28c:	cf 91       	pop	r28
- 28e:	08 95       	ret
+0000026a <get_command_from_bus>:
+ 26a:	cf 93       	push	r28
+ 26c:	df 93       	push	r29
+ 26e:	c0 91 0e 02 	lds	r28, 0x020E
+ 272:	d0 91 0f 02 	lds	r29, 0x020F
+ 276:	db df       	rcall	.-74     	; 0x22e <get_data>
+ 278:	cc 0f       	add	r28, r28
+ 27a:	dd 1f       	adc	r29, r29
+ 27c:	c7 5f       	subi	r28, 0xF7	; 247
+ 27e:	de 4f       	sbci	r29, 0xFE	; 254
+ 280:	99 83       	std	Y+1, r25	; 0x01
+ 282:	88 83       	st	Y, r24
+ 284:	80 91 0e 02 	lds	r24, 0x020E
+ 288:	90 91 0f 02 	lds	r25, 0x020F
+ 28c:	01 96       	adiw	r24, 0x01	; 1
+ 28e:	90 93 0f 02 	sts	0x020F, r25
+ 292:	80 93 0e 02 	sts	0x020E, r24
+ 296:	df 91       	pop	r29
+ 298:	cf 91       	pop	r28
+ 29a:	08 95       	ret
 
-00000290 <get_sensor_from_bus>:
- 290:	cf 93       	push	r28
- 292:	df 93       	push	r29
- 294:	c0 91 24 02 	lds	r28, 0x0224
- 298:	d0 91 25 02 	lds	r29, 0x0225
- 29c:	c7 30       	cpi	r28, 0x07	; 7
- 29e:	d1 05       	cpc	r29, r1
- 2a0:	99 f4       	brne	.+38     	; 0x2c8 <get_sensor_from_bus+0x38>
- 2a2:	e0 e1       	ldi	r30, 0x10	; 16
- 2a4:	f2 e0       	ldi	r31, 0x02	; 2
- 2a6:	a6 e2       	ldi	r26, 0x26	; 38
- 2a8:	b2 e0       	ldi	r27, 0x02	; 2
- 2aa:	2e e1       	ldi	r18, 0x1E	; 30
- 2ac:	32 e0       	ldi	r19, 0x02	; 2
- 2ae:	81 91       	ld	r24, Z+
- 2b0:	91 91       	ld	r25, Z+
- 2b2:	8d 93       	st	X+, r24
- 2b4:	9d 93       	st	X+, r25
- 2b6:	e2 17       	cp	r30, r18
- 2b8:	f3 07       	cpc	r31, r19
- 2ba:	c9 f7       	brne	.-14     	; 0x2ae <get_sensor_from_bus+0x1e>
- 2bc:	b2 df       	rcall	.-156    	; 0x222 <get_data>
- 2be:	90 93 21 02 	sts	0x0221, r25
- 2c2:	80 93 20 02 	sts	0x0220, r24
- 2c6:	10 c0       	rjmp	.+32     	; 0x2e8 <get_sensor_from_bus+0x58>
- 2c8:	ac df       	rcall	.-168    	; 0x222 <get_data>
- 2ca:	cc 0f       	add	r28, r28
- 2cc:	dd 1f       	adc	r29, r29
- 2ce:	c0 5f       	subi	r28, 0xF0	; 240
- 2d0:	dd 4f       	sbci	r29, 0xFD	; 253
- 2d2:	99 83       	std	Y+1, r25	; 0x01
- 2d4:	88 83       	st	Y, r24
- 2d6:	80 91 24 02 	lds	r24, 0x0224
- 2da:	90 91 25 02 	lds	r25, 0x0225
- 2de:	01 96       	adiw	r24, 0x01	; 1
- 2e0:	90 93 25 02 	sts	0x0225, r25
- 2e4:	80 93 24 02 	sts	0x0224, r24
- 2e8:	df 91       	pop	r29
- 2ea:	cf 91       	pop	r28
- 2ec:	08 95       	ret
+0000029c <get_sensor_from_bus>:
+ 29c:	cf 93       	push	r28
+ 29e:	df 93       	push	r29
+ 2a0:	c0 91 24 02 	lds	r28, 0x0224
+ 2a4:	d0 91 25 02 	lds	r29, 0x0225
+ 2a8:	c7 30       	cpi	r28, 0x07	; 7
+ 2aa:	d1 05       	cpc	r29, r1
+ 2ac:	99 f4       	brne	.+38     	; 0x2d4 <get_sensor_from_bus+0x38>
+ 2ae:	e0 e1       	ldi	r30, 0x10	; 16
+ 2b0:	f2 e0       	ldi	r31, 0x02	; 2
+ 2b2:	a6 e2       	ldi	r26, 0x26	; 38
+ 2b4:	b2 e0       	ldi	r27, 0x02	; 2
+ 2b6:	2e e1       	ldi	r18, 0x1E	; 30
+ 2b8:	32 e0       	ldi	r19, 0x02	; 2
+ 2ba:	81 91       	ld	r24, Z+
+ 2bc:	91 91       	ld	r25, Z+
+ 2be:	8d 93       	st	X+, r24
+ 2c0:	9d 93       	st	X+, r25
+ 2c2:	e2 17       	cp	r30, r18
+ 2c4:	f3 07       	cpc	r31, r19
+ 2c6:	c9 f7       	brne	.-14     	; 0x2ba <get_sensor_from_bus+0x1e>
+ 2c8:	b2 df       	rcall	.-156    	; 0x22e <get_data>
+ 2ca:	90 93 21 02 	sts	0x0221, r25
+ 2ce:	80 93 20 02 	sts	0x0220, r24
+ 2d2:	10 c0       	rjmp	.+32     	; 0x2f4 <get_sensor_from_bus+0x58>
+ 2d4:	ac df       	rcall	.-168    	; 0x22e <get_data>
+ 2d6:	cc 0f       	add	r28, r28
+ 2d8:	dd 1f       	adc	r29, r29
+ 2da:	c0 5f       	subi	r28, 0xF0	; 240
+ 2dc:	dd 4f       	sbci	r29, 0xFD	; 253
+ 2de:	99 83       	std	Y+1, r25	; 0x01
+ 2e0:	88 83       	st	Y, r24
+ 2e2:	80 91 24 02 	lds	r24, 0x0224
+ 2e6:	90 91 25 02 	lds	r25, 0x0225
+ 2ea:	01 96       	adiw	r24, 0x01	; 1
+ 2ec:	90 93 25 02 	sts	0x0225, r25
+ 2f0:	80 93 24 02 	sts	0x0224, r24
+ 2f4:	df 91       	pop	r29
+ 2f6:	cf 91       	pop	r28
+ 2f8:	08 95       	ret
 
-000002ee <stop_twi>:
- 2ee:	10 92 0f 02 	sts	0x020F, r1
- 2f2:	10 92 0e 02 	sts	0x020E, r1
- 2f6:	10 92 25 02 	sts	0x0225, r1
- 2fa:	10 92 24 02 	sts	0x0224, r1
- 2fe:	10 92 1f 02 	sts	0x021F, r1
- 302:	10 92 1e 02 	sts	0x021E, r1
- 306:	08 95       	ret
-
-00000308 <reset_TWI>:
- 308:	ec eb       	ldi	r30, 0xBC	; 188
- 30a:	f0 e0       	ldi	r31, 0x00	; 0
- 30c:	80 81       	ld	r24, Z
- 30e:	80 6c       	ori	r24, 0xC0	; 192
- 310:	80 83       	st	Z, r24
+000002fa <stop_twi>:
+ 2fa:	10 92 0f 02 	sts	0x020F, r1
+ 2fe:	10 92 0e 02 	sts	0x020E, r1
+ 302:	10 92 25 02 	sts	0x0225, r1
+ 306:	10 92 24 02 	sts	0x0224, r1
+ 30a:	10 92 1f 02 	sts	0x021F, r1
+ 30e:	10 92 1e 02 	sts	0x021E, r1
  312:	08 95       	ret
 
-00000314 <_exit>:
- 314:	f8 94       	cli
+00000314 <reset_TWI>:
+ 314:	ec eb       	ldi	r30, 0xBC	; 188
+ 316:	f0 e0       	ldi	r31, 0x00	; 0
+ 318:	80 81       	ld	r24, Z
+ 31a:	80 6c       	ori	r24, 0xC0	; 192
+ 31c:	80 83       	st	Z, r24
+ 31e:	08 95       	ret
 
-00000316 <__stop_program>:
- 316:	ff cf       	rjmp	.-2      	; 0x316 <__stop_program>
+00000320 <_exit>:
+ 320:	f8 94       	cli
+
+00000322 <__stop_program>:
+ 322:	ff cf       	rjmp	.-2      	; 0x322 <__stop_program>

@@ -220,7 +220,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x318
+.text           0x00000000      0x324
  *(.vectors)
  .vectors       0x00000000       0x8c c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
                 0x00000000                __vector_default
@@ -313,37 +313,37 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .text.main     0x000000ae       0x52 Navigationsenheten.o
                 0x000000ae                main
  .text.__vector_26
-                0x00000100       0xcc Navigationsenheten.o
+                0x00000100       0xd8 Navigationsenheten.o
                 0x00000100                __vector_26
  .text.set_twi_reciever_enable
-                0x000001cc        0x8 twi.o
-                0x000001cc                set_twi_reciever_enable
+                0x000001d8        0x8 twi.o
+                0x000001d8                set_twi_reciever_enable
  .text.init_TWI
-                0x000001d4       0x4e twi.o
-                0x000001d4                init_TWI
+                0x000001e0       0x4e twi.o
+                0x000001e0                init_TWI
  .text.get_data
-                0x00000222        0x8 twi.o
-                0x00000222                get_data
+                0x0000022e        0x8 twi.o
+                0x0000022e                get_data
  .text.get_char_from_bus
-                0x0000022a       0x34 twi.o
-                0x0000022a                get_char_from_bus
+                0x00000236       0x34 twi.o
+                0x00000236                get_char_from_bus
  .text.get_command_from_bus
-                0x0000025e       0x32 twi.o
-                0x0000025e                get_command_from_bus
+                0x0000026a       0x32 twi.o
+                0x0000026a                get_command_from_bus
  .text.get_sensor_from_bus
-                0x00000290       0x5e twi.o
-                0x00000290                get_sensor_from_bus
+                0x0000029c       0x5e twi.o
+                0x0000029c                get_sensor_from_bus
  .text.stop_twi
-                0x000002ee       0x1a twi.o
-                0x000002ee                stop_twi
+                0x000002fa       0x1a twi.o
+                0x000002fa                stop_twi
  .text.reset_TWI
-                0x00000308        0xc twi.o
-                0x00000308                reset_TWI
-                0x00000314                . = ALIGN (0x2)
+                0x00000314        0xc twi.o
+                0x00000314                reset_TWI
+                0x00000320                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000314        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
-                0x00000314                _exit
-                0x00000314                exit
+ .fini9         0x00000320        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+                0x00000320                _exit
+                0x00000320                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -362,11 +362,11 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000314        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+ .fini0         0x00000320        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000318                _etext = .
+                0x00000324                _etext = .
 
-.data           0x00800100        0x0 load address 0x00000318
+.data           0x00800100        0x0 load address 0x00000324
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
@@ -404,8 +404,8 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
                 0x00800224                sensor
                 0x00800226                sensors
                 0x00800234                PROVIDE (__bss_end, .)
-                0x00000318                __data_load_start = LOADADDR (.data)
-                0x00000318                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000324                __data_load_start = LOADADDR (.data)
+                0x00000324                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x00800234        0x0
                 0x00800234                PROVIDE (__noinit_start, .)
@@ -492,10 +492,10 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_abbrev  0x00000000      0x16c Navigationsenheten.o
  .debug_abbrev  0x0000016c      0x216 twi.o
 
-.debug_line     0x00000000      0xbec
+.debug_line     0x00000000      0xbf2
  *(.debug_line)
- .debug_line    0x00000000      0x271 Navigationsenheten.o
- .debug_line    0x00000271      0x97b twi.o
+ .debug_line    0x00000000      0x277 Navigationsenheten.o
+ .debug_line    0x00000277      0x97b twi.o
 
 .debug_frame    0x00000000      0x380
  *(.debug_frame)

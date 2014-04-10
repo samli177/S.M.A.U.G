@@ -40,7 +40,7 @@ int main(void)
 ISR(TWI_vect)
 {
 	cli();
-	PORTA ^= (1<<PORTA1);
+	
 	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 	{
 		instruction = true;
@@ -79,7 +79,7 @@ ISR(TWI_vect)
 		{
 			case(I_COMMAND):
 			{
-				//get_command(1);
+				PORTA ^= (1<<PORTA1);
 				break;
 			}
 			case(I_STRING):
