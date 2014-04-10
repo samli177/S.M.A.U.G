@@ -54,7 +54,7 @@ int main(void)
 		USART_DecodeRxFIFO();
 		USART_SendSensors();
 		
-		_delay_ms(2000);
+		_delay_ms(1000);
 		send_status(S_ADRESS);
 	}
 }

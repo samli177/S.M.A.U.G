@@ -240,8 +240,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 	
 	if(length == 3)
 	{
-		for(int i = 0; i < length; ++i)
-		{
+		
 			if(FifoRead(gRxFIFO, data))
 			{
 				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
@@ -259,12 +258,11 @@ uint8_t USART_DecodeCommandRxFIFO()
 			
 			if(FifoRead(gRxFIFO, data))
 			{
-				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: SPEED MISSING");
 				return 1; // error
 			}
 			
 			speed = *data;
-		}
 		
 		send_command(direction, rotation, speed);
 
@@ -283,7 +281,7 @@ void USART_DecodeRxFIFO()
 {
 	uint8_t *tag = 0;
 	
-	if(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
+	while(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
 	{
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
@@ -342,7 +340,10 @@ ISR (USART0_RX_vect)
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
 			{
-				FifoWrite(gRxFIFO, gRxBuffer[i]);
+				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
+				{
+					send_string(S_ADRESS,"U_FIFO-full");
+				}
 			}
 		}
 		
