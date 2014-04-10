@@ -17,6 +17,8 @@ void init_display(void)
 {
 	DDRB = 255;
 	DDRD |= 0b11100000;
+	
+	//TODO: fix this....
 	PORTD &= !(1<<PORTD5) | !(1<<PORTD7); //Instruction mode, Write mode
 	_delay_ms(31);
 	PORTB = 0b00111000; //Function set
