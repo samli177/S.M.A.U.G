@@ -31,7 +31,7 @@ int main(void)
 		//send_settings(C_ADRESS, 4);
         PORTA |= (1<<PORTA0);
 		_delay_ms(1000);
-		send_string(0x40, "I AM DEAD!");
+		//send_string(0x40, "I AM DEAD!");
 		PORTA &= ~(1<<PORTA0);
 		_delay_ms(1000);
     }
@@ -40,7 +40,7 @@ int main(void)
 ISR(TWI_vect)
 {
 	cli();
-	PORTA ^= (1<<PORTA1);
+	
 	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 	{
 		instruction = true;
@@ -79,7 +79,7 @@ ISR(TWI_vect)
 		{
 			case(I_COMMAND):
 			{
-				//get_command(1);
+				PORTA ^= (1<<PORTA1);
 				break;
 			}
 			case(I_STRING):
