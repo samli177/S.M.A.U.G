@@ -236,29 +236,44 @@ uint8_t USART_DecodeCommandRxFIFO()
 	}
 	
 	int length = *len;
+	uint8_t direction, rotation, speed;
 	
 	if(length == 3)
 	{
-		if(FifoRead(gRxFIFO, data))
+		for(int i = 0; i < length; ++i)
 		{
-			send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DATA MISSING");
-			return 1; // error
+			if(FifoRead(gRxFIFO, data))
+			{
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
+				return 1; // error
+			}
+			direction = *data;
+			
+			if(FifoRead(gRxFIFO, data))
+			{
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
+				return 1; // error
+			}
+			
+			rotation = *data;
+			
+			if(FifoRead(gRxFIFO, data))
+			{
+				send_string(S_ADRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
+				return 1; // error
+			}
+			
+			speed = *data;
 		}
+		
+		send_command(direction, rotation, speed);
 
 	}else
 	{
 		send_string(S_ADRESS, "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
+		return 1;
 	}
-	
-	for(int i = 0; i < length; ++i)
-	{
-		if(FifoRead(gRxFIFO, data))
-		{
-			send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DATA MISSING");
-			return 1; // error
-		}
 
-	}
 	return 0;
 	
 }
