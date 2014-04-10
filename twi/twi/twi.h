@@ -45,7 +45,7 @@
 #define I_SETTINGS 1
 #define I_SWEEP 2
 #define I_STATUS 3
-#define I_ELEVATION 4;
+#define I_ELEVATION 4
 #define I_STRING 25
 
 //Module Adresses
@@ -55,35 +55,40 @@
 #define G_ADRESS 0
 
 //Declarations
-void init_TWI(int module_adress);
+void init_TWI(uint8_t module_adress);
 void set_twi_reciever_enable();
 void Error();
 void start_bus();
 void stop_bus();
 void clear_int();
-int get_data();
+uint8_t get_data();
 void send_data_and_wait(uint8_t data);
-bool send_status(uint8_t status);
-bool send_settings(uint8_t set);
-bool send_command(uint8_t direction, uint8_t rot_elev, uint8_t speed);
-bool send_sensors(int sens[7], int serv);
-bool send_sweep(int pos);
-bool send_string(int adr, char str[]);
-bool send_string_fixed_length(int adr, uint8_t str[], int length);
-bool send_something(int adr, int instruction, int packet);
+
+bool TWI_send_status(uint8_t status);
+bool TWI_send_settings(uint8_t set);
+bool TWI_send_command(uint8_t direction, uint8_t rot_elev, uint8_t speed);
+bool TWI_send_elevation(uint8_t elevation);
+bool TWI_send_sensors(uint8_t sens[7], uint8_t serv);
+bool TWI_send_sweep(uint8_t sweep);
+bool TWI_send_string(uint8_t adr, char str[]);
+bool TWI_send_string_fixed_length(uint8_t adr, uint8_t str[], int length);
+bool TWI_send_something(uint8_t adr, uint8_t instruction, uint8_t packet);
+
 void stop_twi();
 void reset_TWI();
 void get_settings_from_bus();
-int get_settings();
 void get_char_from_bus();
-int get_message_length();
-char get_char(int i);
-void get_sensor_from_bus();
-int get_sensor(int i);
-int get_servo();
-int get_sweep();
 void get_sweep_from_bus();
 void get_command_from_bus();
-int get_command(int i);
+void get_sensor_from_bus();
+
+char TWI_get_char(int i);
+uint8_t TWI_get_sensor(int i);
+uint8_t TWI_get_servo();
+uint8_t TWI_get_sweep();
+uint8_t TWI_get_command(int i);
+uint8_t TWI_get_settings();
+uint8_t TWI_get_message_length();
+
 
 #endif

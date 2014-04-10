@@ -4,3 +4,7 @@
 
 highLevelWalking.c
 
+inverseKinematics.c
+
+serialServoControl.c
+

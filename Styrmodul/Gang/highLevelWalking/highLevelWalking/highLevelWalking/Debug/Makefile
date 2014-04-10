@@ -36,7 +36,9 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../highLevelWalking.c
+../highLevelWalking.c \
+../inverseKinematics.c \
+../serialServoControl.c
 
 
 PREPROCESSING_SRCS += 
@@ -46,16 +48,24 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-highLevelWalking.o
+highLevelWalking.o \
+inverseKinematics.o \
+serialServoControl.o
 
 OBJS_AS_ARGS +=  \
-highLevelWalking.o
+highLevelWalking.o \
+inverseKinematics.o \
+serialServoControl.o
 
 C_DEPS +=  \
-highLevelWalking.d
+highLevelWalking.d \
+inverseKinematics.d \
+serialServoControl.d
 
 C_DEPS_AS_ARGS +=  \
-highLevelWalking.d
+highLevelWalking.d \
+inverseKinematics.d \
+serialServoControl.d
 
 OUTPUT_FILE_PATH +=highLevelWalking.elf
 
@@ -68,6 +78,10 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 
