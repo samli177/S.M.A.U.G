@@ -115,6 +115,7 @@ uint8_t servoReadByte();
 void sendServoPacket(uint8_t ID, uint8_t instruction, uint8_t parametersLength);
 void servoGoto(uint8_t ID, double angle, uint16_t speed);
 void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle);
+void servoRetrunLevel(uint8_t ID, uint8_t level);
 
 
 

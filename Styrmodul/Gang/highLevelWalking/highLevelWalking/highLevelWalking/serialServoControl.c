@@ -101,6 +101,7 @@ void sendServoPacket(uint8_t ID, uint8_t instruction, uint8_t parametersLength)
 void servoGoto(uint8_t ID, double angle, uint16_t speed)
 {
 	int16_t goalPosition; 
+	servoTx;
 	
 	angle = 150 + angle * 150/3.1415;
 	
@@ -160,6 +161,12 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 	sendServoPacket(ID, INST_WRITE, 5);	
 }
 
+void servoRetrunLevel(uint8_t ID, uint8_t level)
+{
+	gServoParameters[0] = P_RETURN_LEVEL; // address for CW Angle Limit(L)
+	gServoParameters[1] = level;
+	sendServoPacket(ID, INST_WRITE, 2);	
+}
 
 /*void LegOneGoto(double x,double y,double z, int servospeed)
 {

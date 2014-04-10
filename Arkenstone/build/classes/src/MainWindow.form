@@ -219,7 +219,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace pref="252" max="32767" attributes="0"/>
+                      <EmptySpace pref="318" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -420,6 +420,14 @@
                           <Component id="jSeparator1" alignment="1" max="32767" attributes="0"/>
                           <Component id="jSeparator2" alignment="1" max="32767" attributes="0"/>
                           <Component id="jSeparator6" alignment="0" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="searchControllersButton" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="jLabel5" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="controllersComboBox" max="32767" attributes="0"/>
+                          </Group>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
@@ -444,38 +452,35 @@
                                       <Component id="chosenControllerLabel" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Component id="jLabel12" min="-2" pref="82" max="-2" attributes="0"/>
-                                  <Component id="changeParametersButton" alignment="0" min="-2" pref="187" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="parameter1TextField" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jLabel13" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="jLabel13" min="-2" pref="302" max="-2" attributes="0"/>
+                                  <Component id="messageTextField" max="32767" attributes="0"/>
+                                  <Component id="sendMessageButton" alignment="0" pref="383" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace pref="56" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="jLabel15" max="32767" attributes="0"/>
+                                          <Component id="parameter1TextField" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                           <Component id="parameter2TextField" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="jLabel15" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="parameter3TextField" alignment="0" max="32767" attributes="0"/>
                                           <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="parameter4TextField" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="parameter3TextField" alignment="0" max="32767" attributes="0"/>
                                           <Component id="jLabel16" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
+                                  <Component id="changeParametersButton" max="32767" attributes="0"/>
                               </Group>
-                              <EmptySpace min="0" pref="267" max="32767" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                  <Component id="searchControllersButton" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jLabel5" alignment="0" max="32767" attributes="0"/>
-                              </Group>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="controllersComboBox" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -523,28 +528,31 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="parameter1TextField" min="-2" max="-2" attributes="0"/>
+                              <Component id="messageTextField" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="parameter2TextField" min="-2" max="-2" attributes="0"/>
+                              <Component id="parameter1TextField" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" alignment="0" groupAlignment="1" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="jLabel14" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="parameter3TextField" min="-2" max="-2" attributes="0"/>
+                                  <Component id="parameter2TextField" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
                                   <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="parameter4TextField" min="-2" max="-2" attributes="0"/>
+                                  <Component id="parameter3TextField" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="changeParametersButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="sendMessageButton" min="-2" max="-2" attributes="0"/>
+                          <Component id="changeParametersButton" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace pref="20" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -612,37 +620,27 @@
                 <Property name="text" type="java.lang.String" value="Parametrar"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="changeParametersButton">
+            <Component class="javax.swing.JButton" name="sendMessageButton">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Ladda upp parametrar"/>
+                <Property name="text" type="java.lang.String" value="Skicka meddelande"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="changeParametersButtonActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sendMessageButtonActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel13">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Testparameter 1"/>
+                <Property name="text" type="java.lang.String" value="Meddelandef&#xe4;lt"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="parameter1TextField">
+            <Component class="javax.swing.JTextField" name="messageTextField">
               <Properties>
-                <Property name="text" type="java.lang.String" value="5"/>
+                <Property name="text" type="java.lang.String" value="Test message"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel14">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Testparameter 3"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="parameter3TextField">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="5"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel15">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Testparameter 2"/>
+                <Property name="text" type="java.lang.String" value="Parameter Ki"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="parameter2TextField">
@@ -650,12 +648,22 @@
                 <Property name="text" type="java.lang.String" value="5"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel16">
+            <Component class="javax.swing.JLabel" name="jLabel15">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Testparameter 4"/>
+                <Property name="text" type="java.lang.String" value="Parameter Kp"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="parameter4TextField">
+            <Component class="javax.swing.JTextField" name="parameter1TextField">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="5"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabel16">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Parameter Kd"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="parameter3TextField">
               <Properties>
                 <Property name="text" type="java.lang.String" value="5"/>
               </Properties>
@@ -702,6 +710,14 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Ingen"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="changeParametersButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Skicka parametrar"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="changeParametersButtonActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
