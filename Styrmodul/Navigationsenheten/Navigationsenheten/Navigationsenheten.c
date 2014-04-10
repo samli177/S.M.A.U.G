@@ -31,7 +31,7 @@ int main(void)
 		//send_settings(C_ADRESS, 4);
         PORTA |= (1<<PORTA0);
 		_delay_ms(1000);
-		send_string(0x40, "I AM DEAD!");
+		//send_string(0x40, "I AM DEAD!");
 		PORTA &= ~(1<<PORTA0);
 		_delay_ms(1000);
     }
