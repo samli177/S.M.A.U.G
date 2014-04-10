@@ -29,13 +29,14 @@ void init_tables();
 unsigned int UL_sensor();
 void init_UL();
 int voltage_to_cm(float voltage);
-
-// -- Global variables --
+void print_sensor_data();
 
 uint8_t gSelectedSensor = 0;
-int gSensorBuffer[7]; // NOTE: should probably be uint8_t
+int gSensorBuffer[8]; // NOTE: should probably be uint8_t
 
 float IR_short[13][2];
+float IR_long[15][2];
+
 char display_buffer[64][20];
 int buffer_size = 0;
 
@@ -60,8 +61,6 @@ int main(void)
 	my_adress = S_ADRESS;
 	init_TWI(my_adress);
 	
-	
-	
 	adc_init();
 	init_tables();
 	
@@ -75,10 +74,15 @@ int main(void)
 	init_UL();
 	while(1)
 	{
-		UL_sensor();
+		select_sensor(0);
+		adc_start();
+		_delay_ms(2000);
+		
+			
+		/*UL_sensor();
 		_delay_ms(3000);
 		clear_display();
-		print_value(UL);
+		print_value(UL);*/
 		/*for(int i = 0; i < 8; ++i)
 		{
 			select_sensor(i);
@@ -96,6 +100,8 @@ int main(void)
 			print_text(", ");
 			
 		}*/
+		//send_settings(5);
+		//_delay_ms(680);
 	}
 	
 	//displaytest();
@@ -107,22 +113,18 @@ int main(void)
 	clear_display();
 	print_text("skickas");*/
 	
-	//display top in buffer and sensordata
+	//display top in buffer or sensordata
 	clear_display();
 	if(decode_message_RxFIFO())
 	{
 		//display sensordata
-		for(int i = 0; i < 8; ++i)
-		{
-			print_value(gSensorBuffer[i]);
-			print_text(", ");
-			
-		}
-	}
+		print_sensor_data();
+	}*/
 }
 
 void init_tables()
 {
+	// 10-80 cm
 	IR_short[0][0] = 3.15;
 	IR_short[0][1] = 6;
 	
@@ -162,10 +164,55 @@ void init_tables()
 	IR_short[12][0] = 0.41;
 	IR_short[12][1] = 80;
 	
+	// 20-150 cm
+	IR_long[0][0] = 2.75;
+	IR_long[0][1] = 15;
+	
+	IR_long[1][0] = 2.55;
+	IR_long[1][1] = 20;
+	
+	IR_long[2][0] = 2.00;
+	IR_long[2][1] = 30;
+	
+	IR_long[3][0] = 1.55;
+	IR_long[3][1] = 40;
+	
+	IR_long[4][0] = 1.25;
+	IR_long[4][1] = 50;
+	
+	IR_long[5][0] = 1.07;
+	IR_long[5][1] = 60;
+	
+	IR_long[6][0] = 0.85;
+	IR_long[6][1] = 70;
+	
+	IR_long[7][0] = 0.80;
+	IR_long[7][1] = 80;
+	
+	IR_long[8][0] = 0.75;
+	IR_long[8][1] = 90;
+	
+	IR_long[9][0] = 0.65;
+	IR_long[9][1] = 100;
+	
+	IR_long[10][0] = 0.60;
+	IR_long[10][1] = 110;
+	
+	IR_long[11][0] = 0.55;
+	IR_long[11][1] = 120;
+	
+	IR_long[12][0] = 0.50;
+	IR_long[12][1] = 130;
+	
+	IR_long[13][0] = 0.45;
+	IR_long[13][1] = 140;
+	
+	IR_long[14][0] = 0.42;
+	IR_long[14][1] = 150;
 }
 
-int voltage_to_mm(float voltage)
-{
+int voltage_to_mm_short(float voltage)
+{	
 	if(voltage >= IR_short[0][0])
 	{
 		return IR_short[0][1]*10;
@@ -195,13 +242,43 @@ int voltage_to_mm(float voltage)
 	return 0;
 }
 
+int voltage_to_mm_long(float voltage)
+{
+	if(voltage >= IR_long[0][0])
+	{
+		return IR_long[0][1]*10;
+	} else if(voltage <= IR_long[14][0])
+	{
+		return IR_long[14][1]*10;
+	}
+	
+	for(int i = 0; i < 13; ++i)
+	{
+		float prev = IR_long[i][0];
+		float next = IR_long[i+1][0];
+		if(next == voltage)
+		{
+			return IR_long[i+1][1]*10;
+		} else if(prev > voltage && next < voltage)
+		{
+			int high = IR_long[i][1]*10;
+			int low = IR_long[i+1][1]*10;
+			int diff = high - low;
+			float diff_to_prev = prev - voltage;
+			float volt_diff = prev - next;
+			return (int) (high - diff * diff_to_prev / volt_diff);
+		}
+	}
+	
+	return 0;
+}
+
+
 
 ISR(ADC_vect)
 {
-	cli();
-	/*
-	clear_display();
-	print_line(0, "ADC complete");	set_display_pos(1, 0);	 	print_value(voltage_to_mm(vin));	print_text(", ");	print_value((int)(vin*100));	*/	clear_display();	print_value(gSelectedSensor);		uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;		gSensorBuffer[gSelectedSensor] = voltage_to_mm(vin)/10;	print_text(", ");	print_value(voltage_to_mm(vin)/10);	sei();}
+	cli();	uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;	if(gSelectedSensor == 4)	{		gSensorBuffer[gSelectedSensor] = voltage_to_mm_long(vin)/10;	} else {		gSensorBuffer[gSelectedSensor] = voltage_to_mm_short(vin)/10;	}			if(gSelectedSensor < 6)	{		// Not last sensor		select_sensor(gSelectedSensor + 1);		adc_start();	} else {
+		UL_sensor();	}	sei();}
 
 void init_mux()
 {
@@ -272,6 +349,43 @@ void adc_start()
 	ADCSRA |= 1<<ADSC;
 }
 
+void print_sensor_data()
+{
+	clear_display();
+	
+	set_display_pos(0,0);
+	print_text("1: ");
+	print_value(gSensorBuffer[0]);
+	
+	set_display_pos(0,8);
+	print_text("2: ");
+	print_value(gSensorBuffer[1]);
+	
+	set_display_pos(1,0);
+	print_text("3: ");
+	print_value(gSensorBuffer[2]);
+	
+	set_display_pos(1,8);
+	print_text("4: ");
+	print_value(gSensorBuffer[3]);
+	
+	set_display_pos(2,0);
+	print_text("5: ");
+	print_value(gSensorBuffer[4]);
+	
+	set_display_pos(2,8);
+	print_text("6: ");
+	print_value(gSensorBuffer[5]);
+	
+	set_display_pos(3,0);
+	print_text("7: ");
+	print_value(gSensorBuffer[6]);
+	
+	set_display_pos(3,8);
+	print_text("8: ");
+	print_value(gSensorBuffer[7]);
+}
+
 void select_sensor(int sensor)
 {
 	gSelectedSensor = sensor;
@@ -332,17 +446,19 @@ unsigned int UL_sensor()
 
 ISR(PCINT0_vect)
 {
+	cli();
 	if(PINA & (1<<PINA6))
 	{
 		TCNT0 = 0;
-		PORTD |= (1<<PORTD0);
 	}
 	else
 	{
 		UL = TCNT0;
-		UL = (UL * 340 / (2 * 15625));
-		PORTD &= ~(1<<PORTD0);
+		gSensorBuffer[7] = UL;
+		print_sensor_data();
+		//UL = (UL * 340 / (2 * 15625));
 	}
+	sei();
 }
 
 void displaytest(void)
@@ -388,11 +504,11 @@ ISR(TWI_vect)
 		{
 			case(I_SWEEP):
 			{
-				// TODO: change to get_sweep_from_bus() or implement get_sweep()...
-				print_value(get_sweep());
+				//print_value(get_sweep());
 				break;
 			}
 			case(I_STRING):
+<<<<<<< HEAD
 			{
 				// Write_to_FIFO(I_STRING);
 				break;
