@@ -15,6 +15,7 @@ void init_display(void);
 int display_busy(void);
 void print_char(char);
 void print_text(char[]);
+void print_text_fixed_length(char[], int);
 void print_line(int, char[]);
 void print_int(int);
 void print_digit(int);

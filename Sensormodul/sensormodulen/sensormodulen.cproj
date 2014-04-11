@@ -115,6 +115,12 @@
     <Compile Include="display.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="fifo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="fifo.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="sensormodulen.c">
       <SubType>compile</SubType>
     </Compile>

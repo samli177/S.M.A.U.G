@@ -89,6 +89,24 @@ void print_text(char text[])
 	}
 }
 
+void print_text_fixed_length(char text[], int length)
+{
+	for(int i = 0; i < length; ++i)
+	{
+		if(i == 16)
+		{
+			set_display_pos(1,0);
+		} else if(i == 32)
+		{
+			set_display_pos(2,0);
+		} else if(i == 48)
+		{
+			set_display_pos(3,0);
+		}
+		print_char(text[i]);
+	}
+}
+
 void print_line(int line, char text[])
 {
 	switch(line)

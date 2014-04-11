@@ -4,6 +4,8 @@
 
 display.c
 
+fifo.c
+
 sensormodulen.c
 
 twi.c

@@ -16,7 +16,7 @@
 
 #include "display.h"
 #include "twi.h"
-#include "../../Kommunikationsmodul/kommunikationsmodulen/fifo.h"
+#include "fifo.h"
 
 void send_data(void);
 void init_TWI_sensor(void);
@@ -48,9 +48,9 @@ bool sensor_data_flag = false;
 
 // define FIFO for received packets (USART)
 MK_FIFO(4096); // use 4 kB
-DEFINE_FIFO(gRxFIFO, 4096);
+DEFINE_FIFO(gTwiFIFO, 4096);
 
-uint8_t decode_message_RxFIFO();
+uint8_t decode_message_TwiFIFO();
 uint8_t write_to_FIFO(char msg[]);
 
 int main(void)
@@ -64,8 +64,8 @@ int main(void)
 	adc_init();
 	init_tables();
 	
-	sei();
-	
+	write_to_FIFO("test");
+
 	// Test code for sensor
 	
 	print_text("Testing ADC");
@@ -76,8 +76,11 @@ int main(void)
 	{
 		
 		_delay_ms(1000);
-		if(sensor_data_flag)
-			print_sensor_data();
+		//if(sensor_data_flag)
+			//print_sensor_data();
+			
+		decode_message_TwiFIFO();
+		
 			
 		/*UL_sensor();
 		_delay_ms(3000);
@@ -117,7 +120,7 @@ int main(void)
 	
 	//display top in buffer or sensordata
 	clear_display();
-	if(decode_message_RxFIFO())
+	if(decode_message_TwiFIFO())
 	{
 		//display sensordata
 		print_sensor_data();
@@ -469,15 +472,15 @@ void displaytest(void)
 	print_line(0, "Initiating AI");
 }
 
-uint8_t decode_message_RxFIFO()
+uint8_t decode_message_TwiFIFO()
 {
 	
 	uint8_t *len = 0;
 	uint8_t *character = 0;
 	
-	if(FifoRead(gRxFIFO, len))
+	if(FifoRead(gTwiFIFO, len))
 	{
-		//print_text("RxFIFO ERROR: LEN MISSING");
+		//print_text("TwiFIFO ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -490,9 +493,9 @@ uint8_t decode_message_RxFIFO()
 
 	for(int i = 0; i < length; ++i)
 	{
-		if(FifoRead(gRxFIFO, character))
+		if(FifoRead(gTwiFIFO, character))
 		{
-			//print_text("RxFIFO ERROR: DATA MISSING");
+			//print_text("TwiFIFO ERROR: DATA MISSING");
 			return 1; // error
 		}
 
@@ -501,21 +504,29 @@ uint8_t decode_message_RxFIFO()
 	
 	
 	// TODO: send to relevant party... the display for now
-	print_text(msg);
+	
+	print_text_fixed_length(msg, length);
 	
 	return 0;
 }
 
 uint8_t write_to_FIFO(char msg[])
 {
+	if(FifoWrite(gTwiFIFO, (unsigned char)strlen(msg)))
+	{
+		print_text("TwiFIFO ERROR: 1");
+		return 1;
+	}
+	
 	for(int i = 0; i < strlen(msg); ++i)
 	{
-		if(FifoWrite(gRxFIFO, msg[i]))
+		if(FifoWrite(gTwiFIFO, msg[i]))
 		{
-			print_text("RxFIFO ERROR: WRITING IMPOSSIBLE");
+			print_text("TwiFIFO ERROR: 2");
 			return 1;
 		}
 	}
+	
 	return 0;
 }
 
