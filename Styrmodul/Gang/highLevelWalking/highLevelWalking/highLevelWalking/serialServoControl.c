@@ -102,7 +102,7 @@ void servoGoto(uint8_t ID, double angle, uint16_t speed)
 {
 	int16_t goalPosition; 
 	servoTx;
-	
+	_delay_ms(2);
 	angle = 150 + angle * 150/3.1415;
 	
 	// limit inputs to between 0 and 300 degrees
