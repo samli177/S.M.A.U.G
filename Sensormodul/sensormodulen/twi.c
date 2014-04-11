@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "twi.h"
+#include "display.h"
 
 
 static void set_twi_reciever_enable();
@@ -756,6 +757,12 @@ ISR(TWI_vect)
 					}
 					case(I_STRING):
 					{
+						//TEMP
+						for(int i = 0; i < TWI_get_message_length(); ++i)
+						{
+							//ADD to buffer?
+						}
+						//USH TEMP
 						//Add message to buffer
 						break;
 					}

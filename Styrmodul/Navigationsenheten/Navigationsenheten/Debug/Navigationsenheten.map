@@ -44,23 +44,23 @@ Discarded input sections
  .text          0x00000000        0x0 twi.o
  .bss           0x00000000        0x0 twi.o
  .text.TWI_send_status
-                0x00000000       0x54 twi.o
+                0x00000000       0x58 twi.o
  .text.TWI_send_control_settings
-                0x00000000       0xae twi.o
+                0x00000000       0xb2 twi.o
  .text.TWI_send_autonom_settings
-                0x00000000       0x72 twi.o
+                0x00000000       0x76 twi.o
  .text.TWI_send_sweep
-                0x00000000       0x6c twi.o
- .text.TWI_send_command
-                0x00000000       0xa8 twi.o
- .text.TWI_send_elevation
-                0x00000000       0x6c twi.o
- .text.TWI_send_sensors
                 0x00000000       0x70 twi.o
+ .text.TWI_send_command
+                0x00000000       0xac twi.o
+ .text.TWI_send_elevation
+                0x00000000       0x70 twi.o
+ .text.TWI_send_sensors
+                0x00000000       0x74 twi.o
  .text.TWI_send_string_fixed_length
-                0x00000000       0x8a twi.o
+                0x00000000       0x8e twi.o
  .text.TWI_send_something
-                0x00000000       0x78 twi.o
+                0x00000000       0x7c twi.o
  .text.TWI_get_command
                 0x00000000        0xa twi.o
  .text.TWI_get_message_length
@@ -264,7 +264,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x93e
+.text           0x00000000      0x950
  *(.vectors)
  .vectors       0x00000000       0x8c c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
                 0x00000000                __vector_default
@@ -361,71 +361,73 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .text.FifoWrite
                 0x000000d8       0x40 fifo.o
                 0x000000d8                FifoWrite
- .text.main     0x00000118       0x5e Navigationsenheten.o
+ .text.main     0x00000118       0x66 Navigationsenheten.o
                 0x00000118                main
  .text.set_twi_reciever_enable
-                0x00000176        0x8 twi.o
- .text.clear_int
                 0x0000017e        0x8 twi.o
- .text.start_bus
+ .text.clear_int
                 0x00000186        0x8 twi.o
- .text.stop_bus
+ .text.start_bus
                 0x0000018e        0x8 twi.o
- .text.Error    0x00000196        0xe twi.o
+ .text.stop_bus
+                0x00000196        0x8 twi.o
+ .text.Error    0x0000019e        0xe twi.o
  .text.get_data
-                0x000001a4        0x6 twi.o
+                0x000001ac        0x6 twi.o
+ .text.wait_for_bus
+                0x000001b2        0xc twi.o
  .text.send_data_and_wait
-                0x000001aa       0x16 twi.o
+                0x000001be        0xc twi.o
  .text.stop_twi
-                0x000001c0       0x22 twi.o
+                0x000001ca       0x22 twi.o
  .text.reset_TWI
-                0x000001e2        0xc twi.o
+                0x000001ec        0xc twi.o
  .text.get_sensor_from_bus
-                0x000001ee       0x56 twi.o
+                0x000001f8       0x56 twi.o
  .text.get_control_settings_from_bus
-                0x00000244       0x22 twi.o
+                0x0000024e       0x22 twi.o
  .text.get_autonom_settings_from_bus
-                0x00000266        0x8 twi.o
+                0x00000270        0x8 twi.o
  .text.get_char_from_bus
-                0x0000026e       0x34 twi.o
+                0x00000278       0x34 twi.o
  .text.TWI_init
-                0x000002a2       0x46 twi.o
-                0x000002a2                TWI_init
+                0x000002ac       0x46 twi.o
+                0x000002ac                TWI_init
  .text.TWI_send_string
-                0x000002e8       0x8a twi.o
-                0x000002e8                TWI_send_string
+                0x000002f2       0x8c twi.o
+                0x000002f2                TWI_send_string
  .text.TWI_command_flag
-                0x00000372       0x14 twi.o
-                0x00000372                TWI_command_flag
+                0x0000037e       0x14 twi.o
+                0x0000037e                TWI_command_flag
  .text.__vector_26
-                0x00000386      0x2b8 twi.o
-                0x00000386                __vector_26
+                0x00000392      0x2be twi.o
+                0x00000392                __vector_26
  .text.USART_init
-                0x0000063e       0x18 usart.o
-                0x0000063e                USART_init
+                0x00000650       0x18 usart.o
+                0x00000650                USART_init
  .text.USART_CheckTxReady
-                0x00000656        0x8 usart.o
-                0x00000656                USART_CheckTxReady
+                0x00000668        0x8 usart.o
+                0x00000668                USART_CheckTxReady
  .text.USART_WriteByte
-                0x0000065e       0x12 usart.o
-                0x0000065e                USART_WriteByte
+                0x00000670       0x12 usart.o
+                0x00000670                USART_WriteByte
  .text.USART_crc16
-                0x00000670       0xb2 usart.o
-                0x00000670                USART_crc16
+                0x00000682       0xb2 usart.o
+                0x00000682                USART_crc16
  .text.USART_SendPacket
-                0x00000722       0xc0 usart.o
-                0x00000722                USART_SendPacket
+                0x00000734       0xc0 usart.o
+                0x00000734                USART_SendPacket
  .text.USART_SendMessage
-                0x000007e2       0x42 usart.o
-                0x000007e2                USART_SendMessage
+                0x000007f4       0x42 usart.o
+                0x000007f4                USART_SendMessage
  .text.__vector_20
-                0x00000824      0x116 usart.o
-                0x00000824                __vector_20
-                0x0000093a                . = ALIGN (0x2)
+                0x00000836      0x116 usart.o
+                0x00000836                __vector_20
+                0x0000094c                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000093a        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
-                0x0000093a                _exit
-                0x0000093a                exit
+ .fini9         0x0000094c        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+                0x0000094c                _exit
+                0x0000094c                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -444,11 +446,11 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000093a        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
+ .fini0         0x0000094c        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/avr51\libgcc.a(_exit.o)
  *(.fini0)
-                0x0000093e                _etext = .
+                0x00000950                _etext = .
 
-.data           0x00800100     0x111a load address 0x0000093e
+.data           0x00800100     0x111e load address 0x00000950
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51/crtm1284p.o
@@ -468,76 +470,76 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  *(.rodata)
  *(.rodata*)
  .rodata.str1.1
-                0x00801108        0x4 Navigationsenheten.o
+                0x00801108        0x8 Navigationsenheten.o
  .rodata.str1.1
-                0x0080110c      0x10d usart.o
+                0x00801110      0x10d usart.o
  *(.gnu.linkonce.d*)
-                0x0080121a                . = ALIGN (0x2)
- *fill*         0x00801219        0x1 
-                0x0080121a                _edata = .
-                0x0080121a                PROVIDE (__data_end, .)
+                0x0080121e                . = ALIGN (0x2)
+ *fill*         0x0080121d        0x1 
+                0x0080121e                _edata = .
+                0x0080121e                PROVIDE (__data_end, .)
 
-.bss            0x0080121a      0x639
-                0x0080121a                PROVIDE (__bss_start, .)
+.bss            0x0080121e      0x639
+                0x0080121e                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.sweep_flag_
-                0x0080121a        0x1 twi.o
-                0x0080121a                sweep_flag_
- .bss.elevation_flag_
-                0x0080121b        0x1 twi.o
-                0x0080121b                elevation_flag_
- .bss.autonom_settings_flag_
-                0x0080121c        0x1 twi.o
-                0x0080121c                autonom_settings_flag_
- .bss.control_settings_flag_
-                0x0080121d        0x1 twi.o
-                0x0080121d                control_settings_flag_
- .bss.command_flag_
                 0x0080121e        0x1 twi.o
-                0x0080121e                command_flag_
- .bss.sensor_flag_
+                0x0080121e                sweep_flag_
+ .bss.elevation_flag_
                 0x0080121f        0x1 twi.o
-                0x0080121f                sensor_flag_
+                0x0080121f                elevation_flag_
+ .bss.autonom_settings_flag_
+                0x00801220        0x1 twi.o
+                0x00801220                autonom_settings_flag_
+ .bss.control_settings_flag_
+                0x00801221        0x1 twi.o
+                0x00801221                control_settings_flag_
+ .bss.command_flag_
+                0x00801222        0x1 twi.o
+                0x00801222                command_flag_
+ .bss.sensor_flag_
+                0x00801223        0x1 twi.o
+                0x00801223                sensor_flag_
  .bss.gInvertNextFlag
-                0x00801220        0x2 usart.o
-                0x00801220                gInvertNextFlag
+                0x00801224        0x2 usart.o
+                0x00801224                gInvertNextFlag
  .bss.gRxBufferIndex
-                0x00801222        0x2 usart.o
-                0x00801222                gRxBufferIndex
+                0x00801226        0x2 usart.o
+                0x00801226                gRxBufferIndex
  *(COMMON)
- COMMON         0x00801224      0x126 twi.o
-                0x00801224                message_length
-                0x00801226                current_instruction
-                0x00801228                sensor_buffer
-                0x0080122f                command
-                0x00801232                message
-                0x00801331                autonom_settings
-                0x00801332                instruction
-                0x00801333                control_settings
-                0x00801336                current_command
-                0x00801338                elevation
-                0x0080133a                message_counter
-                0x0080133c                servo
-                0x0080133d                current_setting
-                0x0080133f                my_adress
-                0x00801340                sweep
-                0x00801341                sensor
-                0x00801343                sensors
- COMMON         0x0080134a      0x509 usart.o
-                0x0080134a                gRxBuffer
-                0x0080154f                gTxPayload
-                0x0080164e                gTxBuffer
-                0x00801853                PROVIDE (__bss_end, .)
-                0x0000093e                __data_load_start = LOADADDR (.data)
-                0x00001a58                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00801228      0x126 twi.o
+                0x00801228                message_length
+                0x0080122a                current_instruction
+                0x0080122c                sensor_buffer
+                0x00801233                command
+                0x00801236                message
+                0x00801335                autonom_settings
+                0x00801336                instruction
+                0x00801337                control_settings
+                0x0080133a                current_command
+                0x0080133c                elevation
+                0x0080133e                message_counter
+                0x00801340                servo
+                0x00801341                current_setting
+                0x00801343                my_adress
+                0x00801344                sweep
+                0x00801345                sensor
+                0x00801347                sensors
+ COMMON         0x0080134e      0x509 usart.o
+                0x0080134e                gRxBuffer
+                0x00801553                gTxPayload
+                0x00801652                gTxBuffer
+                0x00801857                PROVIDE (__bss_end, .)
+                0x00000950                __data_load_start = LOADADDR (.data)
+                0x00001a6e                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00801853        0x0
-                0x00801853                PROVIDE (__noinit_start, .)
+.noinit         0x00801857        0x0
+                0x00801857                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00801853                PROVIDE (__noinit_end, .)
-                0x00801853                _end = .
-                0x00801853                PROVIDE (__heap_start, .)
+                0x00801857                PROVIDE (__noinit_end, .)
+                0x00801857                _end = .
+                0x00801857                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -598,65 +600,65 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x238
+.debug_aranges  0x00000000      0x240
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x30 fifo.o
  .debug_aranges
                 0x00000030       0x20 Navigationsenheten.o
  .debug_aranges
-                0x00000050      0x158 twi.o
+                0x00000050      0x160 twi.o
  .debug_aranges
-                0x000001a8       0x90 usart.o
+                0x000001b0       0x90 usart.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x1bcf
+.debug_info     0x00000000     0x1c81
  *(.debug_info)
  .debug_info    0x00000000      0x1b1 fifo.o
- .debug_info    0x000001b1      0x253 Navigationsenheten.o
- .debug_info    0x00000404      0xe92 twi.o
- .debug_info    0x00001296      0x939 usart.o
+ .debug_info    0x000001b1      0x28e Navigationsenheten.o
+ .debug_info    0x0000043f      0xf09 twi.o
+ .debug_info    0x00001348      0x939 usart.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0x720
+.debug_abbrev   0x00000000      0x733
  *(.debug_abbrev)
  .debug_abbrev  0x00000000       0xce fifo.o
- .debug_abbrev  0x000000ce      0x13d Navigationsenheten.o
- .debug_abbrev  0x0000020b      0x24b twi.o
- .debug_abbrev  0x00000456      0x2ca usart.o
+ .debug_abbrev  0x000000ce      0x150 Navigationsenheten.o
+ .debug_abbrev  0x0000021e      0x24b twi.o
+ .debug_abbrev  0x00000469      0x2ca usart.o
 
-.debug_line     0x00000000     0x14d6
+.debug_line     0x00000000     0x152f
  *(.debug_line)
  .debug_line    0x00000000      0x14f fifo.o
- .debug_line    0x0000014f      0x1ef Navigationsenheten.o
- .debug_line    0x0000033e      0xc42 twi.o
- .debug_line    0x00000f80      0x556 usart.o
+ .debug_line    0x0000014f      0x1f5 Navigationsenheten.o
+ .debug_line    0x00000344      0xc95 twi.o
+ .debug_line    0x00000fd9      0x556 usart.o
 
-.debug_frame    0x00000000      0x660
+.debug_frame    0x00000000      0x670
  *(.debug_frame)
  .debug_frame   0x00000000       0x68 fifo.o
  .debug_frame   0x00000068       0x24 Navigationsenheten.o
- .debug_frame   0x0000008c      0x3bc twi.o
- .debug_frame   0x00000448      0x218 usart.o
+ .debug_frame   0x0000008c      0x3cc twi.o
+ .debug_frame   0x00000458      0x218 usart.o
 
-.debug_str      0x00000000      0x72c
+.debug_str      0x00000000      0x739
  *(.debug_str)
  .debug_str     0x00000000       0xf5 fifo.o
                                 0x13a (size before relaxing)
- .debug_str     0x000000f5       0xaf Navigationsenheten.o
-                                0x196 (size before relaxing)
- .debug_str     0x000001a4      0x3fb twi.o
-                                0x578 (size before relaxing)
- .debug_str     0x0000059f      0x18d usart.o
+ .debug_str     0x000000f5       0xbf Navigationsenheten.o
+                                0x1a6 (size before relaxing)
+ .debug_str     0x000001b4      0x3f8 twi.o
+                                0x585 (size before relaxing)
+ .debug_str     0x000005ac      0x18d usart.o
                                 0x367 (size before relaxing)
 
-.debug_loc      0x00000000     0x13a0
+.debug_loc      0x00000000     0x13ae
  *(.debug_loc)
  .debug_loc     0x00000000      0x17b fifo.o
- .debug_loc     0x0000017b      0x9a4 twi.o
- .debug_loc     0x00000b1f      0x881 usart.o
+ .debug_loc     0x0000017b      0x9b2 twi.o
+ .debug_loc     0x00000b2d      0x881 usart.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -664,12 +666,12 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x210
+.debug_ranges   0x00000000      0x218
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x20 fifo.o
  .debug_ranges  0x00000020       0x10 Navigationsenheten.o
- .debug_ranges  0x00000030      0x160 twi.o
- .debug_ranges  0x00000190       0x80 usart.o
+ .debug_ranges  0x00000030      0x168 twi.o
+ .debug_ranges  0x00000198       0x80 usart.o
 
 .debug_macro
  *(.debug_macro)

@@ -48,7 +48,7 @@ int main(void)
 		USART_SendSensors();
 		
 		_delay_ms(1000);
-		if(TWI_send_status(S_ADRESS))
+		if(TWI_send_status(ST_ADRESS))
 			PORTA ^= (1<<PORTA1);
 	}
 }

@@ -32,6 +32,7 @@ int main(void)
 		PORTA &= ~(1<<PORTA0);
 		_delay_ms(1000);
 		USART_SendMessage("apa");
+		TWI_send_string(S_ADRESS, "Hue");
 		if(TWI_command_flag())
 			PORTA ^= (1<<PORTA0);
     }

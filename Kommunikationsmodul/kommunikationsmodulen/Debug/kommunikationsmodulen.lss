@@ -339,7 +339,7 @@ int main(void)
 		USART_SendSensors();
 		
 		_delay_ms(1000);
-		if(TWI_send_status(S_ADRESS))
+		if(TWI_send_status(ST_ADRESS))
 			PORTA ^= (1<<PORTA1);
  184:	d2 e0       	ldi	r29, 0x02	; 2
 	
@@ -368,8 +368,8 @@ int main(void)
  1a0:	00 00       	nop
 		
 		_delay_ms(1000);
-		if(TWI_send_status(S_ADRESS))
- 1a2:	80 e4       	ldi	r24, 0x40	; 64
+		if(TWI_send_status(ST_ADRESS))
+ 1a2:	80 e2       	ldi	r24, 0x20	; 32
  1a4:	c0 d0       	rcall	.+384    	; 0x326 <TWI_send_status>
  1a6:	88 23       	and	r24, r24
  1a8:	71 f3       	breq	.-36     	; 0x186 <main+0x20>

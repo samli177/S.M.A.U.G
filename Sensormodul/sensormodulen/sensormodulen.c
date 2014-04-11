@@ -41,14 +41,17 @@ char display_buffer[64][20];
 int buffer_size = 0;
 
 int UL;
-void init_display_timer();
+void init_counter();
+void set_counter(uint16_t delay);
+
+bool sensor_data_flag = false;
 
 // define FIFO for received packets (USART)
 MK_FIFO(4096); // use 4 kB
 DEFINE_FIFO(gRxFIFO, 4096);
 
 uint8_t decode_message_RxFIFO();
-// uint8_t Write_to_FIFO(char);
+uint8_t write_to_FIFO(char msg[]);
 
 int main(void)
 {
@@ -56,8 +59,8 @@ int main(void)
 	// init TWI
 
 	TWI_init(S_ADRESS);
-
-	
+	init_counter();
+	set_counter(2000);
 	adc_init();
 	init_tables();
 	
@@ -71,10 +74,10 @@ int main(void)
 	init_UL();
 	while(1)
 	{
-		select_sensor(0);
-		adc_start();
-		_delay_ms(2000);
 		
+		_delay_ms(1000);
+		if(sensor_data_flag)
+			print_sensor_data();
 			
 		/*UL_sensor();
 		_delay_ms(3000);
@@ -277,6 +280,7 @@ int voltage_to_mm_long(float voltage)
 ISR(ADC_vect)
 {
 	cli();	uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;	if(gSelectedSensor == 4)	{		gSensorBuffer[gSelectedSensor] = voltage_to_mm_long(vin)/10;	} else {		gSensorBuffer[gSelectedSensor] = voltage_to_mm_short(vin)/10;	}			if(gSelectedSensor < 6)	{		// Not last sensor		select_sensor(gSelectedSensor + 1);		adc_start();	} else {
+		select_sensor(0);
 		UL_sensor();	}	sei();}
 
 void init_mux()
@@ -284,6 +288,7 @@ void init_mux()
 	DDRA |= 0b00111110;
 	DDRA &= ~(1<<PORTA0);
 	PORTA &= ~(1<<PORTA5);
+	PORTA &= ~((1<<PORTA1) | (1<<PORTA2) | (1<<PORTA3) | (1<<PORTA4));
 	//PORTA &= 0b11100001;
 }
 
@@ -297,32 +302,34 @@ void init_UL()
 	TCCR0B = 0x05;
 }
 
-void init_display_timer()
+void init_counter()
 {
 	// WGMn3:0 = 4 (OCRnA) or 12 (OCRn), where top value is read from.
-	TCCR1A |= (1<<WGM12); // CTC (Clear Timer on Compare Match) mode with control value at OCR1A.
-	TCCR1B |= 0b00000011; // Choosing clock. (clkI/O/64)
+	TCCR1B |= 0b00000101; // Choosing clock. (clkI/O/1024)
 	
-	// value for interrupt:
-	OCR1AH = 0x0F; 
-	OCR1AL = 0x00;
+	// standardvalue for interrupt is 1000ms
+	set_counter(1000);
 	
 	TIMSK1 |= 0b00000010; // Enable interrupts when OCF1A, in FIFR1, is set. 
-	TIMSK1 |= 0b00100000; // Enable interrupts when ICF1, in FIFR1, is set. 
 	// OCF1A (or ICFn) Flag, in TIFR1, can be used to generate interrupts.
+	TCNT1 = 0;
 }
-/*
-ISR(OCF1A)
+
+void set_counter(uint16_t delay)
 {
-	if(decode_message_RxFIFO())
-	{
-		// display_sensordata();
-	}
+	delay = 15.625 * delay;
+	OCR1A = delay;
 }
-*/
+
+ISR(TIMER1_COMPA_vect)
+{
+	adc_start();
+	TCNT1 = 0;
+}
+
 void adc_init()
 {
-	// ADC enabled, enable interupt, set division factor for clock to be 128
+	// ADC enabled, enable interrupt, set division factor for clock to be 128
 	ADCSRA = (1<<ADEN | 1<<ADIE | 1<<ADPS2 | 1<<ADPS1 | 1<<ADPS0);
 	// Disable auto trigger
 	// ADCSRA &= ~(1<<ADATE);
@@ -353,35 +360,35 @@ void print_sensor_data()
 	clear_display();
 	
 	set_display_pos(0,0);
-	print_text("1: ");
+	print_text("0: ");
 	print_value(gSensorBuffer[0]);
 	
 	set_display_pos(0,8);
-	print_text("2: ");
+	print_text("1: ");
 	print_value(gSensorBuffer[1]);
 	
 	set_display_pos(1,0);
-	print_text("3: ");
+	print_text("2: ");
 	print_value(gSensorBuffer[2]);
 	
 	set_display_pos(1,8);
-	print_text("4: ");
+	print_text("3: ");
 	print_value(gSensorBuffer[3]);
 	
 	set_display_pos(2,0);
-	print_text("5: ");
+	print_text("4: ");
 	print_value(gSensorBuffer[4]);
 	
 	set_display_pos(2,8);
-	print_text("6: ");
+	print_text("5: ");
 	print_value(gSensorBuffer[5]);
 	
 	set_display_pos(3,0);
-	print_text("7: ");
+	print_text("6: ");
 	print_value(gSensorBuffer[6]);
 	
 	set_display_pos(3,8);
-	print_text("8: ");
+	print_text("7: ");
 	print_value(gSensorBuffer[7]);
 }
 
@@ -392,31 +399,28 @@ void select_sensor(int sensor)
 	switch(sensor)
 	{
 		case(0):
-			// Do nothing
-			break;
-		case(1):
 			PORTA |= 1<<PORTA1;
 			break;
-		case(2):
+		case(1):
 			PORTA |= 1<<PORTA2;
 			break;
-		case(3):
+		case(2):
 			PORTA |= 1<<PORTA1 | 1<<PORTA2;
 			break;
-		case(4):
+		case(3):
 			PORTA |= 1<<PORTA3;
 			break;
-		case(5):
+		case(4):
 			PORTA |= 1<<PORTA1 | 1<<PORTA3;
 			break;
-		case(6):
-			PORTA |= 1<<PORTA2 | 1<< PORTA3;
+		case(5):
+			PORTA |= 1<<PORTA2 | 1<<PORTA3;
 			break;
-		case(7):
+		case(6):
 			PORTA |= 1<<PORTA1 | 1<<PORTA2 | 1<<PORTA3;
 			break;
 		default:
-			// Do nothing
+			//Do nada
 			break;
 	}
 }
@@ -454,7 +458,7 @@ ISR(PCINT0_vect)
 	{
 		UL = TCNT0;
 		gSensorBuffer[7] = UL;
-		print_sensor_data();
+		sensor_data_flag = true;
 		//UL = (UL * 340 / (2 * 15625));
 	}
 	sei();
@@ -501,8 +505,8 @@ uint8_t decode_message_RxFIFO()
 	
 	return 0;
 }
-/*
-uint8_t Write_to_FIFO(char msg[])
+
+uint8_t write_to_FIFO(char msg[])
 {
 	for(int i = 0; i < strlen(msg); ++i)
 	{
@@ -514,5 +518,4 @@ uint8_t Write_to_FIFO(char msg[])
 	}
 	return 0;
 }
-*/
 
