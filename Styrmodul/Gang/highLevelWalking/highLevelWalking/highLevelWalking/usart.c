@@ -29,6 +29,7 @@ MK_FIFO(4096); // use 4 kB
 DEFINE_FIFO(gRxFIFO, 4096);
 
 
+
 void USART_init()
 {
 	//set baud rate
