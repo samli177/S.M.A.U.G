@@ -650,16 +650,16 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x0000009c      0x3cc twi.o
  .debug_frame   0x00000468      0x208 usart.o
 
-.debug_str      0x00000000      0x724
+.debug_str      0x00000000      0x772
  *(.debug_str)
- .debug_str     0x00000000       0xef fifo.o
-                                0x134 (size before relaxing)
- .debug_str     0x000000ef       0xc4 kommunikationsmodulen.o
+ .debug_str     0x00000000       0xe5 fifo.o
+                                0x12a (size before relaxing)
+ .debug_str     0x000000e5      0x11c kommunikationsmodulen.o
                                 0x1ae (size before relaxing)
- .debug_str     0x000001b3      0x409 twi.o
+ .debug_str     0x00000201      0x409 twi.o
                                 0x57f (size before relaxing)
- .debug_str     0x000005bc      0x168 usart.o
-                                0x33f (size before relaxing)
+ .debug_str     0x0000060a      0x168 usart.o
+                                0x335 (size before relaxing)
 
 .debug_loc      0x00000000     0x1382
  *(.debug_loc)
