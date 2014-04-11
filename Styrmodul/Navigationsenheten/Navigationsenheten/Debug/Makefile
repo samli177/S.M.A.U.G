@@ -36,8 +36,10 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
+../fifo.c \
 ../Navigationsenheten.c \
-../twi.c
+../twi.c \
+../usart.c
 
 
 PREPROCESSING_SRCS += 
@@ -47,20 +49,28 @@ ASM_SRCS +=
 
 
 OBJS +=  \
+fifo.o \
 Navigationsenheten.o \
-twi.o
+twi.o \
+usart.o
 
 OBJS_AS_ARGS +=  \
+fifo.o \
 Navigationsenheten.o \
-twi.o
+twi.o \
+usart.o
 
 C_DEPS +=  \
+fifo.d \
 Navigationsenheten.d \
-twi.d
+twi.d \
+usart.d
 
 C_DEPS_AS_ARGS +=  \
+fifo.d \
 Navigationsenheten.d \
-twi.d
+twi.d \
+usart.d
 
 OUTPUT_FILE_PATH +=Navigationsenheten.elf
 
@@ -73,6 +83,10 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 

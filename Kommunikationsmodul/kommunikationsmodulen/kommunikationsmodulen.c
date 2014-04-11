@@ -22,12 +22,6 @@
 #include "usart.h"
 
 
-// -- Global variables from TWI --
-int my_adress;
-bool instruction;
-int current_instruction;
-
-
 // -- Declarations --
 void init();
 
@@ -41,8 +35,7 @@ int main(void)
 	USART_init();
 	
 	// init TWI
-	my_adress = C_ADRESS;
-	init_TWI(my_adress);
+	TWI_init(C_ADRESS);
 	
 	sei();
 	_delay_ms(500);
@@ -54,8 +47,9 @@ int main(void)
 		USART_DecodeRxFIFO();
 		USART_SendSensors();
 		
-		_delay_ms(2000);
-		send_status(S_ADRESS);
+		_delay_ms(1000);
+		if(TWI_send_status(S_ADRESS))
+			PORTA ^= (1<<PORTA1);
 	}
 }
 
@@ -71,67 +65,3 @@ void init()
 
 
 // -- Interrupts -- 
-
-
-
-ISR(TWI_vect)
-{
-	cli();
-	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
-	{
-		instruction = true;
-		
-	}
-	else if(CONTROL == DATA_SLAW)
-	{
-		if(instruction)
-		{
-			current_instruction = get_data();
-			instruction = false;
-		}
-		else
-		{
-			switch(current_instruction)
-			{
-				case(I_SETTINGS):
-				{
-					get_settings_from_bus();
-					break;
-				}
-				case(I_STRING):
-				{
-					get_char_from_bus();
-					break;
-				}
-			}
-		}
-	}
-	else if (CONTROL == DATA_GENERAL)
-	{
-		//temp
-		PORTA |= (1<<PORTA1); // turn on/off led
-		//temp
-		
-		get_sensor_from_bus();
-	}
-	else if (CONTROL == STOP)
-	{
-		PORTA ^= (1<<PORTA1);
-		switch(current_instruction)
-		{
-			case(I_SETTINGS):
-			{
-				//get_settings();
-				break;
-			}
-			case(I_STRING):
-			{
-				//get_char(1);
-				break;
-			}
-		}
-		stop_twi();
-	}
-	reset_TWI();
-	sei();
-}
