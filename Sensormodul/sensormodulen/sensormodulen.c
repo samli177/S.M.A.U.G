@@ -12,9 +12,11 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "display.h"
 #include "twi.h"
+#include "../../Kommunikationsmodul/kommunikationsmodulen/fifo.h"
 
 void send_data(void);
 void init_TWI_sensor(void);
@@ -27,31 +29,38 @@ void init_tables();
 unsigned int UL_sensor();
 void init_UL();
 int voltage_to_cm(float voltage);
-
-// -- Global variables --
+void print_sensor_data();
 
 uint8_t gSelectedSensor = 0;
-int gSensorBuffer[7]; // NOTE: should probably be uint8_t
+int gSensorBuffer[8]; // NOTE: should probably be uint8_t
 
 float IR_short[13][2];
+float IR_long[15][2];
+
 char display_buffer[64][20];
 int buffer_size = 0;
 
-int my_adress;
-bool instruction;
-int current_instruction;
-
 int UL;
+void init_counter();
+void set_counter(uint16_t delay);
+
+bool sensor_data_flag = false;
+
+// define FIFO for received packets (USART)
+MK_FIFO(4096); // use 4 kB
+DEFINE_FIFO(gRxFIFO, 4096);
+
+uint8_t decode_message_RxFIFO();
+uint8_t write_to_FIFO(char msg[]);
 
 int main(void)
 {
 	init_display();
 	// init TWI
-	my_adress = S_ADRESS;
-	init_TWI(my_adress);
-	
-	
-	
+
+	TWI_init(S_ADRESS);
+	init_counter();
+	set_counter(2000);
 	adc_init();
 	init_tables();
 	
@@ -65,6 +74,11 @@ int main(void)
 	init_UL();
 	while(1)
 	{
+		
+		_delay_ms(1000);
+		if(sensor_data_flag)
+			print_sensor_data();
+			
 		/*UL_sensor();
 		_delay_ms(3000);
 		clear_display();
@@ -86,8 +100,10 @@ int main(void)
 			print_text(", ");
 			
 		}*/
-		send_settings(5);
-		_delay_ms(680);
+
+		//TWI_send_autonom_settings(C_ADRESS, 5);
+		//_delay_ms(680);
+
 	}
 	
 	//displaytest();
@@ -99,39 +115,18 @@ int main(void)
 	clear_display();
 	print_text("skickas");*/
 	
-	//display top in buffer and sensordata
+	//display top in buffer or sensordata
 	clear_display();
-	if(buffer_size > 0)
-	{
-		//Display top row:
-		for(int i = 0; i < display_buffer[0][0]; ++i)
-		{
-			print_char(display_buffer[i+1][0]);
-		}
-		//Delete top row:
-		for(int it_row = 0; it_row <= buffer_size; ++it_row)
-		{
-			for(int it_col = 0; it_col <= display_buffer[0][it_row + 1]; ++it_col)
-			{
-				display_buffer[it_col][it_row] = display_buffer[it_col][it_row + 1];
-			}
-		}
-		buffer_size = buffer_size - 1;
-	}
-	else
+	if(decode_message_RxFIFO())
 	{
 		//display sensordata
-		for(int i = 0; i < 8; ++i)
-		{
-			print_value(gSensorBuffer[i]);
-			print_text(", ");
-			
-		}
+		print_sensor_data();
 	}
 }
 
 void init_tables()
 {
+	// 10-80 cm
 	IR_short[0][0] = 3.15;
 	IR_short[0][1] = 6;
 	
@@ -171,10 +166,55 @@ void init_tables()
 	IR_short[12][0] = 0.41;
 	IR_short[12][1] = 80;
 	
+	// 20-150 cm
+	IR_long[0][0] = 2.75;
+	IR_long[0][1] = 15;
+	
+	IR_long[1][0] = 2.55;
+	IR_long[1][1] = 20;
+	
+	IR_long[2][0] = 2.00;
+	IR_long[2][1] = 30;
+	
+	IR_long[3][0] = 1.55;
+	IR_long[3][1] = 40;
+	
+	IR_long[4][0] = 1.25;
+	IR_long[4][1] = 50;
+	
+	IR_long[5][0] = 1.07;
+	IR_long[5][1] = 60;
+	
+	IR_long[6][0] = 0.85;
+	IR_long[6][1] = 70;
+	
+	IR_long[7][0] = 0.80;
+	IR_long[7][1] = 80;
+	
+	IR_long[8][0] = 0.75;
+	IR_long[8][1] = 90;
+	
+	IR_long[9][0] = 0.65;
+	IR_long[9][1] = 100;
+	
+	IR_long[10][0] = 0.60;
+	IR_long[10][1] = 110;
+	
+	IR_long[11][0] = 0.55;
+	IR_long[11][1] = 120;
+	
+	IR_long[12][0] = 0.50;
+	IR_long[12][1] = 130;
+	
+	IR_long[13][0] = 0.45;
+	IR_long[13][1] = 140;
+	
+	IR_long[14][0] = 0.42;
+	IR_long[14][1] = 150;
 }
 
-int voltage_to_mm(float voltage)
-{
+int voltage_to_mm_short(float voltage)
+{	
 	if(voltage >= IR_short[0][0])
 	{
 		return IR_short[0][1]*10;
@@ -204,19 +244,51 @@ int voltage_to_mm(float voltage)
 	return 0;
 }
 
+int voltage_to_mm_long(float voltage)
+{
+	if(voltage >= IR_long[0][0])
+	{
+		return IR_long[0][1]*10;
+	} else if(voltage <= IR_long[14][0])
+	{
+		return IR_long[14][1]*10;
+	}
+	
+	for(int i = 0; i < 13; ++i)
+	{
+		float prev = IR_long[i][0];
+		float next = IR_long[i+1][0];
+		if(next == voltage)
+		{
+			return IR_long[i+1][1]*10;
+		} else if(prev > voltage && next < voltage)
+		{
+			int high = IR_long[i][1]*10;
+			int low = IR_long[i+1][1]*10;
+			int diff = high - low;
+			float diff_to_prev = prev - voltage;
+			float volt_diff = prev - next;
+			return (int) (high - diff * diff_to_prev / volt_diff);
+		}
+	}
+	
+	return 0;
+}
+
+
 
 ISR(ADC_vect)
 {
-	cli();
-	/*
-	clear_display();
-	print_line(0, "ADC complete");	set_display_pos(1, 0);	 	print_value(voltage_to_mm(vin));	print_text(", ");	print_value((int)(vin*100));	*/	clear_display();	print_value(gSelectedSensor);		uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;		gSensorBuffer[gSelectedSensor] = voltage_to_mm(vin)/10;	print_text(", ");	print_value(voltage_to_mm(vin)/10);	sei();}
+	cli();	uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;	if(gSelectedSensor == 4)	{		gSensorBuffer[gSelectedSensor] = voltage_to_mm_long(vin)/10;	} else {		gSensorBuffer[gSelectedSensor] = voltage_to_mm_short(vin)/10;	}			if(gSelectedSensor < 6)	{		// Not last sensor		select_sensor(gSelectedSensor + 1);		adc_start();	} else {
+		select_sensor(0);
+		UL_sensor();	}	sei();}
 
 void init_mux()
 {
 	DDRA |= 0b00111110;
 	DDRA &= ~(1<<PORTA0);
 	PORTA &= ~(1<<PORTA5);
+	PORTA &= ~((1<<PORTA1) | (1<<PORTA2) | (1<<PORTA3) | (1<<PORTA4));
 	//PORTA &= 0b11100001;
 }
 
@@ -230,9 +302,34 @@ void init_UL()
 	TCCR0B = 0x05;
 }
 
+void init_counter()
+{
+	// WGMn3:0 = 4 (OCRnA) or 12 (OCRn), where top value is read from.
+	TCCR1B |= 0b00000101; // Choosing clock. (clkI/O/1024)
+	
+	// standardvalue for interrupt is 1000ms
+	set_counter(1000);
+	
+	TIMSK1 |= 0b00000010; // Enable interrupts when OCF1A, in FIFR1, is set. 
+	// OCF1A (or ICFn) Flag, in TIFR1, can be used to generate interrupts.
+	TCNT1 = 0;
+}
+
+void set_counter(uint16_t delay)
+{
+	delay = 15.625 * delay;
+	OCR1A = delay;
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+	adc_start();
+	TCNT1 = 0;
+}
+
 void adc_init()
 {
-	// ADC enabled, enable interupt, set division factor for clock to be 128
+	// ADC enabled, enable interrupt, set division factor for clock to be 128
 	ADCSRA = (1<<ADEN | 1<<ADIE | 1<<ADPS2 | 1<<ADPS1 | 1<<ADPS0);
 	// Disable auto trigger
 	// ADCSRA &= ~(1<<ADATE);
@@ -258,6 +355,43 @@ void adc_start()
 	ADCSRA |= 1<<ADSC;
 }
 
+void print_sensor_data()
+{
+	clear_display();
+	
+	set_display_pos(0,0);
+	print_text("0: ");
+	print_value(gSensorBuffer[0]);
+	
+	set_display_pos(0,8);
+	print_text("1: ");
+	print_value(gSensorBuffer[1]);
+	
+	set_display_pos(1,0);
+	print_text("2: ");
+	print_value(gSensorBuffer[2]);
+	
+	set_display_pos(1,8);
+	print_text("3: ");
+	print_value(gSensorBuffer[3]);
+	
+	set_display_pos(2,0);
+	print_text("4: ");
+	print_value(gSensorBuffer[4]);
+	
+	set_display_pos(2,8);
+	print_text("5: ");
+	print_value(gSensorBuffer[5]);
+	
+	set_display_pos(3,0);
+	print_text("6: ");
+	print_value(gSensorBuffer[6]);
+	
+	set_display_pos(3,8);
+	print_text("7: ");
+	print_value(gSensorBuffer[7]);
+}
+
 void select_sensor(int sensor)
 {
 	gSelectedSensor = sensor;
@@ -265,31 +399,28 @@ void select_sensor(int sensor)
 	switch(sensor)
 	{
 		case(0):
-			// Do nothing
-			break;
-		case(1):
 			PORTA |= 1<<PORTA1;
 			break;
-		case(2):
+		case(1):
 			PORTA |= 1<<PORTA2;
 			break;
-		case(3):
+		case(2):
 			PORTA |= 1<<PORTA1 | 1<<PORTA2;
 			break;
-		case(4):
+		case(3):
 			PORTA |= 1<<PORTA3;
 			break;
-		case(5):
+		case(4):
 			PORTA |= 1<<PORTA1 | 1<<PORTA3;
 			break;
-		case(6):
-			PORTA |= 1<<PORTA2 | 1<< PORTA3;
+		case(5):
+			PORTA |= 1<<PORTA2 | 1<<PORTA3;
 			break;
-		case(7):
+		case(6):
 			PORTA |= 1<<PORTA1 | 1<<PORTA2 | 1<<PORTA3;
 			break;
 		default:
-			// Do nothing
+			//Do nada
 			break;
 	}
 }
@@ -326,6 +457,8 @@ ISR(PCINT0_vect)
 	else
 	{
 		UL = TCNT0;
+		gSensorBuffer[7] = UL;
+		sensor_data_flag = true;
 		//UL = (UL * 340 / (2 * 15625));
 	}
 	sei();
@@ -336,62 +469,53 @@ void displaytest(void)
 	print_line(0, "Initiating AI");
 }
 
-// TWI interrupt vector
-ISR(TWI_vect)
+uint8_t decode_message_RxFIFO()
 {
-	cli();
-	if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
+	
+	uint8_t *len = 0;
+	uint8_t *character = 0;
+	
+	if(FifoRead(gRxFIFO, len))
 	{
-		instruction = true;
+		//print_text("RxFIFO ERROR: LEN MISSING");
+		return 1; // error
 	}
-	else if(CONTROL == DATA_SLAW)
+	
+	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
+	
+	//NOTE: there has to be a better way of doing this...
+	int ifzero = 0;
+	if(length == 0) ifzero = 1;
+	char msg[length-1+ifzero];
+
+	for(int i = 0; i < length; ++i)
 	{
-		if(instruction)
+		if(FifoRead(gRxFIFO, character))
 		{
-			current_instruction = get_data();
-			instruction = false;
+			//print_text("RxFIFO ERROR: DATA MISSING");
+			return 1; // error
 		}
-		else
-		{
-			switch(current_instruction)
-			{
-				case(I_SWEEP):
-				{
-					get_sweep_from_bus();
-					break;
-				}
-				case(I_STRING):
-				{
-					get_char_from_bus();
-					break;
-				}
-			}
-		}
+
+		msg[i] = *character;
 	}
-	else if (CONTROL == STOP)
-	{
-		switch(current_instruction)
-		{
-			case(I_SWEEP):
-			{
-				//print_value(get_sweep());
-				break;
-			}
-			case(I_STRING):
-			{
-				display_buffer[0][buffer_size] = get_message_length();
-				for(int i = 0; i < get_message_length(); ++i)
-				{
-					// TODO: change to get_char_from_bus() or implement get_char()...
-					//Take char and put in display_buffer in top empty row
-					display_buffer[i+1][buffer_size] = get_char(i);
-				}
-				buffer_size = buffer_size + 1;
-				break;
-			}
-		}
-		stop_twi();
-	}
-	reset_TWI();
-	sei();
+	
+	
+	// TODO: send to relevant party... the display for now
+	print_text(msg);
+	
+	return 0;
 }
+
+uint8_t write_to_FIFO(char msg[])
+{
+	for(int i = 0; i < strlen(msg); ++i)
+	{
+		if(FifoWrite(gRxFIFO, msg[i]))
+		{
+			print_text("RxFIFO ERROR: WRITING IMPOSSIBLE");
+			return 1;
+		}
+	}
+	return 0;
+}
+
