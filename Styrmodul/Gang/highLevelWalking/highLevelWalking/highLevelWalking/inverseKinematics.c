@@ -25,13 +25,7 @@
 double sinAngleToFrontLegs = centerToFrontLegsY / centerToFrontLegs;
 double cosAngleToFrontLegs = centerToFrontLegsX / centerToFrontLegs;
 
-void LegGoto(double x,double y,double z, int servospeed, int side, int servo1, int servo2, int servo3);
-void moveLeg1too(double x, double y, double z, int servospeed);
-void moveLeg2too(double x, double y, double z, int servospeed);
-void moveLeg3too(double x, double y, double z, int servospeed);
-void moveLeg4too(double x, double y, double z, int servospeed);
-void moveLeg5too(double x, double y, double z, int servospeed);
-void moveLeg6too(double x, double y, double z, int servospeed);
+
 
 void LegGoto(double x,double y,double z, int servospeed, int side, int servo1, int servo2, int servo3)
 {
@@ -46,7 +40,9 @@ void LegGoto(double x,double y,double z, int servospeed, int side, int servo1, i
 	alpha = acos((femur*femur-tibia*tibia+d*d)/(2*femur*d))-asin(fabs(z)/d);
 	
 	servoGoto(servo1, gamma, servospeed);
+	_delay_ms(1);
 	servoGoto(servo2, side*(alpha + femurAngleAddition),servospeed);
+	_delay_ms(1);
 	servoGoto(servo3, side*(-beta + tibiaAngleAddition),servospeed);
 }
 
@@ -59,8 +55,8 @@ void moveLeg1too(double x, double y, double z, int servospeed) //Help function t
 
 void moveLeg2too(double x, double y, double z, int servospeed) //Help function to describe position of leg in standard base x,y,z
 {
-	double a = (x + centerToSideLegs)*cos(-3.1415)-(y)*sin(-3.1415);
-	double b = (x + centerToSideLegs)*sin(-3.1415)+(y)*cos(-3.1415);
+	double a = (x + centerToSideLegs)*cos(3.1415)-(y)*sin(-3.1415);
+	double b = (x + centerToSideLegs)*sin(-3.1415)+(y)*cos(3.1415);
 	LegGoto(a, b, z, servospeed,1,14,16,18);
 }
 
