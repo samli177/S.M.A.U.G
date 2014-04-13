@@ -122,6 +122,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="counter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="counter.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="fifo.c">
       <SubType>compile</SubType>
     </Compile>

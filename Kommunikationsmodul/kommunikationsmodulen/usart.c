@@ -1,9 +1,11 @@
 ﻿/*
- * CFile1.c
+ * usart.c
  *
  * Created: 4/7/2014 11:34:04 AM
  *  Author: samli177
  */ 
+
+#define F_CPU 18432000UL
 
 #include <avr/io.h>
 #include <avr/interrupt.h>

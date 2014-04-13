@@ -16,7 +16,7 @@
 
 #include "display.h"
 #include "twi.h"
-#include "fifo.h"
+#include "counter.h"
 
 void send_data(void);
 void init_TWI_sensor(void);
@@ -41,17 +41,8 @@ char display_buffer[64][20];
 int buffer_size = 0;
 
 int UL;
-void init_counter();
-void set_counter(uint16_t delay);
 
 bool sensor_data_flag = false;
-
-// define FIFO for received packets (USART)
-MK_FIFO(4096); // use 4 kB
-DEFINE_FIFO(gTwiFIFO, 4096);
-
-uint8_t decode_message_TwiFIFO();
-uint8_t write_to_FIFO(char msg[]);
 
 int main(void)
 {
@@ -59,12 +50,11 @@ int main(void)
 	// init TWI
 
 	TWI_init(S_ADRESS);
-	init_counter();
-	set_counter(2000);
+	init_counters();
+	set_counter_1(2000);
 	adc_init();
 	init_tables();
 	
-	write_to_FIFO("test");
 
 	// Test code for sensor
 	
@@ -78,9 +68,6 @@ int main(void)
 		_delay_ms(1000);
 		//if(sensor_data_flag)
 			//print_sensor_data();
-			
-		decode_message_TwiFIFO();
-		
 			
 		/*UL_sensor();
 		_delay_ms(3000);
@@ -120,11 +107,6 @@ int main(void)
 	
 	//display top in buffer or sensordata
 	clear_display();
-	if(decode_message_TwiFIFO())
-	{
-		//display sensordata
-		print_sensor_data();
-	}
 }
 
 void init_tables()
@@ -305,30 +287,22 @@ void init_UL()
 	TCCR0B = 0x05;
 }
 
-void init_counter()
-{
-	// WGMn3:0 = 4 (OCRnA) or 12 (OCRn), where top value is read from.
-	TCCR1B |= 0b00000101; // Choosing clock. (clkI/O/1024)
-	
-	// standardvalue for interrupt is 1000ms
-	set_counter(1000);
-	
-	TIMSK1 |= 0b00000010; // Enable interrupts when OCF1A, in FIFR1, is set. 
-	// OCF1A (or ICFn) Flag, in TIFR1, can be used to generate interrupts.
-	TCNT1 = 0;
-}
 
-void set_counter(uint16_t delay)
-{
-	delay = 15.625 * delay;
-	OCR1A = delay;
-}
+//---------------------------------------COUNTERS/TIMERS interrupt vectirs-----------
 
 ISR(TIMER1_COMPA_vect)
 {
 	adc_start();
 	TCNT1 = 0;
 }
+
+ISR(TIMER2_COMPA_vect)
+{
+	decode_message_TwiFIFO();
+	TCNT2 = 0;
+}
+
+//---------------------------------------------------------------------------------------
 
 void adc_init()
 {
@@ -471,62 +445,3 @@ void displaytest(void)
 {
 	print_line(0, "Initiating AI");
 }
-
-uint8_t decode_message_TwiFIFO()
-{
-	
-	uint8_t *len = 0;
-	uint8_t *character = 0;
-	
-	if(FifoRead(gTwiFIFO, len))
-	{
-		//print_text("TwiFIFO ERROR: LEN MISSING");
-		return 1; // error
-	}
-	
-	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
-	
-	//NOTE: there has to be a better way of doing this...
-	int ifzero = 0;
-	if(length == 0) ifzero = 1;
-	char msg[length-1+ifzero];
-
-	for(int i = 0; i < length; ++i)
-	{
-		if(FifoRead(gTwiFIFO, character))
-		{
-			//print_text("TwiFIFO ERROR: DATA MISSING");
-			return 1; // error
-		}
-
-		msg[i] = *character;
-	}
-	
-	
-	// TODO: send to relevant party... the display for now
-	
-	print_text_fixed_length(msg, length);
-	
-	return 0;
-}
-
-uint8_t write_to_FIFO(char msg[])
-{
-	if(FifoWrite(gTwiFIFO, (unsigned char)strlen(msg)))
-	{
-		print_text("TwiFIFO ERROR: 1");
-		return 1;
-	}
-	
-	for(int i = 0; i < strlen(msg); ++i)
-	{
-		if(FifoWrite(gTwiFIFO, msg[i]))
-		{
-			print_text("TwiFIFO ERROR: 2");
-			return 1;
-		}
-	}
-	
-	return 0;
-}
-
