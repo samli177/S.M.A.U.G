@@ -29,4 +29,23 @@ void moveLeg3too(double x, double y, double z, int servospeed);
 void moveLeg4too(double x, double y, double z, int servospeed);
 void moveLeg5too(double x, double y, double z, int servospeed);
 void moveLeg6too(double x, double y, double z, int servospeed);
+
+//New functions by Tobias
+void Calc_d(double x,double y,double z);
+double Calc_gamma(double x,double y);
+double Calc_Beta(double x,double y,double z);
+double Calc_Alpha(double x,double y,double z);
+
+double basis_change_Leg1x(double x, double y, double z) ;
+double basis_change_Leg1y(double x, double y, double z);
+double basis_change_Leg2x(double x, double y, double z);
+double basis_change_Leg2y(double x, double y, double z);
+double basis_change_Leg3x(double x, double y, double z);
+double basis_change_Leg3y(double x, double y, double z); 
+double basis_change_Leg4x(double x, double y, double z); 
+double basis_change_Leg4y(double x, double y, double z); 
+double basis_change_Leg5x(double x, double y, double z); 
+double basis_change_Leg5y(double x, double y, double z); 
+double basis_change_Leg6x(double x, double y, double z); 
+double basis_change_Leg6y(double x, double y, double z); 
 #endif /* INVERSEKINEMATICS_H_ */
