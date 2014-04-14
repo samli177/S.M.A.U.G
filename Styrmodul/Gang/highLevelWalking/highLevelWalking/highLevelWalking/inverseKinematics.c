@@ -16,8 +16,8 @@
 #define coxa (float)56
 #define femur (float)66
 #define tibia (float)131
-#define femurAngleAddition (float)0.2426
-#define tibiaAngleAddition (float)(-3.1415/6)
+#define femurAngleAddition (float)0.231 //0.2426
+#define tibiaAngleAddition (float)0.812 //(-3.1415/6)
 #define centerToFrontLegsY (float)120
 #define centerToSideLegs (float)100
 #define centerToFrontLegs (float)135

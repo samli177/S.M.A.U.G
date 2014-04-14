@@ -18,18 +18,18 @@
 
 #define pi 3.14159265
 
-#define x0_1 -240 //stanfdard x pos for leg 1
-#define y0_1  250 //stanfdard y pos for leg 1
-#define x0_2  -320 //stanfdard x pos for leg 2
+#define x0_1 -140 //stanfdard x pos for leg 1
+#define y0_1  180 //stanfdard y pos for leg 1
+#define x0_2  -220 //stanfdard x pos for leg 2
 #define y0_2  0 //stanfdard y pos for leg 2
-#define x0_3  -240 //stanfdard x pos for leg 3
-#define y0_3  -250 //stanfdard y pos for leg 3
-#define x0_4 240 //stanfdard x pos for leg 4
-#define y0_4  -250 //stanfdard y pos for leg 4
-#define x0_5  320 //stanfdard x pos for leg 5
+#define x0_3  -140 //stanfdard x pos for leg 3
+#define y0_3  -180 //stanfdard y pos for leg 3
+#define x0_4 140 //stanfdard x pos for leg 4
+#define y0_4  -180 //stanfdard y pos for leg 4
+#define x0_5  220 //stanfdard x pos for leg 5
 #define y0_5  0 //stanfdard y pos for leg 5
-#define x0_6  240 //stanfdard x pos for leg 6
-#define y0_6  250 //stanfdard y pos for leg 6
+#define x0_6  140 //stanfdard x pos for leg 6
+#define y0_6  180 //stanfdard y pos for leg 6
 
 
 
@@ -138,7 +138,7 @@ float z0;
 */
 //Jonas function for robot movement
 
-float z0 = -50;
+float z0 = -120;
 int speed = 200;
 
 void moveRobot(float direction,float distanfce, float rotation, float z, int servoSpeed, float rotationX, float rotationY)
@@ -485,7 +485,8 @@ int main(void)
 		
 		//USART_DecodeRxFIFO();
 
-		moveRobot((float)0,(float)40,(float)0,(float)50,(int)100,(float)0,(float)0);
+		moveRobot((float)0,(float)40,(float)0,(float)120,(int)100,(float)0,(float)0);
+
         //TODO:: Please write your application code 
     }
 }
