@@ -20,7 +20,7 @@
 #include "twi.h"
 #include "fifo.h"
 #include "usart.h"
-
+#include "counter.h"
 
 // -- Declarations --
 void init();
@@ -32,11 +32,6 @@ void init();
 int main(void)
 {
 	init();
-	USART_init();
-	
-	// init TWI
-	TWI_init(C_ADRESS);
-	
 	sei();
 	_delay_ms(500);
 	while(1)
@@ -59,9 +54,19 @@ int main(void)
 void init()
 {
 	DDRA |= (1<<PORTA0|1<<PORTA1); //set status diodes to outputs
-	
+	USART_init();
+	TWI_init(C_ADRESS);
+	init_counters();
 }
 
+//Interrupt vectors
 
+ISR(TIMER1_COMPA_vect)
+{
+	TCNT1 = 0;
+}
 
-// -- Interrupts -- 
+ISR(TIMER2_COMPA_vect)
+{
+	TCNT2 = 0;
+}

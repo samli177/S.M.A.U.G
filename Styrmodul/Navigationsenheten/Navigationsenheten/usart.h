@@ -10,7 +10,6 @@
 #define USART_H_
 
 
-#define F_CPU 16000000UL
 
 #define BaudRate 115200
 #define POLY 0x8408

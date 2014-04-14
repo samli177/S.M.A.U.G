@@ -109,10 +109,22 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="counter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="counter.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="display.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="display.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="fifo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="fifo.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="sensormodulen.c">
