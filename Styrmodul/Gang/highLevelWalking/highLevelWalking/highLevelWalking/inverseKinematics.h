@@ -33,19 +33,19 @@ void moveLeg6too(float x, float y, float z, int servospeed);
 //New functions by Tobias
 void Calc_d(float x,float y,float z);
 float Calc_gamma(float x,float y);
-float Calc_Beta(float x,float y,float z);
-float Calc_Alpha(float x,float y,float z);
+float Calc_Beta();
+float Calc_Alpha(float z);
 
-float basis_change_Leg1x(float x, float y, float z) ;
-float basis_change_Leg1y(float x, float y, float z);
-float basis_change_Leg2x(float x, float y, float z);
-float basis_change_Leg2y(float x, float y, float z);
-float basis_change_Leg3x(float x, float y, float z);
-float basis_change_Leg3y(float x, float y, float z); 
-float basis_change_Leg4x(float x, float y, float z); 
-float basis_change_Leg4y(float x, float y, float z); 
-float basis_change_Leg5x(float x, float y, float z); 
-float basis_change_Leg5y(float x, float y, float z); 
-float basis_change_Leg6x(float x, float y, float z); 
-float basis_change_Leg6y(float x, float y, float z); 
+float basis_change_Leg1x(float x, float y);
+float basis_change_Leg1y(float x, float y);
+float basis_change_Leg2x(float x);
+float basis_change_Leg2y(float y);
+float basis_change_Leg3x(float x, float y);
+float basis_change_Leg3y(float x, float y); 
+float basis_change_Leg4x(float x, float y); 
+float basis_change_Leg4y(float x, float y); 
+float basis_change_Leg5x(float x); 
+float basis_change_Leg5y(float y); 
+float basis_change_Leg6x(float x, float y); 
+float basis_change_Leg6y(float x, float y); 
 #endif /* INVERSEKINEMATICS_H_ */
