@@ -138,24 +138,27 @@ float z0;
 */
 //Jonas function for robot movement
 
-float z0 = -120;
+float z0 = -120; //120 fungerar
 int speed = 200;
 
 void moveRobot(float direction,float distanfce, float rotation, float z, int servoSpeed, float rotationX, float rotationY)
 {
-	float sinfrotation = 0;//sinf(rotation);
-	float cosfrotation = 1;//cosf(rotation);
-	float sinfdirection = 0;//sinf(direction);
-	float cosfdirection = 1;//cosf(direction);
+	float sinfrotation = sinf(rotation);
+	float cosfrotation = cosf(rotation);
+	float sinfdirection = sinf(direction);
+	float cosfdirection = cosf(direction);
 	float sinfaroundx = 0;//sinf(rotationX);
-	float sinfaroundy = 0;//cosf(rotationY);
+	float sinfaroundy = 0;//sinf(rotationY);
 	
 	//First state-------------------
-	servoGoto(4, 3.1415/2, servoSpeed); //raise legs
+	/*servoGoto(4, 3.1415/2, servoSpeed); //raise legs
 	_delay_ms(5);
 	servoGoto(10, 3.1415/2, servoSpeed);
 	_delay_ms(5);
-	servoGoto(15, -3.1415/2, servoSpeed);
+	servoGoto(15, -3.1415/2, servoSpeed);*/
+	moveLeg1too(x0_1*cosfrotation-y0_1*sinfrotation-sinfdirection*distanfce, y0_1*cosfrotation-x0_1*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY-40), servoSpeed);
+	moveLeg3too(x0_3*cosfrotation-y0_3*sinfrotation-sinfdirection*distanfce, y0_3*cosfrotation-x0_3*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY-40), servoSpeed);
+	moveLeg5too(x0_5*cosfrotation-y0_5*sinfrotation-sinfdirection*distanfce, y0_5*cosfrotation+x0_5*sinfrotation+cosfdirection*distanfce, -(z-centerToSideLegs*sinfaroundy-40), servoSpeed);
 	_delay_ms(200);
 	moveLeg1too(x0_1*cosfrotation-y0_1*sinfrotation-sinfdirection*distanfce, y0_1*cosfrotation-x0_1*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY), servoSpeed);
 	moveLeg3too(x0_3*cosfrotation-y0_3*sinfrotation-sinfdirection*distanfce, y0_3*cosfrotation-x0_3*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY), servoSpeed);
@@ -166,11 +169,14 @@ void moveRobot(float direction,float distanfce, float rotation, float z, int ser
 	_delay_ms(300);
 		
 	//Second state-------------------
-	servoGoto(3, -3.1415/2, servoSpeed); //raise legs
+	/*servoGoto(3, -3.1415/2, servoSpeed); //raise legs
 	_delay_ms(5);
 	servoGoto(9, -3.1415/2, servoSpeed);
 	_delay_ms(5);
-	servoGoto(16, 3.1415/2, servoSpeed);
+	servoGoto(16, 3.1415/2, servoSpeed);*/
+	moveLeg2too(x0_2*cosfrotation-y0_2*sinfrotation-sinfdirection*distanfce, y0_2*cosfrotation+x0_2*sinfrotation+cosfdirection*distanfce, -(z+centerToSideLegs*sinfaroundy-40), servoSpeed);
+	moveLeg4too(x0_4*cosfrotation-y0_4*sinfrotation-sinfdirection*distanfce, y0_4*cosfrotation-x0_4*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY-40), servoSpeed);
+	moveLeg6too(x0_6*cosfrotation-y0_6*sinfrotation-sinfdirection*distanfce, y0_6*cosfrotation-x0_6*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY-40), servoSpeed);
 	_delay_ms(200);
 	moveLeg2too(x0_2*cosfrotation-y0_2*sinfrotation-sinfdirection*distanfce, y0_2*cosfrotation+x0_2*sinfrotation+cosfdirection*distanfce, -(z+centerToSideLegs*sinfaroundy), servoSpeed);
 	moveLeg4too(x0_4*cosfrotation-y0_4*sinfrotation-sinfdirection*distanfce, y0_4*cosfrotation-x0_4*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY), servoSpeed);
@@ -485,7 +491,7 @@ int main(void)
 		
 		//USART_DecodeRxFIFO();
 
-		moveRobot((float)0,(float)40,(float)0,(float)120,(int)100,(float)0,(float)0);
+		moveRobot((float)1,(float)0,(float)0.3,(float)120,(int)100,(float)0,(float)0);
 
         //TODO:: Please write your application code 
     }
