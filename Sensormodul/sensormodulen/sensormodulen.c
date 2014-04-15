@@ -288,7 +288,7 @@ void init_UL()
 }
 
 
-//---------------------------------------COUNTERS/TIMERS interrupt vectirs-----------
+//---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
 
 ISR(TIMER1_COMPA_vect)
 {
