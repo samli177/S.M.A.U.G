@@ -13,6 +13,13 @@
 #include <string.h>
 #include "display.h"
 
+
+static void toggle_enable(void);
+static int display_busy(void);
+static void print_int(int);
+static void print_digit(int);
+static uint8_t read_adress();
+
 void init_display(void)
 {
 	DDRB = 255;
@@ -47,25 +54,41 @@ void print_char(char c)
 	PORTD |= (1<<PORTD5); //Data mode
 	PORTB = c;
 	toggle_enable();
+	
+	switch (read_adress())
+	{
+		case 0x40:
+		set_display_pos(1,0);
+		break;
+		case 0x54:
+		set_display_pos(2,0);
+		break;
+		case 0x50:
+		set_display_pos(3,0);
+		break;
+		case 0x64:
+		set_display_pos(0,0);
+		break;
+	}
 }
 
 int display_busy(void)
 {
 	PORTB = 0;
 	DDRB = 0;
-	PORTD &= !(1<<PORTD5); //Instruction mode
+	PORTD &= ~(1<<PORTD5); //Instruction mode
 	PORTD |= (1<<PORTD7); //Read mode
 	_delay_us(10);
 	toggle_enable();
-	if(PORTB & (1<<PORTB7))
+	if(PINB & (1<<PINB7))
 	{
-		PORTD &= !(1<<PORTD7);
+		PORTD &= ~(1<<PORTD7);
 		DDRB = 255;
 		return 1;
 	}
 	else
 	{
-		PORTD &= !(1<<PORTD7);
+		PORTD &= ~(1<<PORTD7);
 		DDRB = 255;
 		return 0;
 	}
@@ -219,4 +242,19 @@ void set_display_pos(int line, int pos)
 	
 	PORTB = data; //Set adress
 	toggle_enable();
+}
+
+uint8_t read_adress()
+{
+	PORTD &= ~(1<<PORTD5);
+	PORTD |= 1<<PORTD7;
+	
+	toggle_enable();
+	
+	DDRB = 0;
+	uint8_t adress = PINB;
+	DDRB = 0xFF;
+	PORTD |= 1<<PORTD5;
+	
+	return adress;
 }
