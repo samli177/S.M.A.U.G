@@ -171,7 +171,7 @@ void USART_SendMessage(char msg[])
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('S', strlen(msg));
+	USART_SendPacket('M', strlen(msg));
 }
 
 void USART_SendSensors()

@@ -63,6 +63,7 @@ void init()
 
 ISR(TIMER1_COMPA_vect)
 {
+	decode_message_TwiFIFO();
 	TCNT1 = 0;
 }
 

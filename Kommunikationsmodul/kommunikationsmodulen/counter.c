@@ -38,13 +38,13 @@ void init_counters()
 
 void set_counter_1(uint16_t delay)
 {
-	delay = 15.625 * delay;
+	delay = 18.000 * delay;
 	OCR1A = delay;
 }
 
 void set_counter_2(uint16_t delay)
 {
-	delay = 15.625 * delay;
+	delay = 18.000 * delay;
 	OCR1A = delay;
 }
 

@@ -658,7 +658,6 @@ uint8_t decode_message_TwiFIFO()
 	
 	if(FifoRead(gTwiFIFO, len))
 	{
-		//Light lamp?
 		return 1; // error
 	}
 	
