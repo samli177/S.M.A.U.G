@@ -13,7 +13,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include "twi.h"
-
+#include "display.h"
+#include "fifo.h"
 
 static void set_twi_reciever_enable();
 static void Error();
@@ -63,6 +64,12 @@ bool control_settings_flag_ = false;
 bool autonom_settings_flag_ = false;
 bool elevation_flag_ = false;
 bool sweep_flag_ = false;
+
+
+// define FIFO for received packets (USART)
+MK_FIFO(4096); // use 4 kB
+DEFINE_FIFO(gTwiFIFO, 4096);
+
 
 void TWI_init(uint8_t module_adress)
 {
@@ -642,6 +649,67 @@ bool TWI_sweep_flag()
 	return false;
 }
 
+//------------------------------------------------------------------------------FIFO
+
+uint8_t decode_message_TwiFIFO()
+{
+	
+	uint8_t *len = 0;
+	uint8_t *character = 0;
+	
+	if(FifoRead(gTwiFIFO, len))
+	{
+		//No new messages
+		return 1; // error
+	}
+	
+	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
+	
+	//NOTE: there has to be a better way of doing this...
+	int ifzero = 0;
+	if(length == 0) ifzero = 1;
+	char msg[length-1+ifzero];
+
+	for(int i = 0; i < length; ++i)
+	{
+		if(FifoRead(gTwiFIFO, character))
+		{
+			print_text("FIFO ERROR 2!");
+			return 1; // error
+		}
+
+		msg[i] = *character;
+	}
+	
+	
+	// TODO: send to relevant party... the display for now
+	
+	print_text_fixed_length(msg, length);
+	
+	return 0;
+}
+
+uint8_t write_to_TwiFIFO(char msg[])
+{
+	if(FifoWrite(gTwiFIFO, (unsigned char)strlen(msg)))
+	{
+		print_text("FIFO ERROR 3");
+		return 1;
+	}
+	
+	for(int i = 0; i < strlen(msg); ++i)
+	{
+		if(FifoWrite(gTwiFIFO, msg[i]))
+		{
+			print_text("FIFO ERROR 4");
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+
 //TWI Interrupt vector MUHAHAHAHA
 // ----------------------------------------------------------------------------- Communications
 ISR(TWI_vect)
@@ -756,7 +824,7 @@ ISR(TWI_vect)
 					}
 					case(I_STRING):
 					{
-						//Add message to buffer
+						write_to_TwiFIFO(message);
 						break;
 					}
 				}

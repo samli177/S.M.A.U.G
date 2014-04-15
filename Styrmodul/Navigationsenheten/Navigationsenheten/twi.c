@@ -812,25 +812,28 @@ ISR(TWI_vect)
 			else if (CONTROL == STOP)
 			{
 				stop_twi();
-				case(I_COMMAND):
+				switch(current_instruction)
 				{
-					command_flag_ = true;
-					break;
-				}
-				case(I_ELEVATION):
-				{
-					elevation_flag_ = true;
-					break;
-				}
-				case(I_SETTINGS):
-				{
-					control_settings_flag_ = true;
-					break;
-				}
-				case(I_AUTONOM):
-				{
-					autonom_settings_flag_ = true;
-					break;
+					case(I_COMMAND):
+					{
+						command_flag_ = true;
+						break;
+					}
+					case(I_ELEVATION):
+					{
+						elevation_flag_ = true;
+						break;
+					}
+					case(I_SETTINGS):
+					{
+						control_settings_flag_ = true;
+						break;
+					}
+					case(I_AUTONOM):
+					{
+						autonom_settings_flag_ = true;
+						break;
+					}
 				}
 			}
 			reset_TWI();

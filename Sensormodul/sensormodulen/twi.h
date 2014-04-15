@@ -78,6 +78,9 @@ uint8_t TWI_get_control_setting(int i);
 uint8_t TWI_get_autonom_settings();
 uint8_t TWI_get_message_length();
 
+uint8_t decode_message_TwiFIFO();
+uint8_t write_to_TwiFIFO(char msg[]);
+
 //Flags for new data, should be set false when read true
 bool TWI_sensor_flag();
 bool TWI_command_flag();

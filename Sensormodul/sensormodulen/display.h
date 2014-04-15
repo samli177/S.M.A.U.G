@@ -12,6 +12,7 @@
 void init_display(void);
 void print_char(char);
 void print_text(char[]);
+void print_text_fixed_length(char[], int);
 void print_line(int, char[]);
 void print_value(float);
 void set_display_pos(int, int);

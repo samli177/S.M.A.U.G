@@ -10,8 +10,6 @@
 #define USART_H_
 
 
-#define F_CPU 18432000
-
 #define BaudRate 115200
 #define POLY 0x8408
 // -- Declarations --
