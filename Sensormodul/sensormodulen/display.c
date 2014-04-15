@@ -18,9 +18,8 @@ static void toggle_enable(void);
 static int display_busy(void);
 static void print_int(int);
 static void print_digit(int);
-static uint8_t read_adress();
 
-void init_display(void)
+void display_init(void)
 {
 	DDRB = 255;
 	DDRD |= 0b11100000;
@@ -48,26 +47,26 @@ void toggle_enable(void)
 	PORTD &= !(1<<PORTD6);
 }
 
-void print_char(char c)
+void display_char(char c)
 {
 	while(display_busy()); //Wait for display
 	PORTD |= (1<<PORTD5); //Data mode
 	PORTB = c;
 	toggle_enable();
 	
-	switch (read_adress())
+	switch (display_read_adress())
 	{
 		case 0x40:
-		set_display_pos(1,0);
+		display_set_pos(1,0);
 		break;
 		case 0x54:
-		set_display_pos(2,0);
+		display_set_pos(2,0);
 		break;
 		case 0x50:
-		set_display_pos(3,0);
+		display_set_pos(3,0);
 		break;
 		case 0x64:
-		set_display_pos(0,0);
+		display_set_pos(0,0);
 		break;
 	}
 }
@@ -94,11 +93,11 @@ int display_busy(void)
 	}
 }
 
-void print_text(char text[])
+void display_text(char text[])
 {
 	for(int i = 0; i < strlen(text); ++i)
 	{
-		if(i == 16)
+		/*if(i == 16)
 		{
 			set_display_pos(1,0);
 		} else if(i == 32)
@@ -107,44 +106,44 @@ void print_text(char text[])
 		} else if(i == 48)
 		{
 			set_display_pos(3,0);
-		}
-		print_char(text[i]);
+		}*/
+		display_char(text[i]);
 	}
 }
 
-void print_text_fixed_length(char text[], int length)
+void display_text_fixed_length(char text[], int length)
 {
 	for(int i = 0; i < length; ++i)
 	{
 		if(i == 16)
 		{
-			set_display_pos(1,0);
+			display_set_pos(1,0);
 		} else if(i == 32)
 		{
-			set_display_pos(2,0);
+			display_set_pos(2,0);
 		} else if(i == 48)
 		{
-			set_display_pos(3,0);
+			display_set_pos(3,0);
 		}
-		print_char(text[i]);
+		display_char(text[i]);
 	}
 }
 
-void print_line(int line, char text[])
+void display_text_line(int line, char text[])
 {
 	switch(line)
 	{
 		case 0:
-		set_display_pos(0,0);
+		display_set_pos(0,0);
 		break;
 		case 1:
-		set_display_pos(1,0);
+		display_set_pos(1,0);
 		break;
 		case 2:
-		set_display_pos(2,0);
+		display_set_pos(2,0);
 		break;
 		case 3:
-		set_display_pos(3,0);
+		display_set_pos(3,0);
 		break;
 		default:
 		break;
@@ -152,11 +151,11 @@ void print_line(int line, char text[])
 	
 	for(int i = 0; i < strlen(text); ++i)
 	{
-		print_char(text[i]);
+		display_char(text[i]);
 	}
 }
 
-void print_value(float value)
+void display_value(float value)
 {
 	if(value == (int) value)
 	{
@@ -193,48 +192,48 @@ void print_digit(int digit)
 	switch(digit)
 	{
 		case 0:
-			print_char('0');
+			display_char('0');
 			break;
 		case 1:
-			print_char('1');
+			display_char('1');
 			break;
 		case 2:
-			print_char('2');
+			display_char('2');
 			break;
 		case 3:
-			print_char('3');
+			display_char('3');
 			break;
 		case 4:
-			print_char('4');
+			display_char('4');
 			break;
 		case 5:
-			print_char('5');
+			display_char('5');
 			break;
 		case 6:
-			print_char('6');
+			display_char('6');
 			break;
 		case 7:
-			print_char('7');
+			display_char('7');
 			break;
 		case 8:
-			print_char('8');
+			display_char('8');
 			break;
 		case 9:
-			print_char('9');
+			display_char('9');
 			break;
 		default:
-			print_char('0');
+			display_char('0');
 			break;
 	}
 }
 
-void clear_display()
+void display_clear()
 {
 	PORTB = 0b00000001; //Clear Display
 	toggle_enable();
 }
 
-void set_display_pos(int line, int pos)
+void display_set_pos(int line, int pos)
 {
 	PORTD  &= !(1<<PORTD5); //RS = 0 (Instruction mode)
 	int data;
@@ -262,7 +261,7 @@ void set_display_pos(int line, int pos)
 	toggle_enable();
 }
 
-uint8_t read_adress()
+uint8_t display_read_adress()
 {
 	PORTD &= ~(1<<PORTD5);
 	PORTD |= 1<<PORTD7;
