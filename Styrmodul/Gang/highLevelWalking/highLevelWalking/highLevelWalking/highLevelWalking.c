@@ -20,18 +20,20 @@
 #define pi (float) 3.14159265
 #define sqrt2 (float) 1.41421356
 
-#define x0_1 (float) -150/sqrt2-61.85 //standard x pos for leg 1
-#define y0_1 (float) 150/sqrt2+120 //standard y pos for leg 1
-#define x0_2 (float) -150-61.85 //standard x pos for leg 2
+#define x0_1 (float) (-150/sqrt2-61.85) //standard x pos for leg 1
+#define y0_1 (float) (150/sqrt2+120) //standard y pos for leg 1
+#define x0_2 (float) (-150-100) //standard x pos for leg 2
 #define y0_2 (float) 0 //standard y pos for leg 2
-#define x0_3 (float) -150/sqrt2-61.85 //standard x pos for leg 3
-#define y0_3 (float) -150/sqrt2-120 //standard y pos for leg 3
-#define x0_4 (float) 150/sqrt2+61.85 //standard x pos for leg 4
-#define y0_4 (float) -150/sqrt2-120 //standard y pos for leg 4
-#define x0_5 (float) 150+61.15 //standard x pos for leg 5
+#define x0_3 (float) (-150/sqrt2-61.85) //standard x pos for leg 3
+#define y0_3 (float) (-150/sqrt2-120) //standard y pos for leg 3
+#define x0_4 (float) (150/sqrt2+61.85) //standard x pos for leg 4
+#define y0_4 (float) (-150/sqrt2-120) //standard y pos for leg 4
+#define x0_5 (float) (150+100) //standard x pos for leg 5
 #define y0_5 (float) 0 //standard y pos for leg 5
-#define x0_6 (float) 150/sqrt2+61.85 //standard x pos for leg 6
-#define y0_6 (float) 150/sqrt2+120 //standard y pos for leg 6
+#define x0_6 (float) (150/sqrt2+61.85) //standard x pos for leg 6
+#define y0_6 (float) (150/sqrt2+120) //standard y pos for leg 6
+#define x0 (float) 150
+#define y0 (float) 0
 #define z0 (float) -80
 
 int speed = 200;
@@ -376,7 +378,7 @@ void initvar()
 	
 	Leg5_prev_angleGamma = Gamma0;
 	Leg5_prev_angleBeta = Beta0;
-	float Leg5_prev_angleAlpha = Alpha0;
+	Leg5_prev_angleAlpha = Alpha0;
 	
 	Leg6_prev_angleGamma = Gamma0;
 	Leg6_prev_angleBeta = Beta0;
@@ -407,28 +409,28 @@ void initvar()
 	Leg6_new_angleBeta = Beta0;
 	Leg6_new_angleAlpha = Alpha0;
 	
-	Leg1_new_posx = x0_1;
-	Leg1_new_posy = y0_1;
+	Leg1_new_posx = x0;
+	Leg1_new_posy = y0;
 	Leg1_new_posz = z0;
 	
-	Leg2_new_posx = x0_2;
-	Leg2_new_posy = y0_2;
+	Leg2_new_posx = x0;
+	Leg2_new_posy = y0;
 	Leg2_new_posz = z0;
 	
-	Leg3_new_posx = x0_3;
-	Leg3_new_posy = y0_3;
+	Leg3_new_posx = x0;
+	Leg3_new_posy = y0;
 	Leg3_new_posz = z0;
 	
-	Leg4_new_posx = x0_4;
-	Leg4_new_posy = y0_4;
+	Leg4_new_posx = x0;
+	Leg4_new_posy = y0;
 	Leg4_new_posz = z0;
 	
-	Leg5_new_posx = x0_5;
-	Leg5_new_posy = y0_5;
+	Leg5_new_posx = x0;
+	Leg5_new_posy = y0;
 	Leg5_new_posz = z0;
 	
-	Leg6_new_posx = x0_6;
-	Leg6_new_posy = y0_6;
+	Leg6_new_posx = x0;
+	Leg6_new_posy = y0;
 	Leg6_new_posz = z0;
 }
 //Tar in styrkommandon (format á la Martin) och uppdaterar variabler för positionen
@@ -439,6 +441,23 @@ void moveRobot(int dir, int rot, int spd)
 	rotation = (float)rot;
 	speedf = (float)spd;
 	
+	Leg1_prev_posx = Leg1_new_posx;
+	Leg1_prev_posy = Leg1_new_posy;
+	
+	Leg2_prev_posx = Leg2_new_posx;
+	Leg2_prev_posy = Leg2_new_posy;
+	
+	Leg3_prev_posx = Leg3_new_posx;
+	Leg3_prev_posy = Leg3_new_posy;
+	
+	Leg4_prev_posx = Leg4_new_posx;
+	Leg4_prev_posy = Leg4_new_posy;
+	
+	Leg5_prev_posx = Leg5_new_posx;
+	Leg5_prev_posy = Leg5_new_posy;
+	
+	Leg6_prev_posx = Leg6_new_posx;
+	Leg6_prev_posy = Leg6_new_posy;
 	
 	
 	//Nytt steg ska räknas ut. Nya stegets vinklar sätts till föregående stegets vinklar.
@@ -473,7 +492,7 @@ void moveRobot(int dir, int rot, int spd)
 
 
 	//x och y riktning för rotation, skalad med rotationshastighet
-	x_rot1 = (rotation / 50 -1) * y0_1 / std_lenght;
+	x_rot1 = (rotation / 50 -1) * y0_1/ std_lenght;
 	y_rot1 = (rotation / 50 -1) * x0_1 / std_lenght;
 
 	x_rot2 = 0;
@@ -654,7 +673,7 @@ void moveRobot(int dir, int rot, int spd)
 
 void Leg_motion()
 {
-	/*
+	
 	if (Leg1_lift == -1)
 	{
 		servoGoto(8,Leg1_new_middle_angleGamma,100);
@@ -758,7 +777,7 @@ _delay_ms(1);
 		servoGoto(11,side6*(-Leg6_prev_angleBeta - (Leg6_new_angleBeta-Leg6_prev_angleBeta)/2 + tibiaAngleAddition),100);
 	}
 
-	_delay_ms(2000);*/
+	_delay_ms(2000);
 
 	servoGoto(8,Leg1_new_angleGamma,100);
 	_delay_us(100);
@@ -820,7 +839,7 @@ int main(void)
 	sei();
 	initServoSerial(); //Init servos
 	USART_init();
-	//initvar();
+	initvar();
 	
 	/*
 	float alpha = 3.1415/4;
