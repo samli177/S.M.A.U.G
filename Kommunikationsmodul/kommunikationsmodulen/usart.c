@@ -277,7 +277,6 @@ uint8_t USART_DecodeCommandRxFIFO()
 			speed = *data;
 		
 		TWI_send_command(direction, rotation, speed);
-		USART_SendMessage("Tog emot kommando.");
 
 	}else
 	{

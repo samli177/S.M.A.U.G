@@ -24,6 +24,7 @@ uint8_t gServoLengthCounter = 0;
 
 void initServoSerial()
 {
+	servoTx;
 	//set baud rate
 	//typecasting of "int" to byte truncates to the lowest uint8_t
 	UBRR1H = (uint8_t) (((F_CPU / 16 / ServoBaudRate ) - 1)>>8);
@@ -188,7 +189,7 @@ uint16_t servoGetPosition(uint8_t ID)
 	
 	servoRx;
 	
-	uint_fast16_t = 0;
+	uint16_t data = 0;
 	int pos;
 	
 	for(int i = 0; i < 8; ++i)

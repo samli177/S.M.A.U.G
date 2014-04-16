@@ -29,19 +29,25 @@ MK_FIFO(4096); // use 4 kB
 DEFINE_FIFO(gRxFIFO, 4096);
 
 
-float getRotation()
+uint8_t USART_getRotation()
 {
-	return (float)( ((gRotation-50)/50.0)*(3.1415/4) );
+	uint8_t rotation = gRotation;
+	gRotation = 50;
+	return  rotation;
 }
 
-int getSpeed()
+uint8_t USART_getSpeed()
 {
-	return (int)(gSpeed*2 + 50);
+	uint8_t speed = gSpeed;
+	gSpeed = 0;
+	return speed;
 }
 
-float getDirection()
+uint8_t USART_getDirection()
 {
-	return (float)( (gDirection/180.0)*2*3.1415 );
+	uint8_t direction = gDirection;
+	gDirection = 0;
+	return direction;
 }
 
 void USART_init()
@@ -57,7 +63,7 @@ void USART_init()
 	//Frame format: 8data, no parity, 1 stop bit
 	UCSR0C = (1<<UCSZ00 | 1<<UCSZ01);
 	
-	gRotation = 0;
+	gRotation = 50;
 	gSpeed = 0;
 	gDirection = 0;
 
