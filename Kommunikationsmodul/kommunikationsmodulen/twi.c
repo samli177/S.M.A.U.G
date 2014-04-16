@@ -54,6 +54,9 @@ uint8_t autonom_settings;
 int current_setting;
 int elevation;
 
+uint8_t float_message[4];
+int float_counter;
+
 //Global variables for the interrupts
 bool instruction;
 int current_instruction;
@@ -746,6 +749,12 @@ ISR(TWI_vect)
 							get_char_from_bus();
 							break;
 						}
+						case(I_FLOAT):
+						{
+							float_message[float_counter] = get_data();
+							float_counter += 1;
+							break;
+						}
 					}
 				}
 			}
@@ -771,6 +780,12 @@ ISR(TWI_vect)
 					case(I_STRING):
 					{
 						write_to_TwiFIFO(message);
+						break;
+					}
+					case(I_FLOAT):
+					{
+						USART_SendValue(float_message);
+						float_counter = 0;
 						break;
 					}
 				}

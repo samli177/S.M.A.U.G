@@ -56,16 +56,16 @@ void display_char(char c)
 	
 	switch (display_read_adress())
 	{
-		case 0x40:
+		case 16:
 		display_set_pos(1,0);
 		break;
-		case 0x54:
+		case 80:
 		display_set_pos(2,0);
 		break;
-		case 0x50:
+		case 32:
 		display_set_pos(3,0);
 		break;
-		case 0x64:
+		case 96:
 		display_set_pos(0,0);
 		break;
 	}
@@ -263,12 +263,14 @@ void display_set_pos(int line, int pos)
 
 uint8_t display_read_adress()
 {
+	PORTB = 0;
+	DDRB = 0;
 	PORTD &= ~(1<<PORTD5);
 	PORTD |= 1<<PORTD7;
-	
+	_delay_us(10);
 	toggle_enable();
 	
-	DDRB = 0;
+	
 	uint8_t adress = PINB;
 	DDRB = 0xFF;
 	PORTD |= 1<<PORTD5;

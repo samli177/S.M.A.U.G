@@ -174,6 +174,16 @@ void USART_SendMessage(char msg[])
 	USART_SendPacket('M', strlen(msg));
 }
 
+void USART_SendValue(uint8_t msg[])
+{
+	for(int i = 0; i < 4; ++i )
+	{
+		gTxPayload[i] = msg[i];
+	}
+	
+	USART_SendPacket('V', 4);
+}
+
 void USART_SendSensors()
 {
 	for(int i = 0; i < 7; i++)
