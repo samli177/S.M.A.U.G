@@ -9,6 +9,8 @@
 #ifndef HIGHLEVELWALKING_H_
 #define HIGHLEVELWALKING_H_
 
+
+
 void moveRobotTob(int direction, int rotation, int speed);
 
 void moveRobot(int direction, int rotation, int speed);
