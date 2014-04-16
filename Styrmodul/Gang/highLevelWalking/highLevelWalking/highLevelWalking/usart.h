@@ -1,4 +1,4 @@
-﻿/*
+﻿	/*
  * usart.h
  *
  * Created: 4/8/2014 1:52:09 PM
@@ -27,6 +27,10 @@ void USART_SendSensors();
 uint8_t USART_DecodeMessageRxFIFO();
 void USART_DecodeRxFIFO();
 void USART_Bounce();
+
+uint8_t USART_getRotation();
+uint8_t USART_getSpeed();
+uint8_t USART_getDirection();
 
 
 

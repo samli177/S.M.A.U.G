@@ -104,6 +104,12 @@ void TWI_init(uint8_t module_adress)
 	}
 }
 
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];	
+};
+
 void set_twi_reciever_enable()
 {
 	TWCR = (1<<TWEA) | (1<<TWEN) | (1<<TWIE); //TWI enable, TWI interrupt enable
@@ -434,6 +440,38 @@ bool TWI_send_string_fixed_length(uint8_t adr, uint8_t str[], int length)
 	for(int i = 0; i < length; ++i)
 	{
 		send_data_and_wait(str[i]);
+	}
+	stop_bus();
+	return true;
+}
+
+
+bool TWI_send_float(uint8_t adr, float flo)
+{
+	union Union_floatcast foo;
+	foo.f = flo;
+	start_bus();
+	wait_for_bus();
+	if(CONTROL != START)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(adr);
+	if(CONTROL != ADRESS_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(I_FLOAT);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	for(int i = 0; i < 4; ++i)
+	{
+		send_data_and_wait(foo.s[i]);
 	}
 	stop_bus();
 	return true;

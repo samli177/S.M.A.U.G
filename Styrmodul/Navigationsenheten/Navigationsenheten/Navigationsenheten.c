@@ -26,6 +26,7 @@ int main(void)
 	DDRA |= (1<<PORTA0 | 1<<PORTA1);
     while(1)
     {
+		/*
 		_delay_ms(500);
 		//TWI_send_autonom_settings(C_ADRESS, 4);
         PORTA |= (1<<PORTA0);
@@ -35,8 +36,13 @@ int main(void)
 		_delay_ms(1000);
 		USART_SendMessage("apa");
 		TWI_send_string(S_ADRESS, "Hue");
-		if(TWI_command_flag())
-			PORTA ^= (1<<PORTA0);
+		*/
+		
+		if(TWI_command_flag()){
+			PORTA ^= (1<<PORTA1);
+			USART_SendCommand();
+		}
+			
     }
 }
 

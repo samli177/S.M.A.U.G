@@ -22,6 +22,7 @@ uint8_t USART_ReadByte();
 uint16_t USART_crc16(uint8_t tag, uint8_t length);
 void USART_SendPacket(char tag, uint8_t length);
 void USART_SendMessage(char msg[]);
+void USART_SendValue(uint8_t msg[]);
 void USART_SendSensors();
 uint8_t USART_DecodeMessageRxFIFO();
 void USART_DecodeRxFIFO();
