@@ -9,21 +9,23 @@
 #include "serialServoControl.h"
 #include "inverseKinematics.h"
 
+
 #include <util/delay.h>
 #include <math.h>
 #include <avr/interrupt.h>
 
-
+/*
 #define coxa (float)56
 #define femur (float)66
 #define tibia (float)131
-//#define femurAngleAddition (float)0.231 //0.2426
-//#define tibiaAngleAddition (float)0.812 //(-3.1415/6)
+#define femurAngleAddition (float)0.231 //0.2426
+#define tibiaAngleAddition (float)0.812 //(-3.1415/6)
 #define centerToFrontLegsY (float)120
 #define centerToSideLegs (float)100
 #define centerToFrontLegs (float)135
 #define centerToFrontLegsX (float)61.85
-
+*/
+/*
 #define x0_1 (float) -150/sqrt2-61.85 //standard x pos for leg 1
 #define y0_1 (float) 150/sqrt2+120 //standard y pos for leg 1
 #define x0_2 (float) -150-61.85 //standard x pos for leg 2
@@ -40,6 +42,7 @@
 
 #define pi (float) 3.14159265
 #define sqrt2 (float) 1.41421356
+*/
 
 float alpha;
 float beta;
@@ -78,7 +81,7 @@ return (x + x0_1 + centerToFrontLegsX)/(-sqrt2)+(y + y0_1 - centerToFrontLegsY)/
 
 
 float basis_change_Leg2x(float x) {
-return (x - x0_2 + centerToSideLegs);}
+return -(x + x0_2 + centerToSideLegs);}
 
 float basis_change_Leg2y(float y) {
 return -(y + y0_2);}
