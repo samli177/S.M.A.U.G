@@ -46,26 +46,27 @@ bool sensor_data_flag = false;
 
 int main(void)
 {
-	init_display();
+	display_init();
 	// init TWI
 
 	TWI_init(S_ADRESS);
 	init_counters();
-	set_counter_1(2000);
+	//set_counter_1(2000);
 	adc_init();
 	init_tables();
 	
 
 	// Test code for sensor
 	
-	print_text("Testing ADC");
+	display_text("Testing ADC");
 	_delay_ms(1000);
 	init_mux();
 	init_UL();
 	while(1)
 	{
-		
-		_delay_ms(1000);
+		display_char('a');
+		TWI_send_float(C_ADRESS, (float)display_read_adress());
+		_delay_ms(500);
 		//if(sensor_data_flag)
 			//print_sensor_data();
 			
@@ -106,7 +107,7 @@ int main(void)
 	print_text("skickas");*/
 	
 	//display top in buffer or sensordata
-	clear_display();
+	display_clear();
 }
 
 void init_tables()
@@ -288,7 +289,7 @@ void init_UL()
 }
 
 
-//---------------------------------------COUNTERS/TIMERS interrupt vectirs-----------
+//---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -334,39 +335,39 @@ void adc_start()
 
 void print_sensor_data()
 {
-	clear_display();
+	display_clear();
 	
-	set_display_pos(0,0);
-	print_text("0: ");
-	print_value(gSensorBuffer[0]);
+	display_set_pos(0,0);
+	display_text("0: ");
+	display_value(gSensorBuffer[0]);
 	
-	set_display_pos(0,8);
-	print_text("1: ");
-	print_value(gSensorBuffer[1]);
+	display_set_pos(0,8);
+	display_text("1: ");
+	display_value(gSensorBuffer[1]);
 	
-	set_display_pos(1,0);
-	print_text("2: ");
-	print_value(gSensorBuffer[2]);
+	display_set_pos(1,0);
+	display_text("2: ");
+	display_value(gSensorBuffer[2]);
 	
-	set_display_pos(1,8);
-	print_text("3: ");
-	print_value(gSensorBuffer[3]);
+	display_set_pos(1,8);
+	display_text("3: ");
+	display_value(gSensorBuffer[3]);
 	
-	set_display_pos(2,0);
-	print_text("4: ");
-	print_value(gSensorBuffer[4]);
+	display_set_pos(2,0);
+	display_text("4: ");
+	display_value(gSensorBuffer[4]);
 	
-	set_display_pos(2,8);
-	print_text("5: ");
-	print_value(gSensorBuffer[5]);
+	display_set_pos(2,8);
+	display_text("5: ");
+	display_value(gSensorBuffer[5]);
 	
-	set_display_pos(3,0);
-	print_text("6: ");
-	print_value(gSensorBuffer[6]);
+	display_set_pos(3,0);
+	display_text("6: ");
+	display_value(gSensorBuffer[6]);
 	
-	set_display_pos(3,8);
-	print_text("7: ");
-	print_value(gSensorBuffer[7]);
+	display_set_pos(3,8);
+	display_text("7: ");
+	display_value(gSensorBuffer[7]);
 }
 
 void select_sensor(int sensor)
@@ -443,5 +444,5 @@ ISR(PCINT0_vect)
 
 void displaytest(void)
 {
-	print_line(0, "Initiating AI");
+	display_text_line(0, "Initiating AI");
 }

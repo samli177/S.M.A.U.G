@@ -47,6 +47,7 @@
 #define I_STATUS 3
 #define I_ELEVATION 4
 #define I_AUTONOM 5
+#define I_FLOAT 6
 #define I_STRING 25
 
 //Module Adresses

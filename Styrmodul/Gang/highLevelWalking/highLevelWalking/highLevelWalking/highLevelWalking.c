@@ -18,169 +18,177 @@
 
 #define pi 3.14159265
 
-#define x0_1 -240 //standard x pos for leg 1
-#define y0_1  250 //standard y pos for leg 1
-#define x0_2  -320 //standard x pos for leg 2
-#define y0_2  0 //standard y pos for leg 2
-#define x0_3  -240 //standard x pos for leg 3
-#define y0_3  -250 //standard y pos for leg 3
-#define x0_4 240 //standard x pos for leg 4
-#define y0_4  -250 //standard y pos for leg 4
-#define x0_5  320 //standard x pos for leg 5
-#define y0_5  0 //standard y pos for leg 5
-#define x0_6  240 //standard x pos for leg 6
-#define y0_6  250 //standard y pos for leg 6
+#define x0_1 -140 //stanfdard x pos for leg 1
+#define y0_1  180 //stanfdard y pos for leg 1
+#define x0_2  -220 //stanfdard x pos for leg 2
+#define y0_2  0 //stanfdard y pos for leg 2
+#define x0_3  -140 //stanfdard x pos for leg 3
+#define y0_3  -180 //stanfdard y pos for leg 3
+#define x0_4 140 //stanfdard x pos for leg 4
+#define y0_4  -180 //stanfdard y pos for leg 4
+#define x0_5  220 //stanfdard x pos for leg 5
+#define y0_5  0 //stanfdard y pos for leg 5
+#define x0_6  140 //stanfdard x pos for leg 6
+#define y0_6  180 //stanfdard y pos for leg 6
 
 
 
 
 
-#define frontLegDistance (double)200
-#define centerToFrontLegsY (double)120
-#define centerToSideLegs (double)100
-#define centerToFrontLegs (double)135
-#define centerToFrontLegsX (double)61.85
+#define frontLegDistanfce (float)200
+#define centerToFrontLegsY (float)120
+#define centerToSideLegs (float)100
+#define centerToFrontLegs (float)135
+#define centerToFrontLegsX (float)61.85
 /*
-double x0_1 = -240; //standard x pos for leg 1
-double y0_1 = 240; //standard y pos for leg 1
-double x0_2 = -320; //standard x pos for leg 2
-double y0_2 = 0; //standard y pos for leg 2
-double x0_3 = -240; //standard x pos for leg 3
-double y0_3 = -240; //standard y pos for leg 3
-double x0_4 = 240; //standard x pos for leg 4
-double y0_4 = -240; //standard y pos for leg 4
-double x0_5 = 320; //standard x pos for leg 5
-double y0_5 = 0; //standard y pos for leg 5
-double x0_6 = 240; //standard x pos for leg 6
+float x0_1 = -240; //stanfdard x pos for leg 1
+float y0_1 = 240; //stanfdard y pos for leg 1
+float x0_2 = -320; //stanfdard x pos for leg 2
+float y0_2 = 0; //stanfdard y pos for leg 2
+float x0_3 = -240; //stanfdard x pos for leg 3
+float y0_3 = -240; //stanfdard y pos for leg 3
+float x0_4 = 240; //stanfdard x pos for leg 4
+float y0_4 = -240; //stanfdard y pos for leg 4
+float x0_5 = 320; //stanfdard x pos for leg 5
+float y0_5 = 0; //stanfdard y pos for leg 5
+float x0_6 = 240; //stanfdard x pos for leg 6
 <<<<<<< HEAD
-double y0_6 = 250; //standard y pos for leg 6
+float y0_6 = 250; //stanfdard y pos for leg 6
 */
 /*
-double Gamma0_1 = 0;
-double Alpha0_1 = -3.1415/4;
-double Beta0_1 = -3.1415/2.2;
+float Gamma0_1 = 0;
+float Alpha0_1 = -3.1415/4;
+float Beta0_1 = -3.1415/2.2;
 
-double Gamma0_2 = 0;
-double Alpha0_2 = -3.1415/4;
-double Beta0_2 = -3.1415/2.2;
+float Gamma0_2 = 0;
+float Alpha0_2 = -3.1415/4;
+float Beta0_2 = -3.1415/2.2;
 
-double Gamma0_3 = 0;
-double Alpha0_3 = -3.1415/4;
-double Beta0_3 = -3.1415/2.2;
+float Gamma0_3 = 0;
+float Alpha0_3 = -3.1415/4;
+float Beta0_3 = -3.1415/2.2;
 
-double Gamma0_4 = 0;
-double Alpha0_4 = -3.1415/4;
-double Beta0_4 = -3.1415/2.2;
+float Gamma0_4 = 0;
+float Alpha0_4 = -3.1415/4;
+float Beta0_4 = -3.1415/2.2;
 
-double Gamma0_5 = 0;
-double Alpha0_5 = 3.1415/4;
-double Beta0_5 = 3.1415/2.2;
+float Gamma0_5 = 0;
+float Alpha0_5 = 3.1415/4;
+float Beta0_5 = 3.1415/2.2;
 
-double Gamma0_6 = 0;
-double Alpha0_6 = 3.1415/4;
-double Beta0_6 = 3.1415/2.2;
+float Gamma0_6 = 0;
+float Alpha0_6 = 3.1415/4;
+float Beta0_6 = 3.1415/2.2;
 
 
 
-double std_lenght1;
+float std_lenght1;
 //Max möjliga steglängd från grundpositionen
-double max_step_lenght = 40;
+float max_step_lenght = 40;
 
-double Leg1_prev_angleGamma;
-double Leg1_prev_angleBeta;
-double Leg1_prev_angleAlpha;
+float Leg1_prev_angleGamma;
+float Leg1_prev_angleBeta;
+float Leg1_prev_angleAlpha;
 
-double Leg2_prev_angleGamma;
-double Leg2_prev_angleBeta;
-double Leg2_prev_angleAlpha;
+float Leg2_prev_angleGamma;
+float Leg2_prev_angleBeta;
+float Leg2_prev_angleAlpha;
 
-double Leg3_prev_angleGamma;
-double Leg3_prev_angleBeta;
-double Leg3_prev_angleAlpha;
+float Leg3_prev_angleGamma;
+float Leg3_prev_angleBeta;
+float Leg3_prev_angleAlpha;
 
-double Leg4_prev_angleGamma;
-double Leg4_prev_angleBeta;
-double Leg4_prev_angleAlpha;
+float Leg4_prev_angleGamma;
+float Leg4_prev_angleBeta;
+float Leg4_prev_angleAlpha;
 
-double Leg5_prev_angleGamma;
-double Leg5_prev_angleBeta;
-double Leg5_prev_angleAlpha;
+float Leg5_prev_angleGamma;
+float Leg5_prev_angleBeta;
+float Leg5_prev_angleAlpha;
 
-double Leg6_prev_angleGamma;
-double Leg6_prev_angleBeta;
-double Leg6_prev_angleAlpha;
+float Leg6_prev_angleGamma;
+float Leg6_prev_angleBeta;
+float Leg6_prev_angleAlpha;
 
 //Benkoordinater som nuvarande steget ska gå till
-double Leg1_new_angleGamma;
-double Leg1_new_angleBeta;
-double Leg1_new_angleAlpha;
+float Leg1_new_angleGamma;
+float Leg1_new_angleBeta;
+float Leg1_new_angleAlpha;
 
-double Leg2_new_angleGamma;
-double Leg2_new_angleBeta;
-double Leg2_new_angleAlpha;
+float Leg2_new_angleGamma;
+float Leg2_new_angleBeta;
+float Leg2_new_angleAlpha;
 
-double Leg3_new_angleGamma;
-double Leg3_new_angleBeta;
-double Leg3_new_angleAlpha;
+float Leg3_new_angleGamma;
+float Leg3_new_angleBeta;
+float Leg3_new_angleAlpha;
 
-double Leg4_new_angleGamma;
-double Leg4_new_angleBeta;
-double Leg4_new_angleAlpha;
+float Leg4_new_angleGamma;
+float Leg4_new_angleBeta;
+float Leg4_new_angleAlpha;
 
-double Leg5_new_angleGamma;
-double Leg5_new_angleBeta;
-double Leg5_new_angleAlpha;
+float Leg5_new_angleGamma;
+float Leg5_new_angleBeta;
+float Leg5_new_angleAlpha;
 
-double Leg6_new_angleGamma;
-double Leg6_new_angleBeta;
-double Leg6_new_angleAlpha;
-double z0; 
+float Leg6_new_angleGamma;
+float Leg6_new_angleBeta;
+float Leg6_new_angleAlpha;
+float z0; 
 */
 //Jonas function for robot movement
 
-double z0 = -70;
-int speed = 80;
+float z0 = -120; //120 fungerar
+int speed = 200;
 
-void moveRobot(double direction,double distance, double rotation, double z, int servoSpeed, double rotationX, double rotationY)
+void moveRobot(float direction,float distanfce, float rotation, float z, int servoSpeed, float rotationX, float rotationY)
 {
-	double sinrotation = 0;//sin(rotation);
-	double cosrotation = 1;//cos(rotation);
-	double sindirection = 0;//sin(direction);
-	double cosdirection = 1;//cos(direction);
-	double sinaroundx = 0;//sin(rotationX);
-	double sinaroundy = 0;//cos(rotationY);
+	float sinfrotation = sinf(rotation);
+	float cosfrotation = cosf(rotation);
+	float sinfdirection = sinf(direction);
+	float cosfdirection = cosf(direction);
+	float sinfaroundx = 0;//sinf(rotationX);
+	float sinfaroundy = 0;//sinf(rotationY);
 	
 	//First state-------------------
-	servoGoto(4, 3.1415/2, servoSpeed); //raise legs
+	/*servoGoto(4, 3.1415/2, servoSpeed); //raise legs
 	_delay_ms(5);
 	servoGoto(10, 3.1415/2, servoSpeed);
 	_delay_ms(5);
-	servoGoto(15, -3.1415/2, servoSpeed);
-	_delay_ms(500);
-	moveLeg1too(x0_1*cosrotation-y0_1*sinrotation-sindirection*distance, y0_1*cosrotation-x0_1*sinrotation+cosdirection*distance, -(z+sinaroundy*centerToFrontLegsX+sinaroundx*centerToFrontLegsY), servoSpeed);
-	moveLeg3too(x0_3*cosrotation-y0_3*sinrotation-sindirection*distance, y0_3*cosrotation-x0_3*sinrotation+cosdirection*distance, -(z+sinaroundy*centerToFrontLegsX-sinaroundx*centerToFrontLegsY), servoSpeed);
-	moveLeg5too(x0_5*cosrotation-y0_5*sinrotation-sindirection*distance, y0_5*cosrotation+x0_5*sinrotation+cosdirection*distance, -(z-centerToSideLegs*sinaroundy), servoSpeed);
-	_delay_ms(1000);
+	servoGoto(15, -3.1415/2, servoSpeed);*/
+	moveLeg1too(x0_1*cosfrotation-y0_1*sinfrotation-sinfdirection*distanfce, y0_1*cosfrotation-x0_1*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY-40), servoSpeed);
+	moveLeg3too(x0_3*cosfrotation-y0_3*sinfrotation-sinfdirection*distanfce, y0_3*cosfrotation-x0_3*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY-40), servoSpeed);
+	moveLeg5too(x0_5*cosfrotation-y0_5*sinfrotation-sinfdirection*distanfce, y0_5*cosfrotation+x0_5*sinfrotation+cosfdirection*distanfce, -(z-centerToSideLegs*sinfaroundy-40), servoSpeed);
+	_delay_ms(200);
+	moveLeg1too(x0_1*cosfrotation-y0_1*sinfrotation-sinfdirection*distanfce, y0_1*cosfrotation-x0_1*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY), servoSpeed);
+	moveLeg3too(x0_3*cosfrotation-y0_3*sinfrotation-sinfdirection*distanfce, y0_3*cosfrotation-x0_3*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY), servoSpeed);
+	moveLeg5too(x0_5*cosfrotation-y0_5*sinfrotation-sinfdirection*distanfce, y0_5*cosfrotation+x0_5*sinfrotation+cosfdirection*distanfce, -(z-centerToSideLegs*sinfaroundy), servoSpeed);
+	moveLeg6too(x0_6, y0_6, -(z-sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY), servoSpeed);
+	moveLeg4too(x0_4, y0_4, -(z-sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY), servoSpeed);
+	moveLeg2too(x0_2, y0_2, -(z+centerToSideLegs*sinfaroundy), servoSpeed);	
+	_delay_ms(300);
 		
 	//Second state-------------------
-	servoGoto(3, -3.1415/2, servoSpeed); //raise legs
+	/*servoGoto(3, -3.1415/2, servoSpeed); //raise legs
 	_delay_ms(5);
 	servoGoto(9, -3.1415/2, servoSpeed);
 	_delay_ms(5);
-	servoGoto(16, 3.1415/2, servoSpeed);
-	_delay_ms(500);
-	moveLeg2too(x0_2*cosrotation-y0_2*sinrotation-sindirection*distance, y0_2*cosrotation+x0_2*sinrotation+cosdirection*distance, -(z+centerToSideLegs*sinaroundy), servoSpeed);
-	moveLeg4too(x0_4*cosrotation-y0_4*sinrotation-sindirection*distance, y0_4*cosrotation-x0_4*sinrotation+cosdirection*distance, -(z-sinaroundy*centerToFrontLegsX-sinaroundx*centerToFrontLegsY), servoSpeed);
-	moveLeg6too(x0_6*cosrotation-y0_6*sinrotation-sindirection*distance, y0_6*cosrotation-x0_6*sinrotation+cosdirection*distance, -(z-sinaroundy*centerToFrontLegsX+sinaroundx*centerToFrontLegsY), servoSpeed);
-	_delay_ms(1000);
+	servoGoto(16, 3.1415/2, servoSpeed);*/
+	moveLeg2too(x0_2*cosfrotation-y0_2*sinfrotation-sinfdirection*distanfce, y0_2*cosfrotation+x0_2*sinfrotation+cosfdirection*distanfce, -(z+centerToSideLegs*sinfaroundy-40), servoSpeed);
+	moveLeg4too(x0_4*cosfrotation-y0_4*sinfrotation-sinfdirection*distanfce, y0_4*cosfrotation-x0_4*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY-40), servoSpeed);
+	moveLeg6too(x0_6*cosfrotation-y0_6*sinfrotation-sinfdirection*distanfce, y0_6*cosfrotation-x0_6*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY-40), servoSpeed);
+	_delay_ms(200);
+	moveLeg2too(x0_2*cosfrotation-y0_2*sinfrotation-sinfdirection*distanfce, y0_2*cosfrotation+x0_2*sinfrotation+cosfdirection*distanfce, -(z+centerToSideLegs*sinfaroundy), servoSpeed);
+	moveLeg4too(x0_4*cosfrotation-y0_4*sinfrotation-sinfdirection*distanfce, y0_4*cosfrotation-x0_4*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY), servoSpeed);
+	moveLeg6too(x0_6*cosfrotation-y0_6*sinfrotation-sinfdirection*distanfce, y0_6*cosfrotation-x0_6*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY), servoSpeed);
+	moveLeg1too(x0_1, y0_1, -(z+sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY), servoSpeed);
+	moveLeg3too(x0_3, y0_3, -(z+sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY), servoSpeed);
+	moveLeg5too(x0_5, y0_5, -(z-centerToSideLegs*sinfaroundy), servoSpeed);
+	_delay_ms(300);
 
 	//Third state-------------------
-	moveLeg1too(x0_1, y0_1, -(z+sinaroundy*centerToFrontLegsX+sinaroundx*centerToFrontLegsY), servoSpeed);
-	moveLeg2too(x0_2, y0_2, -(z+centerToSideLegs*sinaroundy), servoSpeed);
-	moveLeg3too(x0_3, y0_3, -(z+sinaroundy*centerToFrontLegsX-sinaroundx*centerToFrontLegsY), servoSpeed);
-	moveLeg4too(x0_4, y0_4, -(z-sinaroundy*centerToFrontLegsX-sinaroundx*centerToFrontLegsY), servoSpeed);
-	moveLeg5too(x0_5, y0_5, -(z-centerToSideLegs*sinaroundy), servoSpeed);
-	moveLeg6too(x0_6, y0_6, -(z-sinaroundy*centerToFrontLegsX+sinaroundx*centerToFrontLegsY), servoSpeed);
+
+	
 	
 }
 
@@ -196,7 +204,7 @@ int Leg4_lift = -1;
 int Leg5_lift = 1;
 int Leg6_lift = -1;
 
-std_lenght1 = sqrt((double)x0_1*x0_1 + (double)y0_1*y0_1);
+std_lenght1 = sqrt((float)x0_1*x0_1 + (float)y0_1*y0_1);
 
 //Vinklar där föregående steg slutade
 Leg1_prev_angleGamma = Gamma0_1;
@@ -248,8 +256,8 @@ Leg6_new_angleGamma = Gamma0_6;
 Leg6_new_angleBeta = Beta0_6;
 Leg6_new_angleAlpha = Alpha0_6;
 
-//Längd från origo till standardposition för ben 1,3,4,6
-//double std_lenght = sqrt(x0_1*x0_1 + y0_1*y0_1);
+//Längd från origo till stanfdardposition för ben 1,3,4,6
+//float std_lenght = sqrt(x0_1*x0_1 + y0_1*y0_1);
 
 
 }
@@ -258,7 +266,7 @@ Leg6_new_angleAlpha = Alpha0_6;
 //av ben för förra steget och räknar ut position för nästa steg.
 void moveRobotTob(int direction, int rotation, int speed)
 {
-	double z = -50;
+	float z = -50;
 	//Nytt steg ska räknas ut. Nya stegets vinklar sätts till föregående stegets vinklar.
 	Leg1_prev_angleGamma = Leg1_new_angleGamma;
 	Leg1_prev_angleBeta = Leg1_new_angleBeta;
@@ -286,33 +294,33 @@ void moveRobotTob(int direction, int rotation, int speed)
 
 
 	//x och y riktning för förflyttning, skalad med hastigheten
-	double x_direction = -sin(direction * pi / 90) * speed / 100;
-	double y_direction = cos(direction * pi / 90) * speed / 100;
+	float x_direction = -sinf(direction * pi / 90) * speed / 100;
+	float y_direction = cosf(direction * pi / 90) * speed / 100;
 
 
 	//x och y riktning för rotation, skalad med rotationshastighet
-	double x_rot1 = (rotation / 50 -1)*y0_1/std_lenght1;
-	double y_rot1 = (rotation / 50 -1) * x0_1 / std_lenght1;
+	float x_rot1 = (rotation / 50 -1)*y0_1/std_lenght1;
+	float y_rot1 = (rotation / 50 -1) * x0_1 / std_lenght1;
 
-	double x_rot2 = 0;
-	double y_rot2 = rotation / 50 - 1;
+	float x_rot2 = 0;
+	float y_rot2 = rotation / 50 - 1;
 
-	double x_rot3 = (rotation / 50 -1) * (- y0_1 / std_lenght1);
-	double y_rot3 = (rotation / 50 -1) * x0_1 / std_lenght1;
+	float x_rot3 = (rotation / 50 -1) * (- y0_1 / std_lenght1);
+	float y_rot3 = (rotation / 50 -1) * x0_1 / std_lenght1;
 
-	double x_rot4 = (rotation / 50 -1) * (- y0_1 / std_lenght1);
-	double y_rot4 = (rotation / 50 -1) * (- x0_1 / std_lenght1);
+	float x_rot4 = (rotation / 50 -1) * (- y0_1 / std_lenght1);
+	float y_rot4 = (rotation / 50 -1) * (- x0_1 / std_lenght1);
 
-	double x_rot5 = 0;
-	double y_rot5 = -rotation / 50 + 1;
+	float x_rot5 = 0;
+	float y_rot5 = -rotation / 50 + 1;
 
-	double x_rot6 = (rotation / 50 -1) * y0_1 / std_lenght1;
-	double y_rot6 = (rotation / 50 -1) * (- x0_1 / std_lenght1);
+	float x_rot6 = (rotation / 50 -1) * y0_1 / std_lenght1;
+	float y_rot6 = (rotation / 50 -1) * (- x0_1 / std_lenght1);
 
 
 	//Addera förflyttningarna och sätter Step_max till längsta stegets längd
-	double Step_max = sqrt(pow(x_direction + x_rot1,2) + pow(y_direction + y_rot1,2));
-	double Step_test = sqrt(pow(x_direction + x_rot2,2) + pow(y_direction + y_rot2,2));
+	float Step_max = sqrt(pow(x_direction + x_rot1,2) + pow(y_direction + y_rot1,2));
+	float Step_test = sqrt(pow(x_direction + x_rot2,2) + pow(y_direction + y_rot2,2));
 	Step_max = fmax(Step_max, Step_test);
 
 	Step_test = sqrt(pow(x_direction + x_rot3,2) + pow(y_direction + y_rot3,2));
@@ -329,17 +337,17 @@ void moveRobotTob(int direction, int rotation, int speed)
 
 
 	//Stegskalning för att inte alltid ta max längd på steg;
-	double Step_scaling = fmax(speed/100, fabs(rotation/50-1));
+	float Step_scaling = fmax(speed/100, fabs(rotation/50-1));
 
 
 	//Uppdatera vinklar för nya steget
 
 
-	double Leg1_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot1)*Step_scaling;
-	double Leg1_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot1)*Step_scaling;
-	double Leg1_new_posz = z;
-	double Leg1_new_posx = basis_change_Leg1x(Leg1_new_posx_wb,Leg1_new_posy_wb,Leg1_new_posz);
-	double Leg1_new_posy = basis_change_Leg1y(Leg1_new_posx_wb,Leg1_new_posy_wb,Leg1_new_posz);
+	float Leg1_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot1)*Step_scaling;
+	float Leg1_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot1)*Step_scaling;
+	float Leg1_new_posz = z;
+	float Leg1_new_posx = basis_change_Leg1x(Leg1_new_posx_wb,Leg1_new_posy_wb,Leg1_new_posz);
+	float Leg1_new_posy = basis_change_Leg1y(Leg1_new_posx_wb,Leg1_new_posy_wb,Leg1_new_posz);
 	Calc_d(Leg1_new_posx, Leg1_new_posy, Leg1_new_posz);
 	Leg1_new_angleGamma = Calc_gamma(Leg1_new_posx, Leg1_new_posy);
 	Leg1_new_angleBeta = Calc_Beta(Leg1_new_posx, Leg1_new_posy, Leg1_new_posz);
@@ -349,11 +357,11 @@ void moveRobotTob(int direction, int rotation, int speed)
 	servoGoto(12, -Leg1_new_angleBeta + tibiaAngleAddition, speed);
 
 
-	double Leg2_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot2)*Step_scaling;
-	double Leg2_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot2)*Step_scaling;
-	double Leg2_new_posz = z;
-	double Leg2_new_posx = basis_change_Leg2x(Leg2_new_posx_wb,Leg2_new_posy_wb,Leg2_new_posz);
-	double Leg2_new_posy = basis_change_Leg2y(Leg2_new_posx_wb,Leg2_new_posy_wb,Leg2_new_posz);
+	float Leg2_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot2)*Step_scaling;
+	float Leg2_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot2)*Step_scaling;
+	float Leg2_new_posz = z;
+	float Leg2_new_posx = basis_change_Leg2x(Leg2_new_posx_wb,Leg2_new_posy_wb,Leg2_new_posz);
+	float Leg2_new_posy = basis_change_Leg2y(Leg2_new_posx_wb,Leg2_new_posy_wb,Leg2_new_posz);
 	Calc_d(Leg2_new_posx, Leg2_new_posy, Leg2_new_posz);
 	Leg2_new_angleGamma = Calc_gamma(Leg2_new_posx, Leg2_new_posy);
 	Leg2_new_angleBeta = Calc_Beta(Leg2_new_posx, Leg2_new_posy, Leg2_new_posz);
@@ -364,11 +372,11 @@ void moveRobotTob(int direction, int rotation, int speed)
 	
 
 
-	double Leg3_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot3)*Step_scaling;
-	double Leg3_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot3)*Step_scaling;
-	double Leg3_new_posz = z;
-	double Leg3_new_posx = basis_change_Leg3x(Leg3_new_posx_wb,Leg3_new_posy_wb,Leg3_new_posz);
-	double Leg3_new_posy = basis_change_Leg3y(Leg3_new_posx_wb,Leg3_new_posy_wb,Leg3_new_posz);
+	float Leg3_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot3)*Step_scaling;
+	float Leg3_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot3)*Step_scaling;
+	float Leg3_new_posz = z;
+	float Leg3_new_posx = basis_change_Leg3x(Leg3_new_posx_wb,Leg3_new_posy_wb,Leg3_new_posz);
+	float Leg3_new_posy = basis_change_Leg3y(Leg3_new_posx_wb,Leg3_new_posy_wb,Leg3_new_posz);
 	Calc_d(Leg3_new_posx, Leg3_new_posy, Leg3_new_posz);
 	Leg3_new_angleGamma = Calc_gamma(Leg3_new_posx, Leg3_new_posy);
 	Leg3_new_angleBeta = Calc_Beta(Leg3_new_posx, Leg3_new_posy, Leg3_new_posz);
@@ -378,11 +386,11 @@ void moveRobotTob(int direction, int rotation, int speed)
 	servoGoto(6, -Leg3_new_angleBeta + tibiaAngleAddition, speed);
 
 
-	double Leg4_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot4)*Step_scaling;
-	double Leg4_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot4)*Step_scaling;
-	double Leg4_new_posz = z;
-	double Leg4_new_posx = basis_change_Leg4x(Leg4_new_posx_wb,Leg4_new_posy_wb,Leg4_new_posz);
-	double Leg4_new_posy = basis_change_Leg4y(Leg4_new_posx_wb,Leg4_new_posy_wb,Leg4_new_posz);
+	float Leg4_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot4)*Step_scaling;
+	float Leg4_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot4)*Step_scaling;
+	float Leg4_new_posz = z;
+	float Leg4_new_posx = basis_change_Leg4x(Leg4_new_posx_wb,Leg4_new_posy_wb,Leg4_new_posz);
+	float Leg4_new_posy = basis_change_Leg4y(Leg4_new_posx_wb,Leg4_new_posy_wb,Leg4_new_posz);
 	Calc_d(Leg4_new_posx, Leg4_new_posy, Leg4_new_posz);
 	Leg4_new_angleGamma = Calc_gamma(Leg4_new_posx, Leg4_new_posy);
 	Leg4_new_angleBeta = Calc_Beta(Leg4_new_posx, Leg4_new_posy, Leg4_new_posz);
@@ -392,11 +400,11 @@ void moveRobotTob(int direction, int rotation, int speed)
 	servoGoto(5, Leg4_new_angleBeta - tibiaAngleAddition, speed);
 
 
-	double Leg5_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot5)*Step_scaling;
-	double Leg5_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot5)*Step_scaling;
-	double Leg5_new_posz = z;
-	double Leg5_new_posx = basis_change_Leg5x(Leg5_new_posx_wb,Leg5_new_posy_wb,Leg5_new_posz);
-	double Leg5_new_posy = basis_change_Leg5y(Leg5_new_posx_wb,Leg5_new_posy_wb,Leg5_new_posz);
+	float Leg5_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot5)*Step_scaling;
+	float Leg5_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot5)*Step_scaling;
+	float Leg5_new_posz = z;
+	float Leg5_new_posx = basis_change_Leg5x(Leg5_new_posx_wb,Leg5_new_posy_wb,Leg5_new_posz);
+	float Leg5_new_posy = basis_change_Leg5y(Leg5_new_posx_wb,Leg5_new_posy_wb,Leg5_new_posz);
 	Calc_d(Leg5_new_posx, Leg5_new_posy, Leg5_new_posz);
 	Leg5_new_angleGamma = Calc_gamma(Leg5_new_posx, Leg5_new_posy);
 	Leg5_new_angleBeta = Calc_Beta(Leg5_new_posx, Leg5_new_posy, Leg5_new_posz);
@@ -406,11 +414,11 @@ void moveRobotTob(int direction, int rotation, int speed)
 	servoGoto(17, Leg5_new_angleBeta - tibiaAngleAddition, speed);
 
 
-	double Leg6_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot6)*Step_scaling;
-	double Leg6_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot6)*Step_scaling;
-	double Leg6_new_posz = z;
-	double Leg6_new_posx = basis_change_Leg6x(Leg6_new_posx_wb,Leg6_new_posy_wb,Leg6_new_posz);
-	double Leg6_new_posy = basis_change_Leg6y(Leg6_new_posx_wb,Leg6_new_posy_wb,Leg6_new_posz);
+	float Leg6_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot6)*Step_scaling;
+	float Leg6_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot6)*Step_scaling;
+	float Leg6_new_posz = z;
+	float Leg6_new_posx = basis_change_Leg6x(Leg6_new_posx_wb,Leg6_new_posy_wb,Leg6_new_posz);
+	float Leg6_new_posy = basis_change_Leg6y(Leg6_new_posx_wb,Leg6_new_posy_wb,Leg6_new_posz);
 	Calc_d(Leg6_new_posx, Leg6_new_posy, Leg6_new_posz);
 	Leg6_new_angleGamma = Calc_gamma(Leg6_new_posx, Leg6_new_posy);
 	Leg6_new_angleBeta = Calc_Beta(Leg6_new_posx, Leg6_new_posy, Leg6_new_posz);
@@ -434,11 +442,11 @@ int main(void)
 	//initvar();
 	
 	/*
-	double alpha = 3.1415/4;
-	double beta = 3.1415/2.2;
+	float alpha = 3.1415/4;
+	float beta = 3.1415/2.2;
 	int speed = 180;
 	
-	//dummy code that puts robot in standard position
+	//dummy code that puts robot in stanfdard position
 	
 	servoGoto(1, 0, speed);
 	servoGoto(2, 0, speed);
@@ -483,8 +491,7 @@ int main(void)
 		
 		//USART_DecodeRxFIFO();
 
-		_delay_ms(1000);
-		moveRobot((double)0,(double)60,(double)0,(double)70,(int)100,(double)0,(double)0);
+		moveRobot((float)1,(float)0,(float)0.3,(float)120,(int)100,(float)0,(float)0);
 
         //TODO:: Please write your application code 
     }

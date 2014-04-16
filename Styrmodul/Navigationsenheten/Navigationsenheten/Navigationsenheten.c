@@ -40,7 +40,7 @@ int main(void)
     }
 }
 
-//---------------------------------------COUNTERS/TIMERS interrupt vectirs-----------
+//---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
 
 ISR(TIMER1_COMPA_vect)
 {
