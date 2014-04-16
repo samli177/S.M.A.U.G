@@ -29,13 +29,16 @@ void initServoSerial()
 	UBRR1H = (uint8_t) (((F_CPU / 16 / ServoBaudRate ) - 1)>>8);
 	UBRR1L = (uint8_t) ((F_CPU / 16 / ServoBaudRate ) - 1) ;
 	
-	//enable receiver and transmitter and enable interrupts
-	UCSR1B = (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1);
+	//enable receiver and transmitter and disable interrupts
+	UCSR1B = (1<<RXEN1)|(1<<TXEN1);
 	
 	//Frame format: 8data, no parity, 1 stop bit
 	UCSR1C = (1<<UCSZ10 | 1<<UCSZ11);
 	
 	servoDDR |= (1<<servoDirPin); //set pin for controlling direction of serial communication w. servo.
+	
+	// Set torque limit
+	servoTorqueLimit(BROADCASTING_ID, 0x3ff); // 50% of max
 }
 
 uint8_t servoCheckRxComplete()
@@ -161,6 +164,15 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 	sendServoPacket(ID, INST_WRITE, 5);	
 }
 
+void servoTorqueLimit(uint8_t ID, uint16_t maxTorque)
+{
+	gServoParameters[0] = P_TORQUE_LIMIT_L; 
+	gServoParameters[1] = (uint8_t)maxTorque; //truncates to low byte
+	gServoParameters[2] = (uint8_t)(maxTorque>>8); //high byte
+	
+	sendServoPacket(ID, INST_WRITE, 3);
+}
+
 void servoRetrunLevel(uint8_t ID, uint8_t level)
 {
 	gServoParameters[0] = P_RETURN_LEVEL; // address for CW Angle Limit(L)
@@ -168,6 +180,35 @@ void servoRetrunLevel(uint8_t ID, uint8_t level)
 	sendServoPacket(ID, INST_WRITE, 2);	
 }
 
+uint16_t servoGetPosition(uint8_t ID)
+{
+	gServoParameters[0] = P_PRESENT_POSITION_L;
+	gServoParameters[1] = 2; // read 2 bytes
+	sendServoPacket(ID, INST_READ, 2);
+	
+	servoRx;
+	
+	uint_fast16_t = 0;
+	int pos;
+	
+	for(int i = 0; i < 8; ++i)
+	{
+		while ( !(UCSR1A & (1<<RXC1)) );
+		data = UDR1;
+		if(i == 5) 
+		{
+			pos = data;
+		} else if(i == 6)
+		{
+			pos = pos + (data << 8);
+		}
+	}
+	
+	servoTx;
+
+	return data;
+	
+}
 /*void LegOneGoto(double x,double y,double z, int servospeed)
 {
 	double alpha;

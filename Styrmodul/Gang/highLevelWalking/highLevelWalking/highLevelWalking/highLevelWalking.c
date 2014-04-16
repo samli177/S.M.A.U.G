@@ -489,7 +489,7 @@ int main(void)
     while(1)
     {
 		
-		//USART_DecodeRxFIFO();
+		USART_DecodeRxFIFO();
 
 		moveRobot((float)1,(float)0,(float)0.3,(float)120,(int)100,(float)0,(float)0);
 

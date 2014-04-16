@@ -35,8 +35,12 @@ int main(void)
 		_delay_ms(1000);
 		USART_SendMessage("apa");
 		TWI_send_string(S_ADRESS, "Hue");
-		if(TWI_command_flag())
-			PORTA ^= (1<<PORTA0);
+		if(TWI_command_flag()){
+			TWI_send_string(C_ADRESS, "Kom fram till navagation.");
+			PORTA ^= (1<<PORTA1);
+			USART_SendCommand();
+		}
+			
     }
 }
 
