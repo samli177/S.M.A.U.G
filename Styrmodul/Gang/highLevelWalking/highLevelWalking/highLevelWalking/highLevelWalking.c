@@ -919,7 +919,7 @@ int main(void)
 		Leg6_lift = -Leg6_lift;
 		
 		
-		//USART_DecodeRxFIFO();
+		USART_DecodeRxFIFO();
 
 		//moveRobot((float)0,(float)40,(float)0,(float)120,(int)100,(float)0,(float)0);
 

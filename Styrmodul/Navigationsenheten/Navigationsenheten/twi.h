@@ -47,6 +47,7 @@
 #define I_STATUS 3
 #define I_ELEVATION 4
 #define I_AUTONOM 5
+#define I_FLOAT 6
 #define I_STRING 25
 
 //Module Adresses
@@ -67,6 +68,7 @@ bool TWI_send_sensors(uint8_t sens[7], uint8_t serv);
 bool TWI_send_sweep(uint8_t sweep);
 bool TWI_send_string(uint8_t adr, char str[]);
 bool TWI_send_string_fixed_length(uint8_t adr, uint8_t str[], int length);
+bool TWI_send_float(uint8_t adr, float flo);
 bool TWI_send_something(uint8_t adr, uint8_t instruction, uint8_t packet);
 
 char TWI_get_char(int i);

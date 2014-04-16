@@ -197,6 +197,8 @@ void USART_SendCommand()
 	}
 	
 	USART_SendPacket('C', 3);
+	// clear flag
+	
 	
 }
 

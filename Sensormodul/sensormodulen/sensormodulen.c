@@ -65,10 +65,8 @@ int main(void)
 	while(1)
 	{
 		display_char('a');
-		uint8_t data[1];
-		data[0] = display_read_adress();
-		TWI_send_string_fixed_length(C_ADRESS, data,1);
-		_delay_ms(1000);
+		TWI_send_float(C_ADRESS, (float)display_read_adress());
+		_delay_ms(500);
 		//if(sensor_data_flag)
 			//print_sensor_data();
 			

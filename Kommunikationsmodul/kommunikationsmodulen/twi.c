@@ -54,6 +54,9 @@ uint8_t autonom_settings;
 int current_setting;
 int elevation;
 
+uint8_t float_message[4];
+int float_counter;
+
 //Global variables for the interrupts
 bool instruction;
 int current_instruction;
@@ -102,6 +105,12 @@ void TWI_init(uint8_t module_adress)
 		}
 	}
 }
+
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];
+};
 
 void set_twi_reciever_enable()
 {
@@ -438,6 +447,37 @@ bool TWI_send_string_fixed_length(uint8_t adr, uint8_t str[], int length)
 	return true;
 }
 
+bool TWI_send_float(uint8_t adr, float flo)
+{
+	union Union_floatcast foo;
+	foo.f = flo;
+	start_bus();
+	wait_for_bus();
+	if(CONTROL != START)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(adr);
+	if(CONTROL != ADRESS_W)
+	{
+		Error();
+		return false;
+	}
+	send_data_and_wait(I_FLOAT);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return false;
+	}
+	for(int i = 0; i < 4; ++i)
+	{
+		send_data_and_wait(foo.s[i]);
+	}
+	stop_bus();
+	return true;
+}
+
 bool TWI_send_something(uint8_t adr, uint8_t instruction, uint8_t packet)
 {
 	start_bus();
@@ -746,6 +786,12 @@ ISR(TWI_vect)
 							get_char_from_bus();
 							break;
 						}
+						case(I_FLOAT):
+						{
+							float_message[float_counter] = get_data();
+							float_counter += 1;
+							break;
+						}
 					}
 				}
 			}
@@ -771,6 +817,12 @@ ISR(TWI_vect)
 					case(I_STRING):
 					{
 						write_to_TwiFIFO(message);
+						break;
+					}
+					case(I_FLOAT):
+					{
+						USART_SendValue(float_message);
+						float_counter = 0;
 						break;
 					}
 				}
