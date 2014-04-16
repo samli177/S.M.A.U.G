@@ -7,12 +7,14 @@
 
 #include <avr/io.h>
 #include "serialServoControl.h"
+#include "inverseKinematics.h"
+
 
 #include <util/delay.h>
 #include <math.h>
 #include <avr/interrupt.h>
 
-
+/*
 #define coxa (float)56
 #define femur (float)66
 #define tibia (float)131
@@ -22,8 +24,98 @@
 #define centerToSideLegs (float)100
 #define centerToFrontLegs (float)135
 #define centerToFrontLegsX (float)61.85
+*/
+/*
+#define x0_1 (float) -150/sqrt2-61.85 //standard x pos for leg 1
+#define y0_1 (float) 150/sqrt2+120 //standard y pos for leg 1
+#define x0_2 (float) -150-61.85 //standard x pos for leg 2
+#define y0_2 (float) 0 //standard y pos for leg 2
+#define x0_3 (float) -150/sqrt2-61.85 //standard x pos for leg 3
+#define y0_3 (float) -150/sqrt2-120 //standard y pos for leg 3
+#define x0_4 (float) 150/sqrt2+61.85 //standard x pos for leg 4
+#define y0_4 (float) -150/sqrt2-120 //standard y pos for leg 4
+#define x0_5 (float) 150+61.15 //standard x pos for leg 5
+#define y0_5 (float) 0 //standard y pos for leg 5
+#define x0_6 (float) 150/sqrt2+61.85 //standard x pos for leg 6
+#define y0_6 (float) 150/sqrt2+120 //standard y pos for leg 6
+#define z0 (float) -80
+
+#define pi (float) 3.14159265
+#define sqrt2 (float) 1.41421356
+*/
+
+float alpha;
+float beta;
+float gamma;
+float d;
+
+void Calc_d(float x,float y,float z)
+{
+	d = sqrtf(powf(sqrtf(x*x + y*y)-coxa, 2) + z*z);
+}
+
+float Calc_gamma(float x,float y)
+{
+gamma = atanf(y/x);
+return gamma;
+}
+
+float Calc_Beta()
+{
+	beta = pi - acosf((femur*femur+tibia*tibia-d*d)/(2*femur*tibia));
+	return beta;
+}
+
+float Calc_Alpha(float z)
+{
+	alpha = acosf((femur*femur-tibia*tibia+d*d)/(2*femur*d))+asinf(z/d);
+	return alpha;
+}
 
 
+float basis_change_Leg1x(float x, float y) {
+return (x + x0_1 + centerToFrontLegsX)/(-sqrt2)-(y + y0_1 - centerToFrontLegsY)/(-sqrt2);}
+
+float basis_change_Leg1y(float x, float y) {
+return (x + x0_1 + centerToFrontLegsX)/(-sqrt2)+(y + y0_1 - centerToFrontLegsY)/(-sqrt2);}
+
+
+float basis_change_Leg2x(float x) {
+return -(x + x0_2 + centerToSideLegs);}
+
+float basis_change_Leg2y(float y) {
+return -(y + y0_2);}
+
+
+float basis_change_Leg3x(float x, float y) {
+return (x + x0_3 + centerToFrontLegsX)/(-sqrt2)-(y + y0_3 +centerToFrontLegsY)/sqrt2;}
+
+float basis_change_Leg3y(float x, float y) {
+return (x + x0_3 + centerToFrontLegsX)/sqrt2+(y + y0_3 + centerToFrontLegsY)/(-sqrt2);}
+
+
+float basis_change_Leg4x(float x, float y) {
+return (x + x0_4 - centerToFrontLegsX)/sqrt2-(y + y0_4 + centerToFrontLegsY)/sqrt2;}
+
+float basis_change_Leg4y(float x, float y) {
+return (x + x0_4 - centerToFrontLegsX)/sqrt2+(y + y0_4 + centerToFrontLegsY)/sqrt2;}
+
+
+float basis_change_Leg5x(float x) {
+return (x + x0_5 - centerToSideLegs);}
+
+float basis_change_Leg5y(float y) {
+return (y + y0_5);}
+
+
+float basis_change_Leg6x(float x, float y) {
+return (x + x0_6 - centerToFrontLegsX)/sqrt2-(y + y0_6 - centerToFrontLegsY)/(-sqrt2);}
+
+float basis_change_Leg6y(float x, float y) {
+	return (x + x0_6 - centerToFrontLegsX)/(-sqrt2)+(y + y0_6 - centerToFrontLegsY)/sqrt2;}
+
+
+/* Start bortkommentering av allt
 #define x0_1 -215 //stanfdard x pos for leg 1
 #define y0_1  275 //stanfdard y pos for leg 1
 #define x0_2  -340 //stanfdard x pos for leg 2
@@ -47,16 +139,19 @@ float beta;
 float gamma;
 float d;
 
-
+*/
 
 void LegGoto(float x,float y, int z, int servospeed, int side, int servo1, int servo2, int servo3)
 {
+	//Ett slut vid bortkommentering av allt
 	/*
 	float alpha;
 	float beta;
 	float gamma;
 	float d;
 	*/
+	
+	
 	gamma = atanf(y/x);
 	d = sqrt(pow(sqrt(x*x + y*y)-coxa, 2) + z*z);
 	beta = 3.1415 - acosf((femur*femur+tibia*tibia-d*d)/(2*femur*tibia));
@@ -114,7 +209,7 @@ void moveLeg6too(float x, float y, float z, int servospeed) //Help function to d
 	LegGoto(a, b, (int) z, servospeed,-1,7,9,11);
 }
 
-
+/*
 //New functions by Tobias
 void Calc_d(float x,float y,float z)
 {
@@ -180,3 +275,5 @@ return (x + x0_6 - centerToFrontLegsX)*cosf(-Pi/4)-(y + y0_6 - centerToFrontLegs
 
 float basis_change_Leg6y(float x, float y, float z) {
 return (x + x0_6 - centerToFrontLegsX)*sinf(-Pi/4)+(y + y0_6 - centerToFrontLegsY)*cosf(-Pi/4);}
+*/
+	//Slut bortkommentering av allt

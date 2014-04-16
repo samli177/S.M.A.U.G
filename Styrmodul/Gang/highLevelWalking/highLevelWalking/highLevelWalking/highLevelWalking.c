@@ -13,130 +13,58 @@
 #include <avr/interrupt.h>
 #include "serialServoControl.h"
 #include "inverseKinematics.h"
+#include "highLevelWalking.h"
 #include "usart.h"
 
+/*
+#define pi (float) 3.14159265
+#define sqrt2 (float) 1.41421356
 
-#define pi 3.14159265
+#define x0_1 (float) (-100/sqrt2-61.85) //standard x pos for leg 1
+#define y0_1 (float) (100/sqrt2+120) //standard y pos for leg 1
+#define x0_2 (float) (-100-100) //standard x pos for leg 2
+#define y0_2 (float) 0 //standard y pos for leg 2
+#define x0_3 (float) (-100/sqrt2-61.85) //standard x pos for leg 3
+#define y0_3 (float) (-100/sqrt2-120) //standard y pos for leg 3
+#define x0_4 (float) (100/sqrt2+61.85) //standard x pos for leg 4
+#define y0_4 (float) (-100/sqrt2-120) //standard y pos for leg 4
+#define x0_5 (float) (100+100) //standard x pos for leg 5
+#define y0_5 (float) 0 //standard y pos for leg 5
+#define x0_6 (float) (100/sqrt2+61.85) //standard x pos for leg 6
+#define y0_6 (float) (100/sqrt2+120) //standard y pos for leg 6
+#define x0 (float) 100
+#define y0 (float) 0
+#define z0 (float) -120
+*/
+int speed = 400;
 
-#define x0_1 -140 //stanfdard x pos for leg 1
-#define y0_1  180 //stanfdard y pos for leg 1
-#define x0_2  -220 //stanfdard x pos for leg 2
-#define y0_2  0 //stanfdard y pos for leg 2
-#define x0_3  -140 //stanfdard x pos for leg 3
-#define y0_3  -180 //stanfdard y pos for leg 3
-#define x0_4 140 //stanfdard x pos for leg 4
-#define y0_4  -180 //stanfdard y pos for leg 4
-#define x0_5  220 //stanfdard x pos for leg 5
-#define y0_5  0 //stanfdard y pos for leg 5
-#define x0_6  140 //stanfdard x pos for leg 6
-#define y0_6  180 //stanfdard y pos for leg 6
+/*
+#define side1 (float)1
+#define side2 (float)1
+#define side3 (float)1
+#define side4 (float)(-1)
+#define side5 (float)(-1)
+#define side6 (float)(-1)
+*/
+
+//#define femurAngleAddition (float)0.231 //0.2426
+//#define tibiaAngleAddition (float)0.812 //(-3.1415/6)
 
 
 
-
-
+/*
 #define frontLegDistanfce (float)200
 #define centerToFrontLegsY (float)120
 #define centerToSideLegs (float)100
 #define centerToFrontLegs (float)135
 #define centerToFrontLegsX (float)61.85
-/*
-float x0_1 = -240; //stanfdard x pos for leg 1
-float y0_1 = 240; //stanfdard y pos for leg 1
-float x0_2 = -320; //stanfdard x pos for leg 2
-float y0_2 = 0; //stanfdard y pos for leg 2
-float x0_3 = -240; //stanfdard x pos for leg 3
-float y0_3 = -240; //stanfdard y pos for leg 3
-float x0_4 = 240; //stanfdard x pos for leg 4
-float y0_4 = -240; //stanfdard y pos for leg 4
-float x0_5 = 320; //stanfdard x pos for leg 5
-float y0_5 = 0; //stanfdard y pos for leg 5
-float x0_6 = 240; //stanfdard x pos for leg 6
-<<<<<<< HEAD
-float y0_6 = 250; //stanfdard y pos for leg 6
 */
-/*
-float Gamma0_1 = 0;
-float Alpha0_1 = -3.1415/4;
-float Beta0_1 = -3.1415/2.2;
 
-float Gamma0_2 = 0;
-float Alpha0_2 = -3.1415/4;
-float Beta0_2 = -3.1415/2.2;
-
-float Gamma0_3 = 0;
-float Alpha0_3 = -3.1415/4;
-float Beta0_3 = -3.1415/2.2;
-
-float Gamma0_4 = 0;
-float Alpha0_4 = -3.1415/4;
-float Beta0_4 = -3.1415/2.2;
-
-float Gamma0_5 = 0;
-float Alpha0_5 = 3.1415/4;
-float Beta0_5 = 3.1415/2.2;
-
-float Gamma0_6 = 0;
-float Alpha0_6 = 3.1415/4;
-float Beta0_6 = 3.1415/2.2;
-
-
-
-float std_lenght1;
-//Max möjliga steglängd från grundpositionen
-float max_step_lenght = 40;
-
-float Leg1_prev_angleGamma;
-float Leg1_prev_angleBeta;
-float Leg1_prev_angleAlpha;
-
-float Leg2_prev_angleGamma;
-float Leg2_prev_angleBeta;
-float Leg2_prev_angleAlpha;
-
-float Leg3_prev_angleGamma;
-float Leg3_prev_angleBeta;
-float Leg3_prev_angleAlpha;
-
-float Leg4_prev_angleGamma;
-float Leg4_prev_angleBeta;
-float Leg4_prev_angleAlpha;
-
-float Leg5_prev_angleGamma;
-float Leg5_prev_angleBeta;
-float Leg5_prev_angleAlpha;
-
-float Leg6_prev_angleGamma;
-float Leg6_prev_angleBeta;
-float Leg6_prev_angleAlpha;
-
-//Benkoordinater som nuvarande steget ska gå till
-float Leg1_new_angleGamma;
-float Leg1_new_angleBeta;
-float Leg1_new_angleAlpha;
-
-float Leg2_new_angleGamma;
-float Leg2_new_angleBeta;
-float Leg2_new_angleAlpha;
-
-float Leg3_new_angleGamma;
-float Leg3_new_angleBeta;
-float Leg3_new_angleAlpha;
-
-float Leg4_new_angleGamma;
-float Leg4_new_angleBeta;
-float Leg4_new_angleAlpha;
-
-float Leg5_new_angleGamma;
-float Leg5_new_angleBeta;
-float Leg5_new_angleAlpha;
-
-float Leg6_new_angleGamma;
-float Leg6_new_angleBeta;
-float Leg6_new_angleAlpha;
-float z0; 
-*/
 //Jonas function for robot movement
+
+/*
+
+
 
 float z0 = -120; //120 fungerar
 int speed = 200;
@@ -151,11 +79,12 @@ void moveRobot(float direction,float distanfce, float rotation, float z, int ser
 	float sinfaroundy = 0;//sinf(rotationY);
 	
 	//First state-------------------
-	/*servoGoto(4, 3.1415/2, servoSpeed); //raise legs
+	servoGoto(4, 3.1415/2, servoSpeed); //raise legs
 	_delay_ms(5);
 	servoGoto(10, 3.1415/2, servoSpeed);
 	_delay_ms(5);
 	servoGoto(15, -3.1415/2, servoSpeed);*/
+	/*
 	moveLeg1too(x0_1*cosfrotation-y0_1*sinfrotation-sinfdirection*distanfce, y0_1*cosfrotation-x0_1*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY-40), servoSpeed);
 	moveLeg3too(x0_3*cosfrotation-y0_3*sinfrotation-sinfdirection*distanfce, y0_3*cosfrotation-x0_3*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY-40), servoSpeed);
 	moveLeg5too(x0_5*cosfrotation-y0_5*sinfrotation-sinfdirection*distanfce, y0_5*cosfrotation+x0_5*sinfrotation+cosfdirection*distanfce, -(z-centerToSideLegs*sinfaroundy-40), servoSpeed);
@@ -167,13 +96,14 @@ void moveRobot(float direction,float distanfce, float rotation, float z, int ser
 	moveLeg4too(x0_4, y0_4, -(z-sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY), servoSpeed);
 	moveLeg2too(x0_2, y0_2, -(z+centerToSideLegs*sinfaroundy), servoSpeed);	
 	_delay_ms(300);
-		
+		*/
 	//Second state-------------------
 	/*servoGoto(3, -3.1415/2, servoSpeed); //raise legs
 	_delay_ms(5);
 	servoGoto(9, -3.1415/2, servoSpeed);
 	_delay_ms(5);
 	servoGoto(16, 3.1415/2, servoSpeed);*/
+	/*
 	moveLeg2too(x0_2*cosfrotation-y0_2*sinfrotation-sinfdirection*distanfce, y0_2*cosfrotation+x0_2*sinfrotation+cosfdirection*distanfce, -(z+centerToSideLegs*sinfaroundy-40), servoSpeed);
 	moveLeg4too(x0_4*cosfrotation-y0_4*sinfrotation-sinfdirection*distanfce, y0_4*cosfrotation-x0_4*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY-40), servoSpeed);
 	moveLeg6too(x0_6*cosfrotation-y0_6*sinfrotation-sinfdirection*distanfce, y0_6*cosfrotation-x0_6*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY-40), servoSpeed);
@@ -192,81 +122,365 @@ void moveRobot(float direction,float distanfce, float rotation, float z, int ser
 	
 }
 
+*/
+//Statusvariabler
+
+//1 om benet ska lyftas, -1 om det ska vara i marken
+float Leg1_lift;
+float Leg2_lift;
+float Leg3_lift;
+float Leg4_lift;
+float Leg5_lift;
+float Leg6_lift;
 
 /*
-//Statusvariabler
-void initvar(){
-//1 om benet ska lyftas, -1 om det ska vara i marken
-int Leg1_lift = 1;
-int Leg2_lift = -1;
-int Leg3_lift = 1;
-int Leg4_lift = -1;
-int Leg5_lift = 1;
-int Leg6_lift = -1;
+#define Gamma0 (float) 0
+#define Beta0 (float) 1.875
+#define Alpha0 (float) 0.1406
+*/
 
-std_lenght1 = sqrt((float)x0_1*x0_1 + (float)y0_1*y0_1);
+float z = z0;
 
-//Vinklar där föregående steg slutade
-Leg1_prev_angleGamma = Gamma0_1;
-Leg1_prev_angleBeta = Beta0_1;
-Leg1_prev_angleAlpha = Alpha0_1;
+float direction;
+float rotation;
+float speedf;
 
-Leg2_prev_angleGamma = Gamma0_2;
-Leg2_prev_angleBeta = Beta0_2;
-Leg2_prev_angleAlpha = Alpha0_2;
+//Position där föregående steg slutade
+float Leg1_prev_posx;
+float Leg1_prev_posy;
 
-Leg3_prev_angleGamma = Gamma0_3;
-Leg3_prev_angleBeta = Beta0_3;
-Leg3_prev_angleAlpha = Alpha0_3;
+float Leg2_prev_posx;
+float Leg2_prev_posy;
 
-Leg4_prev_angleGamma = Gamma0_4;
-Leg4_prev_angleBeta = Beta0_4;
-Leg4_prev_angleAlpha = Alpha0_4;
+float Leg3_prev_posx;
+float Leg3_prev_posy;
 
-Leg5_prev_angleGamma = Gamma0_5;
-Leg5_prev_angleBeta = Beta0_5;
-Leg5_prev_angleAlpha = Alpha0_5;
+float Leg4_prev_posx;
+float Leg4_prev_posy;
 
-Leg6_prev_angleGamma = Gamma0_6;
-Leg6_prev_angleBeta = Beta0_6;
-Leg6_prev_angleAlpha = Alpha0_6;
+float Leg5_prev_posx;
+float Leg5_prev_posy;
 
-//Benkoordinater som nuvarande steget ska gå till
-Leg1_new_angleGamma = Gamma0_1;
-Leg1_new_angleBeta = Beta0_1;
-Leg1_new_angleAlpha = Alpha0_1;
-
-Leg2_new_angleGamma = Gamma0_2;
-Leg2_new_angleBeta = Beta0_2;
-Leg2_new_angleAlpha = Alpha0_2;
-
-Leg3_new_angleGamma = Gamma0_3;
-Leg3_new_angleBeta = Beta0_3;
-Leg3_new_angleAlpha = Alpha0_3;
-
-Leg4_new_angleGamma = Gamma0_4;
-Leg4_new_angleBeta = Beta0_4;
-Leg4_new_angleAlpha = Alpha0_4;
-
-Leg5_new_angleGamma = Gamma0_5;
-Leg5_new_angleBeta = Beta0_5;
-Leg5_new_angleAlpha = Alpha0_5;
-
-Leg6_new_angleGamma = Gamma0_6;
-Leg6_new_angleBeta = Beta0_6;
-Leg6_new_angleAlpha = Alpha0_6;
-
-//Längd från origo till stanfdardposition för ben 1,3,4,6
-//float std_lenght = sqrt(x0_1*x0_1 + y0_1*y0_1);
+float Leg6_prev_posx;
+float Leg6_prev_posy;
 
 
+//Position där nuvarande steg ska sluta
+float Leg1_new_posx;
+float Leg1_new_posy;
+
+float Leg2_new_posx;
+float Leg2_new_posy;
+
+float Leg3_new_posx;
+float Leg3_new_posy;
+
+float Leg4_new_posx;
+float Leg4_new_posy;
+
+float Leg5_new_posx;
+float Leg5_new_posy;
+
+float Leg6_new_posx;
+float Leg6_new_posy;
+
+float x_direction;
+float y_direction;
+
+
+	
+float x_rot1;
+float y_rot1;
+
+float x_rot2;
+float y_rot2;
+
+float x_rot3;
+float y_rot3;
+
+float x_rot4;
+float y_rot4;
+
+float x_rot5;
+float y_rot5;
+
+float x_rot6;
+float y_rot6;
+
+float Step_max;
+float Step_test;
+float Step_scaling;
+
+
+
+
+float Leg1_new_posx_wb;
+float Leg1_new_posy_wb;
+float Leg1_new_posz;
+float Leg1_new_posx;
+float Leg1_new_posy;
+float Leg1_prev_posx;
+float Leg1_prev_posy;
+
+float Leg2_new_posx_wb;
+float Leg2_new_posy_wb;
+float Leg2_new_posz;
+float Leg2_new_posx;
+float Leg2_new_posy;
+float Leg2_prev_posx;
+float Leg2_prev_posy;
+
+float Leg3_new_posx_wb;
+float Leg3_new_posy_wb;
+float Leg3_new_posz;
+float Leg3_new_posx;
+float Leg3_new_posy;
+float Leg3_prev_posx;
+float Leg3_prev_posy;
+
+float Leg4_new_posx_wb;
+float Leg4_new_posy_wb;
+float Leg4_new_posz;
+float Leg4_new_posx;
+float Leg4_new_posy;
+float Leg4_prev_posx;
+float Leg4_prev_posy;
+
+float Leg5_new_posx_wb;
+float Leg5_new_posy_wb;
+float Leg5_new_posz;
+float Leg5_new_posx;
+float Leg5_new_posy;
+float Leg5_prev_posx;
+float Leg5_prev_posy;
+
+float Leg6_new_posx_wb;
+float Leg6_new_posy_wb;
+float Leg6_new_posz;
+float Leg6_new_posx;
+float Leg6_new_posy;
+float Leg6_prev_posx;
+float Leg6_prev_posy;
+
+	//Vinklar där föregående steg slutade
+	float Leg1_prev_angleGamma;
+	float Leg1_prev_angleBeta;
+	float Leg1_prev_angleAlpha;
+
+	float Leg2_prev_angleGamma;
+	float Leg2_prev_angleBeta;
+	float Leg2_prev_angleAlpha;
+	
+	float Leg3_prev_angleGamma;
+	float Leg3_prev_angleBeta;
+	float Leg3_prev_angleAlpha;
+	
+	float Leg4_prev_angleGamma;
+	float Leg4_prev_angleBeta;
+	float Leg4_prev_angleAlpha;
+	
+	float Leg5_prev_angleGamma;
+	float Leg5_prev_angleBeta;
+	float Leg5_prev_angleAlpha;
+	
+	float Leg6_prev_angleGamma;
+	float Leg6_prev_angleBeta;
+	float Leg6_prev_angleAlpha;
+	
+	//Benkoordinater som nuvarande steget ska gå till
+	float Leg1_new_angleGamma;
+	float Leg1_new_angleBeta;
+	float Leg1_new_angleAlpha;
+	
+	float Leg2_new_angleGamma;
+	float Leg2_new_angleBeta;
+	float Leg2_new_angleAlpha;
+	
+	float Leg3_new_angleGamma;
+	float Leg3_new_angleBeta;
+	float Leg3_new_angleAlpha;
+	
+	float Leg4_new_angleGamma;
+	float Leg4_new_angleBeta;
+	float Leg4_new_angleAlpha;
+	
+	float Leg5_new_angleGamma;
+	float Leg5_new_angleBeta;
+	float Leg5_new_angleAlpha;
+	
+	float Leg6_new_angleGamma;
+	float Leg6_new_angleBeta;
+	float Leg6_new_angleAlpha;
+
+
+//Längd från origo till standardposition för ben 1,3,4,6
+float std_lenght;
+
+
+//Max möjliga steglängd från grundpositionen
+float max_step_lenght;
+
+//Middle-postioner
+float Leg1_new_middle_posx;
+float Leg1_new_middle_posy;
+
+float Leg2_new_middle_posx;
+float Leg2_new_middle_posy;
+
+float Leg3_new_middle_posx;
+float Leg3_new_middle_posy;
+
+float Leg4_new_middle_posx;
+float Leg4_new_middle_posy;
+
+float Leg5_new_middle_posx;
+float Leg5_new_middle_posy;
+
+float Leg6_new_middle_posx;
+float Leg6_new_middle_posy;
+
+
+//Middle-vinklar
+float Leg1_new_middle_angleGamma;
+float Leg1_new_middle_angleBeta;
+float Leg1_new_middle_angleAlpha;
+
+float Leg2_new_middle_angleGamma;
+float Leg2_new_middle_angleBeta;
+float Leg2_new_middle_angleAlpha;
+
+float Leg3_new_middle_angleGamma;
+float Leg3_new_middle_angleBeta;
+float Leg3_new_middle_angleAlpha;
+
+float Leg4_new_middle_angleGamma;
+float Leg4_new_middle_angleBeta;
+float Leg4_new_middle_angleAlpha;
+
+float Leg5_new_middle_angleGamma;
+float Leg5_new_middle_angleBeta;
+float Leg5_new_middle_angleAlpha;
+
+float Leg6_new_middle_angleGamma;
+float Leg6_new_middle_angleBeta;
+float Leg6_new_middle_angleAlpha;
+
+void initvar()
+{
+	max_step_lenght = 70;
+	std_lenght = sqrtf(x0_1*x0_1 + y0_1*y0_1);
+	
+	Leg1_lift = 1;
+	Leg2_lift = -1;
+	Leg3_lift = 1;
+	Leg4_lift = -1;	
+	Leg5_lift = 1;
+	Leg6_lift = -1;
+	
+	//Vinklar där föregående steg slutade
+	Leg1_prev_angleGamma = Gamma0;
+	Leg1_prev_angleBeta = Beta0;
+	Leg1_prev_angleAlpha = Alpha0;
+
+	Leg2_prev_angleGamma = Gamma0;
+	Leg2_prev_angleBeta = Beta0;
+	Leg2_prev_angleAlpha = Alpha0;
+	
+	Leg3_prev_angleGamma = Gamma0;
+	Leg3_prev_angleBeta = Beta0;
+	Leg3_prev_angleAlpha = Alpha0;
+	
+	Leg4_prev_angleGamma = Gamma0;
+	Leg4_prev_angleBeta = Beta0;
+	Leg4_prev_angleAlpha = Alpha0;
+	
+	Leg5_prev_angleGamma = Gamma0;
+	Leg5_prev_angleBeta = Beta0;
+	Leg5_prev_angleAlpha = Alpha0;
+	
+	Leg6_prev_angleGamma = Gamma0;
+	Leg6_prev_angleBeta = Beta0;
+	Leg6_prev_angleAlpha = Alpha0;
+	
+	//Benkoordinater som nuvarande steget ska gå till
+	Leg1_new_angleGamma = Gamma0;
+	Leg1_new_angleBeta = Beta0;
+	Leg1_new_angleAlpha = Alpha0;
+	
+	Leg2_new_angleGamma = Gamma0;
+	Leg2_new_angleBeta = Beta0;
+	Leg2_new_angleAlpha = Alpha0;
+	
+	Leg3_new_angleGamma = Gamma0;
+	Leg3_new_angleBeta = Beta0;
+	Leg3_new_angleAlpha = Alpha0;
+	
+	Leg4_new_angleGamma = Gamma0;
+	Leg4_new_angleBeta = Beta0;
+	Leg4_new_angleAlpha = Alpha0;
+	
+	Leg5_new_angleGamma = Gamma0;
+	Leg5_new_angleBeta = Beta0;
+	Leg5_new_angleAlpha = Alpha0;
+	
+	Leg6_new_angleGamma = Gamma0;
+	Leg6_new_angleBeta = Beta0;
+	Leg6_new_angleAlpha = Alpha0;
+	
+	Leg1_new_posx = x0;
+	Leg1_new_posy = y0;
+	Leg1_new_posz = z0;
+	
+	Leg2_new_posx = x0;
+	Leg2_new_posy = y0;
+	Leg2_new_posz = z0;
+	
+	Leg3_new_posx = x0;
+	Leg3_new_posy = y0;
+	Leg3_new_posz = z0;
+	
+	Leg4_new_posx = x0;
+	Leg4_new_posy = y0;
+	Leg4_new_posz = z0;
+	
+	Leg5_new_posx = x0;
+	Leg5_new_posy = y0;
+	Leg5_new_posz = z0;
+	
+	Leg6_new_posx = x0;
+	Leg6_new_posy = y0;
+	Leg6_new_posz = z0;
 }
-
 //Tar in styrkommandon (format á la Martin) och uppdaterar variabler för positionen
 //av ben för förra steget och räknar ut position för nästa steg.
-void moveRobotTob(int direction, int rotation, int speed)
+void moveRobot(int dir, int rot, int spd)
 {
-	float z = -50;
+	direction = (float)dir*2;
+	rotation = (float)rot;
+	speedf = (float)spd;
+	if (speedf != 0 || rotation != 50)
+	{
+		
+
+	Leg1_prev_posx = Leg1_new_posx;
+	Leg1_prev_posy = Leg1_new_posy;
+	
+	Leg2_prev_posx = Leg2_new_posx;
+	Leg2_prev_posy = Leg2_new_posy;
+	
+	Leg3_prev_posx = Leg3_new_posx;
+	Leg3_prev_posy = Leg3_new_posy;
+	
+	Leg4_prev_posx = Leg4_new_posx;
+	Leg4_prev_posy = Leg4_new_posy;
+	
+	Leg5_prev_posx = Leg5_new_posx;
+	Leg5_prev_posy = Leg5_new_posy;
+	
+	Leg6_prev_posx = Leg6_new_posx;
+	Leg6_prev_posy = Leg6_new_posy;
+	
+	
 	//Nytt steg ska räknas ut. Nya stegets vinklar sätts till föregående stegets vinklar.
 	Leg1_prev_angleGamma = Leg1_new_angleGamma;
 	Leg1_prev_angleBeta = Leg1_new_angleBeta;
@@ -294,140 +508,351 @@ void moveRobotTob(int direction, int rotation, int speed)
 
 
 	//x och y riktning för förflyttning, skalad med hastigheten
-	float x_direction = -sinf(direction * pi / 90) * speed / 100;
-	float y_direction = cosf(direction * pi / 90) * speed / 100;
+	x_direction = -sinf(direction * pi / 90) * speedf / speed;
+	y_direction = cosf(direction * pi / 90) * speedf / speed;
 
 
 	//x och y riktning för rotation, skalad med rotationshastighet
-	float x_rot1 = (rotation / 50 -1)*y0_1/std_lenght1;
-	float y_rot1 = (rotation / 50 -1) * x0_1 / std_lenght1;
+	x_rot1 = (rotation / 50 -1) * y0_1/ std_lenght;
+	y_rot1 = (rotation / 50 -1) * x0_1 / std_lenght;
 
-	float x_rot2 = 0;
-	float y_rot2 = rotation / 50 - 1;
+	x_rot2 = 0;
+	y_rot2 = rotation / 50 - 1;
 
-	float x_rot3 = (rotation / 50 -1) * (- y0_1 / std_lenght1);
-	float y_rot3 = (rotation / 50 -1) * x0_1 / std_lenght1;
+	x_rot3 = (rotation / 50 -1) * (- y0_1 / std_lenght);
+	y_rot3 = (rotation / 50 -1) * x0_1 / std_lenght;
 
-	float x_rot4 = (rotation / 50 -1) * (- y0_1 / std_lenght1);
-	float y_rot4 = (rotation / 50 -1) * (- x0_1 / std_lenght1);
+	x_rot4 = (rotation / 50 -1) * (- y0_1 / std_lenght);
+	y_rot4 = (rotation / 50 -1) * (- x0_1 / std_lenght);
 
-	float x_rot5 = 0;
-	float y_rot5 = -rotation / 50 + 1;
+	x_rot5 = 0;
+	y_rot5 = -rotation / 50 + 1;
 
-	float x_rot6 = (rotation / 50 -1) * y0_1 / std_lenght1;
-	float y_rot6 = (rotation / 50 -1) * (- x0_1 / std_lenght1);
+	x_rot6 = (rotation / 50 -1) * y0_1 / std_lenght;
+	y_rot6 = (rotation / 50 -1) * (- x0_1 / std_lenght);
 
 
 	//Addera förflyttningarna och sätter Step_max till längsta stegets längd
-	float Step_max = sqrt(pow(x_direction + x_rot1,2) + pow(y_direction + y_rot1,2));
-	float Step_test = sqrt(pow(x_direction + x_rot2,2) + pow(y_direction + y_rot2,2));
-	Step_max = fmax(Step_max, Step_test);
+	Step_max = powf((x_direction + x_rot1),2) + powf((y_direction + y_rot1),2);
+	Step_test = powf((x_direction + x_rot2),2) + powf((y_direction + y_rot2),2);
+	Step_max = fmaxf(Step_max, Step_test);
 
-	Step_test = sqrt(pow(x_direction + x_rot3,2) + pow(y_direction + y_rot3,2));
-	Step_max = fmax(Step_max, Step_test);
+	Step_test = powf((x_direction + x_rot3),2) + powf((y_direction + y_rot3),2);
+	Step_max = fmaxf(Step_max, Step_test);
 
-	Step_test = sqrt(pow(x_direction + x_rot4,2) + pow(y_direction + y_rot4,2));
-	Step_max = fmax(Step_max, Step_test);
+	Step_test = powf((x_direction + x_rot4),2) + powf((y_direction + y_rot4),2);
+	Step_max = fmaxf(Step_max, Step_test);
 
-	Step_test = sqrt(pow(x_direction + x_rot5,2) + pow(y_direction + y_rot5,2));
-	Step_max = fmax(Step_max, Step_test);
+	Step_test = powf((x_direction + x_rot5),2) + powf((y_direction + y_rot5),2);
+	Step_max = fmaxf(Step_max, Step_test);
 
-	Step_test = sqrt(pow(x_direction + x_rot6,2) + pow(y_direction + y_rot6,2));
-	Step_max = fmax(Step_max, Step_test);
+	Step_test = powf((x_direction + x_rot6),2) + powf((y_direction + y_rot6),2);
+	Step_max = fmaxf(Step_max, Step_test);
+	
+	Step_max =sqrtf(Step_max);
 
 
 	//Stegskalning för att inte alltid ta max längd på steg;
-	float Step_scaling = fmax(speed/100, fabs(rotation/50-1));
+	Step_scaling = fmaxf(speedf/speed, fabsf(rotation/50-1));
 
 
 	//Uppdatera vinklar för nya steget
 
 
-	float Leg1_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot1)*Step_scaling;
-	float Leg1_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot1)*Step_scaling;
-	float Leg1_new_posz = z;
-	float Leg1_new_posx = basis_change_Leg1x(Leg1_new_posx_wb,Leg1_new_posy_wb,Leg1_new_posz);
-	float Leg1_new_posy = basis_change_Leg1y(Leg1_new_posx_wb,Leg1_new_posy_wb,Leg1_new_posz);
+	Leg1_new_posx_wb = Leg1_lift * max_step_lenght / Step_max * (x_direction + x_rot1) * Step_scaling;
+	Leg1_new_posy_wb = Leg1_lift * max_step_lenght / Step_max * (y_direction + y_rot1) * Step_scaling;
+	Leg1_new_posz = z;
+	Leg1_new_posx = basis_change_Leg1x(Leg1_new_posx_wb,Leg1_new_posy_wb);
+	Leg1_new_posy = basis_change_Leg1y(Leg1_new_posx_wb,Leg1_new_posy_wb);
 	Calc_d(Leg1_new_posx, Leg1_new_posy, Leg1_new_posz);
 	Leg1_new_angleGamma = Calc_gamma(Leg1_new_posx, Leg1_new_posy);
-	Leg1_new_angleBeta = Calc_Beta(Leg1_new_posx, Leg1_new_posy, Leg1_new_posz);
-	Leg1_new_angleAlpha = Calc_Alpha(Leg1_new_posx, Leg1_new_posy, Leg1_new_posz);
-	servoGoto(8, Leg1_new_angleGamma, speed);
-	servoGoto(10, -Leg1_new_angleAlpha - femurAngleAddition, speed);
-	servoGoto(12, -Leg1_new_angleBeta + tibiaAngleAddition, speed);
+	Leg1_new_angleBeta = Calc_Beta();
+	Leg1_new_angleAlpha = Calc_Alpha(Leg1_new_posz);
 
 
-	float Leg2_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot2)*Step_scaling;
-	float Leg2_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot2)*Step_scaling;
-	float Leg2_new_posz = z;
-	float Leg2_new_posx = basis_change_Leg2x(Leg2_new_posx_wb,Leg2_new_posy_wb,Leg2_new_posz);
-	float Leg2_new_posy = basis_change_Leg2y(Leg2_new_posx_wb,Leg2_new_posy_wb,Leg2_new_posz);
+	Leg2_new_posx_wb = Leg2_lift * max_step_lenght / Step_max * (x_direction + x_rot2) * Step_scaling;
+	Leg2_new_posy_wb = Leg2_lift * max_step_lenght / Step_max * (y_direction + y_rot2) * Step_scaling;
+	Leg2_new_posz = z;
+	Leg2_new_posx = basis_change_Leg2x(Leg2_new_posx_wb);
+	Leg2_new_posy = basis_change_Leg2y(Leg2_new_posy_wb);
 	Calc_d(Leg2_new_posx, Leg2_new_posy, Leg2_new_posz);
 	Leg2_new_angleGamma = Calc_gamma(Leg2_new_posx, Leg2_new_posy);
-	Leg2_new_angleBeta = Calc_Beta(Leg2_new_posx, Leg2_new_posy, Leg2_new_posz);
-	Leg2_new_angleAlpha = Calc_Alpha(Leg2_new_posx, Leg2_new_posy, Leg2_new_posz);
-	servoGoto(14, Leg2_new_angleGamma, speed);
-	servoGoto(16, -Leg2_new_angleAlpha - femurAngleAddition, speed);
-	servoGoto(18, -Leg2_new_angleBeta + tibiaAngleAddition, speed);
+	Leg2_new_angleBeta = Calc_Beta();
+	Leg2_new_angleAlpha = Calc_Alpha(Leg2_new_posz);
+
+
+	Leg3_new_posx_wb = Leg3_lift * max_step_lenght / Step_max * (x_direction + x_rot3) * Step_scaling;
+	Leg3_new_posy_wb = Leg3_lift * max_step_lenght / Step_max * (y_direction + y_rot3) * Step_scaling;
+	Leg3_new_posz = z;
+	Leg3_new_posx = basis_change_Leg3x(Leg3_new_posx_wb,Leg3_new_posy_wb);
+	Leg3_new_posy = basis_change_Leg3y(Leg3_new_posx_wb,Leg3_new_posy_wb);
+	Calc_d(Leg3_new_posx, Leg3_new_posy, Leg3_new_posz);
+	Leg3_new_angleGamma = Calc_gamma(Leg3_new_posx, Leg3_new_posy);
+	Leg3_new_angleBeta = Calc_Beta();
+	Leg3_new_angleAlpha = Calc_Alpha(Leg3_new_posz);
+
+
+	Leg4_new_posx_wb = Leg4_lift * max_step_lenght / Step_max * (x_direction + x_rot4) * Step_scaling;
+	Leg4_new_posy_wb = Leg4_lift * max_step_lenght / Step_max * (y_direction + y_rot4) * Step_scaling;
+	Leg4_new_posz = z;
+	Leg4_new_posx = basis_change_Leg4x(Leg4_new_posx_wb,Leg4_new_posy_wb);
+	Leg4_new_posy = basis_change_Leg4y(Leg4_new_posx_wb,Leg4_new_posy_wb);
+	Calc_d(Leg4_new_posx, Leg4_new_posy, Leg4_new_posz);
+	Leg4_new_angleGamma = Calc_gamma(Leg4_new_posx, Leg4_new_posy);
+	Leg4_new_angleBeta = Calc_Beta();
+	Leg4_new_angleAlpha = Calc_Alpha(Leg4_new_posz);
+
+
+	Leg5_new_posx_wb = Leg5_lift * max_step_lenght / Step_max * (x_direction + x_rot5) * Step_scaling;
+	Leg5_new_posy_wb = Leg5_lift * max_step_lenght / Step_max * (y_direction + y_rot5) * Step_scaling;
+	Leg5_new_posz = z;
+	Leg5_new_posx = basis_change_Leg5x(Leg5_new_posx_wb);
+	Leg5_new_posy = basis_change_Leg5y(Leg5_new_posy_wb);
+	Calc_d(Leg5_new_posx, Leg5_new_posy, Leg5_new_posz);
+	Leg5_new_angleGamma = Calc_gamma(Leg5_new_posx, Leg5_new_posy);
+	Leg5_new_angleBeta = Calc_Beta();
+	Leg5_new_angleAlpha = Calc_Alpha(Leg5_new_posz);
+
+
+	Leg6_new_posx_wb = Leg6_lift * max_step_lenght / Step_max * (x_direction + x_rot6) * Step_scaling;
+	Leg6_new_posy_wb = Leg6_lift * max_step_lenght / Step_max * (y_direction + y_rot6) * Step_scaling;
+	Leg6_new_posz = z;
+	Leg6_new_posx = basis_change_Leg6x(Leg6_new_posx_wb,Leg6_new_posy_wb);
+	Leg6_new_posy = basis_change_Leg6y(Leg6_new_posx_wb,Leg6_new_posy_wb);
+	Calc_d(Leg6_new_posx, Leg6_new_posy, Leg6_new_posz);
+	Leg6_new_angleGamma = Calc_gamma(Leg6_new_posx, Leg6_new_posy);
+	Leg6_new_angleBeta = Calc_Beta();
+	Leg6_new_angleAlpha = Calc_Alpha(Leg6_new_posz);
+
+
+	if(Leg1_lift == -1)
+	{
+		Leg1_new_middle_posx = Leg1_prev_posx + (Leg1_new_posx - Leg1_prev_posx)/2;
+		Leg1_new_middle_posy = Leg1_prev_posy + (Leg1_new_posy - Leg1_prev_posy)/2;
+		Calc_d(Leg1_new_middle_posx, Leg1_new_middle_posy, z);
+		Leg1_new_middle_angleGamma = Calc_gamma(Leg1_new_middle_posx, Leg1_new_middle_posy);
+		Leg1_new_middle_angleBeta = Calc_Beta();
+		Leg1_new_middle_angleAlpha = Calc_Alpha(Leg1_new_posz);
+	}
+	
+	if(Leg2_lift == -1)
+	{
+		Leg2_new_middle_posx = Leg2_prev_posx + (Leg2_new_posx - Leg2_prev_posx)/2;
+		Leg2_new_middle_posy = Leg2_prev_posy + (Leg2_new_posy - Leg2_prev_posy)/2;
+		Calc_d(Leg2_new_middle_posx, Leg2_new_middle_posy, z);
+		Leg2_new_middle_angleGamma = Calc_gamma(Leg2_new_middle_posx, Leg2_new_middle_posy);
+		Leg2_new_middle_angleBeta = Calc_Beta();
+		Leg2_new_middle_angleAlpha = Calc_Alpha(Leg2_new_posz);
+	}
+	
+	if(Leg3_lift == -1)
+	{
+		Leg3_new_middle_posx = Leg3_prev_posx + (Leg3_new_posx - Leg3_prev_posx)/2;
+		Leg3_new_middle_posy = Leg3_prev_posy + (Leg3_new_posy - Leg3_prev_posy)/2;
+		Calc_d(Leg3_new_middle_posx, Leg3_new_middle_posy,z);
+		Leg3_new_middle_angleGamma = Calc_gamma(Leg3_new_middle_posx, Leg3_new_middle_posy);
+		Leg3_new_middle_angleBeta = Calc_Beta();
+		Leg3_new_middle_angleAlpha = Calc_Alpha(Leg3_new_posz);
+	}
+	
+	if(Leg4_lift == -1)
+	{
+		Leg4_new_middle_posx = Leg4_prev_posx + (Leg4_new_posx - Leg4_prev_posx)/2;
+		Leg4_new_middle_posy = Leg4_prev_posy + (Leg4_new_posy - Leg4_prev_posy)/2;
+		Calc_d(Leg4_new_middle_posx, Leg4_new_middle_posy, z);
+		Leg4_new_middle_angleGamma = Calc_gamma(Leg4_new_middle_posx, Leg4_new_middle_posy);
+		Leg4_new_middle_angleBeta = Calc_Beta();
+		Leg4_new_middle_angleAlpha = Calc_Alpha(Leg4_new_posz);
+	}
+	
+	if(Leg5_lift == -1)
+	{
+		Leg5_new_middle_posx = Leg5_prev_posx + (Leg5_new_posx - Leg5_prev_posx)/2;
+		Leg5_new_middle_posy = Leg5_prev_posy + (Leg5_new_posy - Leg5_prev_posy)/2;
+		Calc_d(Leg5_new_middle_posx, Leg5_new_middle_posy,z);
+		Leg5_new_middle_angleGamma = Calc_gamma(Leg5_new_middle_posx, Leg5_new_middle_posy);
+		Leg5_new_middle_angleBeta = Calc_Beta();
+		Leg5_new_middle_angleAlpha = Calc_Alpha(Leg5_new_posz);
+	}
+	
+	if(Leg6_lift == -1)
+	{
+		Leg6_new_middle_posx = Leg6_prev_posx + (Leg6_new_posx - Leg6_prev_posx)/2;
+		Leg6_new_middle_posy = Leg6_prev_posy + (Leg6_new_posy - Leg6_prev_posy)/2;
+		Calc_d(Leg6_new_middle_posx, Leg6_new_middle_posy,z);
+		Leg6_new_middle_angleGamma = Calc_gamma(Leg6_new_middle_posx, Leg6_new_middle_posy);
+		Leg6_new_middle_angleBeta = Calc_Beta();
+		Leg6_new_middle_angleAlpha = Calc_Alpha(Leg6_new_posz);
+	}
 	
 
 
-	float Leg3_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot3)*Step_scaling;
-	float Leg3_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot3)*Step_scaling;
-	float Leg3_new_posz = z;
-	float Leg3_new_posx = basis_change_Leg3x(Leg3_new_posx_wb,Leg3_new_posy_wb,Leg3_new_posz);
-	float Leg3_new_posy = basis_change_Leg3y(Leg3_new_posx_wb,Leg3_new_posy_wb,Leg3_new_posz);
-	Calc_d(Leg3_new_posx, Leg3_new_posy, Leg3_new_posz);
-	Leg3_new_angleGamma = Calc_gamma(Leg3_new_posx, Leg3_new_posy);
-	Leg3_new_angleBeta = Calc_Beta(Leg3_new_posx, Leg3_new_posy, Leg3_new_posz);
-	Leg3_new_angleAlpha = Calc_Alpha(Leg3_new_posx, Leg3_new_posy, Leg3_new_posz);
-	servoGoto(2, Leg3_new_angleGamma, speed);
-	servoGoto(4, -Leg3_new_angleAlpha - femurAngleAddition, speed);
-	servoGoto(6, -Leg3_new_angleBeta + tibiaAngleAddition, speed);
-
-
-	float Leg4_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot4)*Step_scaling;
-	float Leg4_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot4)*Step_scaling;
-	float Leg4_new_posz = z;
-	float Leg4_new_posx = basis_change_Leg4x(Leg4_new_posx_wb,Leg4_new_posy_wb,Leg4_new_posz);
-	float Leg4_new_posy = basis_change_Leg4y(Leg4_new_posx_wb,Leg4_new_posy_wb,Leg4_new_posz);
-	Calc_d(Leg4_new_posx, Leg4_new_posy, Leg4_new_posz);
-	Leg4_new_angleGamma = Calc_gamma(Leg4_new_posx, Leg4_new_posy);
-	Leg4_new_angleBeta = Calc_Beta(Leg4_new_posx, Leg4_new_posy, Leg4_new_posz);
-	Leg4_new_angleAlpha = Calc_Alpha(Leg4_new_posx, Leg4_new_posy, Leg4_new_posz);
-	servoGoto(1, Leg4_new_angleGamma, speed);
-	servoGoto(3, Leg4_new_angleAlpha + femurAngleAddition, speed);
-	servoGoto(5, Leg4_new_angleBeta - tibiaAngleAddition, speed);
-
-
-	float Leg5_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot5)*Step_scaling;
-	float Leg5_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot5)*Step_scaling;
-	float Leg5_new_posz = z;
-	float Leg5_new_posx = basis_change_Leg5x(Leg5_new_posx_wb,Leg5_new_posy_wb,Leg5_new_posz);
-	float Leg5_new_posy = basis_change_Leg5y(Leg5_new_posx_wb,Leg5_new_posy_wb,Leg5_new_posz);
-	Calc_d(Leg5_new_posx, Leg5_new_posy, Leg5_new_posz);
-	Leg5_new_angleGamma = Calc_gamma(Leg5_new_posx, Leg5_new_posy);
-	Leg5_new_angleBeta = Calc_Beta(Leg5_new_posx, Leg5_new_posy, Leg5_new_posz);
-	Leg5_new_angleAlpha = Calc_Alpha(Leg5_new_posx, Leg5_new_posy, Leg5_new_posz);
-	servoGoto(13, Leg5_new_angleGamma, speed);
-	servoGoto(15, Leg5_new_angleAlpha + femurAngleAddition, speed);
-	servoGoto(17, Leg5_new_angleBeta - tibiaAngleAddition, speed);
-
-
-	float Leg6_new_posx_wb = max_step_lenght/Step_max*(x_direction + x_rot6)*Step_scaling;
-	float Leg6_new_posy_wb = max_step_lenght/Step_max*(y_direction + y_rot6)*Step_scaling;
-	float Leg6_new_posz = z;
-	float Leg6_new_posx = basis_change_Leg6x(Leg6_new_posx_wb,Leg6_new_posy_wb,Leg6_new_posz);
-	float Leg6_new_posy = basis_change_Leg6y(Leg6_new_posx_wb,Leg6_new_posy_wb,Leg6_new_posz);
-	Calc_d(Leg6_new_posx, Leg6_new_posy, Leg6_new_posz);
-	Leg6_new_angleGamma = Calc_gamma(Leg6_new_posx, Leg6_new_posy);
-	Leg6_new_angleBeta = Calc_Beta(Leg6_new_posx, Leg6_new_posy, Leg6_new_posz);
-	Leg6_new_angleAlpha = Calc_Alpha(Leg6_new_posx, Leg6_new_posy, Leg6_new_posz);
-	servoGoto(7, Leg6_new_angleGamma, speed);
-	servoGoto(9, Leg6_new_angleAlpha + femurAngleAddition, speed);
-	servoGoto(11, Leg6_new_angleBeta - tibiaAngleAddition, speed);
+	Leg_motion();
+	}
 }
-*/
+
+
+void Leg_motion()
+{
+	
+	if (Leg1_lift == -1)
+	{
+		servoGoto(8,Leg1_new_middle_angleGamma,speed);
+		_delay_us(100);
+		servoGoto(10,side1*(Leg1_new_middle_angleAlpha + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(12,side1*(-Leg1_new_middle_angleBeta + tibiaAngleAddition),speed);
+	}
+	else
+	{
+		servoGoto(8,Leg1_prev_angleGamma + (Leg1_new_angleGamma-Leg1_prev_angleGamma)/2 ,speed);
+		_delay_us(100);
+		servoGoto(10,side1*(Leg1_prev_angleAlpha + (Leg1_new_angleAlpha-Leg1_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(12,side1*(-Leg1_prev_angleBeta - (Leg1_new_angleBeta-Leg1_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+	}
+	_delay_ms(1);
+
+	if (Leg2_lift == -1)
+	{
+		servoGoto(14,Leg2_new_middle_angleGamma,speed);
+		_delay_us(100);
+		servoGoto(16,side2*(Leg2_new_middle_angleAlpha + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(18,side2*(-Leg2_new_middle_angleBeta + tibiaAngleAddition),speed);
+	}
+	else
+	{
+		servoGoto(14,Leg2_prev_angleGamma + (Leg2_new_angleGamma-Leg2_prev_angleGamma)/2 ,speed);
+		_delay_us(100);
+		servoGoto(16,side2*(Leg2_prev_angleAlpha + (Leg2_new_angleAlpha-Leg2_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(18,side2*(-Leg2_prev_angleBeta - (Leg2_new_angleBeta-Leg2_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+	}
+	_delay_ms(1);
+
+	if (Leg3_lift == -1)
+	{
+		servoGoto(2,Leg3_new_middle_angleGamma,speed);
+		_delay_us(100);
+		servoGoto(4,side3*(Leg3_new_middle_angleAlpha + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(6,side3*(-Leg3_new_middle_angleBeta + tibiaAngleAddition),speed);
+	}
+	else
+	{
+		servoGoto(2,Leg3_prev_angleGamma + (Leg3_new_angleGamma-Leg3_prev_angleGamma)/2 ,speed);
+		_delay_us(100);
+		servoGoto(4,side3*(Leg3_prev_angleAlpha + (Leg3_new_angleAlpha-Leg3_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(6,side3*(-Leg3_prev_angleBeta - (Leg3_new_angleBeta-Leg3_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+	}
+	_delay_ms(1);
+
+	if (Leg4_lift == -1)
+	{
+		servoGoto(1,Leg4_new_middle_angleGamma,speed);
+		_delay_us(100);
+		servoGoto(3,side4*(Leg4_new_middle_angleAlpha + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(5,side4*(-Leg4_new_middle_angleBeta + tibiaAngleAddition),speed);
+	}
+	else
+	{
+		servoGoto(1,Leg4_prev_angleGamma + (Leg4_new_angleGamma-Leg4_prev_angleGamma)/2 ,speed);
+		_delay_us(100);
+		servoGoto(3,side4*(Leg4_prev_angleAlpha + (Leg4_new_angleAlpha-Leg4_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(5,side4*(-Leg4_prev_angleBeta - (Leg4_new_angleBeta-Leg4_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+	}
+	_delay_ms(1);
+
+	if (Leg5_lift == -1)
+	{
+		servoGoto(13,Leg5_new_middle_angleGamma,speed);
+		_delay_us(100);
+		servoGoto(15,side5*(Leg5_new_middle_angleAlpha + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(17,side5*(-Leg5_new_middle_angleBeta + tibiaAngleAddition),speed);
+	}
+	else
+	{
+		servoGoto(13,Leg5_prev_angleGamma + (Leg5_new_angleGamma-Leg5_prev_angleGamma)/2 ,speed);
+		_delay_us(100);
+		servoGoto(15,side5*(Leg5_prev_angleAlpha + (Leg5_new_angleAlpha-Leg5_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(17,side5*(-Leg5_prev_angleBeta - (Leg5_new_angleBeta-Leg5_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+	}
+_delay_ms(1);
+
+	if (Leg6_lift == -1)
+	{
+		servoGoto(7,Leg6_new_middle_angleGamma,speed);
+		_delay_us(100);
+		servoGoto(9,side6*(Leg6_new_middle_angleAlpha + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(11,side6*(-Leg6_new_middle_angleBeta + tibiaAngleAddition),speed);
+	}
+	else
+	{
+		servoGoto(7,Leg6_prev_angleGamma + (Leg6_new_angleGamma-Leg6_prev_angleGamma)/2 ,speed);
+		_delay_us(100);
+		servoGoto(9,side6*(Leg6_prev_angleAlpha + (Leg6_new_angleAlpha-Leg6_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		_delay_us(100);
+		servoGoto(11,side6*(-Leg6_prev_angleBeta - (Leg6_new_angleBeta-Leg6_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+	}
+
+	_delay_ms(200);
+
+	servoGoto(8,Leg1_new_angleGamma,speed);
+	_delay_us(100);
+	servoGoto(10,side1*(Leg1_new_angleAlpha + femurAngleAddition),speed);
+	_delay_us(100);
+	servoGoto(12,side1*(-Leg1_new_angleBeta + tibiaAngleAddition),speed);
+
+	_delay_ms(1);
+
+	servoGoto(14,Leg2_new_angleGamma,speed);
+	_delay_us(100);
+	servoGoto(16,side2*(Leg2_new_angleAlpha + femurAngleAddition),speed);
+	_delay_us(100);
+	servoGoto(18,side2*(-Leg2_new_angleBeta + tibiaAngleAddition),speed);
+
+	_delay_ms(1);
+
+	servoGoto(2,Leg3_new_angleGamma,speed);
+	_delay_us(100);
+	servoGoto(4,side3*(Leg3_new_angleAlpha + femurAngleAddition),speed);
+	_delay_us(100);
+	servoGoto(6,side3*(-Leg3_new_angleBeta + tibiaAngleAddition),speed);
+
+	_delay_ms(1);
+
+	servoGoto(1,Leg4_new_angleGamma,speed);
+	_delay_us(100);
+	servoGoto(3,side4*(Leg4_new_angleAlpha + femurAngleAddition),speed);
+	_delay_us(100);
+	servoGoto(5,side4*(-Leg4_new_angleBeta + tibiaAngleAddition),speed);
+
+	_delay_ms(1);
+
+	servoGoto(13,Leg5_new_angleGamma,speed);
+	_delay_us(100);
+	servoGoto(15,side5*(Leg5_new_angleAlpha + femurAngleAddition),speed);
+	_delay_us(100);
+	servoGoto(17,side5*(-Leg5_new_angleBeta + tibiaAngleAddition),speed);
+
+	_delay_ms(1);
+
+	servoGoto(7,Leg6_new_angleGamma,speed);
+	_delay_us(100);
+	servoGoto(9,side6*(Leg6_new_angleAlpha + femurAngleAddition),speed);
+	_delay_us(100);
+	servoGoto(11,side6*(-Leg6_new_angleBeta + tibiaAngleAddition),speed);
+
+	_delay_ms(200);
+}
+
 
 int main(void)
 {
@@ -439,7 +864,7 @@ int main(void)
 	sei();
 	initServoSerial(); //Init servos
 	USART_init();
-	//initvar();
+	initvar();
 	
 	/*
 	float alpha = 3.1415/4;
@@ -488,10 +913,19 @@ int main(void)
 	//moveRobotTob(0,50,100);
     while(1)
     {
+		moveRobot(USART_getDirection(),USART_getRotation(),USART_getSpeed());
+		Leg1_lift = -Leg1_lift;
+		Leg2_lift = -Leg2_lift;
+		Leg3_lift = -Leg3_lift;
+		Leg4_lift = -Leg4_lift;
+		Leg5_lift = -Leg5_lift;
+		Leg6_lift = -Leg6_lift;
 		
-		//USART_DecodeRxFIFO();
+		
+		USART_DecodeRxFIFO();
 
-		moveRobot((float)1,(float)0,(float)0.3,(float)120,(int)100,(float)0,(float)0);
+		//moveRobot((float)0,(float)40,(float)0,(float)120,(int)100,(float)0,(float)0);
+
 
         //TODO:: Please write your application code 
     }

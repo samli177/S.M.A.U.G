@@ -40,11 +40,11 @@ int main(void)
 		
 		
 		USART_DecodeRxFIFO();
-		USART_SendSensors();
+		//SART_SendSensors();
 		
-		_delay_ms(1000);
-		if(TWI_send_status(ST_ADRESS))
-			PORTA ^= (1<<PORTA1);
+		// TODO: put this on timer
+		//if(TWI_send_status(ST_ADRESS))
+			//PORTA ^= (1<<PORTA1);
 	}
 }
 
