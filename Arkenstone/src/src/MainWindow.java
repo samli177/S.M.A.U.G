@@ -39,7 +39,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         ULTRA_SOUND
     }
 
-    final int CONTROLL_DELAY = 500; // milli-seconds
+    final int CONTROLL_DELAY = 100; // milli-seconds
 
     SerialPort comPort;
     LinkedList<byte[]> messageBuffer;
@@ -1532,10 +1532,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     private void valueRecieved(byte[] data) {
-        float f = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN).getFloat();
+        float f = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).getFloat();
         writeDebugMessage("Value: " + f);
     }
-    
+
     private void debugMessageRecieved(char tag, byte data[]) {
         writeDebugMessage("\n-- Okänt meddelande --");
         writeDebugMessage("Tag: " + tag);
@@ -1548,7 +1548,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         writeDebugMessage("String: " + m);
         writeDebugMessage("-- Slut --\n");
     }
-    
+
     private void keyUpdate() {
         int walk = 0;
         int strafe = 0;
@@ -1680,8 +1680,11 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
 
         if (speed > 0 || Math.abs(rotation) > 0) {
-            System.out.println("Direction: " + (int) angle + ", speed: " + speed + ", rotation: " + rotation);
-            //sendSteerCommand((int) angle, rotation, speed);
+            // För att kunna skicka över UART
+            angle /= 4;
+            rotation += 50;
+            System.out.println("Direction: " + (int) angle + ", rotation: " + rotation + ", speed: " + speed);
+            sendSteerCommand((int) angle, rotation, speed);
         }
     }
 }
