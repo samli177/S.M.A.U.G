@@ -38,6 +38,7 @@ SUBDIRS :=
 C_SRCS +=  \
 ../counter.c \
 ../fifo.c \
+../Navigation.c \
 ../Navigationsenheten.c \
 ../twi.c \
 ../usart.c
@@ -52,6 +53,7 @@ ASM_SRCS +=
 OBJS +=  \
 counter.o \
 fifo.o \
+Navigation.o \
 Navigationsenheten.o \
 twi.o \
 usart.o
@@ -59,6 +61,7 @@ usart.o
 OBJS_AS_ARGS +=  \
 counter.o \
 fifo.o \
+Navigation.o \
 Navigationsenheten.o \
 twi.o \
 usart.o
@@ -66,6 +69,7 @@ usart.o
 C_DEPS +=  \
 counter.d \
 fifo.d \
+Navigation.d \
 Navigationsenheten.d \
 twi.d \
 usart.d
@@ -73,6 +77,7 @@ usart.d
 C_DEPS_AS_ARGS +=  \
 counter.d \
 fifo.d \
+Navigation.d \
 Navigationsenheten.d \
 twi.d \
 usart.d
@@ -88,6 +93,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

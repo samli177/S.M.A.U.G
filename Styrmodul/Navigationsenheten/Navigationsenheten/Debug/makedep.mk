@@ -6,6 +6,8 @@ counter.c
 
 fifo.c
 
+Navigation.c
+
 Navigationsenheten.c
 
 twi.c
