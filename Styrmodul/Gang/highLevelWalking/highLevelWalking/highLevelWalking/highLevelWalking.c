@@ -310,12 +310,12 @@ void leg_motion()
 	
 	for(int i = 0; i < (int)iterations; i++)
 	{
-		move_leg(&leg1,i);
-		move_leg(&leg2,i);
-		move_leg(&leg3,i);
-		move_leg(&leg4,i);
-		move_leg(&leg5,i);
-		move_leg(&leg6,i);
+		move_leg(&leg1,i+1);
+		move_leg(&leg2,i+1);
+		move_leg(&leg3,i+1);
+		move_leg(&leg4,i+1);
+		move_leg(&leg5,i+1);
+		move_leg(&leg6,i+1);
 		servoAction();
 	}
 }
