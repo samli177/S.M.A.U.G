@@ -38,7 +38,6 @@ int main(void)
 	{
 		PORTA ^= (1<<PORTA0);
 		
-		
 		USART_DecodeRxFIFO();
 		//SART_SendSensors();
 		
@@ -55,7 +54,7 @@ void init()
 {
 	DDRA |= (1<<PORTA0|1<<PORTA1); //set status diodes to outputs
 	USART_init();
-	TWI_init(C_ADRESS);
+	TWI_init(C_ADDRESS);
 	init_counters();
 }
 

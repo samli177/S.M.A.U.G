@@ -211,6 +211,26 @@ void USART_SendSensors()
 	USART_SendPacket('S', 9);
 }
 
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];
+};
+
+void USART_SendValue(float flo)
+{
+	union Union_floatcast foo;
+	foo.f = flo;
+	
+	for(int i = 0; i < 4; ++i)
+	{
+		gTxPayload[i] = foo.s[i]; 
+	}
+	
+	USART_SendPacket('V', 4);
+	
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	uint8_t *len = 0;

@@ -914,17 +914,20 @@ int main(void)
 	//moveRobotTob(0,50,100);
     while(1)
     {
-		//moveRobot(USART_getDirection(),USART_getRotation(),USART_getSpeed());
-		move_robot(0,50,100);
+		move_robot(USART_getDirection(),USART_getRotation(),USART_getSpeed());
+		//moveRobot(0,50,100);
+
+
 		leg1Lift = -leg1Lift;
 		leg2Lift = -leg2Lift;
 		leg3Lift = -leg3Lift;
 		leg4Lift = -leg4Lift;
 		leg5Lift = -leg5Lift;
 		leg6Lift = -leg6Lift;
+
 		
 		
-		//USART_DecodeRxFIFO();
+		USART_DecodeRxFIFO();
 
 		//moveRobot((float)0,(float)40,(float)0,(float)120,(int)100,(float)0,(float)0);
 
