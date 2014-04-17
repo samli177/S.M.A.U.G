@@ -20,6 +20,8 @@ uint8_t gServoTxBuffer[128];
 uint8_t gServoRxBuffer[260];
 uint8_t gServoRxReadMode = RM_WAIT_FOR_START;
 uint8_t gServoLengthCounter = 0;
+uint8_t gNewPacketOnBuffer = 0;
+uint8_t gRxIndex = 0;
 
 
 void initServoSerial()
@@ -101,6 +103,7 @@ void sendServoPacket(uint8_t ID, uint8_t instruction, uint8_t parametersLength)
 	//servoRx;
 	
 }
+
 
 void servoGoto(uint8_t ID, double angle, uint16_t speed)
 {
@@ -222,9 +225,11 @@ uint16_t servoGetPosition(uint8_t ID)
 	
 	servoRx;
 	
+	
 	uint16_t data = 0;
 	int pos;
 	
+
 	for(int i = 0; i < 8; ++i)
 	{
 		while ( !(UCSR1A & (1<<RXC1)) );
@@ -243,6 +248,16 @@ uint16_t servoGetPosition(uint8_t ID)
 	return data;
 	
 }
+
+uint8_t servoReceiveStatus()
+{
+	servoRx;
+	
+	servoTx;
+	return 1;
+}
+
+
 
 
 // -- Interrupts --
@@ -278,13 +293,36 @@ ISR (USART1_RX_vect)
 		gServoRxBuffer[2] = data;
 		gServoRxReadMode = RM_READ_PARAMETERS;
 		--gServoLengthCounter;
+		gRxIndex = 2;
 	}else if(gServoRxReadMode == RM_READ_PARAMETERS)
 	{
-		if(gServoLengthCounter == 2)  
+		if(gServoLengthCounter == 1)  
 		{
 			gServoRxReadMode = RM_READ_CHECKSUM;
+		}else if(gServoLengthCounter > 1)
+		{
+			++gRxIndex;
+			gServoRxBuffer[gRxIndex] = data;
+			--gServoLengthCounter;
 		}
-	// TODO: figure out how to get the index for gbuffer correct...
-	}
+	}else if(gServoRxReadMode == RM_READ_CHECKSUM)
+		{
+			// calculate checksum
+			int checkSum = 0;
+			int packetLength = gServoRxBuffer[1]; 
+
+			for(int count = 2; count < packetLength -1; ++count) // calculation of checksum starts with ID-byte
+			{
+				checkSum += gServoRxBuffer[count]; // NOTE: make sure overflow truncates to lower byte
+			}
+			
+			if(~checkSum == data)
+			{
+				// correct packet
+				gNewPacketOnBuffer = 1; // set flag		
+			}
+			
+			gServoRxReadMode = RM_WAIT_FOR_START;
+		}
 }
 

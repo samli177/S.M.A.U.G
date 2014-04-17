@@ -42,6 +42,8 @@ int main(void)
 			PORTA ^= (1<<PORTA1);
 			USART_SendCommand();
 		}
+		
+		USART_DecodeRxFIFO();
 			
     }
 }
