@@ -10,5 +10,7 @@ fifo.c
 
 sensormodulen.c
 
+sensors.c
+
 twi.c
 
