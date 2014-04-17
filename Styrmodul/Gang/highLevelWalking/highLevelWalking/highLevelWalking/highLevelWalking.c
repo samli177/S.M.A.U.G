@@ -79,11 +79,11 @@ void moveRobot(float direction,float distanfce, float rotation, float z, int ser
 	float sinfaroundy = 0;//sinf(rotationY);
 	
 	//First state-------------------
-	servoGoto(4, 3.1415/2, servoSpeed); //raise legs
+	servoBufferPosition(4, 3.1415/2, servoSpeed); //raise legs
 	_delay_ms(5);
-	servoGoto(10, 3.1415/2, servoSpeed);
+	servoBufferPosition(10, 3.1415/2, servoSpeed);
 	_delay_ms(5);
-	servoGoto(15, -3.1415/2, servoSpeed);*/
+	servoBufferPosition(15, -3.1415/2, servoSpeed);*/
 	/*
 	moveLeg1too(x0_1*cosfrotation-y0_1*sinfrotation-sinfdirection*distanfce, y0_1*cosfrotation-x0_1*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX+sinfaroundx*centerToFrontLegsY-40), servoSpeed);
 	moveLeg3too(x0_3*cosfrotation-y0_3*sinfrotation-sinfdirection*distanfce, y0_3*cosfrotation-x0_3*sinfrotation+cosfdirection*distanfce, -(z+sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY-40), servoSpeed);
@@ -98,11 +98,11 @@ void moveRobot(float direction,float distanfce, float rotation, float z, int ser
 	_delay_ms(300);
 		*/
 	//Second state-------------------
-	/*servoGoto(3, -3.1415/2, servoSpeed); //raise legs
+	/*servoBufferPosition(3, -3.1415/2, servoSpeed); //raise legs
 	_delay_ms(5);
-	servoGoto(9, -3.1415/2, servoSpeed);
+	servoBufferPosition(9, -3.1415/2, servoSpeed);
 	_delay_ms(5);
-	servoGoto(16, 3.1415/2, servoSpeed);*/
+	servoBufferPosition(16, 3.1415/2, servoSpeed);*/
 	/*
 	moveLeg2too(x0_2*cosfrotation-y0_2*sinfrotation-sinfdirection*distanfce, y0_2*cosfrotation+x0_2*sinfrotation+cosfdirection*distanfce, -(z+centerToSideLegs*sinfaroundy-40), servoSpeed);
 	moveLeg4too(x0_4*cosfrotation-y0_4*sinfrotation-sinfdirection*distanfce, y0_4*cosfrotation-x0_4*sinfrotation+cosfdirection*distanfce, -(z-sinfaroundy*centerToFrontLegsX-sinfaroundx*centerToFrontLegsY-40), servoSpeed);
@@ -698,159 +698,159 @@ void Leg_motion()
 	speed = 150;
 	if (Leg1_lift == -1)
 	{
-		servoGoto(8,Leg1_new_middle_angleGamma,speed);
+		servoBufferPosition(8,Leg1_new_middle_angleGamma,speed);
 		_delay_us(100);
-		servoGoto(10,side1*(Leg1_new_middle_angleAlpha + femurAngleAddition),speed);
+		servoBufferPosition(10,side1*(Leg1_new_middle_angleAlpha + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(12,side1*(-Leg1_new_middle_angleBeta + tibiaAngleAddition),speed);
+		servoBufferPosition(12,side1*(-Leg1_new_middle_angleBeta + tibiaAngleAddition),speed);
 	}
 	else
 	{
-		servoGoto(8,Leg1_prev_angleGamma + (Leg1_new_angleGamma-Leg1_prev_angleGamma)/2 ,speed);
+		servoBufferPosition(8,Leg1_prev_angleGamma + (Leg1_new_angleGamma-Leg1_prev_angleGamma)/2 ,speed);
 		_delay_us(100);
-		servoGoto(10,side1*(Leg1_prev_angleAlpha + (Leg1_new_angleAlpha-Leg1_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		servoBufferPosition(10,side1*(Leg1_prev_angleAlpha + (Leg1_new_angleAlpha-Leg1_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(12,side1*(-Leg1_prev_angleBeta - (Leg1_new_angleBeta-Leg1_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+		servoBufferPosition(12,side1*(-Leg1_prev_angleBeta - (Leg1_new_angleBeta-Leg1_prev_angleBeta)/2 + tibiaAngleAddition),speed);
 	}
 	_delay_ms(1);
 
 	if (Leg2_lift == -1)
 	{
-		servoGoto(14,Leg2_new_middle_angleGamma,speed);
+		servoBufferPosition(14,Leg2_new_middle_angleGamma,speed);
 		_delay_us(100);
-		servoGoto(16,side2*(Leg2_new_middle_angleAlpha + femurAngleAddition),speed);
+		servoBufferPosition(16,side2*(Leg2_new_middle_angleAlpha + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(18,side2*(-Leg2_new_middle_angleBeta + tibiaAngleAddition),speed);
+		servoBufferPosition(18,side2*(-Leg2_new_middle_angleBeta + tibiaAngleAddition),speed);
 	}
 	else
 	{
-		servoGoto(14,Leg2_prev_angleGamma + (Leg2_new_angleGamma-Leg2_prev_angleGamma)/2 ,speed);
+		servoBufferPosition(14,Leg2_prev_angleGamma + (Leg2_new_angleGamma-Leg2_prev_angleGamma)/2 ,speed);
 		_delay_us(100);
-		servoGoto(16,side2*(Leg2_prev_angleAlpha + (Leg2_new_angleAlpha-Leg2_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		servoBufferPosition(16,side2*(Leg2_prev_angleAlpha + (Leg2_new_angleAlpha-Leg2_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(18,side2*(-Leg2_prev_angleBeta - (Leg2_new_angleBeta-Leg2_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+		servoBufferPosition(18,side2*(-Leg2_prev_angleBeta - (Leg2_new_angleBeta-Leg2_prev_angleBeta)/2 + tibiaAngleAddition),speed);
 	}
 	_delay_ms(1);
 
 	if (Leg3_lift == -1)
 	{
-		servoGoto(2,Leg3_new_middle_angleGamma,speed);
+		servoBufferPosition(2,Leg3_new_middle_angleGamma,speed);
 		_delay_us(100);
-		servoGoto(4,side3*(Leg3_new_middle_angleAlpha + femurAngleAddition),speed);
+		servoBufferPosition(4,side3*(Leg3_new_middle_angleAlpha + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(6,side3*(-Leg3_new_middle_angleBeta + tibiaAngleAddition),speed);
+		servoBufferPosition(6,side3*(-Leg3_new_middle_angleBeta + tibiaAngleAddition),speed);
 	}
 	else
 	{
-		servoGoto(2,Leg3_prev_angleGamma + (Leg3_new_angleGamma-Leg3_prev_angleGamma)/2 ,speed);
+		servoBufferPosition(2,Leg3_prev_angleGamma + (Leg3_new_angleGamma-Leg3_prev_angleGamma)/2 ,speed);
 		_delay_us(100);
-		servoGoto(4,side3*(Leg3_prev_angleAlpha + (Leg3_new_angleAlpha-Leg3_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		servoBufferPosition(4,side3*(Leg3_prev_angleAlpha + (Leg3_new_angleAlpha-Leg3_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(6,side3*(-Leg3_prev_angleBeta - (Leg3_new_angleBeta-Leg3_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+		servoBufferPosition(6,side3*(-Leg3_prev_angleBeta - (Leg3_new_angleBeta-Leg3_prev_angleBeta)/2 + tibiaAngleAddition),speed);
 	}
 	_delay_ms(1);
 
 	if (Leg4_lift == -1)
 	{
-		servoGoto(1,Leg4_new_middle_angleGamma,speed);
+		servoBufferPosition(1,Leg4_new_middle_angleGamma,speed);
 		_delay_us(100);
-		servoGoto(3,side4*(Leg4_new_middle_angleAlpha + femurAngleAddition),speed);
+		servoBufferPosition(3,side4*(Leg4_new_middle_angleAlpha + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(5,side4*(-Leg4_new_middle_angleBeta + tibiaAngleAddition),speed);
+		servoBufferPosition(5,side4*(-Leg4_new_middle_angleBeta + tibiaAngleAddition),speed);
 	}
 	else
 	{
-		servoGoto(1,Leg4_prev_angleGamma + (Leg4_new_angleGamma-Leg4_prev_angleGamma)/2 ,speed);
+		servoBufferPosition(1,Leg4_prev_angleGamma + (Leg4_new_angleGamma-Leg4_prev_angleGamma)/2 ,speed);
 		_delay_us(100);
-		servoGoto(3,side4*(Leg4_prev_angleAlpha + (Leg4_new_angleAlpha-Leg4_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		servoBufferPosition(3,side4*(Leg4_prev_angleAlpha + (Leg4_new_angleAlpha-Leg4_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(5,side4*(-Leg4_prev_angleBeta - (Leg4_new_angleBeta-Leg4_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+		servoBufferPosition(5,side4*(-Leg4_prev_angleBeta - (Leg4_new_angleBeta-Leg4_prev_angleBeta)/2 + tibiaAngleAddition),speed);
 	}
 	_delay_ms(1);
 
 	if (Leg5_lift == -1)
 	{
-		servoGoto(13,Leg5_new_middle_angleGamma,speed);
+		servoBufferPosition(13,Leg5_new_middle_angleGamma,speed);
 		_delay_us(100);
-		servoGoto(15,side5*(Leg5_new_middle_angleAlpha + femurAngleAddition),speed);
+		servoBufferPosition(15,side5*(Leg5_new_middle_angleAlpha + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(17,side5*(-Leg5_new_middle_angleBeta + tibiaAngleAddition),speed);
+		servoBufferPosition(17,side5*(-Leg5_new_middle_angleBeta + tibiaAngleAddition),speed);
 	}
 	else
 	{
-		servoGoto(13,Leg5_prev_angleGamma + (Leg5_new_angleGamma-Leg5_prev_angleGamma)/2 ,speed);
+		servoBufferPosition(13,Leg5_prev_angleGamma + (Leg5_new_angleGamma-Leg5_prev_angleGamma)/2 ,speed);
 		_delay_us(100);
-		servoGoto(15,side5*(Leg5_prev_angleAlpha + (Leg5_new_angleAlpha-Leg5_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		servoBufferPosition(15,side5*(Leg5_prev_angleAlpha + (Leg5_new_angleAlpha-Leg5_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(17,side5*(-Leg5_prev_angleBeta - (Leg5_new_angleBeta-Leg5_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+		servoBufferPosition(17,side5*(-Leg5_prev_angleBeta - (Leg5_new_angleBeta-Leg5_prev_angleBeta)/2 + tibiaAngleAddition),speed);
 	}
 _delay_ms(1);
 
 	if (Leg6_lift == -1)
 	{
-		servoGoto(7,Leg6_new_middle_angleGamma,speed);
+		servoBufferPosition(7,Leg6_new_middle_angleGamma,speed);
 		_delay_us(100);
-		servoGoto(9,side6*(Leg6_new_middle_angleAlpha + femurAngleAddition),speed);
+		servoBufferPosition(9,side6*(Leg6_new_middle_angleAlpha + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(11,side6*(-Leg6_new_middle_angleBeta + tibiaAngleAddition),speed);
+		servoBufferPosition(11,side6*(-Leg6_new_middle_angleBeta + tibiaAngleAddition),speed);
 	}
 	else
 	{
-		servoGoto(7,Leg6_prev_angleGamma + (Leg6_new_angleGamma-Leg6_prev_angleGamma)/2 ,speed);
+		servoBufferPosition(7,Leg6_prev_angleGamma + (Leg6_new_angleGamma-Leg6_prev_angleGamma)/2 ,speed);
 		_delay_us(100);
-		servoGoto(9,side6*(Leg6_prev_angleAlpha + (Leg6_new_angleAlpha-Leg6_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
+		servoBufferPosition(9,side6*(Leg6_prev_angleAlpha + (Leg6_new_angleAlpha-Leg6_prev_angleAlpha)/2 + 0.5 + femurAngleAddition),speed);
 		_delay_us(100);
-		servoGoto(11,side6*(-Leg6_prev_angleBeta - (Leg6_new_angleBeta-Leg6_prev_angleBeta)/2 + tibiaAngleAddition),speed);
+		servoBufferPosition(11,side6*(-Leg6_prev_angleBeta - (Leg6_new_angleBeta-Leg6_prev_angleBeta)/2 + tibiaAngleAddition),speed);
 	}
-
+servoAction();
 	_delay_ms(200);
 
-	servoGoto(8,Leg1_new_angleGamma,speed);
+	servoBufferPosition(8,Leg1_new_angleGamma,speed);
 	_delay_us(100);
-	servoGoto(10,side1*(Leg1_new_angleAlpha + femurAngleAddition),speed);
+	servoBufferPosition(10,side1*(Leg1_new_angleAlpha + femurAngleAddition),speed);
 	_delay_us(100);
-	servoGoto(12,side1*(-Leg1_new_angleBeta + tibiaAngleAddition),speed);
+	servoBufferPosition(12,side1*(-Leg1_new_angleBeta + tibiaAngleAddition),speed);
 
 	_delay_ms(1);
 
-	servoGoto(14,Leg2_new_angleGamma,speed);
+	servoBufferPosition(14,Leg2_new_angleGamma,speed);
 	_delay_us(100);
-	servoGoto(16,side2*(Leg2_new_angleAlpha + femurAngleAddition),speed);
+	servoBufferPosition(16,side2*(Leg2_new_angleAlpha + femurAngleAddition),speed);
 	_delay_us(100);
-	servoGoto(18,side2*(-Leg2_new_angleBeta + tibiaAngleAddition),speed);
+	servoBufferPosition(18,side2*(-Leg2_new_angleBeta + tibiaAngleAddition),speed);
 
 	_delay_ms(1);
 
-	servoGoto(2,Leg3_new_angleGamma,speed);
+	servoBufferPosition(2,Leg3_new_angleGamma,speed);
 	_delay_us(100);
-	servoGoto(4,side3*(Leg3_new_angleAlpha + femurAngleAddition),speed);
+	servoBufferPosition(4,side3*(Leg3_new_angleAlpha + femurAngleAddition),speed);
 	_delay_us(100);
-	servoGoto(6,side3*(-Leg3_new_angleBeta + tibiaAngleAddition),speed);
+	servoBufferPosition(6,side3*(-Leg3_new_angleBeta + tibiaAngleAddition),speed);
 
 	_delay_ms(1);
 
-	servoGoto(1,Leg4_new_angleGamma,speed);
+	servoBufferPosition(1,Leg4_new_angleGamma,speed);
 	_delay_us(100);
-	servoGoto(3,side4*(Leg4_new_angleAlpha + femurAngleAddition),speed);
+	servoBufferPosition(3,side4*(Leg4_new_angleAlpha + femurAngleAddition),speed);
 	_delay_us(100);
-	servoGoto(5,side4*(-Leg4_new_angleBeta + tibiaAngleAddition),speed);
+	servoBufferPosition(5,side4*(-Leg4_new_angleBeta + tibiaAngleAddition),speed);
 
 	_delay_ms(1);
 
-	servoGoto(13,Leg5_new_angleGamma,speed);
+	servoBufferPosition(13,Leg5_new_angleGamma,speed);
 	_delay_us(100);
-	servoGoto(15,side5*(Leg5_new_angleAlpha + femurAngleAddition),speed);
+	servoBufferPosition(15,side5*(Leg5_new_angleAlpha + femurAngleAddition),speed);
 	_delay_us(100);
-	servoGoto(17,side5*(-Leg5_new_angleBeta + tibiaAngleAddition),speed);
+	servoBufferPosition(17,side5*(-Leg5_new_angleBeta + tibiaAngleAddition),speed);
 
 	_delay_ms(1);
 
-	servoGoto(7,Leg6_new_angleGamma,speed);
+	servoBufferPosition(7,Leg6_new_angleGamma,speed);
 	_delay_us(100);
-	servoGoto(9,side6*(Leg6_new_angleAlpha + femurAngleAddition),speed);
+	servoBufferPosition(9,side6*(Leg6_new_angleAlpha + femurAngleAddition),speed);
 	_delay_us(100);
-	servoGoto(11,side6*(-Leg6_new_angleBeta + tibiaAngleAddition),speed);
-
+	servoBufferPosition(11,side6*(-Leg6_new_angleBeta + tibiaAngleAddition),speed);
+servoAction();
 	_delay_ms(200);
 }
 
@@ -874,30 +874,30 @@ int main(void)
 	
 	//dummy code that puts robot in stanfdard position
 	
-	servoGoto(1, 0, speed);
-	servoGoto(2, 0, speed);
-	servoGoto(7, 0, speed);
-	servoGoto(8, 0, speed);
-	servoGoto(13, 0, speed);
-	servoGoto(14, 0, speed);
+	servoBufferPosition(1, 0, speed);
+	servoBufferPosition(2, 0, speed);
+	servoBufferPosition(7, 0, speed);
+	servoBufferPosition(8, 0, speed);
+	servoBufferPosition(13, 0, speed);
+	servoBufferPosition(14, 0, speed);
 	
 	_delay_ms(100);
 	
-	servoGoto(15, -alpha, speed);
-	servoGoto(3, -alpha, speed);
-	servoGoto(9, -alpha, speed);
-	servoGoto(16, alpha, speed);
-	servoGoto(4, alpha, speed);
-	servoGoto(10, alpha, speed);
+	servoBufferPosition(15, -alpha, speed);
+	servoBufferPosition(3, -alpha, speed);
+	servoBufferPosition(9, -alpha, speed);
+	servoBufferPosition(16, alpha, speed);
+	servoBufferPosition(4, alpha, speed);
+	servoBufferPosition(10, alpha, speed);
 	
 	_delay_ms(100);
 	
-	servoGoto(12, -beta, speed);
-	servoGoto(18, -beta, speed);
-	servoGoto(6, -beta, speed);
-	servoGoto(5, beta, speed);
-	servoGoto(11, beta, speed);
-	servoGoto(17, beta, speed);
+	servoBufferPosition(12, -beta, speed);
+	servoBufferPosition(18, -beta, speed);
+	servoBufferPosition(6, -beta, speed);
+	servoBufferPosition(5, beta, speed);
+	servoBufferPosition(11, beta, speed);
+	servoBufferPosition(17, beta, speed);
 	
 	_delay_ms(5000);
 	*/

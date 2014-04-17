@@ -119,6 +119,8 @@ void servoRetrunLevel(uint8_t ID, uint8_t level);
 void servoTorqueLimit(uint8_t ID, uint16_t maxTorque);
 
 uint16_t servoGetPosition(uint8_t ID);
+void servoAction();
+void servoBufferPosition(uint8_t ID, double angle, uint16_t speed);
 
 
 #endif /* INCFILE1_H_ */
