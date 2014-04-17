@@ -36,7 +36,7 @@
 #define y0 (float) 0
 #define z0 (float) -120
 */
-int speed = 400;
+int speed;
 
 /*
 #define side1 (float)1
@@ -367,7 +367,8 @@ float Leg6_new_middle_angleAlpha;
 
 void initvar()
 {
-	max_step_lenght = 70;
+	speed = 300;
+	max_step_lenght = 100;
 	std_lenght = sqrtf(x0_1*x0_1 + y0_1*y0_1);
 	
 	Leg1_lift = 1;
@@ -508,8 +509,8 @@ void moveRobot(int dir, int rot, int spd)
 
 
 	//x och y riktning för förflyttning, skalad med hastigheten
-	x_direction = -sinf(direction * pi / 90) * speedf / speed;
-	y_direction = cosf(direction * pi / 90) * speedf / speed;
+	x_direction = -sinf(direction * pi / 90) * speedf / 100;
+	y_direction = cosf(direction * pi / 90) * speedf / 100;
 
 
 	//x och y riktning för rotation, skalad med rotationshastighet
@@ -553,7 +554,7 @@ void moveRobot(int dir, int rot, int spd)
 
 
 	//Stegskalning för att inte alltid ta max längd på steg;
-	Step_scaling = fmaxf(speedf/speed, fabsf(rotation/50-1));
+	Step_scaling = fmaxf(speedf/100, fabsf(rotation/50-1));
 
 
 	//Uppdatera vinklar för nya steget
@@ -694,7 +695,7 @@ void moveRobot(int dir, int rot, int spd)
 
 void Leg_motion()
 {
-	
+	speed = 150;
 	if (Leg1_lift == -1)
 	{
 		servoGoto(8,Leg1_new_middle_angleGamma,speed);
@@ -913,7 +914,8 @@ int main(void)
 	//moveRobotTob(0,50,100);
     while(1)
     {
-		moveRobot(USART_getDirection(),USART_getRotation(),USART_getSpeed());
+		//moveRobot(USART_getDirection(),USART_getRotation(),USART_getSpeed());
+		moveRobot(0,50,100);
 		Leg1_lift = -Leg1_lift;
 		Leg2_lift = -Leg2_lift;
 		Leg3_lift = -Leg3_lift;
@@ -922,7 +924,7 @@ int main(void)
 		Leg6_lift = -Leg6_lift;
 		
 		
-		USART_DecodeRxFIFO();
+		//USART_DecodeRxFIFO();
 
 		//moveRobot((float)0,(float)40,(float)0,(float)120,(int)100,(float)0,(float)0);
 

@@ -39,7 +39,7 @@ void initServoSerial()
 	servoDDR |= (1<<servoDirPin); //set pin for controlling direction of serial communication w. servo.
 	
 	// Set torque limit
-	servoTorqueLimit(BROADCASTING_ID, 0x3ff); // 50% of max
+	servoTorqueLimit(BROADCASTING_ID, 0x200); // 50% of max
 }
 
 uint8_t servoCheckRxComplete()
