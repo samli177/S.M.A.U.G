@@ -44,7 +44,8 @@ void set_counter_1(uint16_t delay)
 void set_counter_2(uint16_t delay)
 {
 	delay = 15.625 * delay;
-	OCR1A = delay;
+	// ------------------ OBS ändrade detta för att testa om det är fel, vet inte... -----------------------------
+	OCR1B = delay;
 }
 
 

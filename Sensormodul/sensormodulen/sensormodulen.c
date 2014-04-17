@@ -16,17 +16,16 @@
 #include "display.h"
 #include "twi.h"
 #include "counter.h"
-#include "sensors.h"
+#include "sensors.h"	
 
 void send_data(void);
 void init_TWI_sensor(void);
 
-char display_buffer[64][20];
-int buffer_size = 0;
-
+char displayBuffer[64][20];
+int bufferSize = 0;
 
 int main(void)
-{
+{	
 	display_init();
 	sensors_init();
 	
@@ -34,23 +33,22 @@ int main(void)
 	TWI_init(S_ADRESS);
 	init_counters();
 	
-	// Activate interrupts	
+	set_counter_1(500);
+	set_counter_2(2000);
+	
+	// Activate interrupts
 	sei();
 	
-	set_counter_1(2000);
-	
-	//display_text("Hello");
+	display_text("Hello");
 	
 	while(1)
-	{
+	{	
 		if(sensors_sampling_done())
 		{
 			sensors_reset_flag();
-			sensors_display_data();
+			TWI_send_sensors(sensors_get_data(), 0);
 		}
-		_delay_ms(100);
-		
-		//send_sensors(gSensorBuffer, 0);
+		_delay_ms(500);
 		//TWI_send_autonom_settings(C_ADRESS, 5);
 	}
 }
@@ -59,13 +57,22 @@ int main(void)
 
 ISR(TIMER1_COMPA_vect)
 {
+	//display_char('C');
 	sensors_start_sample();
 	TCNT1 = 0;
 }
 
 ISR(TIMER2_COMPA_vect)
 {
-	decode_message_TwiFIFO();
+	if(decode_message_TwiFIFO())
+	{
+		//sensors_display_data();
+		//display_char('A');
+		//set_counter_2(3000);
+	} else {
+		//display_char('B');
+		//set_counter_2(5000);
+	}
 	TCNT2 = 0;
 }
 
