@@ -16,7 +16,8 @@
 #include "display.h"
 
 static uint8_t gSelectedSensor = 0;
-static int gSensorBuffer[8]; // NOTE: should probably be uint8_t
+static uint8_t gSensorBuffer[8];
+
 static float IR_short[13][2];
 static float IR_long[15][2];
 static bool sensor_data_flag = false;
@@ -315,11 +316,11 @@ void sensors_reset_flag()
 	sensor_data_flag = false;
 }
 
+
 ISR(ADC_vect)
 {
-	cli();	uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;	if(gSelectedSensor == 4)	{		gSensorBuffer[gSelectedSensor] = voltage_to_mm_long(vin)/10;		} else {		gSensorBuffer[gSelectedSensor] = voltage_to_mm_short(vin)/10;	}		if(gSelectedSensor < 6)	{		// Not last sensor		select_sensor(gSelectedSensor + 1);		adc_start();		} else {
-		select_sensor(0);
-		start_ul_sensor();	}	sei();}
+	cli();	uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;	if(gSelectedSensor == 4)	{		gSensorBuffer[gSelectedSensor] = voltage_to_mm_long(vin)/10;		} else {		gSensorBuffer[gSelectedSensor] = voltage_to_mm_short(vin)/10;	}		if(gSelectedSensor < 6)	{		// Not last sensor		select_sensor(gSelectedSensor + 1);		adc_start();	} else {
+		select_sensor(0);		start_ul_sensor();	}	sei();}
 
 ISR(PCINT0_vect)
 {

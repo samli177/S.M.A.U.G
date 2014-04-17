@@ -13,7 +13,7 @@
 
 void moveRobotTob(int direction, int rotation, int speed);
 
-void moveRobot(int direction, int rotation, int speed);
+void move_robot(int direction, int rotation, int speed);
 void Leg_motion();
 
 

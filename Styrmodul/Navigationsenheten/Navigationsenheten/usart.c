@@ -176,14 +176,11 @@ void USART_SendMessage(char msg[])
 
 void USART_SendSensors()
 {
-	for(int i = 0; i < 7; i++)
+	for(int i = 0; i < 8; i++)
 	{
 		gTxPayload[i] = TWI_get_sensor(i);
 	}
-	
-	//UL sensor
-	
-	gTxPayload[7] = 254;
+
 	gTxPayload[8] = TWI_get_servo();
 	
 	USART_SendPacket('S', 9);
@@ -210,7 +207,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		TWI_send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: LEN MISSING");
+		TWI_send_string(S_ADDRESS, "RxFIFO MESSAGE ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -225,7 +222,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	{
 		if(FifoRead(gRxFIFO, character))
 		{
-			TWI_send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: DATA MISSING");
+			TWI_send_string(S_ADDRESS, "RxFIFO MESSAGE ERROR: DATA MISSING");
 			return 1; // error
 		}
 
@@ -234,7 +231,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	
 	// TODO: send to relevant party... the display for now
-	TWI_send_string_fixed_length(C_ADRESS, msg, length);
+	TWI_send_string_fixed_length(C_ADDRESS, msg, length);
 
 	return 0;
 }
@@ -248,7 +245,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -260,14 +257,14 @@ uint8_t USART_DecodeCommandRxFIFO()
 		
 			if(FifoRead(gRxFIFO, data))
 			{
-				TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
+				TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
 				return 1; // error
 			}
 			direction = *data;
 			
 			if(FifoRead(gRxFIFO, data))
 			{
-				TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
+				TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
 				return 1; // error
 			}
 			
@@ -275,7 +272,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 			
 			if(FifoRead(gRxFIFO, data))
 			{
-				TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: SPEED MISSING");
+				TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: SPEED MISSING");
 				return 1; // error
 			}
 			
@@ -285,7 +282,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 
 	}else
 	{
-		TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
+		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
 		return 1;
 	}
 
@@ -307,7 +304,7 @@ uint8_t USART_DecodeValueFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -319,14 +316,14 @@ uint8_t USART_DecodeValueFIFO()
 		{
 				if(FifoRead(gRxFIFO, data))
 				{
-					//send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
+					//send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
 					return 1; // error
 				}
 				
 			foo.s[i] = *data;
-			TWI_send_float(C_ADRESS, *data);		
+			TWI_send_float(C_ADDRESS, *data);		
 		}
-	TWI_send_float(C_ADRESS, foo.f);
+	TWI_send_float(C_ADDRESS, foo.f);
 	PORTA ^= (1<<PORTA0);
 	return 0;
 	}
@@ -406,7 +403,7 @@ ISR (USART0_RX_vect)
 			{
 				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
 				{
-					TWI_send_string(S_ADRESS,"U_FIFO-full");
+					TWI_send_string(S_ADDRESS,"U_FIFO-full");
 				}
 			}
 		}

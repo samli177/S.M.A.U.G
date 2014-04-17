@@ -31,7 +31,7 @@ int main(void)
 	sensors_init();
 	
 	// init TWI
-	TWI_init(S_ADRESS);
+	TWI_init(S_ADDRESS);
 	init_counters();
 	
 	// Activate interrupts	
@@ -51,7 +51,7 @@ int main(void)
 		_delay_ms(100);
 		
 		//send_sensors(gSensorBuffer, 0);
-		//TWI_send_autonom_settings(C_ADRESS, 5);
+		//TWI_send_autonom_settings(C_ADDRESS, 5);
 	}
 }
 
