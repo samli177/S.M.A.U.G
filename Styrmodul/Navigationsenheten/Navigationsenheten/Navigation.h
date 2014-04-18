@@ -9,6 +9,7 @@
 #define ACCEPTABLE_OFFSET_ANGLE 0.2
 #define ACCEPTABLE_DISTANCE_OFFSET 5
 #define HEIGHT_LIMIT 100
+#define PI 3.14159265
 
 /**
  * \brief 
