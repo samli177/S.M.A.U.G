@@ -21,6 +21,7 @@ float iterations;
 
 struct LegData 
 {
+	float side;
 	float lift;
 	float xRot;
 	float yRot;
@@ -101,9 +102,10 @@ void init_struct(struct LegData* leg)
 
 void initvar()
 {
+	speedMultiplier = 1500;
 	speed = 300;
-	iterations = 5;
-	maxStepLength = 100;
+	iterations = 7;
+	maxStepLength = 80;
 	stdLength = sqrtf(x0_1*x0_1 + y0_1*y0_1);
 	
 	init_struct(&leg1);
@@ -119,6 +121,37 @@ void initvar()
 	leg4.lift = -1;	
 	leg5.lift = 1;
 	leg6.lift = -1;
+	
+	leg1.side = 1;
+	leg2.side = 1;
+	leg3.side = 1;
+	leg4.side = -1;
+	leg5.side = -1;
+	leg6.side = -1;
+	
+	leg1.servoAlpha = 10;
+	leg1.servoBeta = 12;
+	leg1.servoGamma = 8;
+	
+	leg2.servoAlpha = 16;
+	leg2.servoBeta = 18;
+	leg2.servoGamma = 14;
+	
+	leg3.servoAlpha = 4;
+	leg3.servoBeta = 6;
+	leg3.servoGamma = 2;
+	
+	leg4.servoAlpha = 3;
+	leg4.servoBeta = 5;
+	leg4.servoGamma = 1;
+	
+	leg5.servoAlpha = 15;
+	leg5.servoBeta = 17;
+	leg5.servoGamma = 13;
+	
+	leg6.servoAlpha = 9;
+	leg6.servoBeta = 11;
+	leg6.servoGamma = 7;
 	
 }
 
@@ -172,6 +205,7 @@ void move_robot(int dir, int rot, int spd)
 	//x och y riktning för rotation, skalad med rotationshastighet
 	
 	
+	
 	leg1.xRot = rotation * y0_1/ stdLength;
 	leg1.yRot = rotation * x0_1 / stdLength;
 
@@ -212,7 +246,7 @@ void move_robot(int dir, int rot, int spd)
 
 
 	//Stegskalning för att inte alltid ta max längd på steg;
-	stepScaling = fmaxf(speedf/100, fabsf(rotation/50-1));
+	stepScaling = fmaxf(speedf/100, fabsf(rotation));
 
 
 	//Uppdatera vinklar för nya steget
@@ -288,7 +322,7 @@ void move_leg(struct LegData* leg, float n)
 	tempy = leg->prevPosy + n*(leg->newPosy - leg->prevPosy)/iterations;
 	if(leg->lift == 1 && n != 0 && n != iterations)
 	{
-		tempz = z + 20;
+		tempz = z + 30;
 	}
 	else
 	{
@@ -298,16 +332,16 @@ void move_leg(struct LegData* leg, float n)
 	leg->temp2AngleGamma = get_gamma(tempx, tempy);
 	leg->temp2AngleBeta = get_beta();
 	leg->temp2AngleAlpha = get_alpha(tempz);
-	speedAlpha = fabsf(leg->temp1AngleBeta - leg->temp2AngleBeta)*speedMultiplier;
+	speedAlpha = fabsf(leg->temp1AngleAlpha - leg->temp2AngleAlpha)*speedMultiplier;
 	speedBeta = fabsf(leg->temp1AngleBeta - leg->temp2AngleBeta)*speedMultiplier;
 	speedGamma = fabsf(leg->temp1AngleGamma - leg->temp2AngleGamma)*speedMultiplier;
-	servoBufferPosition(leg->servoAlpha, leg->temp2AngleAlpha,(int)speedAlpha);
-	servoBufferPosition(leg->servoBeta,leg->temp2AngleBeta,(int)speedBeta);
+	servoBufferPosition(leg->servoAlpha, leg->side *(leg->temp2AngleAlpha + femurAngleAddition),(int)speedAlpha);
+	servoBufferPosition(leg->servoBeta,leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition),(int)speedBeta);
 	servoBufferPosition(leg->servoGamma, leg->temp2AngleGamma,(int)speedGamma);
 }
 void leg_motion()
 {
-	
+	leg_motion_init();
 	for(int i = 0; i < (int)iterations; i++)
 	{
 		move_leg(&leg1,i+1);
@@ -317,6 +351,7 @@ void leg_motion()
 		move_leg(&leg5,i+1);
 		move_leg(&leg6,i+1);
 		servoAction();
+		_delay_ms(50);
 	}
 }
 
@@ -343,7 +378,7 @@ int main(void)
 	moveLeg6too(x0_6, y0_6, z0, speed);
 	
 	
-	//_delay_ms(5000);
+	_delay_ms(5000);
 	
 	
     while(1)
