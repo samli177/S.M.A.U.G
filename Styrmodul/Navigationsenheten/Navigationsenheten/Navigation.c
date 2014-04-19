@@ -4,6 +4,18 @@
  * Created: 4/17/2014 1:10:11 PM
  *  Author: jonha860
  */ 
+
+#define F_CPU 16000000UL
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include "twi.h"
+#include "usart.h"
+#include "counter.h"
 #include "Navigation.h"
 #include <math.h>
 
@@ -19,6 +31,16 @@ uint8_t gKp = 1;
 // 0 means autonomous walk is disabled.
 // 1 means autonomous walk is enabled.
 uint8_t gAutonomousWalk = 0;
+
+// A variable that shows how many sensor samples that will be used
+// when taking the median sensor data.
+int sensorBufferSize = 3;
+
+// SensorBufferSize = 3.
+uint8_t sensorBuffer[8][3]; 
+
+// A help variable to be used in fill_buffer().
+uint8_t currentBufferLine;
 
 uint8_t navigation_get_Kp()
 {
@@ -156,4 +178,47 @@ uint8_t navigation_dead_end(uint8_t sensor0, uint8_t sensor1, uint8_t sensor4, f
 	{
 		return 0;
 	}
+}
+
+int compare (const void * a, const void * b)
+{
+	return ( *(uint8_t*)a - *(uint8_t*)b );
+}
+
+uint8_t navigation_get_sensor(int sensorNr)
+{
+	uint8_t temp[sensorBufferSize];
+	for(int i = 0; i < sensorBufferSize; ++i)
+	{
+		temp[i] = sensorBuffer[sensorNr][i];
+	}
+	qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
+	return temp[sensorBufferSize / 2];
+}
+
+void navigation_fill_buffer()
+{
+	for(int i = 0; i < 8; ++i)
+	{
+		sensorBuffer[i][currentBufferLine] = TWI_get_sensor(i);
+	}
+	if(currentBufferLine == sensorBufferSize - 1)
+	currentBufferLine = 0;
+	else
+	currentBufferLine += 1;
+}
+
+/************************************************************************/
+/*      COUNTERS/TIMERS interrupt vectors                               */
+/************************************************************************/
+ISR(TIMER1_COMPA_vect)
+{
+	if(TWI_sensor_flag())
+	navigation_fill_buffer();
+	TCNT1 = 0;
+}
+
+ISR(TIMER2_COMPA_vect)
+{
+	TCNT2 = 0;
 }

@@ -149,14 +149,14 @@ uint8_t navigation_check_right_turn(uint8_t frontRightSensor, uint8_t backRightS
 
 /**
  * \brief 
- * Detects if there is an obsticle above
+ * Detects if there is an obstacle above
  * 
  * \param ultraSoundSensor
  * The reading from the ultra sound sensor measured in centimeters as
  * an unsigned integer.
  * 
  * \return uint8_t
- * Return 1 if an obsticle is found, 0 otherwise.
+ * Return 1 if an obstacle is found, 0 otherwise.
  */
 uint8_t navigation_detect_low_pass_obsticle(uint8_t ultraSoundSensor);
 
@@ -182,5 +182,45 @@ uint8_t navigation_detect_low_pass_obsticle(uint8_t ultraSoundSensor);
  */
 uint8_t navigation_dead_end(uint8_t sensor0, uint8_t sensor1, uint8_t sensor4, float angleOffset);
 
+/**
+ * \brief 
+ * A help function to decide which of two numbers is larger.
+ * Only works for positive numbers. 
+ * 
+ * \param a
+ * The first number to be compared.
+ *
+ * \param b
+ * The second number to be compared.
+ * 
+ * \return int
+ * Returns a positive number if a is larger than b, returns
+ * 0 if a = b, and a negative number if b is larger than a.
+ */
+int compare (const void * a, const void * b);
+
+/**
+ * \brief 
+ * A function that retrieves the desired sensor. The data returned 
+ * will be a median of the last x sensor samples, where x is the 
+ * variable "sensorBufferSize".
+ *
+ * \param sensorNr
+ * The sensor that you require data from, a number between 0 and 7.
+ * 
+ * \return uint8_t
+ * The value from the sensor measured in centimeters given as an
+ * uint8_t.
+ */
+uint8_t navigation_get_sensor(int sensorNr);
+
+/**
+ * \brief 
+ * A function that adds the latest sensor data to the
+ * sensor buffer.
+ * 
+ * \return void
+ */
+void navigation_fill_buffer();
 
 #endif

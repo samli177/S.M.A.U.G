@@ -63,7 +63,6 @@ void turn_left(uint8_t sensors[6])
 	for(int i=0; i < 3; ++i)
 	{
 		walk_forward(sensors);
-		_delay_ms(STEPPING_TIME);
 	}
 }
 
@@ -87,7 +86,6 @@ void turn_right(uint8_t sensors[6])
 	for(int i=0; i < 3; ++i)
 	{
 		walk_forward(sensors);
-		_delay_ms(STEPPING_TIME);
 	}
 }
 
@@ -143,6 +141,7 @@ void walk_forward(uint8_t sensors[5])
 		TWI_send_string(C_ADDRESS, "Taking a step.");
 	}
 	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
+	_delay_ms(STEPPING_TIME);
 }
 
 void autonomouswalk_walk(uint8_t sensors[6])
