@@ -1,7 +1,7 @@
 Archive member included because of file (symbol)
 
 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(addsf3.o)
-                              autonomouswalk.o (__addsf3)
+                              Navigation.o (__subsf3)
 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(addsf3x.o)
                               c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(addsf3.o) (__addsf3x)
 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(atan.o)
@@ -108,17 +108,17 @@ Discarded input sections
  .text.autonomouswalk_get_return_status
                 0x00000000        0x6 autonomouswalk.o
  .rodata.str1.1
-                0x00000000       0xb9 autonomouswalk.o
- .text.turn_left
-                0x00000000       0x14 autonomouswalk.o
- .text.turn_right
-                0x00000000       0x14 autonomouswalk.o
+                0x00000000       0xe7 autonomouswalk.o
  .text.turn_around
-                0x00000000       0x54 autonomouswalk.o
+                0x00000000       0x66 autonomouswalk.o
  .text.walk_forward
-                0x00000000       0xea autonomouswalk.o
+                0x00000000      0x100 autonomouswalk.o
+ .text.turn_right
+                0x00000000       0xc6 autonomouswalk.o
+ .text.turn_left
+                0x00000000       0xc6 autonomouswalk.o
  .text.autonomouswalk_walk
-                0x00000000       0x86 autonomouswalk.o
+                0x00000000       0x8e autonomouswalk.o
  .data.gStatus  0x00000000        0x1 autonomouswalk.o
  .data.gSpeed   0x00000000        0x1 autonomouswalk.o
  .text          0x00000000        0x0 counter.o
@@ -142,7 +142,7 @@ Discarded input sections
  .text.navigation_angle_offset
                 0x00000000       0xcc Navigation.o
  .text.navigation_direction_regulation
-                0x00000000       0x96 Navigation.o
+                0x00000000       0xa6 Navigation.o
  .text.navigation_check_left_turn
                 0x00000000       0x18 Navigation.o
  .text.navigation_check_right_turn
@@ -1033,80 +1033,80 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x3058
+.debug_info     0x00000000     0x3463
  *(.debug_info)
- .debug_info    0x00000000      0x4c7 autonomouswalk.o
- .debug_info    0x000004c7      0x119 counter.o
- .debug_info    0x000005e0      0x1b1 fifo.o
- .debug_info    0x00000791      0x38e Navigation.o
- .debug_info    0x00000b1f      0x36d Navigationsenheten.o
- .debug_info    0x00000e8c     0x10dc twi.o
- .debug_info    0x00001f68      0xad0 usart.o
- .debug_info    0x00002a38      0x620 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
+ .debug_info    0x00000000      0x8d2 autonomouswalk.o
+ .debug_info    0x000008d2      0x119 counter.o
+ .debug_info    0x000009eb      0x1b1 fifo.o
+ .debug_info    0x00000b9c      0x38e Navigation.o
+ .debug_info    0x00000f2a      0x36d Navigationsenheten.o
+ .debug_info    0x00001297     0x10dc twi.o
+ .debug_info    0x00002373      0xad0 usart.o
+ .debug_info    0x00002e43      0x620 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0xe00
+.debug_abbrev   0x00000000      0xea4
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x187 autonomouswalk.o
- .debug_abbrev  0x00000187       0x9c counter.o
- .debug_abbrev  0x00000223       0xce fifo.o
- .debug_abbrev  0x000002f1      0x179 Navigation.o
- .debug_abbrev  0x0000046a      0x1fc Navigationsenheten.o
- .debug_abbrev  0x00000666      0x2c2 twi.o
- .debug_abbrev  0x00000928      0x35d usart.o
- .debug_abbrev  0x00000c85      0x17b c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
+ .debug_abbrev  0x00000000      0x22b autonomouswalk.o
+ .debug_abbrev  0x0000022b       0x9c counter.o
+ .debug_abbrev  0x000002c7       0xce fifo.o
+ .debug_abbrev  0x00000395      0x179 Navigation.o
+ .debug_abbrev  0x0000050e      0x1fc Navigationsenheten.o
+ .debug_abbrev  0x0000070a      0x2c2 twi.o
+ .debug_abbrev  0x000009cc      0x35d usart.o
+ .debug_abbrev  0x00000d29      0x17b c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
 
-.debug_line     0x00000000     0x1f96
+.debug_line     0x00000000     0x2152
  *(.debug_line)
- .debug_line    0x00000000      0x2a5 autonomouswalk.o
- .debug_line    0x000002a5      0x13c counter.o
- .debug_line    0x000003e1      0x14f fifo.o
- .debug_line    0x00000530      0x2c0 Navigation.o
- .debug_line    0x000007f0      0x2c8 Navigationsenheten.o
- .debug_line    0x00000ab8      0xd10 twi.o
- .debug_line    0x000017c8      0x5ea usart.o
- .debug_line    0x00001db2      0x1e4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
+ .debug_line    0x00000000      0x461 autonomouswalk.o
+ .debug_line    0x00000461      0x13c counter.o
+ .debug_line    0x0000059d      0x14f fifo.o
+ .debug_line    0x000006ec      0x2c0 Navigation.o
+ .debug_line    0x000009ac      0x2c8 Navigationsenheten.o
+ .debug_line    0x00000c74      0xd10 twi.o
+ .debug_line    0x00001984      0x5ea usart.o
+ .debug_line    0x00001f6e      0x1e4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
 
-.debug_frame    0x00000000      0xa80
+.debug_frame    0x00000000      0xa98
  *(.debug_frame)
- .debug_frame   0x00000000       0xec autonomouswalk.o
- .debug_frame   0x000000ec       0x44 counter.o
- .debug_frame   0x00000130       0x68 fifo.o
- .debug_frame   0x00000198       0xe0 Navigation.o
- .debug_frame   0x00000278      0x100 Navigationsenheten.o
- .debug_frame   0x00000378      0x3e0 twi.o
- .debug_frame   0x00000758      0x25c usart.o
- .debug_frame   0x000009b4       0xcc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
+ .debug_frame   0x00000000      0x104 autonomouswalk.o
+ .debug_frame   0x00000104       0x44 counter.o
+ .debug_frame   0x00000148       0x68 fifo.o
+ .debug_frame   0x000001b0       0xe0 Navigation.o
+ .debug_frame   0x00000290      0x100 Navigationsenheten.o
+ .debug_frame   0x00000390      0x3e0 twi.o
+ .debug_frame   0x00000770      0x25c usart.o
+ .debug_frame   0x000009cc       0xcc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
 
-.debug_str      0x00000000      0xbcc
+.debug_str      0x00000000      0xc18
  *(.debug_str)
- .debug_str     0x00000000      0x2ab autonomouswalk.o
-                                0x2ff (size before relaxing)
- .debug_str     0x000002ab       0x51 counter.o
+ .debug_str     0x00000000      0x307 autonomouswalk.o
+                                0x35b (size before relaxing)
+ .debug_str     0x00000307       0x48 counter.o
                                 0x132 (size before relaxing)
- .debug_str     0x000002fc       0x3e fifo.o
+ .debug_str     0x0000034f       0x3e fifo.o
                                 0x142 (size before relaxing)
- .debug_str     0x0000033a      0x151 Navigation.o
+ .debug_str     0x0000038d      0x14a Navigation.o
                                 0x2da (size before relaxing)
- .debug_str     0x0000048b      0x10c Navigationsenheten.o
+ .debug_str     0x000004d7      0x10c Navigationsenheten.o
                                 0x218 (size before relaxing)
- .debug_str     0x00000597      0x43e twi.o
+ .debug_str     0x000005e3      0x43e twi.o
                                 0x5f6 (size before relaxing)
- .debug_str     0x000009d5      0x172 usart.o
+ .debug_str     0x00000a21      0x172 usart.o
                                 0x3c2 (size before relaxing)
- .debug_str     0x00000b47       0x85 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
+ .debug_str     0x00000b93       0x85 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
                                  0xb9 (size before relaxing)
 
-.debug_loc      0x00000000     0x2539
+.debug_loc      0x00000000     0x274b
  *(.debug_loc)
- .debug_loc     0x00000000      0x228 autonomouswalk.o
- .debug_loc     0x00000228       0x6c counter.o
- .debug_loc     0x00000294      0x17b fifo.o
- .debug_loc     0x0000040f      0x382 Navigation.o
- .debug_loc     0x00000791      0x24a Navigationsenheten.o
- .debug_loc     0x000009db      0xa4a twi.o
- .debug_loc     0x00001425      0x9b8 usart.o
- .debug_loc     0x00001ddd      0x75c c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
+ .debug_loc     0x00000000      0x43a autonomouswalk.o
+ .debug_loc     0x0000043a       0x6c counter.o
+ .debug_loc     0x000004a6      0x17b fifo.o
+ .debug_loc     0x00000621      0x382 Navigation.o
+ .debug_loc     0x000009a3      0x24a Navigationsenheten.o
+ .debug_loc     0x00000bed      0xa4a twi.o
+ .debug_loc     0x00001637      0x9b8 usart.o
+ .debug_loc     0x00001fef      0x75c c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1114,16 +1114,16 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x370
+.debug_ranges   0x00000000      0x3f0
  *(.debug_ranges)
- .debug_ranges  0x00000000       0x50 autonomouswalk.o
- .debug_ranges  0x00000050       0x20 counter.o
- .debug_ranges  0x00000070       0x20 fifo.o
- .debug_ranges  0x00000090       0x68 Navigation.o
- .debug_ranges  0x000000f8       0x38 Navigationsenheten.o
- .debug_ranges  0x00000130      0x160 twi.o
- .debug_ranges  0x00000290       0xa8 usart.o
- .debug_ranges  0x00000338       0x38 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
+ .debug_ranges  0x00000000       0xd0 autonomouswalk.o
+ .debug_ranges  0x000000d0       0x20 counter.o
+ .debug_ranges  0x000000f0       0x20 fifo.o
+ .debug_ranges  0x00000110       0x68 Navigation.o
+ .debug_ranges  0x00000178       0x38 Navigationsenheten.o
+ .debug_ranges  0x000001b0      0x160 twi.o
+ .debug_ranges  0x00000310       0xa8 usart.o
+ .debug_ranges  0x000003b8       0x38 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
 
 .debug_macro
  *(.debug_macro)

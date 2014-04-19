@@ -5,11 +5,15 @@
  *  Author: Jonas
  */ 
 
+#define F_CPU 16000000UL
+
 #include "autonomouswalk.h"
 #include "Navigation.h"
 #include "usart.h"
 #include "twi.h"
 #include <avr/io.h>
+#include <util/delay.h>
+
 
 
 //Variable for the speed parameter in movement commands. 
@@ -39,19 +43,51 @@ uint8_t autonomouswalk_get_return_status()
 	return gStatus;
 }
 
-void turn_left()
+void turn_left(uint8_t sensors[6])
 {
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning left.");
 	}
+	walk_forward(sensors);
+	_delay_ms(STEPPING_TIME);
+	while(sensors[4] < CORRIDOR_WIDTH && sensors[5] > (CORRIDOR_WIDTH/2))
+	{
+		if(gStatus)
+		{
+			TWI_send_string(C_ADDRESS, "Rotating left.");
+		}
+		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, gSpeed);
+		_delay_ms(STEPPING_TIME);
+	}
+	for(int i=0; i < 3; ++i)
+	{
+		walk_forward(sensors);
+		_delay_ms(STEPPING_TIME);
+	}
 }
 
-void turn_right()
+void turn_right(uint8_t sensors[6])
 {
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning right.");
+	}
+	walk_forward(sensors);
+	_delay_ms(STEPPING_TIME);
+	while(sensors[4] < CORRIDOR_WIDTH && sensors[5] > (CORRIDOR_WIDTH/2))
+	{
+		if(gStatus)
+		{
+			TWI_send_string(C_ADDRESS, "Rotating right.");
+		}
+		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, gSpeed);
+		_delay_ms(STEPPING_TIME);
+	}
+	for(int i=0; i < 3; ++i)
+	{
+		walk_forward(sensors);
+		_delay_ms(STEPPING_TIME);
 	}
 }
 
@@ -67,7 +103,8 @@ void turn_around(uint8_t frontSensor)
 		{
 			TWI_send_string(C_ADDRESS, "Turning around.");
 		}
-		USART_send_command_parameters(0, MAX_ROTATION, gSpeed);
+		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, gSpeed);
+		_delay_ms(STEPPING_TIME);
 	}
 	if(gStatus)
 	{
@@ -101,17 +138,21 @@ void walk_forward(uint8_t sensors[5])
 	{
 		adjustmentDirection = 90 + adjustmentDirection;
 	}
+	if(gStatus)
+	{
+		TWI_send_string(C_ADDRESS, "Taking a step.");
+	}
 	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
 }
 
-void autonomouswalk_walk(uint8_t sensors[5])
+void autonomouswalk_walk(uint8_t sensors[6])
 {
 	uint8_t leftSideAlgorithm = navigation_left_algorithm();
 	if(leftSideAlgorithm)
 	{
 		if(navigation_check_left_turn(sensors[0], sensors[2]) == 2)
 		{
-			turn_left();
+			turn_left(sensors);
 		}
 		else if(sensors[4] > CORRIDOR_WIDTH)
 		{
@@ -119,7 +160,7 @@ void autonomouswalk_walk(uint8_t sensors[5])
 		}
 		else if(navigation_check_right_turn(sensors[1], sensors[3]) == 2)
 		{
-			turn_right();
+			turn_right(sensors);
 		}
 		else
 		{
@@ -130,7 +171,7 @@ void autonomouswalk_walk(uint8_t sensors[5])
 	{
 		if(navigation_check_right_turn(sensors[1], sensors[3]) == 2)
 		{
-			turn_left();
+			turn_left(sensors);
 		}
 		else if(sensors[4] > CORRIDOR_WIDTH)
 		{
@@ -138,7 +179,7 @@ void autonomouswalk_walk(uint8_t sensors[5])
 		}
 		else if(navigation_check_left_turn(sensors[0], sensors[2]) == 2)
 		{
-			turn_right();
+			turn_right(sensors);
 		}
 		else
 		{

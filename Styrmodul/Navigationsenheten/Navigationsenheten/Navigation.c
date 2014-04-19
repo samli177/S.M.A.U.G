@@ -83,7 +83,7 @@ float navigation_direction_regulation(uint8_t sensors[5], float angleOffset)
 	}
 	else if (sensors[4] > CORRIDOR_WIDTH)
 	{
-		d = (1/2 * (sensors[1]+sensors[3]) + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
+		d = (CORRIDOR_WIDTH - (1/2 * (sensors[1]+sensors[3]) + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset));
 	}
 	else
 	{

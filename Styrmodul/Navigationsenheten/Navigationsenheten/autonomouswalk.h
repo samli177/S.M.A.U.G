@@ -11,8 +11,10 @@
 
 #include <avr/io.h>
 
-#define MAX_ROTATION 90
+#define MAX_ROTATION_CLOCKWISE 90
+#define MAX_ROTATION_COUNTER_CLOCKWISE 10
 #define MAX_ROTATION_RADIANS 3.1415/6
+#define STEPPING_TIME 2000
 
 /**
  * \brief 
@@ -63,18 +65,30 @@ uint8_t autonomouswalk_get_return_status();
 /**
  * \brief 
  * Makes the robot turn 90 deg. to the left.
+ *
+ * \param sensors
+ * The distances from the front and back side sensors
+ * in centimeters as unsigned integers. Sensor 4 is the
+ * front sensor, sensor 5 is
+ * the rear sensor. Needed to regulate.
  * 
  * \return void
  */
-void turn_left();
+void turn_left(uint8_t sensors[6]);
 
 /**
  * \brief 
  * Makes the robot turn 90 deg. to the right.
+ *
+ * \param sensors
+ * The distances from the front and back side sensors
+ * in centimeters as unsigned integers. Sensor 4 is the
+ * front sensor, sensor 5 is
+ * the rear sensor. Needed to regulate.
  * 
  * \return void
  */
-void turn_right();
+void turn_right(uint8_t sensors[6]);
 
 /**
  * \brief 
@@ -97,7 +111,8 @@ void turn_around(uint8_t frontSensor);
  * \param sensors
  * The distances from the front and back side sensors
  * in centimeters as unsigned integers. Sensor 4 is the
- * front sensor. Needed to regulate.
+ * front sensor, sensor 5 is
+ * the rear sensor. Needed to regulate.
  * 
  * \return void
  */
@@ -113,6 +128,6 @@ void walk_forward(uint8_t sensors[5]);
  * 
  * \return void
  */
-void autonomouswalk_walk(uint8_t sensors[5]);
+void autonomouswalk_walk(uint8_t sensors[6]);
 
 #endif 
