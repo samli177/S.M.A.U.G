@@ -34,7 +34,7 @@ int main(void)
 	init_counters();
 	
 	set_counter_1(500);
-	set_counter_2(2000);
+	set_counter_2(3000);
 	
 	// Activate interrupts
 	sei();
@@ -57,7 +57,7 @@ int main(void)
 
 ISR(TIMER1_COMPA_vect)
 {
-	//display_char('C');
+	display_char('C');
 	sensors_start_sample();
 	TCNT1 = 0;
 }
@@ -67,11 +67,10 @@ ISR(TIMER2_COMPA_vect)
 	if(decode_message_TwiFIFO())
 	{
 		//sensors_display_data();
-		//display_char('A');
-		//set_counter_2(3000);
+		display_char('A');
+		set_counter_2(2000);
 	} else {
-		//display_char('B');
-		//set_counter_2(5000);
+		set_counter_2(3000);
 	}
 	TCNT2 = 0;
 }
