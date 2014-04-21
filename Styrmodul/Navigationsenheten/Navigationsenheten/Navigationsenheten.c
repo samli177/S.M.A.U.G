@@ -53,9 +53,9 @@ ISR(TIMER1_COMPA_vect)
 	TCNT1 = 0;
 }
 
-ISR(TIMER2_COMPA_vect)
+ISR(TIMER3_COMPA_vect)
 {
-	TCNT2 = 0;
+	TCNT3 = 0;
 }
 
 //---------------------------------------------------------------------------------------

@@ -36,15 +36,17 @@ int main(void)
 	_delay_ms(500);
 	while(1)
 	{
-		PORTA ^= (1<<PORTA0);
+		//PORTA ^= (1<<PORTA0);
 		
 		
 		USART_DecodeRxFIFO();
-		//SART_SendSensors();
+		USART_SendSensors();
 		
 		// TODO: put this on timer
 		//if(TWI_send_status(ST_ADRESS))
 			//PORTA ^= (1<<PORTA1);
+			
+		_delay_ms(50);
 	}
 }
 
@@ -67,7 +69,7 @@ ISR(TIMER1_COMPA_vect)
 	TCNT1 = 0;
 }
 
-ISR(TIMER2_COMPA_vect)
+ISR(TIMER3_COMPA_vect)
 {
-	TCNT2 = 0;
+	TCNT3 = 0;
 }

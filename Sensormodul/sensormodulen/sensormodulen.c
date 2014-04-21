@@ -57,22 +57,20 @@ int main(void)
 
 ISR(TIMER1_COMPA_vect)
 {
-	display_char('C');
 	sensors_start_sample();
 	TCNT1 = 0;
 }
 
-ISR(TIMER2_COMPA_vect)
+ISR(TIMER3_COMPA_vect)
 {
 	if(decode_message_TwiFIFO())
 	{
-		//sensors_display_data();
-		display_char('A');
+		sensors_display_data();
 		set_counter_2(2000);
 	} else {
 		set_counter_2(3000);
 	}
-	TCNT2 = 0;
+	TCNT3 = 0;
 }
 
 //---------------------------------------------------------------------------------------
