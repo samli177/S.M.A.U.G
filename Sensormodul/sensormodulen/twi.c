@@ -720,6 +720,7 @@ uint8_t decode_message_TwiFIFO()
 	
 	// TODO: send to relevant party... the display for now
 	
+	display_clear();
 	display_text_fixed_length(msg, length);
 	
 	return 0;

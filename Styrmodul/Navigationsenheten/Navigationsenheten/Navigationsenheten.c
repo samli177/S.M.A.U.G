@@ -62,3 +62,20 @@ int main(void)
 		USART_DecodeRxFIFO();
     }
 }
+<<<<<<< HEAD
+=======
+
+//---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
+
+ISR(TIMER1_COMPA_vect)
+{
+	TCNT1 = 0;
+}
+
+ISR(TIMER3_COMPA_vect)
+{
+	TCNT3 = 0;
+}
+
+//---------------------------------------------------------------------------------------
+>>>>>>> SensorMainTest
