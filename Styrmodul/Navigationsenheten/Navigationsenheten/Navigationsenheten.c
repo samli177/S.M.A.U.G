@@ -29,7 +29,8 @@ int main(void)
     while(1)
     {
 		
-		navigation_set_autonomous_walk(TWI_get_autonom_settings());
+		//navigation_set_autonomous_walk(TWI_get_autonom_settings());
+		
 		/*
 		_delay_ms(500);
 		//TWI_send_autonom_settings(C_ADRESS, 4);
@@ -41,6 +42,8 @@ int main(void)
 		USART_SendMessage("apa");
 		TWI_send_string(S_ADRESS, "Hue");
 		*/
+		
+		
 		if(navigation_autonomous_walk() == 1)
 		{
 			uint8_t sensors[6];
@@ -62,20 +65,7 @@ int main(void)
 		USART_DecodeRxFIFO();
     }
 }
-<<<<<<< HEAD
-=======
 
 //---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
-
-ISR(TIMER1_COMPA_vect)
-{
-	TCNT1 = 0;
-}
-
-ISR(TIMER3_COMPA_vect)
-{
-	TCNT3 = 0;
-}
-
+// Redan definierade i navigation.c
 //---------------------------------------------------------------------------------------
->>>>>>> SensorMainTest
