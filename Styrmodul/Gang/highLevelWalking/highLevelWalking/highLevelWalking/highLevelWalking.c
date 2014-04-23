@@ -187,7 +187,7 @@ void move_robot(int dir, int rot, int spd)
 	direction = (float)dir*2;
 	rotation = (float)rot / 50 -1;
 	speedf = (float)spd;
-	if (speedf != 0 || rotation != 50)
+	if (speedf != 0 || rotation != 0)
 	{
 	step_start(&leg1);
 	step_start(&leg2);
@@ -396,17 +396,20 @@ int main(void)
 	
     while(1)
     {
-		//move_robot(USART_getDirection(),USART_getRotation(),USART_getSpeed());
-		move_robot(0,50,100);
+		uint8_t r = USART_getRotation();
+		uint8_t s = USART_getSpeed();
+		uint8_t d = USART_getDirection();
+		move_robot(d, r, s);
+		
+		//move_robot(0,50,100);
 
 		leg1.lift = -leg1.lift;
 		leg2.lift = -leg2.lift;
 		leg3.lift = -leg3.lift;
 		leg4.lift = -leg4.lift;
 		leg5.lift = -leg5.lift;
-		leg6.lift = -leg6.lift;		
-		
-		//USART_DecodeRxFIFO();
+		leg6.lift = -leg6.lift;	
+		USART_DecodeRxFIFO();
 
 
     }

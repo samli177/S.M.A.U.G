@@ -43,8 +43,10 @@ int main(void)
 		TWI_send_string(S_ADRESS, "Hue");
 		*/
 		
+		//USART_send_command_parameters(0,50,100);
+		//_delay_ms(1000);
 		
-		/*if(navigation_autonomous_walk() == 1)
+		if(navigation_autonomous_walk() == 1)
 		{
 			uint8_t sensors[6];
 			sensors[0]=navigation_get_sensor(0);
@@ -56,12 +58,12 @@ int main(void)
 			autonomouswalk_walk(sensors);
 		}
 		else
-		{*/
+		{
 			if(TWI_command_flag()){
 				PORTA ^= (1<<PORTA1);
 				USART_SendCommand();
 			}
-		//}
+		}
 		USART_DecodeRxFIFO();
     }
 }
