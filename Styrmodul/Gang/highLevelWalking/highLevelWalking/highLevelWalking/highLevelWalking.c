@@ -105,7 +105,7 @@ void initvar()
 	speedMultiplier = 1500;
 	speed = 300;
 	iterations = 7;
-	maxStepLength = 80;
+	maxStepLength = 70;
 	stdLength = sqrtf(x0_1*x0_1 + y0_1*y0_1);
 	
 	init_struct(&leg1);
@@ -315,18 +315,31 @@ void leg_motion_init()
 
 void move_leg(struct LegData* leg, float n)
 {
-	leg->temp1AngleGamma = leg->temp2AngleGamma;
-	leg->temp1AngleBeta = leg->temp2AngleBeta;
-	leg->temp1AngleAlpha = leg->temp2AngleAlpha;
-	tempx = leg->prevPosx + n*(leg->newPosx - leg->prevPosx)/iterations;
-	tempy = leg->prevPosy + n*(leg->newPosy - leg->prevPosy)/iterations;
-	if(leg->lift == 1 && n != 0 && n != iterations)
+	if(leg->lift == 1 && n != iterations+1)
 	{
 		tempz = z + 30;
 	}
 	else
 	{
 		tempz = z;
+	}
+	if(n != 0 && n != iterations+1)
+	{
+		leg->temp1AngleGamma = leg->temp2AngleGamma;
+		leg->temp1AngleBeta = leg->temp2AngleBeta;
+		leg->temp1AngleAlpha = leg->temp2AngleAlpha;
+		tempx = leg->prevPosx + n*(leg->newPosx - leg->prevPosx)/iterations;
+		tempy = leg->prevPosy + n*(leg->newPosy - leg->prevPosy)/iterations;
+	}
+	else if (n == iterations+1)
+	{
+		tempx = leg->newPosx;
+		tempy = leg->newPosy;
+	}
+	else
+	{
+		tempx = leg->prevPosx;
+		tempy = leg->prevPosy;
 	}
 	calc_d(tempx, tempy, tempz);
 	leg->temp2AngleGamma = get_gamma(tempx, tempy);
@@ -342,16 +355,16 @@ void move_leg(struct LegData* leg, float n)
 void leg_motion()
 {
 	leg_motion_init();
-	for(int i = 0; i < (int)iterations; i++)
+	for(int i = 0; i < (int)iterations+1; i++)
 	{
-		move_leg(&leg1,i+1);
-		move_leg(&leg2,i+1);
-		move_leg(&leg3,i+1);
-		move_leg(&leg4,i+1);
-		move_leg(&leg5,i+1);
-		move_leg(&leg6,i+1);
+		move_leg(&leg1,i);
+		move_leg(&leg2,i);
+		move_leg(&leg3,i);
+		move_leg(&leg4,i);
+		move_leg(&leg5,i);
+		move_leg(&leg6,i);
 		servoAction();
-		_delay_ms(50);
+		_delay_ms(40);
 	}
 }
 
