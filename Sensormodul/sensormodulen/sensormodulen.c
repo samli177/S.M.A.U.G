@@ -33,7 +33,7 @@ int main(void)
 	TWI_init(S_ADDRESS);
 	init_counters();
 	
-	set_counter_1(500);
+	set_counter_1(100);
 	set_counter_2(3000);
 	
 	// Activate interrupts
@@ -48,7 +48,6 @@ int main(void)
 			sensors_reset_flag();
 			TWI_send_sensors(sensors_get_data(), 0);
 		}
-		_delay_ms(500);
 		//TWI_send_autonom_settings(C_ADRESS, 5);
 	}
 }

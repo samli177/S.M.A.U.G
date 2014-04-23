@@ -44,7 +44,7 @@ int main(void)
 		*/
 		
 		
-		if(navigation_autonomous_walk() == 1)
+		/*if(navigation_autonomous_walk() == 1)
 		{
 			uint8_t sensors[6];
 			sensors[0]=navigation_get_sensor(0);
@@ -56,12 +56,12 @@ int main(void)
 			autonomouswalk_walk(sensors);
 		}
 		else
-		{
+		{*/
 			if(TWI_command_flag()){
 				PORTA ^= (1<<PORTA1);
 				USART_SendCommand();
 			}
-		}
+		//}
 		USART_DecodeRxFIFO();
     }
 }
@@ -69,3 +69,4 @@ int main(void)
 //---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
 // Redan definierade i navigation.c
 //---------------------------------------------------------------------------------------
+

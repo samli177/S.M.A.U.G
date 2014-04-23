@@ -722,6 +722,7 @@ uint8_t decode_message_TwiFIFO()
 	
 	display_clear();
 	display_text_fixed_length(msg, length);
+	TWI_send_string_fixed_length(C_ADDRESS, msg, length);
 	
 	return 0;
 }
