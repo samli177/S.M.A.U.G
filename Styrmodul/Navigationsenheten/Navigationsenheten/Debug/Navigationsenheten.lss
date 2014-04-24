@@ -1519,44 +1519,44 @@ int main(void)
      928:	81 b1       	in	r24, 0x01	; 1
      92a:	83 60       	ori	r24, 0x03	; 3
      92c:	81 b9       	out	0x01, r24	; 1
-			autonomouswalk_walk();
-		}
-		else
-		{
-			if(TWI_command_flag()){
-				PORTA ^= (1<<PORTA1);
-     92e:	c2 e0       	ldi	r28, 0x02	; 2
-		*/
-		
-		//USART_send_command_parameters(0,50,100);
 		//_delay_ms(1000);
 		
 		if(navigation_autonomous_walk() == 1)
+		{
+			autonomouswalk_walk();
+		}
+     92e:	c2 e0       	ldi	r28, 0x02	; 2
+		PORTA &= ~(1<<PORTA0);
+		_delay_ms(1000);
+		USART_SendMessage("apa");
+		TWI_send_string(S_ADRESS, "Hue");
+		*/
+		
      930:	03 de       	rcall	.-1018   	; 0x538 <navigation_autonomous_walk>
      932:	81 30       	cpi	r24, 0x01	; 1
      934:	11 f4       	brne	.+4      	; 0x93a <main+0x1c>
-		{
-			autonomouswalk_walk();
+		//USART_send_command_parameters(0,50,100);
+		//_delay_ms(1000);
      936:	0a dd       	rcall	.-1516   	; 0x34c <autonomouswalk_walk>
      938:	07 c0       	rjmp	.+14     	; 0x948 <main+0x2a>
-		}
-		else
+		
+		if(navigation_autonomous_walk() == 1)
 		{
-			if(TWI_command_flag()){
+			autonomouswalk_walk();
      93a:	f5 d1       	rcall	.+1002   	; 0xd26 <TWI_command_flag>
      93c:	88 23       	and	r24, r24
      93e:	21 f0       	breq	.+8      	; 0x948 <main+0x2a>
-				PORTA ^= (1<<PORTA1);
+		}
      940:	82 b1       	in	r24, 0x02	; 2
      942:	8c 27       	eor	r24, r28
      944:	82 b9       	out	0x02, r24	; 2
-				USART_SendCommand();
+		else
      946:	42 d4       	rcall	.+2180   	; 0x11cc <USART_SendCommand>
-			}
-		}
-		USART_DecodeRxFIFO();
+		{
+			if(TWI_command_flag()){
+				PORTA ^= (1<<PORTA1);
      948:	76 d5       	rcall	.+2796   	; 0x1436 <USART_DecodeRxFIFO>
-    }
+				USART_SendCommand();
      94a:	f2 cf       	rjmp	.-28     	; 0x930 <main+0x12>
 
 0000094c <set_twi_reciever_enable>:

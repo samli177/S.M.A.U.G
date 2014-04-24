@@ -5,7 +5,7 @@
  *  Author: jonha860
  */ 
 
-#define F_CPU 16000000 
+#define F_CPU 16000000
 
 #include <avr/io.h>
 #include <math.h>
@@ -15,9 +15,11 @@
 #include "inverseKinematics.h"
 #include "highLevelWalking.h"
 #include "usart.h"
+#include "counter.h"
 
 int speed;
 float iterations;
+static uint8_t std_pos_flag = 1;
 
 struct LegData 
 {
@@ -85,6 +87,7 @@ float stdLength;
 //Max möjliga steglängd från grundpositionen
 float maxStepLength;
 
+
 void init_struct(struct LegData* leg)
 {
 	leg->prevAngleAlpha = Alpha0;
@@ -107,6 +110,8 @@ void initvar()
 	iterations = 7;
 	maxStepLength = 70;
 	stdLength = sqrtf(x0_1*x0_1 + y0_1*y0_1);
+	
+
 	
 	init_struct(&leg1);
 	init_struct(&leg2);
@@ -184,7 +189,7 @@ void step_part2_calculator(struct LegData* leg)
 //av ben för förra steget och räknar ut position för nästa steg.
 void move_robot(int dir, int rot, int spd)
 {
-	direction = (float)dir*2;
+	direction = (float)dir;
 	rotation = (float)rot / 50 -1;
 	speedf = (float)spd;
 	if (speedf != 0 || rotation != 0)
@@ -197,8 +202,8 @@ void move_robot(int dir, int rot, int spd)
 	step_start(&leg6);
 
 	//x och y riktning för förflyttning, skalad med hastigheten
-	xDirection = -sinf(direction * pi / 90) * speedf / 100;
-	yDirection = cosf(direction * pi / 90) * speedf / 100;
+	xDirection = -sinf(direction * pi / 45) * speedf / 100;
+	yDirection = cosf(direction * pi / 45) * speedf / 100;
 
 	
 
@@ -355,7 +360,7 @@ void move_leg(struct LegData* leg, float n)
 void leg_motion()
 {
 	leg_motion_init();
-	for(int i = 0; i < (int)iterations+1; i++)
+	for(int i = 0; i <= (int)iterations+1; ++i)
 	{
 		move_leg(&leg1,i);
 		move_leg(&leg2,i);
@@ -367,7 +372,43 @@ void leg_motion()
 		_delay_ms(40);
 	}
 }
+void move_to_std()
+{
+	
+		step_start(&leg1);
+		step_start(&leg2);
+		step_start(&leg3);
+		step_start(&leg4);
+		step_start(&leg5);
+		step_start(&leg6);
+	
+		leg1.newPosx = x0;
+		leg1.newPosy = y0;
+		step_part2_calculator(&leg1);
+		
+		leg2.newPosx = x0;
+		leg2.newPosy = y0;
+		step_part2_calculator(&leg2);
+		
+		leg3.newPosx = x0;
+		leg3.newPosy = y0;
+		step_part2_calculator(&leg3);
+		
+		leg4.newPosx = x0;
+		leg4.newPosy = y0;
+		step_part2_calculator(&leg4);
+		
+		leg5.newPosx = x0;
+		leg5.newPosy = y0;
+		step_part2_calculator(&leg5);
+		
+		leg6.newPosx = x0;
+		leg6.newPosy = y0;
+		step_part2_calculator(&leg6);
 
+		leg_motion();
+	
+}
 
 
 int main(void)
@@ -380,6 +421,8 @@ int main(void)
 	sei();
 	initServoSerial(); //Init servos
 	USART_init();
+	init_counters();
+	set_counter_1(10000);
 	initvar();
 	
 
@@ -393,24 +436,53 @@ int main(void)
 	
 	_delay_ms(5000);
 	
+	reset_counter_1();
+	set_counter_1(3000);
 	
     while(1)
     {
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
 		uint8_t d = USART_getDirection();
+		if(s != 0 || r != 50)
+		{
+			std_pos_flag = 0;
+			reset_counter_1();
+		}
 		move_robot(d, r, s);
-		
-		//move_robot(0,50,100);
-
 		leg1.lift = -leg1.lift;
 		leg2.lift = -leg2.lift;
 		leg3.lift = -leg3.lift;
 		leg4.lift = -leg4.lift;
 		leg5.lift = -leg5.lift;
-		leg6.lift = -leg6.lift;	
+		leg6.lift = -leg6.lift;
+		
+		/*
+		for(int i = 0; i < 5; ++i)
+		{
+			move_robot(0,50,100);
+			leg1.lift = -leg1.lift;
+			leg2.lift = -leg2.lift;
+			leg3.lift = -leg3.lift;
+			leg4.lift = -leg4.lift;
+			leg5.lift = -leg5.lift;
+			leg6.lift = -leg6.lift;
+		}
+		move_to_std();
+
+		_delay_ms(5000);
+		*/
+		
 		USART_DecodeRxFIFO();
-
-
     }
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+	if(std_pos_flag == 0)
+	{
+		std_pos_flag = 1;
+		move_to_std();
+	}
+	TCNT1 = 0;
 }
