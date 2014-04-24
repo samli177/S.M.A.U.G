@@ -14,14 +14,17 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-
+#define MAX_ROTATION_CLOCKWISE 90
+#define MAX_ROTATION_COUNTER_CLOCKWISE 10
+#define MAX_ROTATION_RADIANS 3.1415/6
+#define STEPPING_TIME 2000
 
 //Variable for the speed parameter in movement commands. 
-uint8_t gSpeed = 80;
+static uint8_t gSpeed = 80;
 
 //Variable to decide if status messages are to be
 //sent back to the PC.
-uint8_t gStatus = 1;
+static uint8_t gStatus = 0;
 
 void autonomouswalk_set_speed(uint8_t speed)
 {
@@ -43,15 +46,15 @@ uint8_t autonomouswalk_get_return_status()
 	return gStatus;
 }
 
-void turn_left(uint8_t sensors[6])
+void turn_left()
 {
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning left.");
 	}
-	walk_forward(sensors);
+	walk_forward();
 	_delay_ms(STEPPING_TIME);
-	while(sensors[4] < CORRIDOR_WIDTH && sensors[5] > (CORRIDOR_WIDTH/2))
+	while(navigation_get_sensor(4) < CORRIDOR_WIDTH && navigation_get_sensor(5) > (CORRIDOR_WIDTH/2))
 	{
 		if(gStatus)
 		{
@@ -60,21 +63,21 @@ void turn_left(uint8_t sensors[6])
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, gSpeed);
 		_delay_ms(STEPPING_TIME);
 	}
-	for(int i=0; i < 3; ++i)
+	for(int i = 0; i < 3; ++i)
 	{
-		walk_forward(sensors);
+		walk_forward();
 	}
 }
 
-void turn_right(uint8_t sensors[6])
+void turn_right()
 {
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning right.");
 	}
-	walk_forward(sensors);
+	walk_forward();
 	_delay_ms(STEPPING_TIME);
-	while(sensors[4] < CORRIDOR_WIDTH && sensors[5] > (CORRIDOR_WIDTH/2))
+	while(navigation_get_sensor(4) < CORRIDOR_WIDTH && navigation_get_sensor(5) > (CORRIDOR_WIDTH/2))
 	{
 		if(gStatus)
 		{
@@ -83,19 +86,19 @@ void turn_right(uint8_t sensors[6])
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, gSpeed);
 		_delay_ms(STEPPING_TIME);
 	}
-	for(int i=0; i < 3; ++i)
+	for(int i = 0; i < 3; ++i)
 	{
-		walk_forward(sensors);
+		walk_forward();
 	}
 }
 
-void turn_around(uint8_t frontSensor)
+void turn_around()
 {
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
-	while (frontSensor < CORRIDOR_WIDTH)
+	while (navigation_get_sensor(4) < CORRIDOR_WIDTH)
 	{
 		if(gStatus)
 		{
@@ -110,14 +113,14 @@ void turn_around(uint8_t frontSensor)
 	}
 }
 
-void walk_forward(uint8_t sensors[5])
+void walk_forward()
 {
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Finding regulation parameters.");
 	}
-	float angleOffset = navigation_angle_offset(sensors);
-	float directionCompensationAngle = navigation_direction_regulation(sensors, angleOffset);
+	float angleOffset = navigation_angle_offset();
+	float directionCompensationAngle = navigation_direction_regulation(angleOffset);
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Found regulation parameters.");
@@ -127,11 +130,11 @@ void walk_forward(uint8_t sensors[5])
 	{
 		adjustmentRotation = 100;
 	}
-	else if(adjustmentRotation<=0)
+	else if(adjustmentRotation <= 0)
 	{
 		adjustmentRotation = 0;
 	}
-	int adjustmentDirection = 90* directionCompensationAngle/(2*PI);
+	int adjustmentDirection = 90 * directionCompensationAngle/(2*PI);
 	if(adjustmentDirection < 0)
 	{
 		adjustmentDirection = 90 + adjustmentDirection;
@@ -144,45 +147,45 @@ void walk_forward(uint8_t sensors[5])
 	_delay_ms(STEPPING_TIME);
 }
 
-void autonomouswalk_walk(uint8_t sensors[6])
+void autonomouswalk_walk()
 {
 	uint8_t leftSideAlgorithm = navigation_left_algorithm();
 	if(leftSideAlgorithm)
 	{
-		if(navigation_check_left_turn(sensors[0], sensors[2]) == 2)
+		if(navigation_check_left_turn(navigation_get_sensor(0), navigation_get_sensor(2)) == 2)
 		{
-			turn_left(sensors);
+			turn_left();
 		}
-		else if(sensors[4] > CORRIDOR_WIDTH)
+		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH)
 		{
-			walk_forward(sensors);
+			walk_forward();
 		}
-		else if(navigation_check_right_turn(sensors[1], sensors[3]) == 2)
+		else if(navigation_check_right_turn(navigation_get_sensor(1), navigation_get_sensor(3)) == 2)
 		{
-			turn_right(sensors);
+			turn_right();
 		}
 		else
 		{
-			turn_around(sensors[4]);
+			turn_around(navigation_get_sensor(4));
 		}
 	}
 	else
 	{
-		if(navigation_check_right_turn(sensors[1], sensors[3]) == 2)
+		if(navigation_check_right_turn(navigation_get_sensor(1), navigation_get_sensor(3)) == 2)
 		{
-			turn_left(sensors);
+			turn_left();
 		}
-		else if(sensors[4] > CORRIDOR_WIDTH)
+		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH)
 		{
-			walk_forward(sensors);
+			walk_forward();
 		}
-		else if(navigation_check_left_turn(sensors[0], sensors[2]) == 2)
+		else if(navigation_check_left_turn(navigation_get_sensor(0), navigation_get_sensor(2)) == 2)
 		{
-			turn_right(sensors);
+			turn_right();
 		}
 		else
 		{
-			turn_around(sensors[4]);
+			turn_around();
 		}
 	}
 }

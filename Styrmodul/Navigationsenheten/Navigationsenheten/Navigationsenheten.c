@@ -48,14 +48,7 @@ int main(void)
 		
 		if(navigation_autonomous_walk() == 1)
 		{
-			uint8_t sensors[6];
-			sensors[0]=navigation_get_sensor(0);
-			sensors[1]=navigation_get_sensor(1);
-			sensors[2]=navigation_get_sensor(2);
-			sensors[3]=navigation_get_sensor(3);
-			sensors[4]=navigation_get_sensor(4);
-			sensors[5]=navigation_get_sensor(5);
-			autonomouswalk_walk(sensors);
+			autonomouswalk_walk();
 		}
 		else
 		{

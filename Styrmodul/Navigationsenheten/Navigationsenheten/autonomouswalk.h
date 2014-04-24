@@ -1,5 +1,5 @@
 /*
- * IncFile1.h
+ * autonomouswalk.h
  *
  * Created: 2014-04-18 14:46:32
  *  Author: Jonas
@@ -10,11 +10,6 @@
 #define AUTONOMOUSWALK_H
 
 #include <avr/io.h>
-
-#define MAX_ROTATION_CLOCKWISE 90
-#define MAX_ROTATION_COUNTER_CLOCKWISE 10
-#define MAX_ROTATION_RADIANS 3.1415/6
-#define STEPPING_TIME 2000
 
 /**
  * \brief 
@@ -74,7 +69,7 @@ uint8_t autonomouswalk_get_return_status();
  * 
  * \return void
  */
-void turn_left(uint8_t sensors[6]);
+void turn_left();
 
 /**
  * \brief 
@@ -88,7 +83,7 @@ void turn_left(uint8_t sensors[6]);
  * 
  * \return void
  */
-void turn_right(uint8_t sensors[6]);
+void turn_right();
 
 /**
  * \brief 
@@ -101,7 +96,7 @@ void turn_right(uint8_t sensors[6]);
  * 
  * \return void
  */
-void turn_around(uint8_t frontSensor);
+void turn_around();
 
 /**
  * \brief 
@@ -116,7 +111,7 @@ void turn_around(uint8_t frontSensor);
  * 
  * \return void
  */
-void walk_forward(uint8_t sensors[5]);
+void walk_forward();
 
 /**
  * \brief 
@@ -128,6 +123,6 @@ void walk_forward(uint8_t sensors[5]);
  * 
  * \return void
  */
-void autonomouswalk_walk(uint8_t sensors[6]);
+void autonomouswalk_walk();
 
 #endif 
