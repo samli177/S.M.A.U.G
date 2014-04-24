@@ -26,8 +26,8 @@
 static uint8_t gAlgorithm = 1;
 
 //A regulation parameter to determine how 
-//hard to punish offset.
-static uint8_t gKp = 1;
+//hard to punish offset. Small Kp => small punishment.
+static float gKp = 0.1;
 
 // 0 means autonomous walk is disabled.
 // 1 means autonomous walk is enabled.
@@ -124,58 +124,75 @@ float navigation_angle_offset()
 {
 	if (gAlgorithm && (navigation_get_sensor(2) + navigation_get_sensor(0)) < (CORRIDOR_WIDTH + 20))
 	{
+		// Use wall to the left
 		return atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 	}
 	else if(gAlgorithm && navigation_get_sensor(4) > CORRIDOR_WIDTH)
 	{
+		// No wall to the left, use wall to the right
 		return atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
 	}
 	else if((navigation_get_sensor(1) + navigation_get_sensor(3)) < (CORRIDOR_WIDTH + 20))
 	{
+		// Use wall to the right
 		return atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
 	}
 	else if(navigation_get_sensor(4) > CORRIDOR_WIDTH)
 	{
+		// No wall to the right, use wall to the left
 		return atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 	}
 	else
 	{
+		// Default, don't care about angle
 		return 0;
 	}
 }
 
 float navigation_direction_regulation(float angleOffset)
 {
+	// ---------------------------------- Skum funktion ----------------------------------- (Jonas förklara...)
+	// Är positiv riktning åt vänster???
+	// Ska vi inte reglera om vi närmar oss en vägg framför?
+	
 	int d;
-	if(gAlgorithm && navigation_get_sensor(4) > CORRIDOR_WIDTH)
+	if(navigation_get_sensor(4) > CORRIDOR_WIDTH)
 	{
-		d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
+		if(gAlgorithm)
+		{
+			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
+		} else {
+			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
+		}
+		
+		if(abs(d) < ACCEPTABLE_DISTANCE_OFFSET)
+		{
+			return 0;
+		}
+		else
+		{
+			float dir = atanf(d * gKp);
+			if(dir < 0)
+			{
+				dir += 2*PI;
+			} else if(dir >= 2*PI)
+			{
+				dir -= 2*PI;
+			}
+			// Dir is between 0 and 2*PI radians
+			return dir;
+		}
 	}
-	else if (navigation_get_sensor(4) > CORRIDOR_WIDTH)
-	{
-		d = (CORRIDOR_WIDTH - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset));
-	}
-	else
-	{
-		return 0;
-	}
-	if((CORRIDOR_WIDTH / 2 - d) < ACCEPTABLE_DISTANCE_OFFSET)
-	{
-		return 0;
-	}
-	else
-	{
-		return atanf((CORRIDOR_WIDTH / 2 - d) * gKp);
-	}
+	return 0;
 }
 
 uint8_t navigation_check_left_turn()
 {
-	if(navigation_get_sensor(0) > CORRIDOR_WIDTH && navigation_get_sensor(2) > CORRIDOR_WIDTH)
+	if(navigation_get_sensor(0) >= CORRIDOR_WIDTH && navigation_get_sensor(2) >= CORRIDOR_WIDTH)
 	{
 		return 2;
 	}
-	else if(navigation_get_sensor(0) > CORRIDOR_WIDTH)
+	else if(navigation_get_sensor(0) >= CORRIDOR_WIDTH)
 	{
 		return 1;
 	}
@@ -187,11 +204,11 @@ uint8_t navigation_check_left_turn()
 
 uint8_t navigation_check_right_turn()
 {
-	if(navigation_get_sensor(1) > CORRIDOR_WIDTH && navigation_get_sensor(3) > CORRIDOR_WIDTH)
+	if(navigation_get_sensor(1) >= CORRIDOR_WIDTH && navigation_get_sensor(3) >= CORRIDOR_WIDTH)
 	{
 		return 2;
 	}
-	else if(navigation_get_sensor(1) > CORRIDOR_WIDTH)
+	else if(navigation_get_sensor(1) >= CORRIDOR_WIDTH)
 	{
 		return 1;
 	}
@@ -215,9 +232,9 @@ uint8_t navigation_detect_low_pass_obsticle()
 
 uint8_t navigation_dead_end(float angleOffset)
 {
-	if(navigation_get_sensor(0) < (CORRIDOR_WIDTH/2 + 20) 
-		&& navigation_get_sensor(1) < (CORRIDOR_WIDTH/2 + 20)
-		&& navigation_get_sensor(4) < (CORRIDOR_WIDTH/2 - 10)
+	if(navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 20)
+		&& navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 20)
+		&& navigation_get_sensor(4) < (CORRIDOR_WIDTH / 2 - 10)
 		&& fabs(angleOffset) < ACCEPTABLE_OFFSET_ANGLE)
 	{
 		return 1;

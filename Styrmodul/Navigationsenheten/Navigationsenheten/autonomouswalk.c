@@ -14,10 +14,10 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define MAX_ROTATION_CLOCKWISE 90
-#define MAX_ROTATION_COUNTER_CLOCKWISE 10
+#define MAX_ROTATION_CLOCKWISE 10
+#define MAX_ROTATION_COUNTER_CLOCKWISE 90
 #define MAX_ROTATION_RADIANS 3.1415/6
-#define STEPPING_TIME 2000
+#define STEPPING_TIME 200
 
 //Variable for the speed parameter in movement commands. 
 static uint8_t gSpeed = 80;
@@ -135,10 +135,6 @@ void walk_forward()
 		adjustmentRotation = 0;
 	}
 	int adjustmentDirection = 90 * directionCompensationAngle/(2*PI);
-	if(adjustmentDirection < 0)
-	{
-		adjustmentDirection = 90 + adjustmentDirection;
-	}
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Taking a step.");
@@ -149,10 +145,9 @@ void walk_forward()
 
 void autonomouswalk_walk()
 {
-	uint8_t leftSideAlgorithm = navigation_left_algorithm();
-	if(leftSideAlgorithm)
+	if(navigation_left_algorithm())
 	{
-		if(navigation_check_left_turn(navigation_get_sensor(0), navigation_get_sensor(2)) == 2)
+		if(navigation_check_left_turn() == 2)
 		{
 			turn_left();
 		}
@@ -160,18 +155,18 @@ void autonomouswalk_walk()
 		{
 			walk_forward();
 		}
-		else if(navigation_check_right_turn(navigation_get_sensor(1), navigation_get_sensor(3)) == 2)
+		else if(navigation_check_right_turn() == 2)
 		{
 			turn_right();
 		}
 		else
 		{
-			turn_around(navigation_get_sensor(4));
+			turn_around();
 		}
 	}
 	else
 	{
-		if(navigation_check_right_turn(navigation_get_sensor(1), navigation_get_sensor(3)) == 2)
+		if(navigation_check_right_turn() == 2)
 		{
 			turn_left();
 		}
@@ -179,7 +174,7 @@ void autonomouswalk_walk()
 		{
 			walk_forward();
 		}
-		else if(navigation_check_left_turn(navigation_get_sensor(0), navigation_get_sensor(2)) == 2)
+		else if(navigation_check_left_turn() == 2)
 		{
 			turn_right();
 		}

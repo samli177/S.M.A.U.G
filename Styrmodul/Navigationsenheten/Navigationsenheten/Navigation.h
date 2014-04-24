@@ -3,12 +3,12 @@
 
 #include <avr/io.h>
 
-#define DISTANCE_FRONT_TO_BACK 400
-#define DISTANCE_MIDDLE_TO_SIDE 200
-#define CORRIDOR_WIDTH 80
-#define ACCEPTABLE_OFFSET_ANGLE 0.2
-#define ACCEPTABLE_DISTANCE_OFFSET 5
-#define HEIGHT_LIMIT 100
+#define DISTANCE_FRONT_TO_BACK 14.5   // cm
+#define DISTANCE_MIDDLE_TO_SIDE 7.5   // cm
+#define CORRIDOR_WIDTH 80             // cm
+#define ACCEPTABLE_OFFSET_ANGLE 0.2   // radians
+#define ACCEPTABLE_DISTANCE_OFFSET 5  // cm
+#define HEIGHT_LIMIT 100              // cm
 #define PI 3.14159265
 
 /**

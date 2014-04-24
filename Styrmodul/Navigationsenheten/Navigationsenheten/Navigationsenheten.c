@@ -27,13 +27,11 @@ int main(void)
 	init_counters();
 	DDRA |= (1<<PORTA0 | 1<<PORTA1);
 	
-	_delay_ms(1000);
-	USART_send_command_parameters(0,50,100);
+	_delay_ms(5000);
 	
     while(1)
     {
-		
-		//navigation_set_autonomous_walk(TWI_get_autonom_settings());
+		navigation_set_autonomous_walk(1 /*TWI_get_autonom_settings()*/);
 		
 		/*
 		_delay_ms(500);
