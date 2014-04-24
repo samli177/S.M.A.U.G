@@ -332,7 +332,6 @@ void USART_DecodeRxFIFO()
 	
 	while(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
 	{
-		
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{

@@ -26,6 +26,10 @@ int main(void)
 	TWI_init(ST_ADDRESS);
 	init_counters();
 	DDRA |= (1<<PORTA0 | 1<<PORTA1);
+	
+	_delay_ms(1000);
+	USART_send_command_parameters(0,50,100);
+	
     while(1)
     {
 		
