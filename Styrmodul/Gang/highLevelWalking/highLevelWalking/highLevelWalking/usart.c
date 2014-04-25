@@ -385,7 +385,7 @@ ISR (USART0_RX_vect)
 			}
 			
 			
-			USART_Bounce();
+			//USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)

@@ -23,22 +23,22 @@
 
 // 0 means use a right side algorithm.
 // 1 means use a left side algorithm.
-static uint8_t gAlgorithm = 1;
+uint8_t gAlgorithm = 1;
 
 //A regulation parameter to determine how 
 //hard to punish offset. Small Kp => small punishment.
-static float gKp = 0.1;
+float gKp = 0.1;
 
 // 0 means autonomous walk is disabled.
 // 1 means autonomous walk is enabled.
-static uint8_t gAutonomousWalk = 0;
+uint8_t gAutonomousWalk = 0;
 
 // Used to take the median of the most recent measurements.
-static uint8_t sensorBuffer[8][sensorBufferSize];
-static uint8_t medianBuffer[8];
+uint8_t sensorBuffer[8][sensorBufferSize];
+uint8_t medianBuffer[8];
 
 // A help variable to be used in fill_buffer().
-static uint8_t currentBufferLine = 0;
+uint8_t currentBufferLine = 0;
 
 //------------- Internal declarations ---------------
 
@@ -263,18 +263,4 @@ void navigation_fill_buffer()
 uint8_t navigation_get_sensor(int sensorNr)
 {
 	return medianBuffer[sensorNr];
-}
-
-// -------------- COUNTERS/TIMERS interrupt vectors ----------------
-
-ISR(TIMER1_COMPA_vect)
-{
-	if(TWI_sensor_flag())
-	navigation_fill_buffer();
-	TCNT1 = 0;
-}
-
-ISR(TIMER3_COMPA_vect)
-{
-	TCNT3 = 0;
 }

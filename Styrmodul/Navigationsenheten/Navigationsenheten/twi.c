@@ -524,6 +524,7 @@ void stop_twi()
 
 void reset_TWI()
 {
+	currentInstruction = 255;
 	TWCR |= (1<<TWINT) | (1<<TWEA);
 }
 

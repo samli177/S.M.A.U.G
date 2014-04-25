@@ -25,6 +25,9 @@ void USART_SendMessage(char msg[]);
 void USART_SendValue(uint8_t msg[]);
 void USART_SendSensors();
 uint8_t USART_DecodeMessageRxFIFO();
+uint8_t USART_DecodeCommandRxFIFO();
+uint8_t USART_DecodeParametersRxFIFO();
+uint8_t USART_DecodeAutonomRxFIFO();
 void USART_DecodeRxFIFO();
 void USART_Bounce();
 

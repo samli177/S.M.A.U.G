@@ -48,7 +48,6 @@ int main(void)
 			sensors_reset_flag();
 			TWI_send_sensors(sensors_get_data(), 0);
 		}
-		//TWI_send_autonom_settings(C_ADRESS, 5);
 	}
 }
 

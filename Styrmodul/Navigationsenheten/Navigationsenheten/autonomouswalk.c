@@ -14,17 +14,17 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define MAX_ROTATION_CLOCKWISE 10
-#define MAX_ROTATION_COUNTER_CLOCKWISE 90
+#define MAX_ROTATION_CLOCKWISE 30
+#define MAX_ROTATION_COUNTER_CLOCKWISE 70
 #define MAX_ROTATION_RADIANS 3.1415/6
 #define STEPPING_TIME 200
 
 //Variable for the speed parameter in movement commands. 
-static uint8_t gSpeed = 80;
+uint8_t gSpeed = 20;
 
 //Variable to decide if status messages are to be
 //sent back to the PC.
-static uint8_t gStatus = 0;
+uint8_t gStatus = 1;
 
 void autonomouswalk_set_speed(uint8_t speed)
 {
@@ -60,7 +60,7 @@ void turn_left()
 		{
 			TWI_send_string(C_ADDRESS, "Rotating left.");
 		}
-		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, gSpeed);
+		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
 	}
 	for(int i = 0; i < 3; ++i)
@@ -83,7 +83,7 @@ void turn_right()
 		{
 			TWI_send_string(C_ADDRESS, "Rotating right.");
 		}
-		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, gSpeed);
+		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
 	}
 	for(int i = 0; i < 3; ++i)
@@ -104,7 +104,7 @@ void turn_around()
 		{
 			TWI_send_string(C_ADDRESS, "Turning around.");
 		}
-		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, gSpeed);
+		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
 	}
 	if(gStatus)
