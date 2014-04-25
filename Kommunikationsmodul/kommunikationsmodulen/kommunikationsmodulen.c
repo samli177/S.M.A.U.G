@@ -40,7 +40,7 @@ int main(void)
 		
 		USART_DecodeRxFIFO();
 		USART_SendSensors();
-		
+		decode_message_TwiFIFO();
 		// TODO: put this on timer
 		//if(TWI_send_status(ST_ADRESS))
 			//PORTA ^= (1<<PORTA1);
@@ -64,7 +64,6 @@ void init()
 
 ISR(TIMER1_COMPA_vect)
 {
-	decode_message_TwiFIFO();
 	TCNT1 = 0;
 }
 

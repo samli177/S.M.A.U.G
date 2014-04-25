@@ -524,7 +524,6 @@ void stop_twi()
 
 void reset_TWI()
 {
-	currentInstruction = 255;
 	TWCR |= (1<<TWINT) | (1<<TWEA);
 }
 
@@ -864,6 +863,7 @@ ISR(TWI_vect)
 			else if (CONTROL == DATA_GENERAL)
 			{
 				get_sensor_from_bus();
+				currentInstruction = 255;
 			}
 			else if (CONTROL == STOP)
 			{

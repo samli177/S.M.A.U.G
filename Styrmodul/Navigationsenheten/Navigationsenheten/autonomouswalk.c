@@ -14,10 +14,10 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define MAX_ROTATION_CLOCKWISE 30
-#define MAX_ROTATION_COUNTER_CLOCKWISE 70
+#define MAX_ROTATION_CLOCKWISE 70
+#define MAX_ROTATION_COUNTER_CLOCKWISE 30
 #define MAX_ROTATION_RADIANS 3.1415/6
-#define STEPPING_TIME 200
+#define STEPPING_TIME 2000
 
 //Variable for the speed parameter in movement commands. 
 uint8_t gSpeed = 20;
@@ -54,11 +54,11 @@ void turn_left()
 	}
 	walk_forward();
 	_delay_ms(STEPPING_TIME);
-	while(navigation_get_sensor(4) < CORRIDOR_WIDTH && navigation_get_sensor(5) > (CORRIDOR_WIDTH/2))
+	while(navigation_get_sensor(4) < (CORRIDOR_WIDTH / 2) || ((navigation_get_sensor(1) + navigation_get_sensor(3)) > (CORRIDOR_WIDTH - 10) && navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2)))
 	{
 		if(gStatus)
 		{
-			TWI_send_string(C_ADDRESS, "Rotating left.");
+			//TWI_send_string(C_ADDRESS, "Rotating left.");
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
@@ -77,11 +77,11 @@ void turn_right()
 	}
 	walk_forward();
 	_delay_ms(STEPPING_TIME);
-	while(navigation_get_sensor(4) < CORRIDOR_WIDTH && navigation_get_sensor(5) > (CORRIDOR_WIDTH/2))
+	while(navigation_get_sensor(4) < (CORRIDOR_WIDTH / 2) || navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2))
 	{
 		if(gStatus)
 		{
-			TWI_send_string(C_ADDRESS, "Rotating right.");
+			//TWI_send_string(C_ADDRESS, "Rotating right.");
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
@@ -98,18 +98,18 @@ void turn_around()
 	{
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
-	while (navigation_get_sensor(4) < CORRIDOR_WIDTH)
+	while(navigation_get_sensor(4) < (CORRIDOR_WIDTH / 2) || (navigation_get_sensor(1) + navigation_get_sensor(3)) > (CORRIDOR_WIDTH - 10))
 	{
 		if(gStatus)
 		{
-			TWI_send_string(C_ADDRESS, "Turning around.");
+			//TWI_send_string(C_ADDRESS, "Turning around.");
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
 	}
 	if(gStatus)
 	{
-		TWI_send_string(C_ADDRESS, "Corridor ahead, done turning around.");
+		//TWI_send_string(C_ADDRESS, "Corridor ahead, done turning around.");
 	}
 }
 
@@ -117,13 +117,13 @@ void walk_forward()
 {
 	if(gStatus)
 	{
-		TWI_send_string(C_ADDRESS, "Finding regulation parameters.");
+		//TWI_send_string(C_ADDRESS, "Finding regulation parameters.");
 	}
 	float angleOffset = navigation_angle_offset();
 	float directionCompensationAngle = navigation_direction_regulation(angleOffset);
 	if(gStatus)
 	{
-		TWI_send_string(C_ADDRESS, "Found regulation parameters.");
+		//TWI_send_string(C_ADDRESS, "Found regulation parameters.");
 	}
 	int adjustmentRotation = (50 + 50 * angleOffset/MAX_ROTATION_RADIANS);
 	if (adjustmentRotation >= 100)
@@ -137,7 +137,7 @@ void walk_forward()
 	int adjustmentDirection = 90 * directionCompensationAngle/(2*PI);
 	if(gStatus)
 	{
-		TWI_send_string(C_ADDRESS, "Taking a step.");
+		//TWI_send_string(C_ADDRESS, "Taking a step.");
 	}
 	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
 	_delay_ms(STEPPING_TIME);

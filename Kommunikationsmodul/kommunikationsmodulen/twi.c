@@ -717,7 +717,6 @@ uint8_t decode_message_TwiFIFO()
 		msg[i] = *character;
 	}
 	
-	
 	USART_SendMessage(msg);
 	
 	return 0;
@@ -793,6 +792,7 @@ ISR(TWI_vect)
 			else if (CONTROL == DATA_GENERAL)
 			{
 				get_sensor_from_bus();
+				currentInstruction = 255;
 			}
 			else if (CONTROL == STOP)
 			{
