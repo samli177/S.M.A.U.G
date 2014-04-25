@@ -1493,7 +1493,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void sensorUpdate(byte[] data) {
         for (int sensor = 0; sensor < data.length - 1; sensor++) {
-            long length = data[sensor];
+            int length = data[sensor];
+            if (length < 0) {
+                length += 256;
+            }
             switch (sensor) {
                 case 0:
                     ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_FRONT);

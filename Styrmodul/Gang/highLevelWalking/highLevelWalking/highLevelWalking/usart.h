@@ -27,6 +27,7 @@ void USART_SendSensors();
 uint8_t USART_DecodeMessageRxFIFO();
 void USART_DecodeRxFIFO();
 void USART_Bounce();
+void USART_SendValue(float flo);
 
 uint8_t USART_getRotation();
 uint8_t USART_getSpeed();

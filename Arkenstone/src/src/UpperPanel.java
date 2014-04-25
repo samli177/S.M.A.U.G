@@ -31,22 +31,24 @@ public class UpperPanel extends JPanel {
         ultraSound = new ArrayList<>();
     }
 
-    public void updatePoints(float length, float angle, MainWindow.SENSOR sensor) {
-        if (sensor == MainWindow.SENSOR.VERTICAL) {
-            Point2D newPoint = new Point2D.Float(angle, length);
-            vertical.add(newPoint);
-            if (vertical.size() > MAX_POINTS) {
-                ArrayList<Point2D> temp = new ArrayList<>();
-                for (int i = 1; i < vertical.size(); i++) {
-                    temp.add(vertical.get(i));
-                }
+    public synchronized void updatePoints(float length, float angle, MainWindow.SENSOR sensor) {
+        switch (sensor) {
+            case VERTICAL:
+                Point2D newPoint = new Point2D.Float(angle, length);
+                vertical.add(newPoint);
+                if (vertical.size() > MAX_POINTS) {
+                    ArrayList<Point2D> temp = new ArrayList<>();
+                    for (int i = 1; i < vertical.size(); i++) {
+                        temp.add(vertical.get(i));
+                    }
 
-                vertical = (ArrayList<Point2D>) temp.clone();
-                temp.clear();
-            }
-        } else if (sensor == MainWindow.SENSOR.ULTRA_SOUND) {
-            ultraSound.add(length);
-                if(ultraSound.size() > MAX_POINTS){
+                    vertical = (ArrayList<Point2D>) temp.clone();
+                    temp.clear();
+                }
+                break;
+            case ULTRA_SOUND:
+                ultraSound.add(length);
+                if (ultraSound.size() > MAX_POINTS) {
                     ArrayList<Float> temp = new ArrayList<>();
                     for (int i = 1; i < ultraSound.size(); i++) {
                         temp.add(ultraSound.get(i));
@@ -55,10 +57,11 @@ public class UpperPanel extends JPanel {
                     ultraSound = (ArrayList<Float>) temp.clone();
                     temp.clear();
                 }
+                break;
         }
     }
 
-    protected void paintComponent(Graphics g) {
+    protected synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         g.setColor(Color.red);
@@ -75,9 +78,9 @@ public class UpperPanel extends JPanel {
             l = (float) pnt.getY();
             g.fillOval(x0 + (int) (l * Math.cos(Math.toRadians(a))), y0 + (int) (l * Math.sin(Math.toRadians(a))), 5, 5);
         }
-        for(int i = 0; i < ultraSound.size(); i++){
+        for (int i = 0; i < ultraSound.size(); i++) {
             l = (float) ultraSound.get(ultraSound.size() - 1 - i);
-            g.fillOval(x0 + (int)(l - Math.cos(Math.toRadians(70))* i * 3), y0 - 40 - (int) (Math.sin(Math.toRadians(70))* i * 3), 5, 5);
+            g.fillOval(x0 + (int) (l - Math.cos(Math.toRadians(70)) * i * 3), y0 - 40 - (int) (Math.sin(Math.toRadians(70)) * i * 3), 5, 5);
         }
     }
 }

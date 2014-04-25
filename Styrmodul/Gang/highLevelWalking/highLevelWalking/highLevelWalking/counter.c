@@ -6,7 +6,7 @@
  */
 
 
-#define F_CPU 18432000UL
+#define F_CPU 16000000
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -14,7 +14,6 @@
 #include <stdbool.h>
 #include "fifo.h"
 #include "usart.h"
-#include "twi.h"
 #include "counter.h"
 
 
@@ -38,16 +37,31 @@ void init_counters()
 
 void set_counter_1(uint16_t delay)
 {
-	delay = 18.000 * delay;
+	delay = 15.625 * delay;
 	OCR1A = delay;
 }
 
 void set_counter_2(uint16_t delay)
 {
-	delay = 18.000 * delay;
+	delay = 15.625 * delay;
 	OCR3A = delay;
 }
 
+void reset_counter_1()
+{
+	TCNT1 = 0;
+}
 
+void reset_counter_3()
+{
+	TCNT3 = 0;
+}
 
 //---------------------------------------------------------------------------------------
+
+
+
+ISR(TIMER3_COMPA_vect)
+{
+	TCNT3 = 0;
+}

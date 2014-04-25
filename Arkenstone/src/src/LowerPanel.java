@@ -24,6 +24,7 @@ public class LowerPanel extends JPanel {
     ArrayList<Float> leftBack;
     ArrayList<Float> rightBack;
     ArrayList<Float> front;
+    ArrayList<Float> back;
 
     int xL = 326 - 30;
     int yU = 214 - 40;
@@ -37,9 +38,10 @@ public class LowerPanel extends JPanel {
         leftBack = new ArrayList<>();
         rightBack = new ArrayList<>();
         front = new ArrayList<>();
+        back = new ArrayList<>();
     }
 
-    public void updatePoints(float length, MainWindow.SENSOR sensor) {
+    public synchronized void updatePoints(float length, MainWindow.SENSOR sensor) {
         switch (sensor) {
             case LEFT_FRONT:
                 leftFront.add(length);
@@ -101,11 +103,23 @@ public class LowerPanel extends JPanel {
                     temp.clear();
                 }
                 break;
+            case BACK:
+                back.add(length);
+                if(back.size() > MAX_POINTS){
+                    ArrayList<Float> temp = new ArrayList<>();
+                    for (int i = 1; i < back.size(); i++) {
+                        temp.add(back.get(i));
+                    }
+
+                    back = (ArrayList<Float>) temp.clone();
+                    temp.clear();
+                }
+                break;
         }
 
     }
 
-    protected void paintComponent(Graphics g) {
+    protected synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         g.setColor(Color.red);

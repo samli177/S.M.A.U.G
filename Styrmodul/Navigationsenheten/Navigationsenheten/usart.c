@@ -231,10 +231,12 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	
 	// TODO: send to relevant party... the display for now
-	TWI_send_string_fixed_length(S_ADDRESS, msg, length);
-	
+	TWI_send_string_fixed_length(C_ADDRESS, msg, length);
+
 	return 0;
 }
+
+
 
 uint8_t USART_DecodeCommandRxFIFO()
 {
@@ -288,6 +290,47 @@ uint8_t USART_DecodeCommandRxFIFO()
 	
 }
 
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];
+};
+
+uint8_t USART_DecodeValueFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	union Union_floatcast foo;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 4)
+	{
+		for(int i = 0; i < 4; ++i)
+		{
+				if(FifoRead(gRxFIFO, data))
+				{
+					//send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
+					return 1; // error
+				}
+				
+			foo.s[i] = *data;
+			TWI_send_float(C_ADDRESS, *data);		
+		}
+	TWI_send_float(C_ADDRESS, foo.f);
+	PORTA ^= (1<<PORTA0);
+	return 0;
+	}
+	
+	return 1;
+}
+
 
 void USART_DecodeRxFIFO()
 {
@@ -295,6 +338,7 @@ void USART_DecodeRxFIFO()
 	
 	while(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
 	{
+		
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{
@@ -311,6 +355,13 @@ void USART_DecodeRxFIFO()
 				if(USART_DecodeCommandRxFIFO())
 				{
 					// TODO: flush buffet?
+					return;
+				}
+			}
+			case('V'):
+			{
+				if(USART_DecodeValueFIFO())
+				{
 					return;
 				}
 			}
@@ -334,8 +385,6 @@ ISR (USART0_RX_vect)
 {
 	uint8_t data;
 	data = UDR0; // read data from buffer TODO: add check for overflow
-	
-	
 	
 	if(data == 0x7e)
 	{
@@ -370,6 +419,18 @@ ISR (USART0_RX_vect)
 		++gRxBufferIndex;
 	}
 	
+	
+}
+
+void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed)
+{
+	gTxPayload[0] = direction;
+	gTxPayload[1] = rotation;
+	gTxPayload[2] = speed;
+	
+	
+	USART_SendPacket('C', 3);
+	// clear flag
 	
 }
 

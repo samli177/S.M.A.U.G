@@ -1,6 +1,5 @@
 /* Display.c
- * Include this file to get functions
- * for writing to the display.
+ * Defines functions for the display.
  * 
  * Created: 2014-04-02
  * Martin, Per
@@ -13,12 +12,13 @@
 #include <string.h>
 #include "display.h"
 
-static void toggle_enable(void);
-static int display_busy(void);
-static void print_int(int);
-static void print_digit(int);
+static void toggle_enable();
+static int display_busy();
+static void print_int(int integer);
+static void print_digit(int digit);
+static uint8_t display_read_adress();
 
-void display_init(void)
+void display_init()
 {
 	DDRB = 255;
 	DDRD |= 0b11100000;
@@ -39,7 +39,7 @@ void display_init(void)
 	toggle_enable();
 }
 
-void toggle_enable(void)
+void toggle_enable()
 {
 	PORTD |= (1<<PORTD6);
 	_delay_ms(10);
@@ -70,7 +70,7 @@ void display_char(char c)
 	}
 }
 
-int display_busy(void)
+int display_busy()
 {
 	PORTB = 0;
 	DDRB = 0;

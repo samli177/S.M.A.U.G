@@ -22,7 +22,7 @@ uint8_t gRxBuffer [517];
 uint16_t gRxBufferIndex = 0;
 uint16_t gInvertNextFlag = 0;
 
-uint8_t gRotation, gSpeed, gDirection;
+uint8_t gRotation=50, gSpeed=0, gDirection=0;
 
 // define FIFO for received packets (USART)
 MK_FIFO(4096); // use 4 kB
@@ -211,6 +211,26 @@ void USART_SendSensors()
 	USART_SendPacket('S', 9);
 }
 
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];
+};
+
+void USART_SendValue(float flo)
+{
+	union Union_floatcast foo;
+	foo.f = flo;
+	
+	for(int i = 0; i < 4; ++i)
+	{
+		gTxPayload[i] = foo.s[i]; 
+	}
+	
+	USART_SendPacket('V', 4);
+	
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	uint8_t *len = 0;
@@ -250,6 +270,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 
 uint8_t USART_DecodeCommandRxFIFO()
 {
+	
 	uint8_t *len = 0;
 	uint8_t *data = 0;
 	
@@ -311,7 +332,6 @@ void USART_DecodeRxFIFO()
 	
 	while(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
 	{
-		
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{

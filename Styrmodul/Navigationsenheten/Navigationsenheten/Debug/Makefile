@@ -36,8 +36,10 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
+../autonomouswalk.c \
 ../counter.c \
 ../fifo.c \
+../Navigation.c \
 ../Navigationsenheten.c \
 ../twi.c \
 ../usart.c
@@ -50,29 +52,37 @@ ASM_SRCS +=
 
 
 OBJS +=  \
+autonomouswalk.o \
 counter.o \
 fifo.o \
+Navigation.o \
 Navigationsenheten.o \
 twi.o \
 usart.o
 
 OBJS_AS_ARGS +=  \
+autonomouswalk.o \
 counter.o \
 fifo.o \
+Navigation.o \
 Navigationsenheten.o \
 twi.o \
 usart.o
 
 C_DEPS +=  \
+autonomouswalk.d \
 counter.d \
 fifo.d \
+Navigation.d \
 Navigationsenheten.d \
 twi.d \
 usart.d
 
 C_DEPS_AS_ARGS +=  \
+autonomouswalk.d \
 counter.d \
 fifo.d \
+Navigation.d \
 Navigationsenheten.d \
 twi.d \
 usart.d
@@ -88,6 +98,10 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 

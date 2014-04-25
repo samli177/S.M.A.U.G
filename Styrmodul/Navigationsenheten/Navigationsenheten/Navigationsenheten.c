@@ -16,38 +16,8 @@
 #include "twi.h"
 #include "usart.h"
 #include "counter.h"
-
-int sensorBufferSize = 3;
-uint8_t sensorBuffer[8][3]; // sensorBufferSize = 3!!
-uint8_t currentBufferLine;
-
-int compare (const void * a, const void * b)
-{
-	return ( *(uint8_t*)a - *(uint8_t*)b );
-}
-
-uint8_t get_sensor(int sensorNr)
-{
-	uint8_t temp[sensorBufferSize];
-	for(int i = 0; i < sensorBufferSize; ++i)
-	{
-		temp[i] = sensorBuffer[sensorNr][i];
-	}
-	qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
-	return temp[sensorBufferSize / 2];
-}
-
-void fill_buffer()
-{
-	for(int i = 0; i < 8; ++i)
-	{
-		sensorBuffer[i][currentBufferLine] = TWI_get_sensor(i);
-	}
-	if(currentBufferLine == sensorBufferSize - 1)
-		currentBufferLine = 0;
-	else
-		currentBufferLine += 1;
-}
+#include "Navigation.h"
+#include "autonomouswalk.h"
 
 int main(void)
 {
@@ -56,8 +26,15 @@ int main(void)
 	TWI_init(ST_ADDRESS);
 	init_counters();
 	DDRA |= (1<<PORTA0 | 1<<PORTA1);
+	
+	_delay_ms(1000);
+	USART_send_command_parameters(0,50,100);
+	
     while(1)
     {
+		
+		//navigation_set_autonomous_walk(TWI_get_autonom_settings());
+		
 		/*
 		_delay_ms(500);
 		//TWI_send_autonom_settings(C_ADRESS, 4);
@@ -70,26 +47,32 @@ int main(void)
 		TWI_send_string(S_ADRESS, "Hue");
 		*/
 		
-		if(TWI_command_flag()){
-			PORTA ^= (1<<PORTA1);
-			USART_SendCommand();
+		//USART_send_command_parameters(0,50,100);
+		//_delay_ms(1000);
+		
+		if(navigation_autonomous_walk() == 1)
+		{
+			uint8_t sensors[6];
+			sensors[0]=navigation_get_sensor(0);
+			sensors[1]=navigation_get_sensor(1);
+			sensors[2]=navigation_get_sensor(2);
+			sensors[3]=navigation_get_sensor(3);
+			sensors[4]=navigation_get_sensor(4);
+			sensors[5]=navigation_get_sensor(5);
+			autonomouswalk_walk(sensors);
 		}
-			
+		else
+		{
+			if(TWI_command_flag()){
+				PORTA ^= (1<<PORTA1);
+				USART_SendCommand();
+			}
+		}
+		USART_DecodeRxFIFO();
     }
 }
 
 //---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
-
-ISR(TIMER1_COMPA_vect)
-{
-	if(TWI_sensor_flag())
-		fill_buffer();
-	TCNT1 = 0;
-}
-
-ISR(TIMER2_COMPA_vect)
-{
-	TCNT2 = 0;
-}
-
+// Redan definierade i navigation.c
 //---------------------------------------------------------------------------------------
+
