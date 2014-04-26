@@ -422,4 +422,16 @@ ISR (USART0_RX_vect)
 	
 }
 
+void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed)
+{
+	gTxPayload[0] = direction;
+	gTxPayload[1] = rotation;
+	gTxPayload[2] = speed;
+	
+	
+	USART_SendPacket('C', 3);
+	// clear flag
+	
+}
+
 // -- END USART stuff --

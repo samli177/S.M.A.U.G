@@ -17,10 +17,9 @@
 
 static uint8_t gSelectedSensor = 0;
 static uint8_t gSensorBuffer[8];
-
-static float IR_short[13][2];
-static float IR_long[15][2];
-static bool sensor_data_flag = false;
+static float IRShort[13][2];
+static float IRLong[15][2];
+static bool sensorDataFlag = false;
 
 static void select_sensor(int sensor);
 static void start_ul_sensor();
@@ -43,113 +42,113 @@ void sensors_init()
 void init_tables()
 {
 	// 10-80 cm
-	IR_short[0][0] = 3.15;
-	IR_short[0][1] = 6;
+	IRShort[0][0] = 3.15;
+	IRShort[0][1] = 6;
 	
-	IR_short[1][0] = 2.98;
-	IR_short[1][1] = 7;
+	IRShort[1][0] = 2.98;
+	IRShort[1][1] = 7;
 
-	IR_short[2][0] = 2.75;
-	IR_short[2][1] = 8;
+	IRShort[2][0] = 2.75;
+	IRShort[2][1] = 8;
 	
-	IR_short[3][0] = 2.31;
-	IR_short[3][1] = 10;
+	IRShort[3][0] = 2.31;
+	IRShort[3][1] = 10;
 	
-	IR_short[4][0] = 1.64;
-	IR_short[4][1] = 15;
+	IRShort[4][0] = 1.64;
+	IRShort[4][1] = 15;
 	
-	IR_short[5][0] = 1.31;
-	IR_short[5][1] = 20;
+	IRShort[5][0] = 1.31;
+	IRShort[5][1] = 20;
 	
-	IR_short[6][0] = 1.08;
-	IR_short[6][1] = 25;
+	IRShort[6][0] = 1.08;
+	IRShort[6][1] = 25;
 	
-	IR_short[7][0] = 0.92;
-	IR_short[7][1] = 30;
+	IRShort[7][0] = 0.92;
+	IRShort[7][1] = 30;
 	
-	IR_short[8][0] = 0.74;
-	IR_short[8][1] = 40;
+	IRShort[8][0] = 0.74;
+	IRShort[8][1] = 40;
 	
-	IR_short[9][0] = 0.61;
-	IR_short[9][1] = 50;
+	IRShort[9][0] = 0.61;
+	IRShort[9][1] = 50;
 	
-	IR_short[10][0] = 0.51;
-	IR_short[10][1] = 60;
+	IRShort[10][0] = 0.51;
+	IRShort[10][1] = 60;
 	
-	IR_short[11][0] = 0.45;
-	IR_short[11][1] = 70;
+	IRShort[11][0] = 0.45;
+	IRShort[11][1] = 70;
 	
-	IR_short[12][0] = 0.41;
-	IR_short[12][1] = 80;
+	IRShort[12][0] = 0.41;
+	IRShort[12][1] = 80;
 	
 	// 20-150 cm
-	IR_long[0][0] = 2.75;
-	IR_long[0][1] = 15;
+	IRLong[0][0] = 2.75;
+	IRLong[0][1] = 15;
 	
-	IR_long[1][0] = 2.55;
-	IR_long[1][1] = 20;
+	IRLong[1][0] = 2.55;
+	IRLong[1][1] = 20;
 	
-	IR_long[2][0] = 2.00;
-	IR_long[2][1] = 30;
+	IRLong[2][0] = 2.00;
+	IRLong[2][1] = 30;
 	
-	IR_long[3][0] = 1.55;
-	IR_long[3][1] = 40;
+	IRLong[3][0] = 1.55;
+	IRLong[3][1] = 40;
 	
-	IR_long[4][0] = 1.25;
-	IR_long[4][1] = 50;
+	IRLong[4][0] = 1.25;
+	IRLong[4][1] = 50;
 	
-	IR_long[5][0] = 1.07;
-	IR_long[5][1] = 60;
+	IRLong[5][0] = 1.07;
+	IRLong[5][1] = 60;
 	
-	IR_long[6][0] = 0.85;
-	IR_long[6][1] = 70;
+	IRLong[6][0] = 0.85;
+	IRLong[6][1] = 70;
 	
-	IR_long[7][0] = 0.80;
-	IR_long[7][1] = 80;
+	IRLong[7][0] = 0.80;
+	IRLong[7][1] = 80;
 	
-	IR_long[8][0] = 0.75;
-	IR_long[8][1] = 90;
+	IRLong[8][0] = 0.75;
+	IRLong[8][1] = 90;
 	
-	IR_long[9][0] = 0.65;
-	IR_long[9][1] = 100;
+	IRLong[9][0] = 0.65;
+	IRLong[9][1] = 100;
 	
-	IR_long[10][0] = 0.60;
-	IR_long[10][1] = 110;
+	IRLong[10][0] = 0.60;
+	IRLong[10][1] = 110;
 	
-	IR_long[11][0] = 0.55;
-	IR_long[11][1] = 120;
+	IRLong[11][0] = 0.55;
+	IRLong[11][1] = 120;
 	
-	IR_long[12][0] = 0.50;
-	IR_long[12][1] = 130;
+	IRLong[12][0] = 0.50;
+	IRLong[12][1] = 130;
 	
-	IR_long[13][0] = 0.45;
-	IR_long[13][1] = 140;
+	IRLong[13][0] = 0.45;
+	IRLong[13][1] = 140;
 	
-	IR_long[14][0] = 0.42;
-	IR_long[14][1] = 150;
+	IRLong[14][0] = 0.42;
+	IRLong[14][1] = 150;
 }
 
 int voltage_to_mm_short(float voltage)
 {
-	if(voltage >= IR_short[0][0])
+	if(voltage >= IRShort[0][0])
 	{
-		return IR_short[0][1]*10;
-	} else if(voltage <= IR_short[12][0])
+		return IRShort[0][1]*10;
+	} else if(voltage <= IRShort[12][0])
 	{
-		return IR_short[12][1]*10;
+		return IRShort[12][1]*10;
 	}
 	
 	for(int i = 0; i < 13; ++i)
 	{
-		float prev = IR_short[i][0];
-		float next = IR_short[i+1][0];
+		float prev = IRShort[i][0];
+		float next = IRShort[i+1][0];
 		if(next == voltage)
 		{
-			return IR_short[i+1][1]*10;
+			return IRShort[i+1][1]*10;
 		} else if(prev > voltage && next < voltage)
 		{
-			int high = IR_short[i][1]*10;
-			int low = IR_short[i+1][1]*10;
+			int high = IRShort[i][1]*10;
+			int low = IRShort[i+1][1]*10;
 			int diff = high - low;
 			float diff_to_prev = prev - voltage;
 			float volt_diff = prev - next;
@@ -162,25 +161,25 @@ int voltage_to_mm_short(float voltage)
 
 int voltage_to_mm_long(float voltage)
 {
-	if(voltage >= IR_long[0][0])
+	if(voltage >= IRLong[0][0])
 	{
-		return IR_long[0][1]*10;
-	} else if(voltage <= IR_long[14][0])
+		return IRLong[0][1]*10;
+	} else if(voltage <= IRLong[14][0])
 	{
-		return IR_long[14][1]*10;
+		return IRLong[14][1]*10;
 	}
 	
 	for(int i = 0; i < 13; ++i)
 	{
-		float prev = IR_long[i][0];
-		float next = IR_long[i+1][0];
+		float prev = IRLong[i][0];
+		float next = IRLong[i+1][0];
 		if(next == voltage)
 		{
-			return IR_long[i+1][1]*10;
+			return IRLong[i+1][1]*10;
 		} else if(prev > voltage && next < voltage)
 		{
-			int high = IR_long[i][1]*10;
-			int low = IR_long[i+1][1]*10;
+			int high = IRLong[i][1]*10;
+			int low = IRLong[i+1][1]*10;
 			int diff = high - low;
 			float diff_to_prev = prev - voltage;
 			float volt_diff = prev - next;
@@ -308,12 +307,17 @@ void start_ul_sensor()
 
 bool sensors_sampling_done()
 {
-	return sensor_data_flag;
+	return sensorDataFlag;
 }
 
 void sensors_reset_flag()
 {
-	sensor_data_flag = false;
+	sensorDataFlag = false;
+}
+
+uint8_t* sensors_get_data()
+{
+	return gSensorBuffer;
 }
 
 
@@ -333,7 +337,7 @@ ISR(PCINT0_vect)
 	{
 		uint8_t UL = TCNT0;
 		gSensorBuffer[7] = UL;
-		sensor_data_flag = true;
+		sensorDataFlag = true;
 	}
 	sei();
 }

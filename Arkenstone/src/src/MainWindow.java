@@ -149,6 +149,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         jLabel17 = new javax.swing.JLabel();
         chosenControllerLabel = new javax.swing.JLabel();
         changeParametersButton = new javax.swing.JButton();
+        sendAutoSettingsButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         debugTextArea = new javax.swing.JTextArea();
@@ -392,19 +393,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         autoButtonGroup.add(autoLeftRadioButton);
         autoLeftRadioButton.setSelected(true);
         autoLeftRadioButton.setText("Vänsteralgoritm");
-        autoLeftRadioButton.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                autoLeftRadioButtonItemStateChanged(evt);
-            }
-        });
 
         autoButtonGroup.add(autoRightRadioButton);
         autoRightRadioButton.setText("Högeralgoritm");
-        autoRightRadioButton.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                autoRightRadioButtonItemStateChanged(evt);
-            }
-        });
 
         jLabel11.setText("COM port namn:");
 
@@ -471,6 +462,13 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             }
         });
 
+        sendAutoSettingsButton.setText("Skicka inställningar");
+        sendAutoSettingsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendAutoSettingsButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -487,34 +485,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                             .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addComponent(controllersComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(autoButton)
-                                .addGap(18, 18, 18)
-                                .addComponent(autoLeftRadioButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(autoRightRadioButton))
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(jLabel11)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(comNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(connectControllerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel17)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(chosenControllerLabel))
-                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(messageTextField)
                             .addComponent(sendMessageButton, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -528,7 +504,32 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(parameter3TextField, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING)))
-                            .addComponent(changeParametersButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(changeParametersButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(jLabel11)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(comNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(connectControllerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel17)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(chosenControllerLabel))
+                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(autoButton)
+                                .addGap(18, 18, 18)
+                                .addComponent(autoLeftRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(autoRightRadioButton)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(sendAutoSettingsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -538,7 +539,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(autoButton)
                     .addComponent(autoLeftRadioButton)
-                    .addComponent(autoRightRadioButton))
+                    .addComponent(autoRightRadioButton)
+                    .addComponent(sendAutoSettingsButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(1, 1, 1)
@@ -722,7 +724,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                             .addComponent(jRadioButton6))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(deleteDebugDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                            .addComponent(deleteDebugDataButton, javax.swing.GroupLayout.PREFERRED_SIZE, 127, Short.MAX_VALUE)
                             .addComponent(deleteAllDebugDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -862,18 +864,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             connect(comNameTextField.getText());
         }
     }//GEN-LAST:event_connectButtonActionPerformed
-
-    private void autoLeftRadioButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_autoLeftRadioButtonItemStateChanged
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
-            writeMessage("Vänsteralgoritm körs");
-        }
-    }//GEN-LAST:event_autoLeftRadioButtonItemStateChanged
-
-    private void autoRightRadioButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_autoRightRadioButtonItemStateChanged
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
-            writeMessage("Högeralgoritm körs");
-        }
-    }//GEN-LAST:event_autoRightRadioButtonItemStateChanged
 
     private void searchControllersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchControllersButtonActionPerformed
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
@@ -1062,6 +1052,24 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_sendDebugDataButtonActionPerformed
 
+    private void sendAutoSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendAutoSettingsButtonActionPerformed
+        byte data[] = new byte[1];
+        if(autoButton.isSelected()){
+            if(autoLeftRadioButton.isSelected()){
+                data[0] = 1;
+            } else {
+                data[0] = 2;
+            }
+        } else {
+            data[0] = 0;
+        }
+        if(sendData('A', data)){
+            writeMessage("Uppdaterade inställningar");
+        } else {
+            writeMessage("Kunde inte skicka!");
+        }
+    }//GEN-LAST:event_sendAutoSettingsButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1177,6 +1185,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JTextField parameter2TextField;
     private javax.swing.JTextField parameter3TextField;
     private javax.swing.JButton searchControllersButton;
+    private javax.swing.JButton sendAutoSettingsButton;
     private javax.swing.JButton sendDebugDataButton;
     private javax.swing.JButton sendMessageButton;
     private javax.swing.JTextField ultraSoundTextField;
@@ -1427,10 +1436,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                     chosenControllerLabel.setText("Ingen");
                 }
             }
-
-            // Sleep, can probably be longer
+            
             try {
-                Thread.sleep(50);
+                Thread.sleep(10);
             } catch (InterruptedException ex) {
                 System.out.println(ex);
             }
@@ -1449,6 +1457,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
 
         char tag = (char) message[0];
+        tag = Character.toUpperCase(tag);
         int length = message[1];
         byte data[] = new byte[length];
         for (int i = 0; i < length; i++) {
@@ -1493,7 +1502,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void sensorUpdate(byte[] data) {
         for (int sensor = 0; sensor < data.length - 1; sensor++) {
-            long length = data[sensor];
+            int length = data[sensor];
+            if (length < 0) {
+                length += 256;
+            }
             switch (sensor) {
                 case 0:
                     ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_FRONT);
@@ -1567,10 +1579,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             strafe--;
         }
         if (keyControlPressed) {
-            rot++;
+            rot--;
         }
         if (keyZeroPressed) {
-            rot--;
+            rot++;
         }
 
         int direction = (int) Math.toDegrees(Math.atan2(walk, strafe)) - 90;

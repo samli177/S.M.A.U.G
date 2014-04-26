@@ -102,6 +102,9 @@ void TWI_init(uint8_t moduleAdress)
 			break;
 		}
 	}
+	command[0] = 0;
+	command[1] = 50;
+	command[2] = 0;
 }
 
 union Union_floatcast
