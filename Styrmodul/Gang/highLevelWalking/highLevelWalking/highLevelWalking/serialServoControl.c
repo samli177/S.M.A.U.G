@@ -32,8 +32,8 @@ void initServoSerial()
 	UBRR1H = (uint8_t) (((F_CPU / 16 / ServoBaudRate ) - 1)>>8);
 	UBRR1L = (uint8_t) ((F_CPU / 16 / ServoBaudRate ) - 1) ;
 	
-	//enable receiver and transmitter and disable interrupts
-	UCSR1B = (1<<RXEN1)|(1<<TXEN1);
+	//enable receiver and transmitter and enable interrupts
+	UCSR1B = (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1);
 	
 	//Frame format: 8data, no parity, 1 stop bit
 	UCSR1C = (1<<UCSZ10 | 1<<UCSZ11);
@@ -212,37 +212,34 @@ void servoTorqueLimit(uint8_t ID, uint16_t maxTorque)
 
 void servoRetrunLevel(uint8_t ID, uint8_t level)
 {
-	gServoParameters[0] = P_RETURN_LEVEL; // address for CW Angle Limit(L)
+	gServoParameters[0] = P_RETURN_LEVEL; 
 	gServoParameters[1] = level;
 	sendServoPacket(ID, INST_WRITE, 2);	
 }
 
 uint16_t servoGetPosition(uint8_t ID)
 {
-	gServoParameters[0] = P_PRESENT_POSITION_L;
-	gServoParameters[1] = 2; // read 2 bytes
-	sendServoPacket(ID, INST_READ, 2);
-	
-	servoRx;
-	
-	
 	uint16_t data = 0;
 	int pos;
 	
+	servoTx;
+	gNewPacketOnBuffer = 0;
+	gServoParameters[0] = P_PRESENT_POSITION_L;
+	gServoParameters[1] = 2; // read 2 bytes
+	sendServoPacket(ID, INST_PING, 0);
+	while(servoCheckTxReady() == 0) // wait until last byte has been transmitted
+	servoRx;
 
-	for(int i = 0; i < 8; ++i)
+	_delay_ms(1000); // receive packet
+
+
+	if(gNewPacketOnBuffer)
 	{
-		while ( !(UCSR1A & (1<<RXC1)) );
-		data = UDR1;
-		if(i == 5) 
-		{
-			pos = data;
-		} else if(i == 6)
-		{
-			pos = pos + (data << 8);
-		}
+		USART_SendMessage("weee");
+	}else 
+	{
+		USART_SendMessage("noo");
 	}
-	
 	servoTx;
 
 	return data;
@@ -253,6 +250,7 @@ uint8_t servoReceiveStatus()
 {
 	servoRx;
 	
+	
 	servoTx;
 	return 1;
 }
@@ -262,8 +260,11 @@ uint8_t servoReceiveStatus()
 
 // -- Interrupts --
 
+
+
 ISR (USART1_RX_vect)
 {
+	gNewPacketOnBuffer = 1;
 	uint8_t data;
 	data = UDR1; // read data from buffer TODO: add check for overflow
 	
@@ -325,4 +326,6 @@ ISR (USART1_RX_vect)
 			gServoRxReadMode = RM_WAIT_FOR_START;
 		}
 }
+
+
 

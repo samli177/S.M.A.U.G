@@ -416,10 +416,10 @@ int main(void)
 	DDRD |= (1<<PORTD5); //init LED
 	//servoTx;
 	
-	servoRetrunLevel(BROADCASTING_ID, 1); //turns off return packets
-	
 	sei();
 	initServoSerial(); //Init servos
+	servoRetrunLevel(BROADCASTING_ID, 1); //turns off return packets
+	
 	USART_init();
 	init_counters();
 	set_counter_1(10000);
@@ -433,11 +433,18 @@ int main(void)
 	moveLeg5too(x0_5, y0_5, z0, speed);
 	moveLeg6too(x0_6, y0_6, z0, speed);
 	
+	// ------TEMP-------
+	USART_SendMessage("gang reset");
 	
+	servoGetPosition(0);
+	//----------------------------
+
 	_delay_ms(5000);
 	
 	reset_counter_1();
 	set_counter_1(3000);
+	
+	
 	
     while(1)
     {
@@ -485,4 +492,5 @@ ISR(TIMER1_COMPA_vect)
 		move_to_std();
 	}
 	TCNT1 = 0;
+
 }
