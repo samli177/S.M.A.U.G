@@ -90,6 +90,16 @@ void update_median()
 
 //--------------- External functions ----------------
 
+void navigation_init()
+{
+	//INT0 & INT1 on PD2 & PD3 respectively inputs
+	DDRD &= ~((1<<PORTD2) | (1<<PORTD3));
+	//Interrupt on INT0 & INT1 on rising edge.
+	EICRA |= (1<<ISC00) | (1<<ISC01) | (1<<ISC10) | (1<<ISC11);
+	//Interrupt enable on INT0 & INT1
+	EIMSK |= (1<<INT0) | (1<<INT1);
+}
+
 uint8_t navigation_get_Kp()
 {
 	return gKp;
@@ -263,4 +273,20 @@ void navigation_fill_buffer()
 uint8_t navigation_get_sensor(int sensorNr)
 {
 	return medianBuffer[sensorNr];
+}
+
+//-------------------------------Interrupts--------------------------------
+
+//External interrupt INT0, to activate autonomous walk and set left hand navigation
+ISR(INT0_vect)
+{
+	navigation_set_algorithm(1); //Left hand
+	navigation_set_autonomous_walk(1);
+}
+
+//External interrupt INT1, to activate autonomous walk and set right hand navigation
+ISR(INT1_vect)
+{
+	navigation_set_algorithm(0); //Right hand
+	navigation_set_autonomous_walk(1);
 }

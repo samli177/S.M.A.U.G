@@ -13,6 +13,14 @@
 
 /**
  * \brief 
+ * Initializes what the navigation requires, including
+ * setting the corresponding registers for interrupts
+ *
+ * \return void
+ */
+void navigation_init();
+/**
+ * \brief 
  * Returns the Kp regulation variable gKp as an unsigned
  * integer
  * 
