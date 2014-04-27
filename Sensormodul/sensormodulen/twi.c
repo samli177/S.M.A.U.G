@@ -181,7 +181,7 @@ uint8_t sweep;
 int sensor;
 uint8_t command[3];
 int currentCommand;
-int messageLength;
+uint8_t messageLength;
 uint8_t autonomSettings;
 int currentSetting;
 int elevation;
@@ -872,13 +872,13 @@ uint8_t decode_message_TwiFIFO()
 
 uint8_t write_to_TwiFIFO(char msg[])
 {
-	if(FifoWrite(gTwiFIFO, (unsigned char)strlen(msg)))
+	if(FifoWrite(gTwiFIFO, messageLength))
 	{
 		display_text("FIFO ERROR 3");
 		return 1;
 	}
 	
-	for(int i = 0; i < strlen(msg); ++i)
+	for(int i = 0; i < messageLength; ++i)
 	{
 		if(FifoWrite(gTwiFIFO, msg[i]))
 		{
