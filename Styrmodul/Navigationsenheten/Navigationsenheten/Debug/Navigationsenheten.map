@@ -1124,23 +1124,23 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x00000780      0x26c usart.o
  .debug_frame   0x000009ec       0xcc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
 
-.debug_str      0x00000000      0xd2a
+.debug_str      0x00000000      0xd86
  *(.debug_str)
- .debug_str     0x00000000      0x2ff autonomouswalk.o
-                                0x353 (size before relaxing)
- .debug_str     0x000002ff       0x48 counter.o
+ .debug_str     0x00000000      0x2fd autonomouswalk.o
+                                0x351 (size before relaxing)
+ .debug_str     0x000002fd       0xa6 counter.o
                                 0x12a (size before relaxing)
- .debug_str     0x00000347       0xa4 fifo.o
+ .debug_str     0x000003a3       0xa4 fifo.o
                                 0x142 (size before relaxing)
- .debug_str     0x000003eb      0x20f Navigation.o
+ .debug_str     0x00000447      0x20f Navigation.o
                                 0x3a9 (size before relaxing)
- .debug_str     0x000005fa       0x8b Navigationsenheten.o
-                                0x242 (size before relaxing)
- .debug_str     0x00000685      0x492 twi.o
+ .debug_str     0x00000656       0x8b Navigationsenheten.o
+                                0x240 (size before relaxing)
+ .debug_str     0x000006e1      0x492 twi.o
                                 0x5e4 (size before relaxing)
- .debug_str     0x00000b17      0x18e usart.o
+ .debug_str     0x00000b73      0x18e usart.o
                                 0x3f8 (size before relaxing)
- .debug_str     0x00000ca5       0x85 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
+ .debug_str     0x00000d01       0x85 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(qsort.o)
                                  0xb9 (size before relaxing)
 
 .debug_loc      0x00000000     0x2793

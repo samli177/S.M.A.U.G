@@ -22,7 +22,7 @@
 int main(void)
 {
 	USART_init();
-	USART_set_twi_message_destination(S_ADDRESS); // send messages from gang to the display, not the computer
+	USART_set_twi_message_destination(C_ADDRESS); // send messages from gang to the display, not the computer
 	sei();
 	TWI_init(ST_ADDRESS);
 	init_counters();

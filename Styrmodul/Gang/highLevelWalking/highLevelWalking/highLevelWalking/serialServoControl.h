@@ -122,5 +122,7 @@ uint16_t servoGetPosition(uint8_t ID);
 void servoAction();
 void servoBufferPosition(uint8_t ID, double angle, uint16_t speed);
 
+void SERVO_set_return_delay_time(uint8_t ID, uint8_t delay);
+
 
 #endif /* INCFILE1_H_ */

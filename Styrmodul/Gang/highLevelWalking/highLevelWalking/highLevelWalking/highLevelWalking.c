@@ -418,14 +418,14 @@ int main(void)
 	
 	sei();
 	initServoSerial(); //Init servos
-	servoRetrunLevel(BROADCASTING_ID, 1); //turns off return packets
+	servoRetrunLevel(BROADCASTING_ID, 1);
 	
 	USART_init();
 	init_counters();
 	set_counter_1(10000);
 	initvar();
 	
-
+/*
 	moveLeg1too(x0_1, y0_1, z0, speed);
 	moveLeg2too(x0_2, y0_2, z0, speed);
 	moveLeg3too(x0_3, y0_3, z0, speed);
@@ -433,10 +433,14 @@ int main(void)
 	moveLeg5too(x0_5, y0_5, z0, speed);
 	moveLeg6too(x0_6, y0_6, z0, speed);
 	
-	// ------TEMP-------
-	USART_SendMessage("gang reset");
+	*/
 	
-	servoGetPosition(0);
+	// ------TEMP-------
+
+	//servoGoto(1, 3.14/3, 0x200);
+	SERVO_set_return_delay_time(BROADCASTING_ID, 0xfa);
+	uint16_t possition = servoGetPosition(1);
+	USART_SendValue(possition);
 	//----------------------------
 
 	_delay_ms(5000);

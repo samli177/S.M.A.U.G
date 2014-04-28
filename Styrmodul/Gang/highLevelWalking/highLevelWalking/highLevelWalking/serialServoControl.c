@@ -7,6 +7,8 @@
 
 #include <avr/io.h>
 #include "serialServoControl.h"
+#include "fifo.h"
+#include "usart.h"
 
 #include <util/delay.h>
 #include <math.h>
@@ -20,8 +22,12 @@ uint8_t gServoTxBuffer[128];
 uint8_t gServoRxBuffer[260];
 uint8_t gServoRxReadMode = RM_WAIT_FOR_START;
 uint8_t gServoLengthCounter = 0;
-uint8_t gNewPacketOnBuffer = 0;
+
 uint8_t gRxIndex = 0;
+
+// define FIFO for received packets (USART)
+MK_FIFO(1024); // use 1 kB
+DEFINE_FIFO(gServoRxFIFO, 1024);
 
 
 void initServoSerial()
@@ -30,7 +36,7 @@ void initServoSerial()
 	//set baud rate
 	//typecasting of "int" to byte truncates to the lowest uint8_t
 	UBRR1H = (uint8_t) (((F_CPU / 16 / ServoBaudRate ) - 1)>>8);
-	UBRR1L = (uint8_t) ((F_CPU / 16 / ServoBaudRate ) - 1) ;
+	UBRR1L = (uint8_t) ((F_CPU / 16 / ServoBaudRate ) - 1);
 	
 	//enable receiver and transmitter and enable interrupts
 	UCSR1B = (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1);
@@ -217,32 +223,146 @@ void servoRetrunLevel(uint8_t ID, uint8_t level)
 	sendServoPacket(ID, INST_WRITE, 2);	
 }
 
+void SERVO_set_return_delay_time(uint8_t ID, uint8_t delay)
+{
+	gServoParameters[0] = P_RETURN_DELAY_TIME;
+	gServoParameters[1] = delay;
+	sendServoPacket(ID, INST_WRITE, 2);
+}
+
 uint16_t servoGetPosition(uint8_t ID)
 {
-	uint16_t data = 0;
-	int pos;
+	uint8_t *data = 0;
+	uint8_t dataint;
+	uint16_t pos = 0;
+	char servoReadMode;
+	uint8_t byteCount = 0;
+	uint8_t packetLength = 0;
+	uint8_t parameters[255]; // TODO: look up max length
+
+	uint8_t checkSum = 0;
+	uint8_t checkSumValid = 0;
+	uint8_t exitFlag = 0;
 	
+
 	servoTx;
-	gNewPacketOnBuffer = 0;
+
 	gServoParameters[0] = P_PRESENT_POSITION_L;
 	gServoParameters[1] = 2; // read 2 bytes
-	sendServoPacket(ID, INST_PING, 0);
+	sendServoPacket(ID, INST_READ, 2);
 	while(servoCheckTxReady() == 0) // wait until last byte has been transmitted
+	_delay_us(20); // wait for stop bits
 	servoRx;
-
-	_delay_ms(1000); // receive packet
-
-
-	if(gNewPacketOnBuffer)
-	{
-		USART_SendMessage("weee");
-	}else 
-	{
-		USART_SendMessage("noo");
-	}
+	
+	_delay_ms(100); // receive packet
+	
 	servoTx;
+	servoReadMode = 'W';
+	
 
-	return data;
+	
+	while(!(FifoRead(gServoRxFIFO, data)) && !exitFlag)
+	{
+		dataint = *data;
+		switch(servoReadMode){
+			case('W'): // wait for start
+			{
+				if(dataint == 0xff)
+				{
+					servoReadMode = 'S';
+				}
+				break;
+			}
+			case('S'): // check for second start
+			{
+				if(dataint == 0xff)
+				{
+					servoReadMode = 'I';
+				}else
+				{
+					servoReadMode = 'W';
+				}
+				break;
+			}
+			case('I'):
+			{
+				/*
+				if(!(*data == ID))
+				{
+					USART_SendMessage("ServoError: 2");
+					while(!(FifoRead(gServoRxFIFO, data))); //flush buffer
+				}
+				*/
+				servoReadMode = 'L';
+				break;
+			}
+			case('L'):
+			{
+				packetLength = dataint;
+				byteCount = 0;
+				servoReadMode = 'E';
+				break;
+			}
+			case('E'):
+			{
+				// TODO: something...probably...
+				servoReadMode = 'P';
+				break;
+			}
+			case('P'):
+			{
+				if(byteCount < packetLength-3)
+				{
+					parameters[byteCount] = dataint;
+				}else
+				{
+					servoReadMode = 'C';
+				}
+	
+				++byteCount;
+				break;
+			}
+			case('C'):
+			{
+				// calculate checksum
+				checkSum = ID + packetLength;
+
+				for(int count = 0; count < packetLength -2; ++count) // calculation of checksum starts with ID-byte
+				{
+					checkSum += parameters[count]; // NOTE: make sure overflow truncates to lower byte
+				}
+				
+				if(~checkSum == dataint)
+				{
+					// correct packet
+					checkSumValid = 1; // set flag
+				}
+				
+				//TODO: figure out how to make checksums work
+				checkSumValid = 1; //this is temporary!
+				
+				exitFlag = 1;
+				break;
+			}
+		}
+		
+	}
+	
+	// if there is stuff left in buffer
+	if(!(FifoRead(gServoRxFIFO, data)))
+	{
+		USART_SendMessage("ServoError: 3");
+		while(!(FifoRead(gServoRxFIFO, data))); //flush buffer
+	}
+	
+	if(checkSumValid)
+	{
+		pos = (parameters[1] << 8);
+		pos = pos + parameters[0];
+	}
+	
+
+	return pos;
 	
 }
 
@@ -260,8 +380,17 @@ uint8_t servoReceiveStatus()
 
 // -- Interrupts --
 
+ISR (USART1_RX_vect)
+{
+	uint8_t data;
+	data = UDR1;
+	if(FifoWrite(gServoRxFIFO, data))
+	{
+		USART_SendMessage("ServoError: 1");
+	}
+}
 
-
+/*
 ISR (USART1_RX_vect)
 {
 	gNewPacketOnBuffer = 1;
@@ -328,4 +457,4 @@ ISR (USART1_RX_vect)
 }
 
 
-
+*/

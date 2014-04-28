@@ -25,11 +25,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  10 .debug_frame  00000ab8  00000000  00000000  0000d88c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000d2a  00000000  00000000  0000e344  2**0
+ 11 .debug_str    00000d86  00000000  00000000  0000e344  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00002793  00000000  00000000  0000f06e  2**0
+ 12 .debug_loc    00002793  00000000  00000000  0000f0ca  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000378  00000000  00000000  00011801  2**0
+ 13 .debug_ranges 00000378  00000000  00000000  0001185d  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -725,12 +725,6 @@ void autonomouswalk_walk(uint8_t sensors[6])
      3f8:	08 95       	ret
 
 000003fa <set_counter_1>:
-	TCNT3 = 0;
-}
-
-void set_counter_1(uint16_t delay)
-{
-	delay = 15.625 * delay;
      3fa:	bc 01       	movw	r22, r24
      3fc:	80 e0       	ldi	r24, 0x00	; 0
      3fe:	90 e0       	ldi	r25, 0x00	; 0
@@ -741,17 +735,11 @@ void set_counter_1(uint16_t delay)
      40a:	51 e4       	ldi	r21, 0x41	; 65
      40c:	0e 94 bc 0c 	call	0x1978	; 0x1978 <__mulsf3>
      410:	0e 94 9d 0b 	call	0x173a	; 0x173a <__fixunssfsi>
-	OCR1A = delay;
      414:	70 93 89 00 	sts	0x0089, r23
      418:	60 93 88 00 	sts	0x0088, r22
      41c:	08 95       	ret
 
 0000041e <set_counter_2>:
-}
-
-void set_counter_2(uint16_t delay)
-{
-	delay = 15.625 * delay;
      41e:	bc 01       	movw	r22, r24
      420:	80 e0       	ldi	r24, 0x00	; 0
      422:	90 e0       	ldi	r25, 0x00	; 0
@@ -762,57 +750,39 @@ void set_counter_2(uint16_t delay)
      42e:	51 e4       	ldi	r21, 0x41	; 65
      430:	0e 94 bc 0c 	call	0x1978	; 0x1978 <__mulsf3>
      434:	0e 94 9d 0b 	call	0x173a	; 0x173a <__fixunssfsi>
-	OCR3A = delay;
      438:	70 93 99 00 	sts	0x0099, r23
      43c:	60 93 98 00 	sts	0x0098, r22
      440:	08 95       	ret
 
 00000442 <init_counters>:
-
-//---------------------------------------COUNTERS/TIMERS-----------
-void init_counters()
-{
-	// WGMn3:0 = 4 (OCRnA) or 12 (OCRn), where top value is read from.
-	TCCR1B |= 0b00000101; // clock 1, prescaler 1024
      442:	e1 e8       	ldi	r30, 0x81	; 129
      444:	f0 e0       	ldi	r31, 0x00	; 0
      446:	80 81       	ld	r24, Z
      448:	85 60       	ori	r24, 0x05	; 5
      44a:	80 83       	st	Z, r24
-	TCCR3B |= 0b00000101; // clock 2, prescaler 1024
      44c:	e1 e9       	ldi	r30, 0x91	; 145
      44e:	f0 e0       	ldi	r31, 0x00	; 0
      450:	80 81       	ld	r24, Z
      452:	85 60       	ori	r24, 0x05	; 5
      454:	80 83       	st	Z, r24
-	
-	// standardvalue for interrupt is 1000ms
-	set_counter_1(1000);
      456:	88 ee       	ldi	r24, 0xE8	; 232
      458:	93 e0       	ldi	r25, 0x03	; 3
      45a:	cf df       	rcall	.-98     	; 0x3fa <set_counter_1>
-	set_counter_2(1000);
      45c:	88 ee       	ldi	r24, 0xE8	; 232
      45e:	93 e0       	ldi	r25, 0x03	; 3
      460:	de df       	rcall	.-68     	; 0x41e <set_counter_2>
-	
-	TIMSK1 |= 0b00000010; // Enable interrupts when OCF1A, in TIFR1, is set.
      462:	ef e6       	ldi	r30, 0x6F	; 111
      464:	f0 e0       	ldi	r31, 0x00	; 0
      466:	80 81       	ld	r24, Z
      468:	82 60       	ori	r24, 0x02	; 2
      46a:	80 83       	st	Z, r24
-	TIMSK3 |= 0b00000010; // Enable interrupts when OCF2A, in TIFR2, is set.
      46c:	e1 e7       	ldi	r30, 0x71	; 113
      46e:	f0 e0       	ldi	r31, 0x00	; 0
      470:	80 81       	ld	r24, Z
      472:	82 60       	ori	r24, 0x02	; 2
      474:	80 83       	st	Z, r24
-	// OCF1A (or ICFn) Flag, in TIFR1, can be used to generate interrupts.
-	TCNT1 = 0;
      476:	10 92 85 00 	sts	0x0085, r1
      47a:	10 92 84 00 	sts	0x0084, r1
-	TCNT3 = 0;
      47e:	10 92 95 00 	sts	0x0095, r1
      482:	10 92 94 00 	sts	0x0094, r1
      486:	08 95       	ret
@@ -899,12 +869,6 @@ void init_counters()
      51c:	08 95       	ret
 
 0000051e <compare>:
-	}
-	else
-	{
-		return 0;
-	}
-}
      51e:	fc 01       	movw	r30, r24
      520:	20 81       	ld	r18, Z
      522:	30 e0       	ldi	r19, 0x00	; 0
@@ -1118,12 +1082,6 @@ void init_counters()
      6da:	08 95       	ret
 
 000006dc <navigation_get_sensor>:
-{
-	return ( *(uint8_t*)a - *(uint8_t*)b );
-}
-
-uint8_t navigation_get_sensor(int sensorNr)
-{
      6dc:	ef 92       	push	r14
      6de:	ff 92       	push	r15
      6e0:	0f 93       	push	r16
@@ -1132,20 +1090,8 @@ uint8_t navigation_get_sensor(int sensorNr)
      6e6:	df 93       	push	r29
      6e8:	cd b7       	in	r28, 0x3d	; 61
      6ea:	de b7       	in	r29, 0x3e	; 62
-	{
-		temp[i] = sensorBuffer[sensorNr][i];
-	}
-	qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
-	return temp[sensorBufferSize / 2];
-}
      6ec:	ed b6       	in	r14, 0x3d	; 61
      6ee:	fe b6       	in	r15, 0x3e	; 62
-	return ( *(uint8_t*)a - *(uint8_t*)b );
-}
-
-uint8_t navigation_get_sensor(int sensorNr)
-{
-	uint8_t temp[sensorBufferSize];
      6f0:	60 91 02 01 	lds	r22, 0x0102
      6f4:	70 91 03 01 	lds	r23, 0x0103
      6f8:	2d b7       	in	r18, 0x3d	; 61
@@ -1161,16 +1107,9 @@ uint8_t navigation_get_sensor(int sensorNr)
      70c:	1e b7       	in	r17, 0x3e	; 62
      70e:	0f 5f       	subi	r16, 0xFF	; 255
      710:	1f 4f       	sbci	r17, 0xFF	; 255
-	for(int i = 0; i < sensorBufferSize; ++i)
      712:	16 16       	cp	r1, r22
      714:	17 06       	cpc	r1, r23
      716:	84 f4       	brge	.+32     	; 0x738 <navigation_get_sensor+0x5c>
-int compare (const void * a, const void * b)
-{
-	return ( *(uint8_t*)a - *(uint8_t*)b );
-}
-
-uint8_t navigation_get_sensor(int sensorNr)
      718:	dc 01       	movw	r26, r24
      71a:	aa 0f       	add	r26, r26
      71c:	bb 1f       	adc	r27, r27
@@ -1182,33 +1121,17 @@ uint8_t navigation_get_sensor(int sensorNr)
      728:	c8 01       	movw	r24, r16
      72a:	86 0f       	add	r24, r22
      72c:	97 1f       	adc	r25, r23
-{
-	uint8_t temp[sensorBufferSize];
-	for(int i = 0; i < sensorBufferSize; ++i)
-	{
-		temp[i] = sensorBuffer[sensorNr][i];
      72e:	2d 91       	ld	r18, X+
      730:	21 93       	st	Z+, r18
-}
-
-uint8_t navigation_get_sensor(int sensorNr)
-{
-	uint8_t temp[sensorBufferSize];
-	for(int i = 0; i < sensorBufferSize; ++i)
      732:	e8 17       	cp	r30, r24
      734:	f9 07       	cpc	r31, r25
      736:	d9 f7       	brne	.-10     	; 0x72e <navigation_get_sensor+0x52>
-	{
-		temp[i] = sensorBuffer[sensorNr][i];
-	}
-	qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
      738:	2f e8       	ldi	r18, 0x8F	; 143
      73a:	32 e0       	ldi	r19, 0x02	; 2
      73c:	41 e0       	ldi	r20, 0x01	; 1
      73e:	50 e0       	ldi	r21, 0x00	; 0
      740:	c8 01       	movw	r24, r16
      742:	0e 94 aa 0d 	call	0x1b54	; 0x1b54 <qsort>
-	return temp[sensorBufferSize / 2];
      746:	20 91 02 01 	lds	r18, 0x0102
      74a:	30 91 03 01 	lds	r19, 0x0103
      74e:	33 23       	and	r19, r19
@@ -1220,7 +1143,6 @@ uint8_t navigation_get_sensor(int sensorNr)
      75a:	f8 01       	movw	r30, r16
      75c:	e2 0f       	add	r30, r18
      75e:	f3 1f       	adc	r31, r19
-}
      760:	80 81       	ld	r24, Z
      762:	0f b6       	in	r0, 0x3f	; 63
      764:	f8 94       	cli
@@ -1236,18 +1158,12 @@ uint8_t navigation_get_sensor(int sensorNr)
      778:	08 95       	ret
 
 0000077a <navigation_fill_buffer>:
-
-void navigation_fill_buffer()
-{
      77a:	0f 93       	push	r16
      77c:	1f 93       	push	r17
      77e:	cf 93       	push	r28
      780:	df 93       	push	r29
-	for(int i = 0; i < 8; ++i)
      782:	c0 e0       	ldi	r28, 0x00	; 0
      784:	d0 e0       	ldi	r29, 0x00	; 0
-	{
-		sensorBuffer[i][currentBufferLine] = TWI_get_sensor(i);
      786:	00 91 2f 13 	lds	r16, 0x132F
      78a:	10 e0       	ldi	r17, 0x00	; 0
      78c:	ce 01       	movw	r24, r28
@@ -1263,20 +1179,10 @@ void navigation_fill_buffer()
      7a0:	e0 5d       	subi	r30, 0xD0	; 208
      7a2:	fc 4e       	sbci	r31, 0xEC	; 236
      7a4:	80 83       	st	Z, r24
-	return temp[sensorBufferSize / 2];
-}
-
-void navigation_fill_buffer()
-{
-	for(int i = 0; i < 8; ++i)
      7a6:	21 96       	adiw	r28, 0x01	; 1
      7a8:	c8 30       	cpi	r28, 0x08	; 8
      7aa:	d1 05       	cpc	r29, r1
      7ac:	61 f7       	brne	.-40     	; 0x786 <navigation_fill_buffer+0xc>
-	{
-		sensorBuffer[i][currentBufferLine] = TWI_get_sensor(i);
-	}
-	if(currentBufferLine == sensorBufferSize - 1)
      7ae:	40 91 2f 13 	lds	r20, 0x132F
      7b2:	24 2f       	mov	r18, r20
      7b4:	30 e0       	ldi	r19, 0x00	; 0
@@ -1286,14 +1192,10 @@ void navigation_fill_buffer()
      7c0:	28 17       	cp	r18, r24
      7c2:	39 07       	cpc	r19, r25
      7c4:	19 f4       	brne	.+6      	; 0x7cc <navigation_fill_buffer+0x52>
-	currentBufferLine = 0;
      7c6:	10 92 2f 13 	sts	0x132F, r1
      7ca:	03 c0       	rjmp	.+6      	; 0x7d2 <navigation_fill_buffer+0x58>
-	else
-	currentBufferLine += 1;
      7cc:	4f 5f       	subi	r20, 0xFF	; 255
      7ce:	40 93 2f 13 	sts	0x132F, r20
-}
      7d2:	df 91       	pop	r29
      7d4:	cf 91       	pop	r28
      7d6:	1f 91       	pop	r17
@@ -1301,12 +1203,6 @@ void navigation_fill_buffer()
      7da:	08 95       	ret
 
 000007dc <__vector_13>:
-
-/************************************************************************/
-/*      COUNTERS/TIMERS interrupt vectors                               */
-/************************************************************************/
-ISR(TIMER1_COMPA_vect)
-{
      7dc:	1f 92       	push	r1
      7de:	0f 92       	push	r0
      7e0:	0f b6       	in	r0, 0x3f	; 63
@@ -1326,15 +1222,11 @@ ISR(TIMER1_COMPA_vect)
      7fc:	bf 93       	push	r27
      7fe:	ef 93       	push	r30
      800:	ff 93       	push	r31
-	if(TWI_sensor_flag())
      802:	52 d2       	rcall	.+1188   	; 0xca8 <TWI_sensor_flag>
      804:	81 11       	cpse	r24, r1
-	navigation_fill_buffer();
      806:	b9 df       	rcall	.-142    	; 0x77a <navigation_fill_buffer>
-	TCNT1 = 0;
      808:	10 92 85 00 	sts	0x0085, r1
      80c:	10 92 84 00 	sts	0x0084, r1
-}
      810:	ff 91       	pop	r31
      812:	ef 91       	pop	r30
      814:	bf 91       	pop	r27
@@ -1356,15 +1248,11 @@ ISR(TIMER1_COMPA_vect)
      834:	18 95       	reti
 
 00000836 <__vector_32>:
-
-ISR(TIMER3_COMPA_vect)
-{
      836:	1f 92       	push	r1
      838:	0f 92       	push	r0
      83a:	0f b6       	in	r0, 0x3f	; 63
      83c:	0f 92       	push	r0
      83e:	11 24       	eor	r1, r1
-	TCNT3 = 0;
      840:	10 92 95 00 	sts	0x0095, r1
      844:	10 92 94 00 	sts	0x0094, r1
      848:	0f 90       	pop	r0
@@ -1389,8 +1277,8 @@ int main(void)
      85e:	de b7       	in	r29, 0x3e	; 62
 	USART_init();
      860:	ae d3       	rcall	.+1884   	; 0xfbe <USART_init>
-	USART_set_twi_message_destination(S_ADDRESS); // send messages from gang to the display, not the computer
-     862:	80 e4       	ldi	r24, 0x40	; 64
+	USART_set_twi_message_destination(C_ADDRESS); // send messages from gang to the display, not the computer
+     862:	80 e8       	ldi	r24, 0x80	; 128
      864:	90 e0       	ldi	r25, 0x00	; 0
      866:	b7 d3       	rcall	.+1902   	; 0xfd6 <USART_set_twi_message_destination>
 	sei();
@@ -2282,12 +2170,6 @@ int main(void)
      fbc:	18 95       	reti
 
 00000fbe <USART_init>:
-{
-	for(int i = 0; i < gRxBuffer[1]; i++)
-	{
-		gTxPayload[i] = gRxBuffer[i+2];
-	}
-	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
      fbe:	10 92 c5 00 	sts	0x00C5, r1
      fc2:	87 e0       	ldi	r24, 0x07	; 7
      fc4:	80 93 c4 00 	sts	0x00C4, r24
@@ -2825,11 +2707,6 @@ int main(void)
     1414:	08 95       	ret
 
 00001416 <__vector_20>:
-}
-
-
-ISR (USART0_RX_vect)
-{
     1416:	1f 92       	push	r1
     1418:	0f 92       	push	r0
     141a:	0f b6       	in	r0, 0x3f	; 63
@@ -2855,16 +2732,10 @@ ISR (USART0_RX_vect)
     1442:	df 93       	push	r29
     1444:	ef 93       	push	r30
     1446:	ff 93       	push	r31
-	uint8_t data;
-	data = UDR0; // read data from buffer TODO: add check for overflow
     1448:	20 91 c6 00 	lds	r18, 0x00C6
-	
-	if(data == 0x7e)
     144c:	2e 37       	cpi	r18, 0x7E	; 126
     144e:	09 f0       	breq	.+2      	; 0x1452 <__vector_20+0x3c>
     1450:	3f c0       	rjmp	.+126    	; 0x14d0 <__vector_20+0xba>
-	{
-		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
     1452:	80 91 2d 13 	lds	r24, 0x132D
     1456:	90 91 2e 13 	lds	r25, 0x132E
     145a:	84 30       	cpi	r24, 0x04	; 4
@@ -2877,24 +2748,14 @@ ISR (USART0_RX_vect)
     146a:	82 17       	cp	r24, r18
     146c:	93 07       	cpc	r25, r19
     146e:	59 f5       	brne	.+86     	; 0x14c6 <__vector_20+0xb0>
-		{
-			if(gInvertNextFlag)
     1470:	80 91 2b 13 	lds	r24, 0x132B
     1474:	90 91 2c 13 	lds	r25, 0x132C
     1478:	89 2b       	or	r24, r25
     147a:	21 f0       	breq	.+8      	; 0x1484 <__vector_20+0x6e>
-			{
-				data = (1<<5)^data;
-				gInvertNextFlag = 0;
     147c:	10 92 2c 13 	sts	0x132C, r1
     1480:	10 92 2b 13 	sts	0x132B, r1
     1484:	0e e6       	ldi	r16, 0x6E	; 110
     1486:	14 e1       	ldi	r17, 0x14	; 20
-			}
-			
-			
-			// Add packet (no crc) to fifo-buffer to cue it for decoding
-			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     1488:	c0 e0       	ldi	r28, 0x00	; 0
     148a:	d0 e0       	ldi	r29, 0x00	; 0
     148c:	0f 2e       	mov	r0, r31
@@ -2903,8 +2764,6 @@ ISR (USART0_RX_vect)
     1492:	f4 e1       	ldi	r31, 0x14	; 20
     1494:	ff 2e       	mov	r15, r31
     1496:	f0 2d       	mov	r31, r0
-			{
-				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
     1498:	f8 01       	movw	r30, r16
     149a:	61 91       	ld	r22, Z+
     149c:	8f 01       	movw	r16, r30
@@ -2913,18 +2772,10 @@ ISR (USART0_RX_vect)
     14a6:	0e 94 4c 02 	call	0x498	; 0x498 <FifoWrite>
     14aa:	88 23       	and	r24, r24
     14ac:	21 f0       	breq	.+8      	; 0x14b6 <__vector_20+0xa0>
-				{
-					TWI_send_string(S_ADDRESS,"U_FIFO-full");
     14ae:	68 e1       	ldi	r22, 0x18	; 24
     14b0:	73 e1       	ldi	r23, 0x13	; 19
     14b2:	80 e4       	ldi	r24, 0x40	; 64
     14b4:	23 db       	rcall	.-2490   	; 0xafc <TWI_send_string>
-				gInvertNextFlag = 0;
-			}
-			
-			
-			// Add packet (no crc) to fifo-buffer to cue it for decoding
-			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     14b6:	21 96       	adiw	r28, 0x01	; 1
     14b8:	f7 01       	movw	r30, r14
     14ba:	80 81       	ld	r24, Z
@@ -2933,43 +2784,25 @@ ISR (USART0_RX_vect)
     14c0:	c8 17       	cp	r28, r24
     14c2:	d9 07       	cpc	r29, r25
     14c4:	4c f3       	brlt	.-46     	; 0x1498 <__vector_20+0x82>
-					TWI_send_string(S_ADDRESS,"U_FIFO-full");
-				}
-			}
-		}
-		
-		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read
     14c6:	10 92 2e 13 	sts	0x132E, r1
     14ca:	10 92 2d 13 	sts	0x132D, r1
     14ce:	16 c0       	rjmp	.+44     	; 0x14fc <__vector_20+0xe6>
-		
-	}else if(data == 0x7d)
     14d0:	2d 37       	cpi	r18, 0x7D	; 125
     14d2:	39 f4       	brne	.+14     	; 0x14e2 <__vector_20+0xcc>
-	{
-		gInvertNextFlag = 1;
     14d4:	81 e0       	ldi	r24, 0x01	; 1
     14d6:	90 e0       	ldi	r25, 0x00	; 0
     14d8:	90 93 2c 13 	sts	0x132C, r25
     14dc:	80 93 2b 13 	sts	0x132B, r24
     14e0:	0d c0       	rjmp	.+26     	; 0x14fc <__vector_20+0xe6>
-	}else
-	{
-		gRxBuffer[gRxBufferIndex] = data;
     14e2:	80 91 2d 13 	lds	r24, 0x132D
     14e6:	90 91 2e 13 	lds	r25, 0x132E
     14ea:	fc 01       	movw	r30, r24
     14ec:	e2 59       	subi	r30, 0x92	; 146
     14ee:	fb 4e       	sbci	r31, 0xEB	; 235
     14f0:	20 83       	st	Z, r18
-		++gRxBufferIndex;
     14f2:	01 96       	adiw	r24, 0x01	; 1
     14f4:	90 93 2e 13 	sts	0x132E, r25
     14f8:	80 93 2d 13 	sts	0x132D, r24
-	}
-	
-	
-}
     14fc:	ff 91       	pop	r31
     14fe:	ef 91       	pop	r30
     1500:	df 91       	pop	r29
@@ -2997,18 +2830,9 @@ ISR (USART0_RX_vect)
     152c:	18 95       	reti
 
 0000152e <USART_send_command_parameters>:
-
-void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed)
-{
-	gTxPayload[0] = direction;
     152e:	80 93 73 16 	sts	0x1673, r24
-	gTxPayload[1] = rotation;
     1532:	60 93 74 16 	sts	0x1674, r22
-	gTxPayload[2] = speed;
     1536:	40 93 75 16 	sts	0x1675, r20
-	
-	
-	USART_SendPacket('C', 3);
     153a:	63 e0       	ldi	r22, 0x03	; 3
     153c:	83 e4       	ldi	r24, 0x43	; 67
     153e:	b6 cd       	rjmp	.-1172   	; 0x10ac <USART_SendPacket>
