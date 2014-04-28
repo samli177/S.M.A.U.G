@@ -372,6 +372,8 @@ void leg_motion()
 		_delay_ms(40);
 	}
 }
+
+/*
 void move_to_std()
 {
 	
@@ -409,8 +411,69 @@ void move_to_std()
 		leg_motion();
 	
 }
+*/
+void move_to_std()
+{
+	leg1.lift = -leg1.lift;
+	leg2.lift = -leg2.lift;
+	leg3.lift = -leg3.lift;
+	leg4.lift = -leg4.lift;
+	leg5.lift = -leg5.lift;
+	leg6.lift = -leg6.lift;
+	
+	step_start(&leg1);
+	step_start(&leg2);
+	step_start(&leg3);
+	step_start(&leg4);
+	step_start(&leg5);
+	step_start(&leg6);
+	
+	if(leg1.lift == -1)
+	{
+		leg1.newPosx = x0;
+		leg1.newPosy = y0;
+		step_part2_calculator(&leg1);
+	}
+	
+	if(leg2.lift == -1)
+	{
+		leg2.newPosx = x0;
+		leg2.newPosy = y0;
+		step_part2_calculator(&leg2);
+	}
+	
+	if(leg3.lift == -1)
+	{
+		leg3.newPosx = x0;
+		leg3.newPosy = y0;
+		step_part2_calculator(&leg3);
+	}
+	
+	if(leg4.lift == -1)
+	{
+		leg4.newPosx = x0;
+		leg4.newPosy = y0;
+		step_part2_calculator(&leg4);
+	}
+	
+	if(leg5.lift == -1)
+	{
+		leg5.newPosx = x0;
+		leg5.newPosy = y0;
+		step_part2_calculator(&leg5);
+	}
+	
+	if(leg6.lift == -1)
+	{
+		leg6.newPosx = x0;
+		leg6.newPosy = y0;
+		step_part2_calculator(&leg6);
+	}
+	
+	leg_motion();
 
-
+	
+}
 int main(void)
 {
 	DDRD |= (1<<PORTD5); //init LED
@@ -482,6 +545,7 @@ ISR(TIMER1_COMPA_vect)
 	if(std_pos_flag == 0)
 	{
 		std_pos_flag = 1;
+		move_to_std();
 		move_to_std();
 	}
 	TCNT1 = 0;
