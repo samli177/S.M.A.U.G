@@ -488,14 +488,16 @@ int main(void)
 	set_counter_1(10000);
 	initvar();
 	
-
+	move_to_std();
+	move_to_std();
+	/*
 	moveLeg1too(x0_1, y0_1, z0, speed);
 	moveLeg2too(x0_2, y0_2, z0, speed);
 	moveLeg3too(x0_3, y0_3, z0, speed);
 	moveLeg4too(x0_4, y0_4, z0, speed);
 	moveLeg5too(x0_5, y0_5, z0, speed);
 	moveLeg6too(x0_6, y0_6, z0, speed);
-	
+	*/
 	
 	_delay_ms(5000);
 	

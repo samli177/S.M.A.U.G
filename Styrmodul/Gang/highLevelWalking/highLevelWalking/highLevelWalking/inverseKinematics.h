@@ -38,18 +38,20 @@
 #define y0 (float) 0
 #define z0 (float) -120
 
+/*
 #define side1 (float)1
 #define side2 (float)1
 #define side3 (float)1
 #define side4 (float)(-1)
 #define side5 (float)(-1)
 #define side6 (float)(-1)
+*/
 
 #define Gamma0 (float) 0
 #define Beta0 (float) 1.875
 #define Alpha0 (float) 0.1406
 
-
+/*
 void LegOneGoto(float x,float y,float z, int servospeed);
 
 void LegGoto(float x,float y, int z, int servospeed, int side, int servo1, int servo2, int servo3);
@@ -59,23 +61,229 @@ void moveLeg3too(float x, float y, float z, int servospeed);
 void moveLeg4too(float x, float y, float z, int servospeed);
 void moveLeg5too(float x, float y, float z, int servospeed);
 void moveLeg6too(float x, float y, float z, int servospeed);
+*/
 
 //New functions by Tobias
+
+/**
+ * \brief 
+ * Calculates length of d for a leg. d is the length 
+ * between servo two on the leg and the foot.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \param float z
+ * New z position in leg basis.
+ *
+ * \return void
+ */
 void calc_d(float x,float y,float z);
+
+/**
+ * \brief 
+ * Calculates angle gamma.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of gamma.
+ */
 float get_gamma(float x,float y);
+
+/**
+ * \brief 
+ * Calculates angle beta.
+ *
+ * \return float
+ * Returns calculated value of beta.
+ */
 float get_beta();
+
+/**
+ * \brief 
+ * Calculates angle alpha.
+ *
+ * \param float z
+ * New z position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of alpha.
+ */
 float get_alpha(float z);
 
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 1 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of x.
+ */
 float basis_change_leg1x(float x, float y);
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 1 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of y.
+ */
 float basis_change_leg1y(float x, float y);
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 2 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of x.
+ */
 float basis_change_leg2x(float x);
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 2 basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of y.
+ */
 float basis_change_leg2y(float y);
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 3 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of x.
+ */
 float basis_change_leg3x(float x, float y);
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 3 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of y.
+ */
 float basis_change_leg3y(float x, float y); 
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 4 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of x.
+ */
 float basis_change_leg4x(float x, float y); 
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 4 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of y.
+ */
 float basis_change_leg4y(float x, float y); 
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 5 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of x.
+ */
 float basis_change_leg5x(float x); 
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 5 basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of y.
+ */
 float basis_change_leg5y(float y); 
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 6 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of x.
+ */
 float basis_change_leg6x(float x, float y); 
+
+/**
+ * \brief 
+ * Changes basis from robot basis to leg 6 basis.
+ *
+ * \param float x
+ * New x position in leg basis.
+ *
+ * \param float y
+ * New y position in leg basis.
+ *
+ * \return float
+ * Returns calculated value of y.
+ */
 float basis_change_leg6y(float x, float y); 
 #endif /* INVERSEKINEMATICS_H_ */
