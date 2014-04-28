@@ -27,7 +27,7 @@ uint8_t gAlgorithm = 1;
 
 //A regulation parameter to determine how 
 //hard to punish offset. Small Kp => small punishment.
-float gKp = 0.01;
+float gKp = 0.1;
 
 // 0 means autonomous walk is disabled.
 // 1 means autonomous walk is enabled.
@@ -133,30 +133,27 @@ void navigation_set_autonomous_walk(uint8_t walk)
 float navigation_angle_offset()
 {
 	float angle = 0;
-	angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
-	/*
-	if (gAlgorithm && (navigation_get_sensor(2) + navigation_get_sensor(0)) < (CORRIDOR_WIDTH + 20))
+	if (gAlgorithm && (navigation_get_sensor(2) + navigation_get_sensor(0)) < CORRIDOR_WIDTH)
 	{
 		// Use wall to the left
-		//angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
+		angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 	}
-	else if(gAlgorithm && navigation_get_sensor(4) > CORRIDOR_WIDTH)
+	else if(gAlgorithm && ((navigation_get_sensor(1) + navigation_get_sensor(3)) < CORRIDOR_WIDTH))
 	{
 		// No wall to the left, use wall to the right
 		angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
 	}
-	else if((navigation_get_sensor(1) + navigation_get_sensor(3)) < (CORRIDOR_WIDTH + 20))
+	else if((navigation_get_sensor(1) + navigation_get_sensor(3)) < CORRIDOR_WIDTH)
 	{
 		// Use wall to the right
 		angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
 	}
-	else if(navigation_get_sensor(4) > CORRIDOR_WIDTH)
+	else if((navigation_get_sensor(2) + navigation_get_sensor(0)) < CORRIDOR_WIDTH)
 	{
 		// No wall to the right, use wall to the left
 		angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 	}
-	*/
-	TWI_send_float(C_ADDRESS, (float)abs(angle));
+	
 	if(fabs(angle) > ACCEPTABLE_OFFSET_ANGLE)
 	{
 		return angle;
@@ -180,7 +177,6 @@ float navigation_direction_regulation(float angleOffset)
 		} else {
 		d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
 	}
-	
 	if(abs(d) < ACCEPTABLE_DISTANCE_OFFSET)
 	{
 		return 0;
@@ -276,7 +272,7 @@ void navigation_fill_buffer()
 
 uint8_t navigation_get_sensor(int sensorNr)
 {
-	return medianBuffer[sensorNr];
+	return TWI_get_sensor(sensorNr);
 }
 
 //-------------------------------Interrupts--------------------------------

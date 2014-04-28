@@ -124,7 +124,7 @@ void walk_forward()
 	{
 		//TWI_send_string(C_ADDRESS, "Found regulation parameters.");
 	}
-	int adjustmentRotation = (50 + 50 * angleOffset * 2/PI);
+	int adjustmentRotation = (50 + 50 * angleOffset * 2.0/PI);
 	if (adjustmentRotation >= 100)
 	{
 		adjustmentRotation = 100;
@@ -138,16 +138,15 @@ void walk_forward()
 	{
 		//TWI_send_string(C_ADDRESS, "Taking a step.");
 	}
-	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, 0);
+	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
 	_delay_ms(STEPPING_TIME / 2);
-	TWI_send_float(C_ADDRESS, angleOffset);
+	TWI_send_float(C_ADDRESS, adjustmentRotation);
 	_delay_ms(STEPPING_TIME / 2);
 }
 
 void autonomouswalk_walk()
 {
-	walk_forward();
-	/*if(navigation_left_algorithm())
+	if(navigation_left_algorithm())
 	{
 		if(navigation_check_left_turn() == 2)
 		{
@@ -184,5 +183,5 @@ void autonomouswalk_walk()
 		{
 			turn_around();
 		}
-	}*/
+	}
 }

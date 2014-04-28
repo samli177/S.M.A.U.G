@@ -31,8 +31,10 @@ int main(void)
 	navigation_set_autonomous_walk(0);
     while(1)
     {
-		//USART_send_command_parameters(0,50,100);
-		//_delay_ms(1000);
+		if(TWI_sensor_flag())
+		{
+			navigation_fill_buffer();
+		}
 		if(TWI_autonom_settings_flag())
 		{
 			uint8_t sett = TWI_get_autonom_settings();
@@ -75,8 +77,6 @@ int main(void)
 
 ISR(TIMER1_COMPA_vect)
 {
-	if(TWI_sensor_flag())
-	navigation_fill_buffer();
 	TCNT1 = 0;
 }
 
