@@ -19,7 +19,7 @@
 #include "Navigation.h"
 #include <math.h>
 
-#define sensorBufferSize 3
+#define sensorBufferSize 5
 
 // 0 means use a right side algorithm.
 // 1 means use a left side algorithm.
@@ -132,29 +132,34 @@ void navigation_set_autonomous_walk(uint8_t walk)
 
 float navigation_angle_offset()
 {
-	if (gAlgorithm && (navigation_get_sensor(2) + navigation_get_sensor(0)) < (CORRIDOR_WIDTH + 20))
+	float angle = 0;
+	if (gAlgorithm && (navigation_get_sensor(2) + navigation_get_sensor(0)) < CORRIDOR_WIDTH)
 	{
 		// Use wall to the left
-		return atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
+		angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 	}
-	else if(gAlgorithm && navigation_get_sensor(4) > CORRIDOR_WIDTH)
+	else if(gAlgorithm && ((navigation_get_sensor(1) + navigation_get_sensor(3)) < CORRIDOR_WIDTH))
 	{
 		// No wall to the left, use wall to the right
-		return atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
+		angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
 	}
-	else if((navigation_get_sensor(1) + navigation_get_sensor(3)) < (CORRIDOR_WIDTH + 20))
+	else if((navigation_get_sensor(1) + navigation_get_sensor(3)) < CORRIDOR_WIDTH)
 	{
 		// Use wall to the right
-		return atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
+		angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
 	}
-	else if(navigation_get_sensor(4) > CORRIDOR_WIDTH)
+	else if((navigation_get_sensor(2) + navigation_get_sensor(0)) < CORRIDOR_WIDTH)
 	{
 		// No wall to the right, use wall to the left
-		return atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
+		angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
+	}
+	
+	if(fabs(angle) > ACCEPTABLE_OFFSET_ANGLE)
+	{
+		return angle;
 	}
 	else
 	{
-		// Default, don't care about angle
 		return 0;
 	}
 }
@@ -166,34 +171,29 @@ float navigation_direction_regulation(float angleOffset)
 	// Ska vi inte reglera om vi närmar oss en vägg framför?
 	
 	int d;
-	if(navigation_get_sensor(4) > CORRIDOR_WIDTH)
+	if(gAlgorithm)
 	{
-		if(gAlgorithm)
-		{
-			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
+		d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
 		} else {
-			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
-		}
-		
-		if(abs(d) < ACCEPTABLE_DISTANCE_OFFSET)
-		{
-			return 0;
-		}
-		else
-		{
-			float dir = atanf(d * gKp);
-			if(dir < 0)
-			{
-				dir += 2*PI;
-			} else if(dir >= 2*PI)
-			{
-				dir -= 2*PI;
-			}
-			// Dir is between 0 and 2*PI radians
-			return dir;
-		}
+		d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
 	}
-	return 0;
+	if(abs(d) < ACCEPTABLE_DISTANCE_OFFSET)
+	{
+		return 0;
+	}
+	else
+	{
+		float dir = atanf(d * gKp);
+		if(dir < 0)
+		{
+			dir += 2*PI;
+		} else if(dir >= 2*PI)
+		{
+			dir -= 2*PI;
+		}
+		// Dir is between 0 and 2*PI radians
+		return dir;
+	}
 }
 
 uint8_t navigation_check_left_turn()
@@ -272,7 +272,7 @@ void navigation_fill_buffer()
 
 uint8_t navigation_get_sensor(int sensorNr)
 {
-	return medianBuffer[sensorNr];
+	return TWI_get_sensor(sensorNr);
 }
 
 //-------------------------------Interrupts--------------------------------

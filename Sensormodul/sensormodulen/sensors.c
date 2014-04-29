@@ -14,6 +14,7 @@
 #include <string.h>
 #include "sensors.h"
 #include "display.h"
+#include "twi.h"
 
 static uint8_t gSelectedSensor = 0;
 static uint8_t gSensorBuffer[8];
@@ -339,6 +340,7 @@ ISR(PCINT0_vect)
 		gSensorBuffer[7] = UL;
 		sensorDataFlag = true;
 	}
+	TWI_send_sensors(sensors_get_data(), 0);
 	sei();
 }
 
