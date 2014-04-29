@@ -1,4 +1,4 @@
-﻿/*
+﻿ /*
  * inverseKinematics.h
  *
  * Created: 4/10/2014 1:34:05 PM
@@ -9,11 +9,11 @@
 #ifndef INVERSEKINEMATICS_H_
 #define INVERSEKINEMATICS_H_
 
-#define coxa (float)56
-#define femur (float)66
-#define tibia (float)131
-#define femurAngleAddition (float)0.231 //0.2426
-#define tibiaAngleAddition (float)0.812 //(-3.1415/6)
+#define coxa (float)54
+#define femur (float)67
+#define tibia (float)132
+#define femurAngleAddition (float)(0.231-0.1) //0.2426
+#define tibiaAngleAddition (float)(0.812+0.05) //(-3.1415/6)
 #define centerToFrontLegsY (float)120
 #define centerToSideLegs (float)100
 #define centerToFrontLegs (float)135
@@ -38,32 +38,10 @@
 #define y0 (float) 0
 #define z0 (float) -120
 
-/*
-#define side1 (float)1
-#define side2 (float)1
-#define side3 (float)1
-#define side4 (float)(-1)
-#define side5 (float)(-1)
-#define side6 (float)(-1)
-*/
 
 #define Gamma0 (float) 0
 #define Beta0 (float) 1.875
 #define Alpha0 (float) 0.1406
-
-/*
-void LegOneGoto(float x,float y,float z, int servospeed);
-
-void LegGoto(float x,float y, int z, int servospeed, int side, int servo1, int servo2, int servo3);
-void moveLeg1too(float x, float y, float z, int servospeed);
-void moveLeg2too(float x, float y, float z, int servospeed);
-void moveLeg3too(float x, float y, float z, int servospeed);
-void moveLeg4too(float x, float y, float z, int servospeed);
-void moveLeg5too(float x, float y, float z, int servospeed);
-void moveLeg6too(float x, float y, float z, int servospeed);
-*/
-
-//New functions by Tobias
 
 /**
  * \brief 
