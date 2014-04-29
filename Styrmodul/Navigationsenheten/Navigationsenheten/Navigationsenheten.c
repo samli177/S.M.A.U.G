@@ -33,6 +33,7 @@ int main(void)
     {
 		if(TWI_sensor_flag())
 		{
+			
 			navigation_fill_buffer();
 		}
 		if(TWI_autonom_settings_flag())
@@ -64,11 +65,23 @@ int main(void)
 		}
 		else
 		{
-			if(TWI_command_flag()){
+			if(TWI_command_flag())
+			{
 				PORTA ^= (1<<PORTA1);
 				USART_SendCommand();
 			}
 		}
+		/*
+		TWI_send_float(C_ADDRESS, (float)navigation_get_sensor(0));
+		_delay_ms(200);
+		TWI_send_float(C_ADDRESS, (float)navigation_get_sensor(1));
+		_delay_ms(200);
+		TWI_send_float(C_ADDRESS, (float)navigation_get_sensor(2));
+		_delay_ms(200);
+		TWI_send_float(C_ADDRESS, 1023);
+		
+		_delay_ms(1000);
+		*/
 		USART_DecodeRxFIFO();
     }
 }
@@ -79,10 +92,10 @@ ISR(TIMER1_COMPA_vect)
 {
 	TCNT1 = 0;
 	
-	if(USART_ready())
+	/*if(USART_ready())
 	{
 		PORTA ^= (1<<PORTA0);
-	}
+	}*/
 }
 
 ISR(TIMER3_COMPA_vect)

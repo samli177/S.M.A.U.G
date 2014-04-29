@@ -53,7 +53,7 @@ void turn_left()
 	}
 	walk_forward();
 	_delay_ms(STEPPING_TIME);
-	while(navigation_get_sensor(4) < (CORRIDOR_WIDTH - 20) || (navigation_get_sensor(4) > (CORRIDOR_WIDTH - 20) && navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2)))
+	while(navigation_get_sensor(4) < (CORRIDOR_WIDTH - 20) ||  (navigation_get_sensor(3) > (CORRIDOR_WIDTH - 20) && navigation_get_sensor(4) > (CORRIDOR_WIDTH - 20) && navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2)) || (navigation_get_sensor(3) > (CORRIDOR_WIDTH / 2) && navigation_get_sensor(5) > (CORRIDOR_WIDTH - 20)))
 	{
 		if(gStatus)
 		{
@@ -62,7 +62,7 @@ void turn_left()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
 	}
-	for(int i = 0; i < 5; ++i)
+	for(int i = 0; i < 8; ++i)
 	{
 		walk_forward();
 	}
@@ -80,7 +80,7 @@ void turn_right()
 	}
 	walk_forward();
 	_delay_ms(STEPPING_TIME);
-	while(navigation_get_sensor(4) < (CORRIDOR_WIDTH - 20) || (navigation_get_sensor(4) > (CORRIDOR_WIDTH - 20) && navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2)))
+	while(navigation_get_sensor(4) < (CORRIDOR_WIDTH - 20) || (navigation_get_sensor(2) > (CORRIDOR_WIDTH - 20) && navigation_get_sensor(4) > (CORRIDOR_WIDTH - 20) && navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2))|| (navigation_get_sensor(2) > (CORRIDOR_WIDTH / 2) && navigation_get_sensor(5) > (CORRIDOR_WIDTH - 20)))
 	{
 		if(gStatus)
 		{
@@ -89,7 +89,7 @@ void turn_right()
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
 	}
-	for(int i = 0; i < 5; ++i)
+	for(int i = 0; i < 8; ++i)
 	{
 		walk_forward();
 	}

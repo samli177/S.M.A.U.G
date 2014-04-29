@@ -19,7 +19,7 @@
 #include "Navigation.h"
 #include <math.h>
 
-#define sensorBufferSize 5
+#define sensorBufferSize 7
 
 // 0 means use a right side algorithm.
 // 1 means use a left side algorithm.
@@ -42,8 +42,9 @@ uint8_t currentBufferLine = 0;
 
 //------------- Internal declarations ---------------
 
-static int compare(const void * a, const void * b);
+//static int compare(const void * a, const void * b);
 static void update_median();
+static uint8_t sortAndFilter(uint8_t data[sensorBufferSize]);
 
 //--------------- Internal functions ----------------
 
@@ -62,10 +63,10 @@ static void update_median();
  * Returns a positive number if a is larger than b, returns
  * 0 if a = b, and a negative number if b is larger than a.
  */
-int compare (const void * a, const void * b)
+/*int compare (const void * a, const void * b)
 {
 	return ( *(uint8_t*)a - *(uint8_t*)b );
-}
+}*/
 
 uint8_t sortAndFilter(uint8_t data[sensorBufferSize])
 {
