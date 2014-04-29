@@ -152,25 +152,21 @@ void navigation_set_autonomous_walk(uint8_t walk)
 float navigation_angle_offset()
 {
 	float angle = 0;
-	if (gAlgorithm && (navigation_get_sensor(2) + navigation_get_sensor(0)) < CORRIDOR_WIDTH)
+	if (gAlgorithm)
 	{
-		// Use wall to the left
-		angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
+		if(navigation_get_sensor(0) < CORRIDOR_WIDTH / 2 + 10)
+		{
+			// Use wall to the left
+			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
+		}
 	}
-	else if(gAlgorithm && ((navigation_get_sensor(1) + navigation_get_sensor(3)) < CORRIDOR_WIDTH))
+	else 
 	{
-		// No wall to the left, use wall to the right
-		angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
-	}
-	else if((navigation_get_sensor(1) + navigation_get_sensor(3)) < CORRIDOR_WIDTH)
-	{
-		// Use wall to the right
-		angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
-	}
-	else if((navigation_get_sensor(2) + navigation_get_sensor(0)) < CORRIDOR_WIDTH)
-	{
-		// No wall to the right, use wall to the left
-		angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
+		if(navigation_get_sensor(1) < CORRIDOR_WIDTH / 2 + 10)
+		{
+			// Use wall to the right
+			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
+		}
 	}
 	
 	if(fabs(angle) > ACCEPTABLE_OFFSET_ANGLE)
@@ -185,17 +181,22 @@ float navigation_angle_offset()
 
 float navigation_direction_regulation(float angleOffset)
 {
-	// ---------------------------------- Skum funktion ----------------------------------- (Jonas förklara...)
-	// Är positiv riktning åt vänster???
-	// Ska vi inte reglera om vi närmar oss en vägg framför?
-	
-	int d;
+	int d = 0;
 	if(gAlgorithm)
 	{
-		d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
-		} else {
-		d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
+		if(navigation_get_sensor(0) < CORRIDOR_WIDTH / 2 + 10)
+		{
+			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
+		}
 	}
+	else 
+	{
+		if(navigation_get_sensor(1) < CORRIDOR_WIDTH / 2 + 10)
+		{
+			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
+		}
+	}
+	
 	if(abs(d) < ACCEPTABLE_DISTANCE_OFFSET)
 	{
 		return 0;
@@ -217,11 +218,11 @@ float navigation_direction_regulation(float angleOffset)
 
 uint8_t navigation_check_left_turn()
 {
-	if(navigation_get_sensor(0) >= CORRIDOR_WIDTH && navigation_get_sensor(2) >= CORRIDOR_WIDTH)
+	if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH / 2 + 10) && navigation_get_sensor(2) >= (CORRIDOR_WIDTH / 2 + 10))
 	{
 		return 2;
 	}
-	else if(navigation_get_sensor(0) >= CORRIDOR_WIDTH)
+	else if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH - 10))
 	{
 		return 1;
 	}
@@ -233,11 +234,11 @@ uint8_t navigation_check_left_turn()
 
 uint8_t navigation_check_right_turn()
 {
-	if(navigation_get_sensor(1) >= CORRIDOR_WIDTH && navigation_get_sensor(3) >= CORRIDOR_WIDTH)
+	if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH / 2 + 10) && navigation_get_sensor(3) >= (CORRIDOR_WIDTH / 2 + 10))
 	{
 		return 2;
 	}
-	else if(navigation_get_sensor(1) >= CORRIDOR_WIDTH)
+	else if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH - 10))
 	{
 		return 1;
 	}
