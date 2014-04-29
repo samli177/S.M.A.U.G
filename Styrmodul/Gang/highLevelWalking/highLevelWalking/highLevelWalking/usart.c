@@ -231,6 +231,11 @@ void USART_SendValue(float flo)
 	
 }
 
+void USART_send_ready()
+{
+	USART_SendPacket('R', 0);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	uint8_t *len = 0;

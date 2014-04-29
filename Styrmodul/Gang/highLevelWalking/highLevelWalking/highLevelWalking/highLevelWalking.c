@@ -485,4 +485,6 @@ ISR(TIMER1_COMPA_vect)
 		move_to_std();
 	}
 	TCNT1 = 0;
+	
+	USART_send_ready();
 }

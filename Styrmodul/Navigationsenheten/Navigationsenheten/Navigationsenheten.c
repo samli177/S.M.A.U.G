@@ -78,6 +78,11 @@ ISR(TIMER1_COMPA_vect)
 	if(TWI_sensor_flag())
 	navigation_fill_buffer();
 	TCNT1 = 0;
+	
+	if(USART_ready())
+	{
+		PORTA ^= (1<<PORTA0);
+	}
 }
 
 ISR(TIMER3_COMPA_vect)
