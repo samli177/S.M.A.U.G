@@ -31,7 +31,7 @@ float gKp = 0.1;
 
 // 0 means autonomous walk is disabled.
 // 1 means autonomous walk is enabled.
-uint8_t gAutonomousWalk = 0;
+uint8_t gAutonomousWalk = 1;
 
 // Used to take the median of the most recent measurements.
 uint8_t sensorBuffer[8][sensorBufferSize];
@@ -67,6 +67,24 @@ int compare (const void * a, const void * b)
 	return ( *(uint8_t*)a - *(uint8_t*)b );
 }
 
+uint8_t sortAndFilter(uint8_t data[sensorBufferSize])
+{
+	uint8_t largest;
+	for (int i=0; i < sensorBufferSize-1; ++i)
+	{
+		for(int j = 0; j < sensorBufferSize - i - 1; ++j)
+		{
+			if(data[j] > data[j+1])
+			{
+				largest = data[j];
+				data[j] = data[j + 1];
+				data[j + 1] = largest;
+			}
+		}
+	}
+	return data[sensorBufferSize / 2];
+}
+
 /**
  * \brief 
  * Uses sensorBuffer to calculate the median of each sensor
@@ -83,8 +101,9 @@ void update_median()
 		{
 			temp[j] = sensorBuffer[i][j];
 		}
-		qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
-		medianBuffer[i] = temp[sensorBufferSize / 2];
+		//qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
+		medianBuffer[i] = sortAndFilter(temp);
+		//temp[sensorBufferSize / 2];
 	}
 }
 
