@@ -53,7 +53,7 @@ void turn_left()
 	}
 	walk_forward();
 	_delay_ms(STEPPING_TIME);
-	while(navigation_get_sensor(4) < CORRIDOR_WIDTH || ((navigation_get_sensor(1) + navigation_get_sensor(3)) > (CORRIDOR_WIDTH - 10) && navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2)))
+	while(navigation_get_sensor(4) < CORRIDOR_WIDTH || navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2))
 	{
 		if(gStatus)
 		{
@@ -97,7 +97,7 @@ void turn_around()
 	{
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
-	while(navigation_get_sensor(4) < CORRIDOR_WIDTH || (navigation_get_sensor(1) + navigation_get_sensor(3)) > (CORRIDOR_WIDTH - 10))
+	while(navigation_get_sensor(4) < CORRIDOR_WIDTH)
 	{
 		if(gStatus)
 		{
@@ -108,7 +108,7 @@ void turn_around()
 	}
 	if(gStatus)
 	{
-		//TWI_send_string(C_ADDRESS, "Corridor ahead, done turning around.");
+		TWI_send_string(C_ADDRESS, "Corridor ahead, done turning around.");
 	}
 }
 
@@ -124,7 +124,7 @@ void walk_forward()
 	{
 		//TWI_send_string(C_ADDRESS, "Found regulation parameters.");
 	}
-	int adjustmentRotation = (50 + 50 * angleOffset * 2.0/PI);
+	int adjustmentRotation = (50 + 50 * angleOffset * 2.0/PI + gSpeed*fabs(directionCompensationAngle));
 	if (adjustmentRotation >= 100)
 	{
 		adjustmentRotation = 100;
@@ -139,6 +139,7 @@ void walk_forward()
 		//TWI_send_string(C_ADDRESS, "Taking a step.");
 	}
 	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
+	//TWI_send_float(C_ADDRESS, adjustmentDirection);
 	_delay_ms(STEPPING_TIME / 2);
 	TWI_send_float(C_ADDRESS, adjustmentRotation);
 	_delay_ms(STEPPING_TIME / 2);
@@ -152,7 +153,7 @@ void autonomouswalk_walk()
 		{
 			turn_left();
 		}
-		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
+		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2 - 10)
 		{
 			walk_forward();
 		}
@@ -171,7 +172,7 @@ void autonomouswalk_walk()
 		{
 			turn_left();
 		}
-		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
+		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2 - 10)
 		{
 			walk_forward();
 		}

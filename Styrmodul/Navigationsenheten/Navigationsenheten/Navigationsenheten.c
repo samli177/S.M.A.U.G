@@ -28,7 +28,7 @@ int main(void)
 	DDRA |= (1<<PORTA0 | 1<<PORTA1);
 	
 	_delay_ms(5000);
-	navigation_set_autonomous_walk(0);
+	navigation_set_autonomous_walk(1);
     while(1)
     {
 		if(TWI_sensor_flag())

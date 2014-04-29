@@ -324,7 +324,7 @@ uint8_t USART_DecodeValueFIFO()
 			TWI_send_float(C_ADDRESS, *data);		
 		}
 	TWI_send_float(C_ADDRESS, foo.f);
-	PORTA ^= (1<<PORTA0);
+	
 	return 0;
 	}
 	

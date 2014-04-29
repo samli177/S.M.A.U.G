@@ -166,10 +166,6 @@ float navigation_angle_offset()
 
 float navigation_direction_regulation(float angleOffset)
 {
-	// ---------------------------------- Skum funktion ----------------------------------- (Jonas förklara...)
-	// Är positiv riktning åt vänster???
-	// Ska vi inte reglera om vi närmar oss en vägg framför?
-	
 	int d;
 	if(gAlgorithm)
 	{
@@ -198,11 +194,11 @@ float navigation_direction_regulation(float angleOffset)
 
 uint8_t navigation_check_left_turn()
 {
-	if(navigation_get_sensor(0) >= CORRIDOR_WIDTH && navigation_get_sensor(2) >= CORRIDOR_WIDTH)
+	if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH - 10) && navigation_get_sensor(2) >= (CORRIDOR_WIDTH / 2))
 	{
 		return 2;
 	}
-	else if(navigation_get_sensor(0) >= CORRIDOR_WIDTH)
+	else if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH - 10))
 	{
 		return 1;
 	}
@@ -214,11 +210,11 @@ uint8_t navigation_check_left_turn()
 
 uint8_t navigation_check_right_turn()
 {
-	if(navigation_get_sensor(1) >= CORRIDOR_WIDTH && navigation_get_sensor(3) >= CORRIDOR_WIDTH)
+	if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH - 10) && navigation_get_sensor(3) >= (CORRIDOR_WIDTH / 2))
 	{
 		return 2;
 	}
-	else if(navigation_get_sensor(1) >= CORRIDOR_WIDTH)
+	else if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH - 10))
 	{
 		return 1;
 	}
