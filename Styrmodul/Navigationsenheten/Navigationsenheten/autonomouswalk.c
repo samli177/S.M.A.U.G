@@ -53,7 +53,7 @@ void turn_left()
 	}
 	walk_forward();
 	_delay_ms(STEPPING_TIME);
-	while(navigation_get_sensor(4) < CORRIDOR_WIDTH || navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2))
+	while(navigation_get_sensor(4) < (CORRIDOR_WIDTH - 20) || (navigation_get_sensor(4) > (CORRIDOR_WIDTH - 20) && navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2)))
 	{
 		if(gStatus)
 		{
@@ -62,9 +62,13 @@ void turn_left()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
 	}
-	for(int i = 0; i < 3; ++i)
+	for(int i = 0; i < 5; ++i)
 	{
 		walk_forward();
+	}
+	if(gStatus)
+	{
+		TWI_send_string(C_ADDRESS, "Done turning left.");
 	}
 }
 
@@ -76,7 +80,7 @@ void turn_right()
 	}
 	walk_forward();
 	_delay_ms(STEPPING_TIME);
-	while(navigation_get_sensor(4) < CORRIDOR_WIDTH|| navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2))
+	while(navigation_get_sensor(4) < (CORRIDOR_WIDTH - 20) || (navigation_get_sensor(4) > (CORRIDOR_WIDTH - 20) && navigation_get_sensor(5) > (CORRIDOR_WIDTH / 2)))
 	{
 		if(gStatus)
 		{
@@ -85,9 +89,13 @@ void turn_right()
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		_delay_ms(STEPPING_TIME);
 	}
-	for(int i = 0; i < 3; ++i)
+	for(int i = 0; i < 5; ++i)
 	{
 		walk_forward();
+	}
+	if(gStatus)
+	{
+		TWI_send_string(C_ADDRESS, "Done turning right.");
 	}
 }
 
@@ -124,7 +132,7 @@ void walk_forward()
 	{
 		//TWI_send_string(C_ADDRESS, "Found regulation parameters.");
 	}
-	int adjustmentRotation = (50 + 50 * angleOffset * 2.0/PI + gSpeed*fabs(directionCompensationAngle));
+	int adjustmentRotation = (50 + 50 * angleOffset * (2.0/PI + fabs(directionCompensationAngle)));
 	if (adjustmentRotation >= 100)
 	{
 		adjustmentRotation = 100;
@@ -170,7 +178,7 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			turn_left();
+			turn_right();
 		}
 		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2 - 10)
 		{
@@ -178,7 +186,7 @@ void autonomouswalk_walk()
 		}
 		else if(navigation_check_left_turn() == 2)
 		{
-			turn_right();
+			turn_left();
 		}
 		else
 		{

@@ -136,19 +136,19 @@ public class LowerPanel extends JPanel {
         float l;
         for (int i = 0; i < leftFront.size(); i++) {
             l = (float) leftFront.get(leftFront.size() - 1 - i);
-            g.fillOval(xL - (int) l - 50, yU + i * 7 - 60, 5, 5);
+            g.fillOval(xL - (int) l * 2 - 10, yU + i * 7 - 80, 5, 5);
         }
         for (int i = 0; i < rightFront.size(); i++) {
             l = (float) rightFront.get(rightFront.size() - 1 - i);
-            g.fillOval(xR + (int) l + 50, yU + i * 7 - 60, 5, 5);
+            g.fillOval(xR + (int) l * 2 + 10, yU + i * 7 - 80, 5, 5);
         }
         for (int i = 0; i < leftBack.size(); i++) {
             l = (float) leftBack.get(leftBack.size() - 1 - i);
-            g.fillOval(xL - (int) l, yD + i * 7, 5, 5);
+            g.fillOval(xL - (int) l * 2 - 10, yD + i * 7, 5, 5);
         }
         for (int i = 0; i < rightBack.size(); i++) {
             l = (float) rightBack.get(rightBack.size() - 1 - i);
-            g.fillOval(xR + (int) l, yD + i * 7, 5, 5);
+            g.fillOval(xR + (int) l * 2 + 10, yD + i * 7, 5, 5);
         }
         for (int i = 0; i < front.size(); i++) {
             l = (float) front.get(front.size() - 1 - i);

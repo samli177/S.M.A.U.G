@@ -6,6 +6,8 @@ counter.c
 
 fifo.c
 
+gang.c
+
 highLevelWalking.c
 
 inverseKinematics.c

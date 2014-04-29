@@ -78,6 +78,11 @@ int main(void)
 ISR(TIMER1_COMPA_vect)
 {
 	TCNT1 = 0;
+	
+	if(USART_ready())
+	{
+		PORTA ^= (1<<PORTA0);
+	}
 }
 
 ISR(TIMER3_COMPA_vect)

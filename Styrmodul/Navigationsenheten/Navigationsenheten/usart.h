@@ -30,7 +30,7 @@ void USART_DecodeRxFIFO();
 void USART_Bounce();
 void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed);
 
-
+uint8_t USART_ready();
 
 
 
