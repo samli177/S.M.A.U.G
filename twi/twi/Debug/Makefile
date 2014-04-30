@@ -36,7 +36,10 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../twi.c
+../display.c \
+../fifo.c \
+../twi.c \
+../usart.c
 
 
 PREPROCESSING_SRCS += 
@@ -46,16 +49,28 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-twi.o
+display.o \
+fifo.o \
+twi.o \
+usart.o
 
 OBJS_AS_ARGS +=  \
-twi.o
+display.o \
+fifo.o \
+twi.o \
+usart.o
 
 C_DEPS +=  \
-twi.d
+display.d \
+fifo.d \
+twi.d \
+usart.d
 
 C_DEPS_AS_ARGS +=  \
-twi.d
+display.d \
+fifo.d \
+twi.d \
+usart.d
 
 OUTPUT_FILE_PATH +=twi.elf
 
@@ -68,6 +83,12 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
+
+
+
+
 
 
 

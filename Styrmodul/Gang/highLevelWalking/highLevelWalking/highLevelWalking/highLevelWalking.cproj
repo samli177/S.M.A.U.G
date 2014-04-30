@@ -121,6 +121,9 @@
     <Compile Include="fifo.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="gang.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="highLevelWalking.c">
       <SubType>compile</SubType>
     </Compile>

@@ -38,6 +38,7 @@ SUBDIRS :=
 C_SRCS +=  \
 ../counter.c \
 ../fifo.c \
+../gang.c \
 ../highLevelWalking.c \
 ../inverseKinematics.c \
 ../serialServoControl.c \
@@ -53,6 +54,7 @@ ASM_SRCS +=
 OBJS +=  \
 counter.o \
 fifo.o \
+gang.o \
 highLevelWalking.o \
 inverseKinematics.o \
 serialServoControl.o \
@@ -61,6 +63,7 @@ usart.o
 OBJS_AS_ARGS +=  \
 counter.o \
 fifo.o \
+gang.o \
 highLevelWalking.o \
 inverseKinematics.o \
 serialServoControl.o \
@@ -69,6 +72,7 @@ usart.o
 C_DEPS +=  \
 counter.d \
 fifo.d \
+gang.d \
 highLevelWalking.d \
 inverseKinematics.d \
 serialServoControl.d \
@@ -77,6 +81,7 @@ usart.d
 C_DEPS_AS_ARGS +=  \
 counter.d \
 fifo.d \
+gang.d \
 highLevelWalking.d \
 inverseKinematics.d \
 serialServoControl.d \
@@ -93,6 +98,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

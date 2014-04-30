@@ -14,6 +14,7 @@
 #include <string.h>
 #include "sensors.h"
 #include "display.h"
+#include "twi.h"
 
 static uint8_t gSelectedSensor = 0;
 static uint8_t gSensorBuffer[8];
@@ -156,7 +157,7 @@ int voltage_to_mm_short(float voltage)
 		}
 	}
 	
-	return 0;
+	return IRShort[12][1]*10;
 }
 
 int voltage_to_mm_long(float voltage)
@@ -187,7 +188,7 @@ int voltage_to_mm_long(float voltage)
 		}
 	}
 	
-	return 0;
+	return IRLong[14][1]*10;
 }void init_mux()
 {
 	DDRA |= 0b00111110;
@@ -339,6 +340,7 @@ ISR(PCINT0_vect)
 		gSensorBuffer[7] = UL;
 		sensorDataFlag = true;
 	}
+	TWI_send_sensors(sensors_get_data(), 0);
 	sei();
 }
 
