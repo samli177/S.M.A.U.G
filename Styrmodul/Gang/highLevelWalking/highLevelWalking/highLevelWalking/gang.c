@@ -39,6 +39,7 @@ int main(void)
     while(1)
     {
 		
+		
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
 		uint8_t d = USART_getDirection();
@@ -46,6 +47,12 @@ int main(void)
 		{
 			std_pos_flag = 0;
 			reset_counter_1();
+		}
+		if(s == 0 && r == 50 && d==0)
+		{
+			PORTD ^= (1<<PORTD5);
+			USART_send_ready();
+			_delay_ms(50);
 		}
 		
 		move_robot(d, r, s);
@@ -68,6 +75,8 @@ int main(void)
 
 		_delay_ms(5000);
 		*/
+		
+		
 		
 		USART_DecodeRxFIFO();
     }

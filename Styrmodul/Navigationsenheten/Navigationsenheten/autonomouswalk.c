@@ -58,7 +58,12 @@ void turn_left()
 			//TWI_send_string(C_ADDRESS, "Rotating right.");
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
-		_delay_ms(STEPPING_TIME);
+		//_delay_ms(STEPPING_TIME);
+		while(!(USART_ready()))
+		{
+			USART_DecodeRxFIFO();
+			_delay_ms(20);
+		}
 	}
 	for(int i = 0; i < 15; ++i)
 	{
@@ -83,7 +88,12 @@ void turn_right()
 			//TWI_send_string(C_ADDRESS, "Rotating right.");
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
-		_delay_ms(STEPPING_TIME);
+		//_delay_ms(STEPPING_TIME);
+		while(!(USART_ready()))
+		{
+			USART_DecodeRxFIFO();
+			_delay_ms(20);
+		}
 	}
 	for(int i = 0; i < 15; ++i)
 	{
@@ -108,7 +118,12 @@ void turn_around()
 			//TWI_send_string(C_ADDRESS, "Rotating right.");
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
-		_delay_ms(STEPPING_TIME);
+		//_delay_ms(STEPPING_TIME);
+		while(!(USART_ready()))
+		{
+			USART_DecodeRxFIFO();
+			_delay_ms(20);
+		}
 	}
 	if(gStatus)
 	{
@@ -143,10 +158,15 @@ void walk_forward()
 		//TWI_send_string(C_ADDRESS, "Taking a step.");
 	}
 	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
-	TWI_send_float(C_ADDRESS, adjustmentDirection);
-	_delay_ms(STEPPING_TIME / 2);
-	TWI_send_float(C_ADDRESS, adjustmentRotation);
-	_delay_ms(STEPPING_TIME / 2);
+	//TWI_send_float(C_ADDRESS, adjustmentDirection);
+	//_delay_ms(STEPPING_TIME / 2);
+	//TWI_send_float(C_ADDRESS, adjustmentRotation);
+	//_delay_ms(STEPPING_TIME / 2);
+	while(!(USART_ready()))
+	{
+		USART_DecodeRxFIFO();
+		_delay_ms(20);
+	}
 }
 
 void autonomouswalk_walk()
