@@ -7,7 +7,7 @@
 #define DISTANCE_MIDDLE_TO_SIDE 7.5   // cm
 #define CORRIDOR_WIDTH 80             // cm
 #define ACCEPTABLE_OFFSET_ANGLE 0.07   // radians
-#define ACCEPTABLE_DISTANCE_OFFSET 4  // cm
+#define ACCEPTABLE_DISTANCE_OFFSET 2  // cm
 #define HEIGHT_LIMIT 100              // cm
 #define PI 3.14159265
 

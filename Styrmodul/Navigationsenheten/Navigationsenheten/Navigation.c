@@ -155,7 +155,7 @@ float navigation_angle_offset()
 	float angle = 0;
 	if (gAlgorithm)
 	{
-		if(navigation_get_sensor(0) < CORRIDOR_WIDTH / 2 + 10)
+		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
 		{
 			// Use wall to the left
 			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
@@ -163,7 +163,7 @@ float navigation_angle_offset()
 	}
 	else 
 	{
-		if(navigation_get_sensor(1) < CORRIDOR_WIDTH / 2 + 10)
+		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
 		{
 			// Use wall to the right
 			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
@@ -185,14 +185,14 @@ float navigation_direction_regulation(float angleOffset)
 	int d = 0;
 	if(gAlgorithm)
 	{
-		if(navigation_get_sensor(0) < CORRIDOR_WIDTH / 2 + 10)
+		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
 		{
 			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
 		}
 	}
 	else 
 	{
-		if(navigation_get_sensor(1) < CORRIDOR_WIDTH / 2 + 10)
+		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
 		{
 			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
 		}

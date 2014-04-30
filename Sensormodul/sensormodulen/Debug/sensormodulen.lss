@@ -1039,31 +1039,29 @@ int main(void)
      49a:	68 de       	rcall	.-816    	; 0x16c <display_init>
 	sensors_init();
      49c:	9b d0       	rcall	.+310    	; 0x5d4 <sensors_init>
-	
+	display_text("Hello");
+     49e:	88 e0       	ldi	r24, 0x08	; 8
+     4a0:	91 e1       	ldi	r25, 0x11	; 17
+     4a2:	8b df       	rcall	.-234    	; 0x3ba <display_text>
 	// init TWI
 	TWI_init(S_ADDRESS);
-     49e:	80 e4       	ldi	r24, 0x40	; 64
-     4a0:	ce d7       	rcall	.+3996   	; 0x143e <TWI_init>
+     4a4:	80 e4       	ldi	r24, 0x40	; 64
+     4a6:	cb d7       	rcall	.+3990   	; 0x143e <TWI_init>
 	init_counters();
-     4a2:	37 de       	rcall	.-914    	; 0x112 <init_counters>
+     4a8:	34 de       	rcall	.-920    	; 0x112 <init_counters>
 	
 	set_counter_1(100);
-     4a4:	84 e6       	ldi	r24, 0x64	; 100
-     4a6:	90 e0       	ldi	r25, 0x00	; 0
-     4a8:	10 de       	rcall	.-992    	; 0xca <set_counter_1>
+     4aa:	84 e6       	ldi	r24, 0x64	; 100
+     4ac:	90 e0       	ldi	r25, 0x00	; 0
+     4ae:	0d de       	rcall	.-998    	; 0xca <set_counter_1>
 	set_counter_2(3000);
-     4aa:	88 eb       	ldi	r24, 0xB8	; 184
-     4ac:	9b e0       	ldi	r25, 0x0B	; 11
-     4ae:	1f de       	rcall	.-962    	; 0xee <set_counter_2>
+     4b0:	88 eb       	ldi	r24, 0xB8	; 184
+     4b2:	9b e0       	ldi	r25, 0x0B	; 11
+     4b4:	1c de       	rcall	.-968    	; 0xee <set_counter_2>
 	
 	// Activate interrupts
 	sei();
-     4b0:	78 94       	sei
-	
-	display_text("Hello");
-     4b2:	88 e0       	ldi	r24, 0x08	; 8
-     4b4:	91 e1       	ldi	r25, 0x11	; 17
-     4b6:	81 df       	rcall	.-254    	; 0x3ba <display_text>
+     4b6:	78 94       	sei
 				set_counter_2(2000);
 			} else {
 				set_counter_2(3000);
@@ -1084,7 +1082,7 @@ int main(void)
      4c2:	f1 f7       	brne	.-4      	; 0x4c0 <main+0x26>
      4c4:	00 c0       	rjmp	.+0      	; 0x4c6 <main+0x2c>
      4c6:	00 00       	nop
-	display_text("Hello");
+	
 	
 	while(1)
 	{	
