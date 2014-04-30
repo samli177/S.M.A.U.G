@@ -34,7 +34,7 @@ float gKp = 0.1;
 uint8_t gAutonomousWalk = 1;
 
 // Used to take the median of the most recent measurements.
-uint8_t sensorBuffer[8][sensorBufferSize];
+uint8_t sensorMedianBuffer[8][sensorBufferSize];
 uint8_t medianBuffer[8];
 
 // A help variable to be used in fill_buffer().
@@ -100,7 +100,7 @@ void update_median()
 		uint8_t temp[sensorBufferSize];
 		for(int j = 0; j < sensorBufferSize; ++j)
 		{
-			temp[j] = sensorBuffer[i][j];
+			temp[j] = sensorMedianBuffer[i][j];
 		}
 		//qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
 		medianBuffer[i] = sortAndFilter(temp);
@@ -160,6 +160,11 @@ float navigation_angle_offset()
 			// Use wall to the left
 			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 		}
+		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
+		{
+			// Use wall to the right
+			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
+		}
 	}
 	else 
 	{
@@ -167,6 +172,11 @@ float navigation_angle_offset()
 		{
 			// Use wall to the right
 			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
+		}
+		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
+		{
+			// Use wall to the left
+			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 		}
 	}
 	
@@ -251,7 +261,7 @@ uint8_t navigation_check_right_turn()
 
 uint8_t navigation_detect_low_pass_obsticle()
 {
-	if (navigation_get_sensor(7) < HEIGHT_LIMIT)
+	if (navigation_get_sensor(sensorBufferSize) < HEIGHT_LIMIT)
 	{
 		return 1;
 	}
@@ -280,7 +290,7 @@ void navigation_fill_buffer()
 {
 	for(int i = 0; i < 8; ++i)
 	{
-		sensorBuffer[i][currentBufferLine] = TWI_get_sensor(i);
+		sensorMedianBuffer[i][currentBufferLine] = TWI_get_sensor(i);
 	}
 	if(currentBufferLine == sensorBufferSize - 1)
 	{
@@ -288,12 +298,19 @@ void navigation_fill_buffer()
 	} else {
 		currentBufferLine += 1;
 	}
-	update_median();
+	//update_median();
 }
 
 uint8_t navigation_get_sensor(int sensorNr)
 {
-	return TWI_get_sensor(sensorNr);
+	uint8_t temp[sensorBufferSize];
+	for(int j = 0; j < sensorBufferSize; ++j)
+	{
+		temp[j] = sensorMedianBuffer[sensorNr][j];
+	}
+	//qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
+	return sortAndFilter(temp);
+	//return TWI_get_sensor(sensorNr);
 }
 
 //-------------------------------Interrupts--------------------------------
