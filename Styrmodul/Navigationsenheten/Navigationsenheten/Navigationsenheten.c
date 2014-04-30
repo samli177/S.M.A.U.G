@@ -31,10 +31,11 @@ int main(void)
 	navigation_set_autonomous_walk(0);
     while(1)
     {
-		if(TWI_sensor_flag())
+		/*if(TWI_sensor_flag())
 		{
+			PORTA ^= (1<<PORTA1);
 			navigation_fill_buffer();
-		}
+		}*/
 		if(TWI_autonom_settings_flag())
 		{
 			uint8_t sett = TWI_get_autonom_settings();
@@ -79,14 +80,10 @@ int main(void)
 ISR(TIMER1_COMPA_vect)
 {
 	TCNT1 = 0;
-	
-	/*if(USART_ready())
-	{
-		PORTA ^= (1<<PORTA0);
-	}*/
 }
 
 ISR(TIMER3_COMPA_vect)
 {
+	//TWI_send_float(C_ADDRESS, (float)navigation_get_sensor(0));
 	TCNT3 = 0;
 }
