@@ -13,7 +13,7 @@
 #define femur (float)67
 #define tibia (float)132
 #define femurAngleAddition (float)(0.231-0.1) //0.2426
-#define tibiaAngleAddition (float)(0.812+0.05) //(-3.1415/6)
+#define tibiaAngleAddition (float)(0.812-0.25) //(-3.1415/6)
 #define centerToFrontLegsY (float)120
 #define centerToSideLegs (float)100
 #define centerToFrontLegs (float)135

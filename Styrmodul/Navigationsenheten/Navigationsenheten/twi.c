@@ -13,6 +13,7 @@
 #include <string.h>
 #include "twi.h"
 #include "fifo.h"
+#include "Navigation.h"
 
 //------------------Internal declarations---------------------------------
 
@@ -201,8 +202,8 @@ uint8_t sweepFlag_ = 0;
 
 
 // ------------- FIFO for TWI --------------------------------------------
-MK_FIFO(4096); // use 4 kB
-DEFINE_FIFO(gTwiFIFO, 4096);
+MK_FIFO(1); // use 1 B
+DEFINE_FIFO(gTwiFIFO, 1);
 
 
 //-------------- Initialize ----------------------------------------------------
@@ -671,6 +672,7 @@ void get_sensor_from_bus()
 		}
 		servo = get_data();
 		sensorFlag_ = 1;
+		navigation_fill_buffer();
 	}
 	else
 	{

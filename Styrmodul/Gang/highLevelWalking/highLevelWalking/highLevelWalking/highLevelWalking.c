@@ -32,6 +32,7 @@ struct LegData
 	float newPosy;
 	float prevPosx;
 	float prevPosy;
+	float prevPosz;
 	float prevAngleGamma;
 	float prevAngleBeta;
 	float prevAngleAlpha;
@@ -47,6 +48,7 @@ struct LegData
 	int servoGamma;
 	int servoBeta;
 	int servoAlpha;
+	int climbing;
 };
 
 float newPosxWB;
@@ -108,7 +110,7 @@ void initvar()
 	speedMultiplier = 1500;
 	speed = 300;
 	iterations = 5;
-	maxStepLength = 60;
+	maxStepLength = 40;
 	stdLength = sqrtf(x0_1*x0_1 + y0_1*y0_1);
 	
 
@@ -164,6 +166,7 @@ void step_start(struct LegData* leg)
 {
 	leg->prevPosx = leg->newPosx;
 	leg->prevPosy = leg->newPosy;
+	leg->prevPosz = leg->newPosz;
 	leg->prevAngleAlpha = leg->newAngleAlpha;
 	leg->prevAngleBeta = leg->newAngleBeta;
 	leg->prevAngleGamma = leg->newAngleGamma;
@@ -173,7 +176,7 @@ void step_part1_calculator(struct LegData* leg)
 {
 	newPosxWB = leg->lift * maxStepLength / stepMax * (xDirection + leg->xRot) * stepScaling;
 	newPosyWB = leg->lift * maxStepLength / stepMax * (yDirection + leg->yRot) * stepScaling;
-	leg->newPosz = z;
+	//leg->newPosz = z;
 }
 
 void step_part2_calculator(struct LegData* leg)
@@ -329,28 +332,43 @@ void move_leg(struct LegData* leg, float n)
 {
 	if(leg->lift == 1 && n != iterations+1)
 	{
-		tempz = z + 30;
+		tempz = leg->newPosz + 30;
 	}
 	else
 	{
-		tempz = z;
+		tempz = leg->newPosz;
 	}
 	if(n != 0 && n != iterations+1)
 	{
 		leg->temp1AngleGamma = leg->temp2AngleGamma;
 		leg->temp1AngleBeta = leg->temp2AngleBeta;
 		leg->temp1AngleAlpha = leg->temp2AngleAlpha;
-		tempx = leg->prevPosx + n*(leg->newPosx - leg->prevPosx)/iterations;
+		if(leg->climbing)
+		{
+			tempx = leg->prevPosx + 40 + n*(leg->newPosx - leg->prevPosx)/iterations - n*40/iterations;
+		}
+		else
+		{
+			tempx = leg->prevPosx + n*(leg->newPosx - leg->prevPosx)/iterations;
+		}
 		tempy = leg->prevPosy + n*(leg->newPosy - leg->prevPosy)/iterations;
 	}
 	else if (n == iterations+1)
 	{
 		tempx = leg->newPosx;
 		tempy = leg->newPosy;
+		leg->climbing = 0;
 	}
 	else
 	{
-		tempx = leg->prevPosx;
+		if(leg->climbing)
+		{
+			tempx = leg->prevPosx + 40;
+		}
+		else
+		{
+			tempx = leg->prevPosx;
+		}
 		tempy = leg->prevPosy;
 	}
 	calc_d(tempx, tempy, tempz);
@@ -376,7 +394,7 @@ void leg_motion()
 		move_leg(&leg5,i);
 		move_leg(&leg6,i);
 		servoAction();
-		_delay_ms(40);
+		_delay_ms(20);
 	}
 }
 
@@ -441,5 +459,17 @@ void move_to_std()
 	leg_motion();
 
 	
+}
+
+void climb(float height)
+{
+	leg6.newPosz = leg6.newPosz + height;
+	leg6.climbing = 1;
+	move_robot(0,50,75);
+	_delay_ms(5000);
+	leg1.newPosz = leg1.newPosz + height;
+	leg1.climbing = 1;
+	move_robot(0,50,75);
+	_delay_ms(5000);
 }
 

@@ -33,6 +33,7 @@ int main(void)
 {
 	init();
 	sei();
+	
 	_delay_ms(500);
 	while(1)
 	{
@@ -41,14 +42,14 @@ int main(void)
 		USART_DecodeRxFIFO();
 		if(TWI_sensor_flag())
 		{
-			USART_SendSensors();	
+			USART_SendSensors();
 		}
 		decode_message_TwiFIFO();
 		// TODO: put this on timer
 		//if(TWI_send_status(ST_ADRESS))
 			//PORTA ^= (1<<PORTA1);
-			
-		_delay_ms(20);
+		TWI_send_string(S_ADDRESS, "Hejsan lulzi!");
+		_delay_ms(2000);
 	}
 }
 
@@ -58,9 +59,11 @@ int main(void)
 void init()
 {
 	DDRA |= (1<<PORTA0|1<<PORTA1); //set status diodes to outputs
+	DDRC |= (1<<PORTC6|1<<PORTC7); //set status diodes to outputs
 	USART_init();
 	TWI_init(C_ADDRESS);
 	init_counters();
+	set_counter_2(2000);
 }
 
 //Interrupt vectors

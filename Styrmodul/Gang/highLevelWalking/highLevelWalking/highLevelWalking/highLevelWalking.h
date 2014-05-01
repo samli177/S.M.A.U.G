@@ -136,4 +136,6 @@ void leg_motion();
  */
 void move_to_std();
 
+void climb(float height);
+
 #endif /* HIGHLEVELWALKING_H_ */

@@ -157,7 +157,7 @@ int voltage_to_mm_short(float voltage)
 		}
 	}
 	
-	return 0;
+	return IRShort[12][1]*10;
 }
 
 int voltage_to_mm_long(float voltage)
@@ -188,7 +188,7 @@ int voltage_to_mm_long(float voltage)
 		}
 	}
 	
-	return 0;
+	return IRLong[14][1]*10;
 }void init_mux()
 {
 	DDRA |= 0b00111110;
