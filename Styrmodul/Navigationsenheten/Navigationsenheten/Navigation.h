@@ -89,6 +89,15 @@ void navigation_set_autonomous_walk(uint8_t walk);
 
 /**
  * \brief 
+ * A function that causes a delay while the robot is not ready
+ * to take another step, it awaits a new flag from the USART.
+ * 
+ * \return void
+ */
+void navigation_stepping_delay();
+
+/**
+ * \brief 
  * Returns the offset angle of the robot during normal
  * normal walking in a corridor.
  *

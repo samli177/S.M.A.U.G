@@ -150,6 +150,17 @@ void navigation_set_autonomous_walk(uint8_t walk)
 	gAutonomousWalk = walk;
 }
 
+void navigation_stepping_delay()
+{
+	int temp = 20;
+	while(USART_ready() == 0)
+	{
+		USART_DecodeRxFIFO();
+		_delay_ms(20);
+		PORTA ^= (1<<PORTA1);
+	}
+}
+
 float navigation_angle_offset()
 {
 	float angle = 0;

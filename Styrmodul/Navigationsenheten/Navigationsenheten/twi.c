@@ -112,7 +112,7 @@ static void reset_TWI();
 static void get_control_settings_from_bus();
 /**
  * \brief 
- * Retrieves the autonom settings from the bus and 
+ * Retrieves the autonomous settings from the bus and 
  * saves them in the appropriate variable.
  * 
  * \return void

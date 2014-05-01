@@ -38,7 +38,7 @@ int main(void)
 	
     while(1)
     {
-		/*
+		
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
 		uint8_t d = USART_getDirection();
@@ -49,10 +49,18 @@ int main(void)
 		}
 		
 		move_robot(d, r, s);
-
-		*/
 		
 		
+		if(r == 50 && s == 0 && d == 0)
+		{
+			_delay_ms(50);
+			PORTD ^= (1<<PORTD5);
+			cli();
+			USART_send_ready();
+			sei();
+		}
+		
+		/*
 		for(int i = 0; i < 5; ++i)
 		{
 			move_robot(22,50,100);
@@ -65,7 +73,7 @@ int main(void)
 		_delay_ms(5000);
 		
 		//climb(30);
-		
+		*/
 		USART_DecodeRxFIFO();
     }
 }

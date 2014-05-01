@@ -51,16 +51,16 @@ void turn_left()
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning left.");
 	}
-	for(int i = 0; i < 18; ++i)
+	for(int i = 0; (i < 20 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		if(gStatus)
 		{
 			//TWI_send_string(C_ADDRESS, "Rotating right.");
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
-		_delay_ms(STEPPING_TIME);
+		navigation_stepping_delay();
 	}
-	for(int i = 0; i < 15; ++i)
+	for(int i = 0; (i < 15 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -76,16 +76,16 @@ void turn_right()
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning right.");
 	}
-	for(int i = 0; i < 20; ++i)
+	for(int i = 0; (i < 20 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		if(gStatus)
 		{
 			//TWI_send_string(C_ADDRESS, "Rotating right.");
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
-		_delay_ms(STEPPING_TIME);
+		navigation_stepping_delay();
 	}
-	for(int i = 0; i < 15; ++i)
+	for(int i = 0; (i < 15 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -101,14 +101,14 @@ void turn_around()
 	{
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
-	for(int i = 0; i < 37; ++i)
+	for(int i = 0; (i < 41 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		if(gStatus)
 		{
 			//TWI_send_string(C_ADDRESS, "Rotating right.");
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
-		_delay_ms(STEPPING_TIME);
+		navigation_stepping_delay();
 	}
 	if(gStatus)
 	{
@@ -143,10 +143,9 @@ void walk_forward()
 		//TWI_send_string(C_ADDRESS, "Taking a step.");
 	}
 	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
-	TWI_send_float(C_ADDRESS, adjustmentDirection);
-	_delay_ms(STEPPING_TIME / 2);
-	TWI_send_float(C_ADDRESS, adjustmentRotation);
-	_delay_ms(STEPPING_TIME / 2);
+	//TWI_send_float(C_ADDRESS, adjustmentDirection);
+	navigation_stepping_delay();
+	//TWI_send_float(C_ADDRESS, adjustmentRotation);
 }
 
 void autonomouswalk_walk()
@@ -155,7 +154,7 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_left_turn() == 2)
 		{
-			for(int i = 0;i < 3; ++i)
+			for(int i = 0;(i < 3 && TWI_get_autonom_settings() != 0); ++i)
 			{
 				walk_forward();
 			}
@@ -178,7 +177,7 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			for(int i = 0;i < 3; ++i)
+			for(int i = 0;(i < 3 && TWI_get_autonom_settings() != 0); ++i)
 			{
 				walk_forward();
 			}
