@@ -107,21 +107,30 @@
 
 // -- Declarations --
 
-void initServoSerial();
-uint8_t servoCheckRxComplete();
-uint8_t servoCheckTxReady();
-void servolWriteByte(uint8_t DataByteOut);
-uint8_t servoReadByte();
-void sendServoPacket(uint8_t ID, uint8_t instruction, uint8_t parametersLength);
-void servoGoto(uint8_t ID, double angle, uint16_t speed);
-void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle);
-void servoRetrunLevel(uint8_t ID, uint8_t level);
-void servoTorqueLimit(uint8_t ID, uint16_t maxTorque);
+void SERVO_init();
 
-uint16_t servoGetPosition(uint8_t ID);
-void servoAction();
-void servoBufferPosition(uint8_t ID, double angle, uint16_t speed);
+// -- Private functions --
 
+// TODO: declare static, write descriptions
+uint8_t servo_check_rx_complete();
+uint8_t servo_check_tx_ready();
+void servo_write_byte(uint8_t DataByteOut);
+uint8_t servo_read_byte(); 
+void send_servo_packet(uint8_t ID, uint8_t instruction, uint8_t parametersLength);
+
+
+// -- Public functions --
+void SERVO_goto(uint8_t ID, double angle, uint16_t speed);
+void SERVO_set_angle_limit(uint8_t ID, double minAngle, double maxAngle);
+void SERVO_set_return_level(uint8_t ID, uint8_t level);
+void SERVO_set_torque_limit(uint8_t ID, uint16_t maxTorque);
+
+uint16_t SERVO_get_position(uint8_t ID);
+
+void SERVO_action();
+void SERVO_buffer_position(uint8_t ID, double angle, uint16_t speed);
+
+void SERVO_update_EEPROM(uint8_t ID);
 void SERVO_set_return_delay_time(uint8_t ID, uint8_t delay);
 
 

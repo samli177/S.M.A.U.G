@@ -157,11 +157,11 @@ void LegGoto(float x,float y, int z, int servospeed, int side, int servo1, int s
 	beta = 3.1415 - acosf((femur*femur+tibia*tibia-d*d)/(2*femur*tibia));
 	alpha = acosf((femur*femur-tibia*tibia+d*d)/((float)2*femur*d))-asinf(fabs(z)/d);
 	
-	servoGoto(servo1, gamma, servospeed);
+	SERVO_goto(servo1, gamma, servospeed);
 	_delay_ms(1);
-	servoGoto(servo2, side*(alpha + femurAngleAddition),servospeed);
+	SERVO_goto(servo2, side*(alpha + femurAngleAddition),servospeed);
 	_delay_ms(1);
-	servoGoto(servo3, side*(-beta + tibiaAngleAddition),servospeed);
+	SERVO_goto(servo3, side*(-beta + tibiaAngleAddition),servospeed);
 }
 
 

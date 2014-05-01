@@ -353,9 +353,9 @@ void move_leg(struct LegData* leg, float n)
 	speedAlpha = fabsf(leg->temp1AngleAlpha - leg->temp2AngleAlpha)*speedMultiplier;
 	speedBeta = fabsf(leg->temp1AngleBeta - leg->temp2AngleBeta)*speedMultiplier;
 	speedGamma = fabsf(leg->temp1AngleGamma - leg->temp2AngleGamma)*speedMultiplier;
-	servoBufferPosition(leg->servoAlpha, leg->side *(leg->temp2AngleAlpha + femurAngleAddition),(int)speedAlpha);
-	servoBufferPosition(leg->servoBeta,leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition),(int)speedBeta);
-	servoBufferPosition(leg->servoGamma, leg->temp2AngleGamma,(int)speedGamma);
+	SERVO_buffer_position(leg->servoAlpha, leg->side *(leg->temp2AngleAlpha + femurAngleAddition),(int)speedAlpha);
+	SERVO_buffer_position(leg->servoBeta,leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition),(int)speedBeta);
+	SERVO_buffer_position(leg->servoGamma, leg->temp2AngleGamma,(int)speedGamma);
 }
 void leg_motion()
 {
@@ -368,7 +368,7 @@ void leg_motion()
 		move_leg(&leg4,i);
 		move_leg(&leg5,i);
 		move_leg(&leg6,i);
-		servoAction();
+		SERVO_action();
 		_delay_ms(40);
 	}
 }
@@ -417,15 +417,15 @@ int main(void)
 	//servoTx;
 	
 	sei();
-	initServoSerial(); //Init servos
-	servoRetrunLevel(BROADCASTING_ID, 1);
+	SERVO_init(); //Init servos
+	
 	
 	USART_init();
 	init_counters();
 	set_counter_1(10000);
 	initvar();
 	
-/*
+	
 	moveLeg1too(x0_1, y0_1, z0, speed);
 	moveLeg2too(x0_2, y0_2, z0, speed);
 	moveLeg3too(x0_3, y0_3, z0, speed);
@@ -433,16 +433,17 @@ int main(void)
 	moveLeg5too(x0_5, y0_5, z0, speed);
 	moveLeg6too(x0_6, y0_6, z0, speed);
 	
-	*/
 	
-	// ------TEMP-------
-
+	// ------ TESTCODE FOR READING SERVO -------
+	
 	//servoGoto(1, 3.14/3, 0x200);
-	SERVO_set_return_delay_time(BROADCASTING_ID, 0xfa);
-	uint16_t possition = servoGetPosition(1);
-	USART_SendValue(possition);
+	SERVO_update_EEPROM(BROADCASTING_ID); // NOTE: needs to run once for SERVO_get position to work
+	uint16_t position = SERVO_get_position(1);
+	USART_SendValue(position);
+	
 	//----------------------------
-
+	
+	
 	_delay_ms(5000);
 	
 	reset_counter_1();
