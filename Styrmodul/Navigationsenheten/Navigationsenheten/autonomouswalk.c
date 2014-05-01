@@ -60,7 +60,7 @@ void turn_left()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}
-	for(int i = 0; (i < 15 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -85,7 +85,7 @@ void turn_right()
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}
-	for(int i = 0; (i < 15 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -101,7 +101,7 @@ void turn_around()
 	{
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
-	for(int i = 0; (i < 41 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 40 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		if(gStatus)
 		{

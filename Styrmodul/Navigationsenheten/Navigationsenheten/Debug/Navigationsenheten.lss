@@ -223,7 +223,7 @@ void turn_around()
 	{
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
-	for(int i = 0; (i < 41 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 40 && TWI_get_autonom_settings() != 0); ++i)
      13a:	19 f0       	breq	.+6      	; 0x142 <turn_around+0x2c>
      13c:	f9 d6       	rcall	.+3570   	; 0xf30 <TWI_get_autonom_settings>
      13e:	81 11       	cpse	r24, r1
@@ -250,7 +250,7 @@ void turn_around()
 
 void turn_around()
 {
-     154:	c9 e2       	ldi	r28, 0x29	; 41
+     154:	c8 e2       	ldi	r28, 0x28	; 40
      156:	d0 e0       	ldi	r29, 0x00	; 0
      158:	f1 cf       	rjmp	.-30     	; 0x13c <turn_around+0x26>
 	}
@@ -422,7 +422,7 @@ void turn_right()
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}
-	for(int i = 0; (i < 15 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		walk_forward();
      23e:	90 df       	rcall	.-224    	; 0x160 <walk_forward>
@@ -432,7 +432,7 @@ void turn_right()
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}
-	for(int i = 0; (i < 15 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
      242:	19 f0       	breq	.+6      	; 0x24a <turn_right+0x3a>
      244:	75 d6       	rcall	.+3306   	; 0xf30 <TWI_get_autonom_settings>
      246:	81 11       	cpse	r24, r1
@@ -460,7 +460,7 @@ void turn_right()
      25c:	c4 e1       	ldi	r28, 0x14	; 20
      25e:	d0 e0       	ldi	r29, 0x00	; 0
      260:	ea cf       	rjmp	.-44     	; 0x236 <turn_right+0x26>
-     262:	cf e0       	ldi	r28, 0x0F	; 15
+     262:	cc e0       	ldi	r28, 0x0C	; 12
      264:	d0 e0       	ldi	r29, 0x00	; 0
      266:	ee cf       	rjmp	.-36     	; 0x244 <turn_right+0x34>
 	}
@@ -520,7 +520,7 @@ void turn_left()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}
-	for(int i = 0; (i < 15 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		walk_forward();
      29c:	61 df       	rcall	.-318    	; 0x160 <walk_forward>
@@ -530,7 +530,7 @@ void turn_left()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}
-	for(int i = 0; (i < 15 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
      2a0:	19 f0       	breq	.+6      	; 0x2a8 <turn_left+0x3a>
      2a2:	46 d6       	rcall	.+3212   	; 0xf30 <TWI_get_autonom_settings>
      2a4:	81 11       	cpse	r24, r1
@@ -558,7 +558,7 @@ void turn_left()
      2ba:	c4 e1       	ldi	r28, 0x14	; 20
      2bc:	d0 e0       	ldi	r29, 0x00	; 0
      2be:	ea cf       	rjmp	.-44     	; 0x294 <turn_left+0x26>
-     2c0:	cf e0       	ldi	r28, 0x0F	; 15
+     2c0:	cc e0       	ldi	r28, 0x0C	; 12
      2c2:	d0 e0       	ldi	r29, 0x00	; 0
      2c4:	ee cf       	rjmp	.-36     	; 0x2a2 <turn_left+0x34>
 	}
