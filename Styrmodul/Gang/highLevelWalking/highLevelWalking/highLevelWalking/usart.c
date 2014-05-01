@@ -231,6 +231,11 @@ void USART_SendValue(float flo)
 	
 }
 
+void USART_send_ready()
+{
+	USART_SendPacket('R', 0);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	uint8_t *len = 0;
@@ -384,7 +389,6 @@ ISR (USART0_RX_vect)
 				data = (1<<5)^data;
 				gInvertNextFlag = 0;
 			}
-			
 			
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding

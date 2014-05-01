@@ -15,27 +15,161 @@
 #include "usart.h"
 #include "fifo.h"
 
+//------------------Internal declarations---------------------------------
+
+/**
+ * \brief 
+ * Sets the registers for the module to
+ * acknowledge the SCL and SDA lines
+ * 
+ * \return void
+ */
 static void set_twi_reciever_enable();
+/**
+ * \brief 
+ * To be activated when something unexpected
+ * has happened on the bus. Error() determines
+ * the correct action to be taken.
+ * 
+ * \return void
+ */
 static void Error();
+/**
+ * \brief 
+ * Sets the registers to send a START on the
+ * TWI bus.
+ * 
+ * \return void
+ */
 static void start_bus();
+/**
+ * \brief 
+ * Sets the registers to send a STOP on the
+ * TWI bus.
+ * 
+ * \return void
+ */
 static void stop_bus();
+/**
+ * \brief 
+ * Sets the registers to release the TWI bus
+ * and enter possible slave receiver mode in case
+ * of arbitration on the TWI bus.
+ * 
+ * \return void
+ */
 static void clear_int();
+/**
+ * \brief 
+ * Picks out the data from the TWI data register.
+ * 
+ * \return uint8_t
+ * Returns the byte received on the TWI bus.
+ */
 static uint8_t get_data();
+/**
+ * \brief 
+ * Sets the data to be sent, sends it and waits for the hardware
+ * to complete the sending.
+ *
+ * \param data
+ * The byte to be sent
+ *
+ * \return void
+ */
 static void send_data_and_wait(uint8_t data);
+/**
+ * \brief 
+ * Waits for the hardware to complete the TWI function.
+ * 
+ * \return void
+ */
 static void wait_for_bus();
 
+/**
+ * \brief 
+ * Resets the assistance variables for the TWI
+ * retrieve functions.
+ * 
+ * \return void
+ */
 static void stop_twi();
+/**
+ * \brief 
+ * Resets the TWI to be able to receive the 
+ * next byte.
+ * 
+ * \return void
+ */
 static void reset_TWI();
+/**
+ * \brief 
+ * Retrieves the control settings from the bus and 
+ * saves them in the appropriate variable.
+ * 
+ * \return void
+ */
 static void get_control_settings_from_bus();
+/**
+ * \brief 
+ * Retrieves the autonom settings from the bus and 
+ * saves them in the appropriate variable.
+ * 
+ * \return void
+ */
 static void get_autonom_settings_from_bus();
+/**
+ * \brief 
+ * Retrieves a byte from the bus and adds it to 
+ * the end of the current message.
+ * 
+ * \return void
+ */
 static void get_char_from_bus();
+/**
+ * \brief 
+ * Retrieves the value for the sweep from the 
+ * bus.
+ * 
+ * \return void
+ */
 static void get_sweep_from_bus();
+/**
+ * \brief 
+ * Retrieves the command from the bus and adds
+ * it to the appropriate variable.
+ * 
+ * \return void
+ */
 static void get_command_from_bus();
+/**
+ * \brief 
+ * Retrieves the float from the bus and adds
+ * it to the appropriate variable.
+ * 
+ * \return void
+ */
 static void get_float_from_bus();
+/**
+ * \brief 
+ * Retrieves the sensors from the bus and adds
+ * them to a buffer, which is translated to the 
+ * appropriate variable in case all sensors are 
+ * properly received.
+ * 
+ * \return void
+ */
 static void get_sensor_from_bus();
+/**
+ * \brief 
+ * Retrieves the elevation from bus and adds it 
+ * to the current elevation value.
+ * 
+ * \return void
+ */
 static void get_elevation_from_bus();
 
-// Global variables for response functions
+//------------------------ Global variables for response functions--------
 uint8_t myAdress;
 char message[255];
 int messageCounter;
@@ -54,11 +188,11 @@ int elevation;
 uint8_t floatMessage[4];
 int floatCounter;
 
-//Global variables for the interrupts
+//-----------Global variables for the interrupts--------------------------
 uint8_t instruction;
 int currentInstruction;
 
-//Flags for new data, should be set 0 when read 1
+//------------Flags for new data, should be set 0 when read 1-------------
 uint8_t sensorFlag_ = 0;
 uint8_t commandFlag_ = 0;
 uint8_t controlSettingsFlag_ = 0;
@@ -67,11 +201,12 @@ uint8_t elevationFlag_ = 0;
 uint8_t sweepFlag_ = 0;
 
 
-// define FIFO for received packets (USART)
+// ------------- FIFO for TWI --------------------------------------------
 MK_FIFO(4096); // use 4 kB
 DEFINE_FIFO(gTwiFIFO, 4096);
 
 
+//-------------- Initialize ----------------------------------------------------
 void TWI_init(uint8_t moduleAdress)
 {
 	myAdress = moduleAdress;
@@ -105,10 +240,11 @@ void TWI_init(uint8_t moduleAdress)
 	}
 }
 
+// -------------- Bus functions ------------------------------------------
 union Union_floatcast
 {
 	float f;
-	char s[sizeof(float)];
+	char s[sizeof(float)];	
 };
 
 void set_twi_reciever_enable()
@@ -160,6 +296,7 @@ void wait_for_bus()
 	while (!(TWCR & (1<<TWINT)));
 }
 
+//---------------- Send funcitons for the TWI ----------------------------
 uint8_t TWI_send_status(uint8_t adr)
 {
 	start_bus();
@@ -509,7 +646,7 @@ uint8_t TWI_send_something(uint8_t adr, uint8_t instruction, uint8_t packet)
 	return 1;
 }
 
-//------------------------------------------------------------------------------------------
+//-----------------------------Receive functions -------------------------
 
 void stop_twi()
 {
@@ -580,7 +717,15 @@ void get_float_from_bus()
 
 void get_elevation_from_bus()
 {
-	elevation += get_data();
+	int ele = get_data();
+	if(ele == 0)
+	{
+		elevation -= 1;
+	}
+	else
+	{
+		elevation += 1;
+	}
 	if(elevation < 1)
 	elevation = 1;
 	else if(elevation > 7) // 7 nivåer?!
@@ -588,7 +733,7 @@ void get_elevation_from_bus()
 }
 
 
-//------------------------------------------------------------------------------------------
+//----------------Access functions for the TWI----------------------------
 uint8_t TWI_get_command(int i)
 {
 	return command[i];
@@ -624,7 +769,7 @@ uint8_t TWI_get_elevation()
 	return elevation;
 }
 
-//----------------------Flags----------------------------------------------------------------
+//----------------------Flags---------------------------------------------
 uint8_t TWI_sensor_flag()
 {
 	if(sensorFlag_)
@@ -685,7 +830,7 @@ uint8_t TWI_sweep_flag()
 	return 0;
 }
 
-//------------------------------------------------------------------------------FIFO
+//--------------------------FIFO------------------------------------------
 
 uint8_t decode_message_TwiFIFO()
 {
@@ -716,7 +861,6 @@ uint8_t decode_message_TwiFIFO()
 
 		msg[i] = *character;
 	}
-	
 	
 	USART_SendMessage(msg);
 	
@@ -754,7 +898,10 @@ ISR(TWI_vect)
 			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 			{
 				instruction = 1;
-				
+			}
+			else if(CONTROL == GENERAL || CONTROL == ARBIT_GENERAL)
+			{
+				currentInstruction = 255;
 			}
 			else if(CONTROL == DATA_SLAW)
 			{
@@ -867,7 +1014,7 @@ ISR(TWI_vect)
 					}
 					case(I_STRING):
 					{
-						//Add message to buffer
+						write_to_TwiFIFO(message);
 						break;
 					}
 				}
@@ -881,6 +1028,10 @@ ISR(TWI_vect)
 			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
 			{
 				instruction = 1;
+			}
+			else if(CONTROL == GENERAL || CONTROL == ARBIT_GENERAL)
+			{
+				currentInstruction = 255;
 			}
 			else if(CONTROL == DATA_SLAW)
 			{
@@ -923,25 +1074,28 @@ ISR(TWI_vect)
 			else if (CONTROL == STOP)
 			{
 				stop_twi();
-				case(I_COMMAND):
+				switch(currentInstruction)
 				{
-					commandFlag_ = 1;
-					break;
-				}
-				case(I_ELEVATION):
-				{
-					elevationFlag_ = 1;
-					break;
-				}
-				case(I_SETTINGS):
-				{
-					controlSettingsFlag_ = 1;
-					break;
-				}
-				case(I_AUTONOM):
-				{
-					autonomSettingsFlag_ = 1;
-					break;
+					case(I_COMMAND):
+					{
+						commandFlag_ = 1;
+						break;
+					}
+					case(I_ELEVATION):
+					{
+						elevationFlag_ = 1;
+						break;
+					}
+					case(I_SETTINGS):
+					{
+						controlSettingsFlag_ = 1;
+						break;
+					}
+					case(I_AUTONOM):
+					{
+						autonomSettingsFlag_ = 1;
+						break;
+					}
 				}
 			}
 			reset_TWI();

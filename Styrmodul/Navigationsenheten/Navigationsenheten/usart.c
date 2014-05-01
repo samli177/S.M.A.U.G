@@ -26,6 +26,8 @@ uint16_t gRxBufferIndex = 0;
 uint16_t gInvertNextFlag = 0;
 uint16_t gMessageDesitnation = C_ADDRESS;
 
+uint8_t gGangReady = 0;
+
 
 
 // define FIFO for received packets (USART)
@@ -337,13 +339,45 @@ uint8_t USART_DecodeValueFIFO()
 			TWI_send_float(C_ADDRESS, *data);		
 		}
 	TWI_send_float(C_ADDRESS, foo.f);
-	PORTA ^= (1<<PORTA0);
+	
 	return 0;
 	}
 	
 	return 1;
 }
 
+uint8_t USART_DecodeReadyFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	union Union_floatcast foo;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 0)
+	{
+		gGangReady = 1; // set flag
+		return 0;
+	}
+	
+	return 1;
+}
+
+uint8_t USART_ready()
+{
+	if(gGangReady)
+	{
+		gGangReady = 0;
+		return 1;
+	}
+	return 0;
+}
 
 void USART_DecodeRxFIFO()
 {
@@ -367,7 +401,7 @@ void USART_DecodeRxFIFO()
 			{
 				if(USART_DecodeCommandRxFIFO())
 				{
-					// TODO: flush buffet?
+					// TODO: flush buffer?
 					return;
 				}
 				break;
@@ -376,9 +410,20 @@ void USART_DecodeRxFIFO()
 			{
 				if(USART_DecodeValueFIFO())
 				{
+					
 					return;
 				}
 				break;
+
+			}
+			case('R'):
+			{
+				if(USART_DecodeReadyFIFO())
+				{
+					return;
+				}
+				break;
+
 			}
 		}
 	}
