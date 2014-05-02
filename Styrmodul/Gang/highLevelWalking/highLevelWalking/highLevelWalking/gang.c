@@ -26,16 +26,15 @@ int main(void)
 	initvar();
 	sei();
 	
+	SERVO_update_EEPROM(BROADCASTING_ID);
+	
 	move_to_std();
 	move_to_std();
 
 	// ------ TESTCODE FOR READING SERVO -------
 		
 	//servoGoto(1, 3.14/3, 0x200);
-	SERVO_update_EEPROM(BROADCASTING_ID); // NOTE: needs to run once for SERVO_get position to work
-	uint16_t position = SERVO_get_position(1);
-	USART_SendValue(position);
-		
+	SERVO_update_EEPROM(BROADCASTING_ID); // NOTE: needs to run once for SERVO_get position to work	
 	//----------------------------
 	
 	_delay_ms(5000);
@@ -63,7 +62,7 @@ int main(void)
 			_delay_ms(50);
 			PORTD ^= (1<<PORTD5);
 			cli();
-			USART_send_ready();
+			//USART_send_ready();
 			sei();
 		}
 		
@@ -90,8 +89,8 @@ ISR(TIMER1_COMPA_vect)
 	if(std_pos_flag == 0)
 	{
 		std_pos_flag = 1;
-		move_to_std();
-		move_to_std();
+		//move_to_std();
+		//move_to_std();
 	}
 	TCNT1 = 0;
 }

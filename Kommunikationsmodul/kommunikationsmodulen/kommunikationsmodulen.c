@@ -48,8 +48,7 @@ int main(void)
 		// TODO: put this on timer
 		//if(TWI_send_status(ST_ADRESS))
 			//PORTA ^= (1<<PORTA1);
-		TWI_send_string(S_ADDRESS, "Hejsan lulzi!");
-		_delay_ms(2000);
+		//TWI_send_string(S_ADDRESS, "Hejsan lulzi!");
 	}
 }
 

@@ -106,6 +106,7 @@
 #define BROADCASTING_ID 0xfe
 
 // -- Declarations --
+struct LegData;
 
 void SERVO_init();
 
@@ -125,13 +126,22 @@ void SERVO_set_angle_limit(uint8_t ID, double minAngle, double maxAngle);
 void SERVO_set_return_level(uint8_t ID, uint8_t level);
 void SERVO_set_torque_limit(uint8_t ID, uint16_t maxTorque);
 
-uint16_t SERVO_get_position(uint8_t ID);
+void SERVO_update_data(uint8_t ID);
 
 void SERVO_action();
 void SERVO_buffer_position(uint8_t ID, double angle, uint16_t speed);
 
 void SERVO_update_EEPROM(uint8_t ID);
 void SERVO_set_return_delay_time(uint8_t ID, uint8_t delay);
+
+void SERVO_update_leg_info(struct LegData* leg);
+
+uint16_t SERVO_get_pos();
+uint16_t SERVO_get_speed();
+uint16_t SERVO_get_load();
+uint8_t SERVO_get_temperature();
+uint8_t SERVO_get_voltage();
+
 
 
 #endif /* INCFILE1_H_ */

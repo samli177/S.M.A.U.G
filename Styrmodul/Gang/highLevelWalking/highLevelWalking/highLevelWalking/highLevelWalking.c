@@ -21,35 +21,7 @@ int speed;
 float iterations;
 
 
-struct LegData 
-{
-	float side;
-	float lift;
-	float xRot;
-	float yRot;
-	float newPosz;
-	float newPosx;
-	float newPosy;
-	float prevPosx;
-	float prevPosy;
-	float prevPosz;
-	float prevAngleGamma;
-	float prevAngleBeta;
-	float prevAngleAlpha;
-	float newAngleGamma;
-	float newAngleBeta;
-	float newAngleAlpha;
-	float temp1AngleGamma;
-	float temp1AngleBeta;
-	float temp1AngleAlpha;
-	float temp2AngleGamma;
-	float temp2AngleBeta;
-	float temp2AngleAlpha;
-	int servoGamma;
-	int servoBeta;
-	int servoAlpha;
-	int climbing;
-};
+
 
 float newPosxWB;
 float newPosyWB;
@@ -160,6 +132,77 @@ void initvar()
 	leg6.servoBeta = 11;
 	leg6.servoGamma = 7;
 	
+	
+}
+
+void update_leg_info(struct LegData* leg)
+{
+	SERVO_update_data(leg->servoAlpha);
+	leg->currPosAlpha = SERVO_get_pos();
+	leg->currLoadAlpha = SERVO_get_load();
+	leg->currSpeedAlpha = SERVO_get_speed();
+	leg->currTempAlpha = SERVO_get_temperature();
+	leg->currVoltAlpha = SERVO_get_voltage();
+	
+	SERVO_update_data(leg->servoBeta);
+	leg->currPosBeta = SERVO_get_pos();
+	leg->currLoadBeta = SERVO_get_load();
+	leg->currSpeedBeta = SERVO_get_speed();
+	leg->currTempBeta = SERVO_get_temperature();
+	leg->currVoltBeta = SERVO_get_voltage();
+	
+	SERVO_update_data(leg->servoGamma);
+	leg->currPosGamma = SERVO_get_pos();
+	leg->currLoadGamma = SERVO_get_load();
+	leg->currSpeedGamma = SERVO_get_speed();
+	leg->currTempGamma = SERVO_get_temperature();
+	leg->currVoltGamma = SERVO_get_voltage();
+	
+}
+
+uint8_t close_enough(struct LegData* leg, uint8_t tolerance)
+{
+	int tempAlpha, tempBeta, tempGamma;
+	tempGamma = fabsf(angle_to_servo_pos(leg->goalAngleGamma) - leg->currPosGamma);
+	tempBeta = fabsf(angle_to_servo_pos(leg->goalAngleBeta) - leg->currPosBeta);
+	tempAlpha = fabsf(angle_to_servo_pos(leg->goalAngleAlpha) - leg->currPosAlpha);
+	/*
+	USART_SendValue(tempAlpha);
+	USART_SendValue(tempBeta);
+	USART_SendValue(tempGamma);
+	*/
+	
+	if(tempGamma >= tolerance)
+	{
+		return 0;
+	} else if(tempBeta >= tolerance)
+	{
+		//return 0;
+	} else if(tempAlpha >= tolerance)
+	{
+		return 0;
+	}
+	
+	
+	
+	return 1;
+}
+
+uint16_t angle_to_servo_pos(float angle)
+{
+	angle = 150 + angle * 150/3.1415;
+	
+	// limit inputs to between 0 and 300 degrees
+	if (angle > 300)
+	{
+		angle = 300;
+	} else if (angle < 0)
+	{
+		angle = 0;
+	}
+	
+	angle = (angle * 0x3ff / 300);
+	return (uint16_t)angle; //this will probably truncate correctly...or not....
 }
 
 void step_start(struct LegData* leg)
@@ -378,9 +421,12 @@ void move_leg(struct LegData* leg, float n)
 	speedAlpha = fabsf(leg->temp1AngleAlpha - leg->temp2AngleAlpha)*speedMultiplier;
 	speedBeta = fabsf(leg->temp1AngleBeta - leg->temp2AngleBeta)*speedMultiplier;
 	speedGamma = fabsf(leg->temp1AngleGamma - leg->temp2AngleGamma)*speedMultiplier;
-	SERVO_buffer_position(leg->servoAlpha, leg->side *(leg->temp2AngleAlpha + femurAngleAddition),(int)speedAlpha);
-	SERVO_buffer_position(leg->servoBeta,leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition),(int)speedBeta);
-	SERVO_buffer_position(leg->servoGamma, leg->temp2AngleGamma,(int)speedGamma);
+	leg->goalAngleAlpha = leg->side *(leg->temp2AngleAlpha + femurAngleAddition);
+	leg->goalAngleBeta = leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition);
+	leg->goalAngleGamma = leg->temp2AngleGamma;
+	SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,(int)speedAlpha);
+	SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,(int)speedBeta);
+	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,(int)speedGamma);
 }
 void leg_motion()
 {
@@ -396,6 +442,23 @@ void leg_motion()
 
 		SERVO_action();
 		_delay_ms(40);
+		
+		// code for checking if servos are close to written pos.
+		
+		/*
+		uint8_t tolerance = 20;
+		do
+		{
+			update_leg_info(&leg1);
+			update_leg_info(&leg2);
+			update_leg_info(&leg3);
+			update_leg_info(&leg4);
+			update_leg_info(&leg5);
+			update_leg_info(&leg6);
+			
+		}while(!(close_enough(&leg1, tolerance) & close_enough(&leg2, tolerance) & close_enough(&leg3, tolerance) & close_enough(&leg4, tolerance) & close_enough(&leg5, tolerance) & close_enough(&leg6, tolerance)));
+		*/
+		
 	}
 }
 
