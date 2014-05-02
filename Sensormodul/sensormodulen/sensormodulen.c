@@ -21,8 +21,6 @@
 void send_data(void);
 void init_TWI_sensor(void);
 
-char displayBuffer[64][20];
-int bufferSize = 0;
 uint8_t displayFlag = 0;
 
 int main(void)
@@ -39,7 +37,7 @@ int main(void)
 	
 	// Activate interrupts
 	sei();
-	
+
 	display_text("Hello");
 	
 	while(1)
