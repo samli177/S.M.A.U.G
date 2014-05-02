@@ -69,7 +69,6 @@ messageLength       0x1               twi.o
 sweep               0x1               twi.o
 currentInstruction  0x2               twi.o
 sensor              0x2               twi.o
-displayBuffer       0x500             sensormodulen.o
 sensorBuffer        0x8               twi.o
 sensors             0x8               twi.o
 
@@ -86,9 +85,6 @@ Discarded input sections
  .bss           0x00000000        0x0 fifo.o
  .text          0x00000000        0x0 sensormodulen.o
  .bss           0x00000000        0x0 sensormodulen.o
- .bss.bufferSize
-                0x00000000        0x2 sensormodulen.o
- COMMON         0x00000000      0x500 sensormodulen.o
  .text          0x00000000        0x0 sensors.o
  .bss           0x00000000        0x0 sensors.o
  .text.sensors_sampling_done
@@ -905,33 +901,33 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x29b3
+.debug_info     0x00000000     0x2972
  *(.debug_info)
  .debug_info    0x00000000      0x119 counter.o
  .debug_info    0x00000119      0x7f2 display.o
  .debug_info    0x0000090b      0x1b1 fifo.o
- .debug_info    0x00000abc      0x335 sensormodulen.o
- .debug_info    0x00000df1      0x86e sensors.o
- .debug_info    0x0000165f     0x1354 twi.o
+ .debug_info    0x00000abc      0x2f4 sensormodulen.o
+ .debug_info    0x00000db0      0x86e sensors.o
+ .debug_info    0x0000161e     0x1354 twi.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0xb7f
+.debug_abbrev   0x00000000      0xb6d
  *(.debug_abbrev)
  .debug_abbrev  0x00000000       0x9c counter.o
  .debug_abbrev  0x0000009c      0x236 display.o
  .debug_abbrev  0x000002d2       0xce fifo.o
- .debug_abbrev  0x000003a0      0x1ac sensormodulen.o
- .debug_abbrev  0x0000054c      0x2b6 sensors.o
- .debug_abbrev  0x00000802      0x37d twi.o
+ .debug_abbrev  0x000003a0      0x19a sensormodulen.o
+ .debug_abbrev  0x0000053a      0x2b6 sensors.o
+ .debug_abbrev  0x000007f0      0x37d twi.o
 
-.debug_line     0x00000000     0x1ec5
+.debug_line     0x00000000     0x1ec4
  *(.debug_line)
  .debug_line    0x00000000      0x13c counter.o
  .debug_line    0x0000013c      0x4f8 display.o
  .debug_line    0x00000634      0x14f fifo.o
- .debug_line    0x00000783      0x258 sensormodulen.o
- .debug_line    0x000009db      0x6ab sensors.o
- .debug_line    0x00001086      0xe3f twi.o
+ .debug_line    0x00000783      0x257 sensormodulen.o
+ .debug_line    0x000009da      0x6ab sensors.o
+ .debug_line    0x00001085      0xe3f twi.o
 
 .debug_frame    0x00000000      0x8cc
  *(.debug_frame)
@@ -942,19 +938,19 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x0000028c      0x1ec sensors.o
  .debug_frame   0x00000478      0x454 twi.o
 
-.debug_str      0x00000000      0x8f5
+.debug_str      0x00000000      0x90f
  *(.debug_str)
- .debug_str     0x00000000       0xd6 counter.o
-                                0x10a (size before relaxing)
- .debug_str     0x000000d6      0x134 display.o
+ .debug_str     0x00000000       0xcb counter.o
+                                 0xff (size before relaxing)
+ .debug_str     0x000000cb      0x172 display.o
                                 0x22a (size before relaxing)
- .debug_str     0x0000020a       0x4a fifo.o
-                                0x11a (size before relaxing)
- .debug_str     0x00000254       0xae sensormodulen.o
-                                0x215 (size before relaxing)
- .debug_str     0x00000302      0x15a sensors.o
-                                0x2fb (size before relaxing)
- .debug_str     0x0000045c      0x499 twi.o
+ .debug_str     0x0000023d       0x4a fifo.o
+                                0x10f (size before relaxing)
+ .debug_str     0x00000287       0x95 sensormodulen.o
+                                0x1e8 (size before relaxing)
+ .debug_str     0x0000031c      0x15a sensors.o
+                                0x2f0 (size before relaxing)
+ .debug_str     0x00000476      0x499 twi.o
                                 0x64f (size before relaxing)
 
 .debug_loc      0x00000000     0x200a
