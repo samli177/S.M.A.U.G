@@ -564,7 +564,7 @@ uint8_t* sensors_get_data()
 
 ISR(ADC_vect)
 {
-	cli();	uint16_t adcValue = ADC;	float vin = adcValue * 5.0 / 1024.0;	if(gSelectedSensor == 4)	{		gSensorBuffer[gSelectedSensor] = voltage_to_cm_long(vin);		} else {		gSensorBuffer[gSelectedSensor] = voltage_to_cm_short(vin);	}		if(gSelectedSensor < 6)	{		// Not last sensor		select_sensor(gSelectedSensor + 1);		adc_start();	} else {
+	cli();	uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;	if(gSelectedSensor == 4)	{		gSensorBuffer[gSelectedSensor] = voltage_to_cm_long(vin);		} else {		gSensorBuffer[gSelectedSensor] = voltage_to_cm_short(vin);	}		if(gSelectedSensor < 6)	{		// Not last sensor		select_sensor(gSelectedSensor + 1);		adc_start();	} else {
 		select_sensor(0);		enable_counter_0(1);		set_counter_0(50);		start_ul_sensor();	}	sei();}
 
 ISR(PCINT0_vect)
@@ -583,7 +583,7 @@ ISR(PCINT0_vect)
 	if(!sensorDataSentFlag)
 	{
 		sensorDataSentFlag = 1;
-		TWI_send_sensors(sensors_get_data(), 0);	
+		TWI_send_sensors(sensors_get_data(), 0);
 	}
 	sei();
 }
@@ -592,6 +592,7 @@ ISR(TIMER0_COMPA_vect)
 {
 	if(!sensorDataSentFlag)
 	{
+		sensorDataSentFlag = 1;
 		TWI_send_sensors(sensors_get_data(), 0);
 	}
 	enable_counter_0(0);

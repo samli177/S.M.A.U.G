@@ -146,6 +146,18 @@ void display_value(float value)
 		{
 			print_int(value);
 		}
+	} else {
+		display_value((int) value);
+		display_char('.');
+		// Two decimals
+		int dec = (int) ((value - (int) value) * 100);
+		if(dec < 10)
+		{
+			print_digit(0);
+			print_digit(dec);
+		} else {
+			print_int(dec);
+		}
 	}
 }
 
