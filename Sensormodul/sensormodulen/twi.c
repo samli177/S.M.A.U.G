@@ -710,7 +710,7 @@ uint8_t decode_message_TwiFIFO()
 	{
 		if(FifoRead(gTwiFIFO, character))
 		{
-			display_text("FIFO ERROR 2!");
+			//display_text("FIFO ERROR 2!");
 			return 1; // error
 		}
 
@@ -729,17 +729,17 @@ uint8_t decode_message_TwiFIFO()
 
 uint8_t write_to_TwiFIFO(char msg[])
 {
-	if(FifoWrite(gTwiFIFO, (unsigned char)strlen(msg)))
+	if(FifoWrite(gTwiFIFO, (unsigned char)messageLength))
 	{
-		display_text("FIFO ERROR 3");
+		//display_text("FIFO ERROR 3");
 		return 1;
 	}
 	
-	for(int i = 0; i < strlen(msg); ++i)
+	for(int i = 0; i < messageLength; ++i)
 	{
 		if(FifoWrite(gTwiFIFO, msg[i]))
 		{
-			display_text("FIFO ERROR 4");
+			//display_text("FIFO ERROR 4");
 			return 1;
 		}
 	}
