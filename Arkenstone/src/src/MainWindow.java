@@ -57,6 +57,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     Vector<Byte> debugData;
 
     boolean keyUpPressed, keyDownPressed, keyLeftPressed, keyRightPressed, keyZeroPressed, keyControlPressed;
+    boolean keyRaisePressed, keyLowerPressed;
 
     /**
      * Creates new form MainWindow
@@ -922,6 +923,18 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                     keyUpdate();
                 }
                 break;
+            case KeyEvent.VK_ADD:
+                if (!keyRaisePressed) {
+                    keyRaisePressed = true;
+                    sendElevationCommand(true);
+                }
+                break;
+            case KeyEvent.VK_SUBTRACT:
+                if (!keyLowerPressed) {
+                    keyLowerPressed = true;
+                    sendElevationCommand(false);
+                }
+                break;
         }
     }//GEN-LAST:event_lowerDrawAreaKeyPressed
 
@@ -949,6 +962,14 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 break;
             case KeyEvent.VK_CONTROL:
                 keyControlPressed = false;
+                keyUpdate();
+                break;
+            case KeyEvent.VK_ADD:
+                keyRaisePressed = false;
+                keyUpdate();
+                break;
+            case KeyEvent.VK_SUBTRACT:
+                keyLowerPressed = false;
                 keyUpdate();
                 break;
         }
@@ -1055,8 +1076,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void sendAutoSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendAutoSettingsButtonActionPerformed
         byte data[] = new byte[1];
-        if(autoButton.isSelected()){
-            if(autoLeftRadioButton.isSelected()){
+        if (autoButton.isSelected()) {
+            if (autoLeftRadioButton.isSelected()) {
                 data[0] = 1;
             } else {
                 data[0] = 2;
@@ -1064,7 +1085,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         } else {
             data[0] = 0;
         }
-        if(sendData('A', data)){
+        if (sendData('A', data)) {
             writeMessage("Uppdaterade inställningar");
         } else {
             writeMessage("Kunde inte skicka!");
@@ -1356,6 +1377,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     public boolean sendElevationCommand(boolean up) {
+        System.out.println("Elevation");
         byte data[] = new byte[1];
         if (up) {
             data[0] = 1;
@@ -1437,7 +1459,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                     chosenControllerLabel.setText("Ingen");
                 }
             }
-            
+
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ex) {
@@ -1545,10 +1567,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     private void valueRecieved(byte[] data) {
-        try{
+        try {
             float f = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).getFloat();
             writeDebugMessage("Value: " + f);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Fel vid float-avkodning");
         }
     }
