@@ -22,48 +22,52 @@
 int main(void)
 {
 	USART_init();
+	USART_set_twi_message_destination(C_ADDRESS); // send messages from gang to the display, not the computer
 	sei();
 	TWI_init(ST_ADDRESS);
 	init_counters();
 	DDRA |= (1<<PORTA0 | 1<<PORTA1);
 	
-	_delay_ms(1000);
-	USART_send_command_parameters(0,50,100);
-	
+	_delay_ms(5000);
+	navigation_set_autonomous_walk(0);
     while(1)
     {
-		
-		//navigation_set_autonomous_walk(TWI_get_autonom_settings());
-		
-		/*
-		_delay_ms(500);
-		//TWI_send_autonom_settings(C_ADRESS, 4);
-        PORTA |= (1<<PORTA0);
-		_delay_ms(1000);
-		//TWI_send_string(0x40, "I AM DEAD!");
-		PORTA &= ~(1<<PORTA0);
-		_delay_ms(1000);
-		USART_SendMessage("apa");
-		TWI_send_string(S_ADRESS, "Hue");
-		*/
-		
-		//USART_send_command_parameters(0,50,100);
-		//_delay_ms(1000);
+		/*if(TWI_sensor_flag())
+		{
+			PORTA ^= (1<<PORTA1);
+			navigation_fill_buffer();
+		}*/
+		if(TWI_autonom_settings_flag())
+		{
+			uint8_t sett = TWI_get_autonom_settings();
+			if(sett == 0)
+			{
+				navigation_set_autonomous_walk(0);
+			}
+			else if(sett == 1)
+			{
+				navigation_set_autonomous_walk(1);
+				navigation_set_algorithm(1);
+			}
+			else //sett == 2
+			{
+				navigation_set_autonomous_walk(1);
+				navigation_set_algorithm(0);
+			}
+		}
 		
 		if(navigation_autonomous_walk() == 1)
 		{
-			uint8_t sensors[6];
-			sensors[0]=navigation_get_sensor(0);
-			sensors[1]=navigation_get_sensor(1);
-			sensors[2]=navigation_get_sensor(2);
-			sensors[3]=navigation_get_sensor(3);
-			sensors[4]=navigation_get_sensor(4);
-			sensors[5]=navigation_get_sensor(5);
-			autonomouswalk_walk(sensors);
+			if(TWI_control_settings_flag())
+			{
+				navigation_set_Kp(TWI_get_control_setting(0));
+			}
+			autonomouswalk_walk();
 		}
 		else
 		{
-			if(TWI_command_flag()){
+			if(TWI_command_flag())
+			{
 				PORTA ^= (1<<PORTA1);
 				USART_SendCommand();
 			}
@@ -73,6 +77,14 @@ int main(void)
 }
 
 //---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
-// Redan definierade i navigation.c
-//---------------------------------------------------------------------------------------
 
+ISR(TIMER1_COMPA_vect)
+{
+	TCNT1 = 0;
+}
+
+ISR(TIMER3_COMPA_vect)
+{
+	//TWI_send_float(C_ADDRESS, (float)navigation_get_sensor(0));
+	TCNT3 = 0;
+}

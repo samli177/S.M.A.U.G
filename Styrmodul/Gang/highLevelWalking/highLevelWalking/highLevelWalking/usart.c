@@ -231,6 +231,11 @@ void USART_SendValue(float flo)
 	
 }
 
+void USART_send_ready()
+{
+	USART_SendPacket('R', 0);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	uint8_t *len = 0;
@@ -350,6 +355,7 @@ void USART_DecodeRxFIFO()
 					// TODO: flush buffer?
 					return;
 				}
+				break;
 			}
 		}
 	}
@@ -384,8 +390,6 @@ ISR (USART0_RX_vect)
 				gInvertNextFlag = 0;
 			}
 			
-			
-			USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)

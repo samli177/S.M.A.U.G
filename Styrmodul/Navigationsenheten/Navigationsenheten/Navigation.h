@@ -3,14 +3,22 @@
 
 #include <avr/io.h>
 
-#define DISTANCE_FRONT_TO_BACK 400
-#define DISTANCE_MIDDLE_TO_SIDE 200
-#define CORRIDOR_WIDTH 80
-#define ACCEPTABLE_OFFSET_ANGLE 0.2
-#define ACCEPTABLE_DISTANCE_OFFSET 5
-#define HEIGHT_LIMIT 100
+#define DISTANCE_FRONT_TO_BACK 14.5   // cm
+#define DISTANCE_MIDDLE_TO_SIDE 7.5   // cm
+#define CORRIDOR_WIDTH 80             // cm
+#define ACCEPTABLE_OFFSET_ANGLE 0.07   // radians
+#define ACCEPTABLE_DISTANCE_OFFSET 2  // cm
+#define HEIGHT_LIMIT 100              // cm
 #define PI 3.14159265
 
+/**
+ * \brief 
+ * Initializes what the navigation requires, including
+ * setting the corresponding registers for interrupts
+ *
+ * \return void
+ */
+void navigation_init();
 /**
  * \brief 
  * Returns the Kp regulation variable gKp as an unsigned
@@ -81,6 +89,15 @@ void navigation_set_autonomous_walk(uint8_t walk);
 
 /**
  * \brief 
+ * A function that causes a delay while the robot is not ready
+ * to take another step, it awaits a new flag from the USART.
+ * 
+ * \return void
+ */
+void navigation_stepping_delay();
+
+/**
+ * \brief 
  * Returns the offset angle of the robot during normal
  * normal walking in a corridor.
  *
@@ -93,7 +110,7 @@ void navigation_set_autonomous_walk(uint8_t walk);
  * The returned angle measured in radians between
  * -pi/2 and pi/2.
  */
-float navigation_angle_offset(uint8_t sensors[5]);
+float navigation_angle_offset();
 
 /**
  * \brief 
@@ -113,7 +130,7 @@ float navigation_angle_offset(uint8_t sensors[5]);
  * The returned angle measured in radians between 
  * -pi/2 and pi/2.
  */
-float navigation_direction_regulation(uint8_t sensors[5], float angleOffset);
+float navigation_direction_regulation(float angleOffset);
 
 /**
  * \brief 
@@ -129,7 +146,7 @@ float navigation_direction_regulation(uint8_t sensors[5], float angleOffset);
   * Return 2 if the robot can take a left turn, 1 if there is a left
   * turn coming up and 0 otherwise.
  */
-uint8_t navigation_check_left_turn(uint8_t frontLeftSensor, uint8_t backLeftSensor);
+uint8_t navigation_check_left_turn();
 
 /**
  * \brief 
@@ -145,7 +162,7 @@ uint8_t navigation_check_left_turn(uint8_t frontLeftSensor, uint8_t backLeftSens
  * Return 2 if the robot can take a right turn, 1 if there is a right
  * turn coming up and 0 otherwise.
  */
-uint8_t navigation_check_right_turn(uint8_t frontRightSensor, uint8_t backRightSensor);
+uint8_t navigation_check_right_turn();
 
 /**
  * \brief 
@@ -158,7 +175,7 @@ uint8_t navigation_check_right_turn(uint8_t frontRightSensor, uint8_t backRightS
  * \return uint8_t
  * Return 1 if an obstacle is found, 0 otherwise.
  */
-uint8_t navigation_detect_low_pass_obsticle(uint8_t ultraSoundSensor);
+uint8_t navigation_detect_low_pass_obsticle();
 
 /**
  * \brief 
@@ -180,24 +197,16 @@ uint8_t navigation_detect_low_pass_obsticle(uint8_t ultraSoundSensor);
  * \return uint8_t
  * Returns a 1 if the robot is in a dead end.
  */
-uint8_t navigation_dead_end(uint8_t sensor0, uint8_t sensor1, uint8_t sensor4, float angleOffset);
+uint8_t navigation_dead_end(float angleOffset);
 
 /**
  * \brief 
- * A help function to decide which of two numbers is larger.
- * Only works for positive numbers. 
+ * A function that adds the latest sensor data to the
+ * sensor buffer.
  * 
- * \param a
- * The first number to be compared.
- *
- * \param b
- * The second number to be compared.
- * 
- * \return int
- * Returns a positive number if a is larger than b, returns
- * 0 if a = b, and a negative number if b is larger than a.
+ * \return void
  */
-int compare (const void * a, const void * b);
+void navigation_fill_buffer();
 
 /**
  * \brief 
@@ -213,14 +222,5 @@ int compare (const void * a, const void * b);
  * uint8_t.
  */
 uint8_t navigation_get_sensor(int sensorNr);
-
-/**
- * \brief 
- * A function that adds the latest sensor data to the
- * sensor buffer.
- * 
- * \return void
- */
-void navigation_fill_buffer();
 
 #endif

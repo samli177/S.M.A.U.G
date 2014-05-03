@@ -7,6 +7,9 @@
 
 #include <avr/io.h>
 #include "serialServoControl.h"
+#include "fifo.h"
+#include "usart.h"
+#include "highLevelWalking.h"
 
 #include <util/delay.h>
 #include <math.h>
@@ -20,20 +23,31 @@ uint8_t gServoTxBuffer[128];
 uint8_t gServoRxBuffer[260];
 uint8_t gServoRxReadMode = RM_WAIT_FOR_START;
 uint8_t gServoLengthCounter = 0;
-uint8_t gNewPacketOnBuffer = 0;
+
 uint8_t gRxIndex = 0;
 
+uint16_t gServoPos = 0;
+uint16_t gServoSpeed = 0;
+uint16_t gServoLoad = 0;
+uint8_t gServoVoltage = 0;
+uint8_t gServoTemperature = 0;
 
-void initServoSerial()
+
+// define FIFO for received packets (USART)
+MK_FIFO(1024); // use 1 kB
+DEFINE_FIFO(gServoRxFIFO, 1024);
+
+
+void SERVO_init()
 {
 	servoTx;
 	//set baud rate
 	//typecasting of "int" to byte truncates to the lowest uint8_t
 	UBRR1H = (uint8_t) (((F_CPU / 16 / ServoBaudRate ) - 1)>>8);
-	UBRR1L = (uint8_t) ((F_CPU / 16 / ServoBaudRate ) - 1) ;
+	UBRR1L = (uint8_t) ((F_CPU / 16 / ServoBaudRate ) - 1);
 	
-	//enable receiver and transmitter and disable interrupts
-	UCSR1B = (1<<RXEN1)|(1<<TXEN1);
+	//enable receiver and transmitter and enable interrupts
+	UCSR1B = (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1);
 	
 	//Frame format: 8data, no parity, 1 stop bit
 	UCSR1C = (1<<UCSZ10 | 1<<UCSZ11);
@@ -41,34 +55,36 @@ void initServoSerial()
 	servoDDR |= (1<<servoDirPin); //set pin for controlling direction of serial communication w. servo.
 	
 	// Set torque limit
-	servoTorqueLimit(BROADCASTING_ID, 0x200); // 50% of max
+	SERVO_set_torque_limit(BROADCASTING_ID, 0x200); // 50% of max
 }
 
-uint8_t servoCheckRxComplete()
+void SERVO_update_EEPROM(uint8_t ID)
+{	
+	servoTx;
+	SERVO_set_return_level(ID, 1);
+	_delay_ms(2);
+	SERVO_set_return_delay_time(ID, 20);
+}
+
+uint8_t servo_check_rx_complete()
 {
 	return (UCSR1A & (1<<RXC1)); // zero if no data is available to read
 }
 
-uint8_t servoCheckTxReady()
+uint8_t servo_check_tx_ready()
 {
 	return (UCSR1A & (1<<UDRE1)); // zero if transmit register is not ready to receive new data
 }
 
-void servolWriteByte(uint8_t DataByteOut)
+void servo_write_byte(uint8_t DataByteOut)
 {
-	while(servoCheckTxReady() == 0)
+	while(servo_check_tx_ready() == 0)
 	{;;} // wait until ready to transmit NOTE: Can probably be optimized using interrupts
 	UDR1 = DataByteOut;
 }
 
-uint8_t servoReadByte()
-{
-	// NOTE: check if data is available before calling this function. Should probably be implemented w. interrupt.
-	return UDR1;
-	
-}
 
-void sendServoPacket(uint8_t ID, uint8_t instruction, uint8_t parametersLength)
+void send_servo_packet(uint8_t ID, uint8_t instruction, uint8_t parametersLength)
 {
 	uint8_t count, checkSum, packetLength;
 	
@@ -98,14 +114,14 @@ void sendServoPacket(uint8_t ID, uint8_t instruction, uint8_t parametersLength)
 	//servoTx; // enable transmit, disable receive
 	for(count = 0; count < packetLength; ++count)
 	{
-		servolWriteByte(gServoTxBuffer[count]);
+		servo_write_byte(gServoTxBuffer[count]);
 	}
 	//servoRx;
 	
 }
 
 
-void servoGoto(uint8_t ID, double angle, uint16_t speed)
+void SERVO_goto(uint8_t ID, double angle, uint16_t speed)
 {
 	int16_t goalPosition; 
 	servoTx;
@@ -130,10 +146,10 @@ void servoGoto(uint8_t ID, double angle, uint16_t speed)
 	gServoParameters[3] = (uint8_t)speed; 
 	gServoParameters[4] = (uint8_t)(speed>>8); 
 	
-	sendServoPacket(ID, INST_WRITE, 5);	
+	send_servo_packet(ID, INST_WRITE, 5);	
 }
 
-void servoBufferPosition(uint8_t ID, double angle, uint16_t speed)
+void SERVO_buffer_position(uint8_t ID, double angle, uint16_t speed)
 {
 	int16_t goalPosition;
 	servoTx;
@@ -158,15 +174,15 @@ void servoBufferPosition(uint8_t ID, double angle, uint16_t speed)
 	gServoParameters[3] = (uint8_t)speed;
 	gServoParameters[4] = (uint8_t)(speed>>8);
 	
-	sendServoPacket(ID, INST_REG_WRITE, 5);
+	send_servo_packet(ID, INST_REG_WRITE, 5);
 }
 
-void servoAction()
+void SERVO_action()
 {
-	sendServoPacket(BROADCASTING_ID, INST_ACTION, 0);
+	send_servo_packet(BROADCASTING_ID, INST_ACTION, 0);
 }
 
-void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
+void SERVO_set_angle_limit(uint8_t ID, double minAngle, double maxAngle)
 {
 	uint16_t minPosition, maxPosition;
 	
@@ -198,66 +214,210 @@ void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle)
 	gServoParameters[3] = (uint8_t)maxPosition;
 	gServoParameters[4] = (uint8_t)(maxPosition>>8);
 	
-	sendServoPacket(ID, INST_WRITE, 5);	
+	send_servo_packet(ID, INST_WRITE, 5);	
 }
 
-void servoTorqueLimit(uint8_t ID, uint16_t maxTorque)
+void SERVO_set_torque_limit(uint8_t ID, uint16_t maxTorque)
 {
 	gServoParameters[0] = P_TORQUE_LIMIT_L; 
 	gServoParameters[1] = (uint8_t)maxTorque; //truncates to low byte
 	gServoParameters[2] = (uint8_t)(maxTorque>>8); //high byte
 	
-	sendServoPacket(ID, INST_WRITE, 3);
+	send_servo_packet(ID, INST_WRITE, 3);
 }
 
-void servoRetrunLevel(uint8_t ID, uint8_t level)
+void SERVO_set_return_level(uint8_t ID, uint8_t level)
 {
-	gServoParameters[0] = P_RETURN_LEVEL; // address for CW Angle Limit(L)
+	gServoParameters[0] = P_RETURN_LEVEL; 
 	gServoParameters[1] = level;
-	sendServoPacket(ID, INST_WRITE, 2);	
+	send_servo_packet(ID, INST_WRITE, 2);	
 }
 
-uint16_t servoGetPosition(uint8_t ID)
+void SERVO_set_return_delay_time(uint8_t ID, uint8_t delay)
 {
-	gServoParameters[0] = P_PRESENT_POSITION_L;
-	gServoParameters[1] = 2; // read 2 bytes
-	sendServoPacket(ID, INST_READ, 2);
+	gServoParameters[0] = P_RETURN_DELAY_TIME;
+	gServoParameters[1] = delay;
+	send_servo_packet(ID, INST_WRITE, 2);
+}
+
+void SERVO_update_data(uint8_t ID)
+{
+	uint8_t *data = 0;
+	uint8_t dataint;
 	
+	char servoReadMode;
+	uint8_t byteCount = 0;
+	uint8_t packetLength = 0;
+	uint8_t parameters[10]; // TODO: look up max length
+
+	uint8_t checkSum = 0;
+	uint8_t inverseCheckSum = 0;
+	uint8_t checkSumValid = 0;
+	uint8_t exitFlag = 0;
+	
+	uint8_t error = 0;
+	
+
+	servoTx;
+
+	gServoParameters[0] = P_PRESENT_POSITION_L;
+	gServoParameters[1] = 8; // read 8 bytes
+	send_servo_packet(ID, INST_READ, 2);
+	while(servo_check_tx_ready() == 0) // wait until last byte has been transmitted
+	_delay_us(20); // wait for stop bits
 	servoRx;
 	
+	_delay_us(250); // receive packet
 	
-	uint16_t data = 0;
-	int pos;
+	servoTx;
+	servoReadMode = 'W';
 	
-
-	for(int i = 0; i < 8; ++i)
+	while(!(FifoRead(gServoRxFIFO, data)) && !exitFlag)
 	{
-		while ( !(UCSR1A & (1<<RXC1)) );
-		data = UDR1;
-		if(i == 5) 
-		{
-			pos = data;
-		} else if(i == 6)
-		{
-			pos = pos + (data << 8);
+		dataint = *data;
+		switch(servoReadMode){
+			case('W'): // wait for start
+			{
+				if(dataint == 0xff)
+				{
+					servoReadMode = 'S';
+				}
+				break;
+			}
+			case('S'): // check for second start
+			{
+				if(dataint == 0xff)
+				{
+					servoReadMode = 'I';
+				}else
+				{
+					servoReadMode = 'W';
+				}
+				break;
+			}
+			case('I'):
+			{
+				
+				if(!(*data == ID))
+				{
+					USART_SendMessage("ServoError: 2");
+					while(!(FifoRead(gServoRxFIFO, data))); //flush buffer
+				}
+				
+				servoReadMode = 'L';
+				break;
+			}
+			case('L'):
+			{
+				packetLength = dataint;
+				byteCount = 0;
+				servoReadMode = 'E';
+				break;
+			}
+			case('E'):
+			{
+				// TODO: something...probably...
+				error = *data;
+				servoReadMode = 'P';
+				break;
+			}
+			case('P'):
+			{
+				if(byteCount < packetLength-2)
+				{
+					parameters[byteCount] = dataint;
+				}
+				
+				if(byteCount == packetLength-3){
+					servoReadMode = 'C';
+				}
+	
+				++byteCount;
+				break;
+			}
+			case('C'):
+			{
+				// calculate checksum
+				checkSum = ID + packetLength + error;
+
+				for(int count = 0; count < packetLength -2; ++count) // calculation of checksum starts with ID-byte
+				{
+					checkSum += parameters[count]; // NOTE: make sure overflow truncates to lower byte
+				}
+				inverseCheckSum = ~checkSum; // don't know why you need to do this...
+				if(inverseCheckSum == dataint)
+				{
+					// correct packet
+					checkSumValid = 1; // set flag
+				}
+				
+				
+				exitFlag = 1;
+				break;
+			}
 		}
+		
 	}
 	
-	servoTx;
-
-	return data;
+	// if there is stuff left in buffer
+	if(!(FifoRead(gServoRxFIFO, data)))
+	{
+		USART_SendMessage("ServoError: 3");
+		while(!(FifoRead(gServoRxFIFO, data))); //flush buffer
+	}
+	
+	if(checkSumValid)
+	{
+		uint16_t temp = (uint16_t)parameters[1];
+		gServoPos = temp << 8;
+		temp = (uint16_t) parameters[0];
+		gServoPos = gServoPos + temp;
+		
+		temp = (uint16_t)parameters[3];
+		gServoSpeed = (temp << 8);
+		temp = (uint16_t)parameters[2];
+		gServoSpeed = gServoSpeed + temp;
+		
+		temp = (uint16_t)parameters[5];
+		gServoLoad = (temp << 8);
+		temp = (uint16_t)parameters[4];
+		gServoLoad = gServoLoad + temp;
+		
+		gServoVoltage = parameters[6];
+		
+		gServoTemperature = parameters[7];
+			
+	}
+	
 	
 }
 
-uint8_t servoReceiveStatus()
+
+
+uint16_t SERVO_get_pos()
 {
-	servoRx;
-	
-	servoTx;
-	return 1;
+	return gServoPos;
 }
 
+uint16_t SERVO_get_speed()
+{
+	return gServoSpeed;
+}
 
+uint16_t SERVO_get_load()
+{
+	return gServoLoad;
+}
+
+uint8_t SERVO_get_temperature()
+{
+	return gServoTemperature;
+}
+
+uint8_t SERVO_get_voltage()
+{
+	return gServoVoltage;
+}
 
 
 // -- Interrupts --
@@ -265,64 +425,11 @@ uint8_t servoReceiveStatus()
 ISR (USART1_RX_vect)
 {
 	uint8_t data;
-	data = UDR1; // read data from buffer TODO: add check for overflow
-	
-	if(data == 0xff)
+	data = UDR1;
+	if(FifoWrite(gServoRxFIFO, data))
 	{
-		if(gServoRxReadMode == RM_WAIT_FOR_START)
-		{
-			gServoRxReadMode = RM_CHECK_FOR_SECOND_START;
-			
-		}else if(gServoRxReadMode == RM_CHECK_FOR_SECOND_START)
-		{
-			gServoRxReadMode = RM_READ_ID;
-		}
-		
-	}else if(gServoRxReadMode == RM_READ_ID)
-	{
-		gServoRxBuffer[0] = data;
-		gServoRxReadMode = RM_READ_LENGTH;
-	}else if(gServoRxReadMode == RM_READ_LENGTH)
-	{
-		gServoRxBuffer[1] = data;
-		// TODO: add check for correct length maybe?
-		gServoLengthCounter = data;
-		gServoRxReadMode = RM_READ_ERROR;	
-	}else if(gServoRxReadMode == RM_READ_ERROR)
-	{
-		gServoRxBuffer[2] = data;
-		gServoRxReadMode = RM_READ_PARAMETERS;
-		--gServoLengthCounter;
-		gRxIndex = 2;
-	}else if(gServoRxReadMode == RM_READ_PARAMETERS)
-	{
-		if(gServoLengthCounter == 1)  
-		{
-			gServoRxReadMode = RM_READ_CHECKSUM;
-		}else if(gServoLengthCounter > 1)
-		{
-			++gRxIndex;
-			gServoRxBuffer[gRxIndex] = data;
-			--gServoLengthCounter;
-		}
-	}else if(gServoRxReadMode == RM_READ_CHECKSUM)
-		{
-			// calculate checksum
-			int checkSum = 0;
-			int packetLength = gServoRxBuffer[1]; 
-
-			for(int count = 2; count < packetLength -1; ++count) // calculation of checksum starts with ID-byte
-			{
-				checkSum += gServoRxBuffer[count]; // NOTE: make sure overflow truncates to lower byte
-			}
-			
-			if(~checkSum == data)
-			{
-				// correct packet
-				gNewPacketOnBuffer = 1; // set flag		
-			}
-			
-			gServoRxReadMode = RM_WAIT_FOR_START;
-		}
+		USART_SendMessage("ServoError: 1");
+	}
 }
+
 

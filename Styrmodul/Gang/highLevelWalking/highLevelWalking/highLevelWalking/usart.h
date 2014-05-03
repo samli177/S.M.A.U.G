@@ -32,7 +32,7 @@ void USART_SendValue(float flo);
 uint8_t USART_getRotation();
 uint8_t USART_getSpeed();
 uint8_t USART_getDirection();
-
+void USART_send_ready();
 
 
 

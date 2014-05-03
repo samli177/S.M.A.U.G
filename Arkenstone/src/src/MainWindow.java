@@ -2,6 +2,7 @@ package src;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -1544,8 +1545,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     private void valueRecieved(byte[] data) {
-        float f = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-        writeDebugMessage("Value: " + f);
+        try{
+            float f = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+            writeDebugMessage("Value: " + f);
+        } catch (Exception e){
+            System.out.println("Fel vid float-avkodning");
+        }
     }
 
     private void debugMessageRecieved(char tag, byte data[]) {

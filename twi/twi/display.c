@@ -48,7 +48,7 @@ void toggle_enable()
 
 void display_char(char c)
 {
-	//while(display_busy()); //Wait for display
+	while(display_busy()); //Wait for display
 	PORTD |= (1<<PORTD5); //Data mode
 	PORTB = c;
 	toggle_enable();

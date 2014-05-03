@@ -21,8 +21,7 @@
 void send_data(void);
 void init_TWI_sensor(void);
 
-char displayBuffer[64][20];
-int bufferSize = 0;
+uint8_t displayFlag = 0;
 
 int main(void)
 {	
@@ -38,17 +37,24 @@ int main(void)
 	
 	// Activate interrupts
 	sei();
-	
+
 	display_text("Hello");
 	
 	while(1)
 	{	
-		if(sensors_sampling_done())
+		_delay_ms(1);
+		if(displayFlag)
 		{
-			sensors_reset_flag();
-			TWI_send_sensors(sensors_get_data(), 0);
+			if(decode_message_TwiFIFO())
+			{
+				sensors_display_data();
+				set_counter_2(2000);
+			} else {
+				set_counter_2(3000);
+			}
+			displayFlag = 0;
+			TCNT3 = 0;
 		}
-		//TWI_send_autonom_settings(C_ADRESS, 5);
 	}
 }
 
@@ -62,13 +68,7 @@ ISR(TIMER1_COMPA_vect)
 
 ISR(TIMER3_COMPA_vect)
 {
-	if(decode_message_TwiFIFO())
-	{
-		sensors_display_data();
-		set_counter_2(2000);
-	} else {
-		set_counter_2(3000);
-	}
+	displayFlag = 1;
 	TCNT3 = 0;
 }
 

@@ -16,6 +16,7 @@
 // -- Declarations --
 
 void USART_init();
+void USART_set_twi_message_destination(uint16_t address);
 uint8_t USART_CheckRxComplete();
 uint8_t USART_CheckTxReady();
 void USART_WriteByte(uint8_t DataByteOut);
@@ -30,7 +31,7 @@ void USART_DecodeRxFIFO();
 void USART_Bounce();
 void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed);
 
-
+uint8_t USART_ready();
 
 
 

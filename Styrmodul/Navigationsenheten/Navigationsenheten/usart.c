@@ -24,6 +24,9 @@ uint8_t gTxBuffer [517]; // if there are only control octets in data it needs to
 uint8_t gRxBuffer [517];
 uint16_t gRxBufferIndex = 0;
 uint16_t gInvertNextFlag = 0;
+uint16_t gMessageDesitnation = C_ADDRESS;
+
+uint8_t gGangReady = 0;
 
 
 
@@ -31,6 +34,13 @@ uint16_t gInvertNextFlag = 0;
 MK_FIFO(4096); // use 4 kB
 DEFINE_FIFO(gRxFIFO, 4096);
 
+
+// --------- TODOs -----------
+
+// decide what to do with error messages
+// figure out if is is possible to stop "package inception", flag maybe?
+
+// ---------------------------
 
 void USART_init()
 {
@@ -45,6 +55,11 @@ void USART_init()
 	//Frame format: 8data, no parity, 1 stop bit
 	UCSR0C = (1<<UCSZ00 | 1<<UCSZ01);
 
+}
+
+void USART_set_twi_message_destination(uint16_t address)
+{
+	gMessageDesitnation = address;
 }
 
 uint8_t USART_CheckRxComplete()
@@ -230,8 +245,8 @@ uint8_t USART_DecodeMessageRxFIFO()
 	}
 	
 	
-	// TODO: send to relevant party... the display for now
-	TWI_send_string_fixed_length(C_ADDRESS, msg, length);
+	// TODO: make message destination configurable
+	TWI_send_string_fixed_length(gMessageDesitnation, msg, length);
 
 	return 0;
 }
@@ -304,7 +319,7 @@ uint8_t USART_DecodeValueFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		TWI_send_string(S_ADDRESS, "RxFIFO VALUE ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -324,13 +339,45 @@ uint8_t USART_DecodeValueFIFO()
 			TWI_send_float(C_ADDRESS, *data);		
 		}
 	TWI_send_float(C_ADDRESS, foo.f);
-	PORTA ^= (1<<PORTA0);
+	
 	return 0;
 	}
 	
 	return 1;
 }
 
+uint8_t USART_DecodeReadyFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	union Union_floatcast foo;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 0)
+	{
+		gGangReady = 1; // set flag
+		return 0;
+	}
+	
+	return 1;
+}
+
+uint8_t USART_ready()
+{
+	if(gGangReady)
+	{
+		gGangReady = 0;
+		return 1;
+	}
+	return 0;
+}
 
 void USART_DecodeRxFIFO()
 {
@@ -354,16 +401,29 @@ void USART_DecodeRxFIFO()
 			{
 				if(USART_DecodeCommandRxFIFO())
 				{
-					// TODO: flush buffet?
+					// TODO: flush buffer?
 					return;
 				}
+				break;
 			}
 			case('V'):
 			{
 				if(USART_DecodeValueFIFO())
 				{
+					
 					return;
 				}
+				break;
+
+			}
+			case('R'):
+			{
+				if(USART_DecodeReadyFIFO())
+				{
+					return;
+				}
+				break;
+
 			}
 		}
 	}
@@ -396,7 +456,6 @@ ISR (USART0_RX_vect)
 				gInvertNextFlag = 0;
 			}
 			
-			//USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
