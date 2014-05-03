@@ -26,12 +26,14 @@ void USART_SendPacket(char tag, uint8_t length);
 void USART_SendMessage(char msg[]);
 void USART_SendSensors();
 void USART_SendCommand();
+void USART_SendElevation();
 uint8_t USART_DecodeMessageRxFIFO();
 void USART_DecodeRxFIFO();
 void USART_Bounce();
 void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed);
 
 uint8_t USART_ready();
+
 
 
 

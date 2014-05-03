@@ -24,6 +24,8 @@ uint16_t gInvertNextFlag = 0;
 
 uint8_t gRotation=50, gSpeed=0, gDirection=0;
 
+float gZ = -120;
+
 // define FIFO for received packets (USART)
 MK_FIFO(4096); // use 4 kB
 DEFINE_FIFO(gRxFIFO, 4096);
@@ -48,6 +50,11 @@ uint8_t USART_getDirection()
 	uint8_t direction = gDirection;
 	gDirection = 0;
 	return direction;
+}
+
+float USART_get_z()
+{
+	return gZ;
 }
 
 void USART_init()
@@ -326,6 +333,53 @@ uint8_t USART_DecodeCommandRxFIFO()
 		return 1;
 	}
 
+
+	return 0;
+	
+}
+
+uint8_t USART_DecodeElevationRxFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	
+	int length = 0;
+	uint8_t direction;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		return 1; // error
+	}
+	
+	length = *len;
+	
+	if(length != 1)
+	{
+		return 1;
+	}
+	
+	if(FifoRead(gRxFIFO, data))
+	{
+		return 1; // error
+	}
+	
+	direction = *data;
+	
+	if(direction == 1)
+	{
+		if(gZ > -150)
+		{
+			gZ -= 5;
+		}
+		
+	}else if(direction == 0)
+	{
+		if(gZ < -80)
+		{
+			gZ += 5;
+		}
+	}
+	
 	return 0;
 	
 }
@@ -351,6 +405,15 @@ void USART_DecodeRxFIFO()
 			case('C'): // 
 			{
 				if(USART_DecodeCommandRxFIFO())
+				{
+					// TODO: flush buffer?
+					return;
+				}
+				break;
+			}
+			case('E'):
+			{
+				if(USART_DecodeElevationRxFIFO())
 				{
 					// TODO: flush buffer?
 					return;

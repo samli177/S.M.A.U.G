@@ -72,6 +72,12 @@ int main(void)
 				USART_SendCommand();
 			}
 		}
+		
+		if(TWI_elevation_flag())
+		{
+			PORTA ^= (1<<PORTA0); 
+			USART_SendElevation();
+		}
 		USART_DecodeRxFIFO();
     }
 }

@@ -371,6 +371,40 @@ uint8_t USART_DecodeAutonomRxFIFO()
 	
 }
 
+uint8_t USART_DecodeElevationRxFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	
+	int length = 0;
+	uint8_t direction;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		return 1; // error
+	}
+	
+	length = *len;
+	
+	if(length != 1)
+	{
+		return 1;
+	}
+	
+	if(FifoRead(gRxFIFO, data))
+	{
+		return 1; // error
+	}
+	
+	direction = *data;
+	
+	TWI_send_elevation(direction);
+
+	return 0;
+	
+}
+
+
 void USART_DecodeRxFIFO()
 {
 	uint8_t *tag = 0;
@@ -416,6 +450,15 @@ void USART_DecodeRxFIFO()
 					return;
 				}
 				
+				break;
+			}
+			case('E'):
+			{
+				if(USART_DecodeElevationRxFIFO())
+				{
+					// TODO: flush buffet?
+					return;
+				}
 				break;
 			}
 		}

@@ -718,19 +718,7 @@ void get_float_from_bus()
 
 void get_elevation_from_bus()
 {
-	int ele = get_data();
-	if(ele == 0)
-	{
-		elevation -= 1;
-	}
-	else
-	{
-		elevation += 1;
-	}
-	if(elevation < 1)
-	elevation = 1;
-	else if(elevation > 7) // 7 nivåer?!
-	elevation = 7;
+	elevation = get_data();
 }
 
 

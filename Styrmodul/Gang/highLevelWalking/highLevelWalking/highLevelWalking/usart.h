@@ -34,7 +34,7 @@ uint8_t USART_getSpeed();
 uint8_t USART_getDirection();
 void USART_send_ready();
 
-
+float USART_get_z();
 
 
 #endif /* USART_H_ */

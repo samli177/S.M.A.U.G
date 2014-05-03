@@ -42,7 +42,8 @@ float tempx;
 float tempy;
 float tempz;
 
-float z = z0;
+float z;
+float zInput;
 
 float direction;
 float rotation;
@@ -85,7 +86,8 @@ void initvar()
 	maxStepLength = 40;
 	stdLength = sqrtf(x0_1*x0_1 + y0_1*y0_1);
 	
-
+	z = z0;
+	zInput = z0;
 	
 	init_struct(&leg1);
 	init_struct(&leg2);
@@ -375,25 +377,19 @@ void move_leg(struct LegData* leg, float n)
 {
 	if(leg->lift == 1 && n != iterations+1)
 	{
-		tempz = leg->newPosz + 30;
+		tempz = z + 30;
 	}
 	else
 	{
-		tempz = leg->newPosz;
+		tempz = z;
 	}
 	if(n != 0 && n != iterations+1)
 	{
 		leg->temp1AngleGamma = leg->temp2AngleGamma;
 		leg->temp1AngleBeta = leg->temp2AngleBeta;
 		leg->temp1AngleAlpha = leg->temp2AngleAlpha;
-		if(leg->climbing)
-		{
-			tempx = leg->prevPosx + 40 + n*(leg->newPosx - leg->prevPosx)/iterations - n*40/iterations;
-		}
-		else
-		{
-			tempx = leg->prevPosx + n*(leg->newPosx - leg->prevPosx)/iterations;
-		}
+
+		tempx = leg->prevPosx + n*(leg->newPosx - leg->prevPosx)/iterations;
 		tempy = leg->prevPosy + n*(leg->newPosy - leg->prevPosy)/iterations;
 	}
 	else if (n == iterations+1)
@@ -404,14 +400,7 @@ void move_leg(struct LegData* leg, float n)
 	}
 	else
 	{
-		if(leg->climbing)
-		{
-			tempx = leg->prevPosx + 40;
-		}
-		else
-		{
-			tempx = leg->prevPosx;
-		}
+		tempx = leg->prevPosx;
 		tempy = leg->prevPosy;
 	}
 	calc_d(tempx, tempy, tempz);
@@ -441,7 +430,10 @@ void leg_motion()
 		move_leg(&leg6,i);
 
 		SERVO_action();
-		_delay_ms(40);
+		_delay_ms(20);
+		
+		z = USART_get_z();
+		
 		
 		// code for checking if servos are close to written pos.
 		
@@ -464,6 +456,9 @@ void leg_motion()
 
 void move_to_std()
 {
+	
+	z = USART_get_z();
+	
 	leg1.lift = -1;
 	leg2.lift = 1;
 	leg3.lift = -1;

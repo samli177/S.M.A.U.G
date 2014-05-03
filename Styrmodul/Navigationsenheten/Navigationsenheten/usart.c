@@ -211,7 +211,13 @@ void USART_SendCommand()
 	USART_SendPacket('C', 3);
 	// clear flag
 	
-	
+}
+
+void USART_SendElevation()
+{
+	int temp = TWI_get_elevation();
+	gTxPayload[0] = temp;
+	USART_SendPacket('E', 1);
 }
 
 uint8_t USART_DecodeMessageRxFIFO()

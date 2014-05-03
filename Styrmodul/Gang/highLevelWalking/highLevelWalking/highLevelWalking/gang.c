@@ -73,7 +73,6 @@ int main(void)
 			
 		}
 		move_to_std();
-		move_to_std();
 
 		_delay_ms(5000);
 		
@@ -88,7 +87,6 @@ ISR(TIMER1_COMPA_vect)
 	if(std_pos_flag == 0)
 	{
 		std_pos_flag = 1;
-		//move_to_std();
 		move_to_std();
 	}
 	TCNT1 = 0;
