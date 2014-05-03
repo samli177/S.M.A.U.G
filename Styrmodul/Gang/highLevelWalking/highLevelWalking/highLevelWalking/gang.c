@@ -29,7 +29,6 @@ int main(void)
 	SERVO_update_EEPROM(BROADCASTING_ID);
 	
 	move_to_std();
-	move_to_std();
 
 	// ------ TESTCODE FOR READING SERVO -------
 		
@@ -90,7 +89,7 @@ ISR(TIMER1_COMPA_vect)
 	{
 		std_pos_flag = 1;
 		//move_to_std();
-		//move_to_std();
+		move_to_std();
 	}
 	TCNT1 = 0;
 }
