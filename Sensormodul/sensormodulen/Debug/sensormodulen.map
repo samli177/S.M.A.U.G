@@ -938,8 +938,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x0000028c      0x1ec sensors.o
  .debug_frame   0x00000478      0x454 twi.o
 
-<<<<<<< HEAD
-.debug_str      0x00000000      0x93b
+.debug_str      0x00000000      0x955
  *(.debug_str)
  .debug_str     0x00000000       0xde counter.o
                                 0x112 (size before relaxing)
@@ -947,26 +946,11 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
                                 0x22a (size before relaxing)
  .debug_str     0x00000250       0x4a fifo.o
                                 0x122 (size before relaxing)
- .debug_str     0x0000029a       0xae sensormodulen.o
-                                0x215 (size before relaxing)
- .debug_str     0x00000348      0x15a sensors.o
-                                0x303 (size before relaxing)
- .debug_str     0x000004a2      0x499 twi.o
-=======
-.debug_str      0x00000000      0x90f
- *(.debug_str)
- .debug_str     0x00000000       0xcb counter.o
-                                 0xff (size before relaxing)
- .debug_str     0x000000cb      0x172 display.o
-                                0x22a (size before relaxing)
- .debug_str     0x0000023d       0x4a fifo.o
-                                0x10f (size before relaxing)
- .debug_str     0x00000287       0x95 sensormodulen.o
+ .debug_str     0x0000029a       0xc8 sensormodulen.o
                                 0x1e8 (size before relaxing)
- .debug_str     0x0000031c      0x15a sensors.o
-                                0x2f0 (size before relaxing)
- .debug_str     0x00000476      0x499 twi.o
->>>>>>> master
+ .debug_str     0x00000362      0x15a sensors.o
+                                0x303 (size before relaxing)
+ .debug_str     0x000004bc      0x499 twi.o
                                 0x64f (size before relaxing)
 
 .debug_loc      0x00000000     0x200a

@@ -45,6 +45,7 @@ int main(void)
 			USART_SendSensors();
 		}
 		decode_message_TwiFIFO();
+		
 		// TODO: put this on timer
 		//if(TWI_send_status(ST_ADRESS))
 			//PORTA ^= (1<<PORTA1);
