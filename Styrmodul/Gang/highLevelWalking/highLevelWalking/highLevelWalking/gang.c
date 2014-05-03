@@ -62,7 +62,7 @@ int main(void)
 			_delay_ms(50);
 			PORTD ^= (1<<PORTD5);
 			cli();
-			//USART_send_ready();
+			USART_send_ready();
 			sei();
 		}
 		
