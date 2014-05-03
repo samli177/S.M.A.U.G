@@ -869,13 +869,13 @@ uint8_t decode_message_TwiFIFO()
 
 uint8_t write_to_TwiFIFO(char msg[])
 {
-	if(FifoWrite(gTwiFIFO, (unsigned char)strlen(msg)))
+	if(FifoWrite(gTwiFIFO, (unsigned char)messageLength))
 	{
 		//Can't add length!?
 		return 1;
 	}
 	
-	for(int i = 0; i < strlen(msg); ++i)
+	for(int i = 0; i < messageLength; ++i)
 	{
 		if(FifoWrite(gTwiFIFO, msg[i]))
 		{

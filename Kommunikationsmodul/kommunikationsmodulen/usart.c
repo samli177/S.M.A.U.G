@@ -272,7 +272,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 			}
 			
 			speed = *data;
-		
+		PORTA ^= (1<<PORTA0);
 		TWI_send_command(direction, rotation, speed);
 
 	}else
@@ -358,7 +358,7 @@ uint8_t USART_DecodeAutonomRxFIFO()
 			return 1; // error
 		}
 		sett = *data;
-		
+		PORTA ^= (1<<PORTA1);
 		TWI_send_autonom_settings(ST_ADDRESS,sett);
 
 	}else

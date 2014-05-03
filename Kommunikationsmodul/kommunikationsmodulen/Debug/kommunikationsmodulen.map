@@ -460,47 +460,47 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
                 0x00000604       0xd2 twi.o
                 0x00000604                decode_message_TwiFIFO
  .text.write_to_TwiFIFO
-                0x000006d6       0x82 twi.o
+                0x000006d6       0x70 twi.o
                 0x000006d6                write_to_TwiFIFO
  .text.__vector_26
-                0x00000758      0x378 twi.o
-                0x00000758                __vector_26
+                0x00000746      0x378 twi.o
+                0x00000746                __vector_26
  .text.USART_init
-                0x00000ad0       0x18 usart.o
-                0x00000ad0                USART_init
+                0x00000abe       0x18 usart.o
+                0x00000abe                USART_init
  .text.USART_CheckTxReady
-                0x00000ae8        0x8 usart.o
-                0x00000ae8                USART_CheckTxReady
+                0x00000ad6        0x8 usart.o
+                0x00000ad6                USART_CheckTxReady
  .text.USART_WriteByte
-                0x00000af0       0x12 usart.o
-                0x00000af0                USART_WriteByte
+                0x00000ade       0x12 usart.o
+                0x00000ade                USART_WriteByte
  .text.USART_crc16
-                0x00000b02       0xb2 usart.o
-                0x00000b02                USART_crc16
+                0x00000af0       0xb2 usart.o
+                0x00000af0                USART_crc16
  .text.USART_SendPacket
-                0x00000bb4       0xc0 usart.o
-                0x00000bb4                USART_SendPacket
+                0x00000ba2       0xc0 usart.o
+                0x00000ba2                USART_SendPacket
  .text.USART_SendMessage
-                0x00000c74       0x42 usart.o
-                0x00000c74                USART_SendMessage
+                0x00000c62       0x42 usart.o
+                0x00000c62                USART_SendMessage
  .text.USART_SendValue
-                0x00000cb6       0x1c usart.o
-                0x00000cb6                USART_SendValue
+                0x00000ca4       0x1c usart.o
+                0x00000ca4                USART_SendValue
  .text.USART_SendSensors
-                0x00000cd2       0x38 usart.o
-                0x00000cd2                USART_SendSensors
+                0x00000cc0       0x38 usart.o
+                0x00000cc0                USART_SendSensors
  .text.USART_DecodeMessageRxFIFO
-                0x00000d0a       0xe4 usart.o
-                0x00000d0a                USART_DecodeMessageRxFIFO
+                0x00000cf8       0xe4 usart.o
+                0x00000cf8                USART_DecodeMessageRxFIFO
  .text.USART_DecodeCommandRxFIFO
-                0x00000dee       0xa0 usart.o
-                0x00000dee                USART_DecodeCommandRxFIFO
+                0x00000ddc       0xaa usart.o
+                0x00000ddc                USART_DecodeCommandRxFIFO
  .text.USART_DecodeParametersRxFIFO
-                0x00000e8e       0xa2 usart.o
-                0x00000e8e                USART_DecodeParametersRxFIFO
+                0x00000e86       0xa2 usart.o
+                0x00000e86                USART_DecodeParametersRxFIFO
  .text.USART_DecodeAutonomRxFIFO
-                0x00000f30       0x56 usart.o
-                0x00000f30                USART_DecodeAutonomRxFIFO
+                0x00000f28       0x5e usart.o
+                0x00000f28                USART_DecodeAutonomRxFIFO
  .text.USART_DecodeRxFIFO
                 0x00000f86       0x4e usart.o
                 0x00000f86                USART_DecodeRxFIFO
@@ -794,21 +794,21 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_abbrev  0x000002ea      0x365 twi.o
  .debug_abbrev  0x0000064f      0x30f usart.o
 
-.debug_line     0x00000000     0x194d
+.debug_line     0x00000000     0x1971
  *(.debug_line)
  .debug_line    0x00000000      0x13c counter.o
  .debug_line    0x0000013c      0x14f fifo.o
  .debug_line    0x0000028b      0x243 kommunikationsmodulen.o
- .debug_line    0x000004ce      0xe2d twi.o
- .debug_line    0x000012fb      0x652 usart.o
+ .debug_line    0x000004ce      0xe39 twi.o
+ .debug_line    0x00001307      0x66a usart.o
 
-.debug_frame    0x00000000      0x7bc
+.debug_frame    0x00000000      0x7b0
  *(.debug_frame)
  .debug_frame   0x00000000       0x44 counter.o
  .debug_frame   0x00000044       0x68 fifo.o
  .debug_frame   0x000000ac       0x6c kommunikationsmodulen.o
- .debug_frame   0x00000118      0x460 twi.o
- .debug_frame   0x00000578      0x244 usart.o
+ .debug_frame   0x00000118      0x454 twi.o
+ .debug_frame   0x0000056c      0x244 usart.o
 
 .debug_str      0x00000000      0x84f
  *(.debug_str)
@@ -823,13 +823,13 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_str     0x000006e5      0x16a usart.o
                                 0x3a7 (size before relaxing)
 
-.debug_loc      0x00000000     0x1891
+.debug_loc      0x00000000     0x187f
  *(.debug_loc)
  .debug_loc     0x00000000       0x6c counter.o
  .debug_loc     0x0000006c      0x17b fifo.o
  .debug_loc     0x000001e7       0x5e kommunikationsmodulen.o
- .debug_loc     0x00000245      0xc96 twi.o
- .debug_loc     0x00000edb      0x9b6 usart.o
+ .debug_loc     0x00000245      0xc84 twi.o
+ .debug_loc     0x00000ec9      0x9b6 usart.o
 
 .debug_macinfo
  *(.debug_macinfo)
