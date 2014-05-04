@@ -1,8 +1,6 @@
 package src;
 
-import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
-import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -868,6 +866,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void searchControllersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchControllersButtonActionPerformed
+        controllersComboBox.removeAllItems();
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
         for (Controller c : controllers) {
             if (c.getType() == Controller.Type.GAMEPAD) {
@@ -1371,13 +1370,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         data[1] = (byte) rotation;
         data[2] = (byte) speed;
 
-        System.out.println("Styr");
-
         return sendData('C', data);
     }
 
     public boolean sendElevationCommand(boolean up) {
-        System.out.println("Elevation");
         byte data[] = new byte[1];
         if (up) {
             data[0] = 1;
@@ -1449,7 +1445,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
                     while (eventQueue.getNextEvent(event)) {
                         if (!event.getComponent().isAnalog()) {
-                            controllerButtonPressed(event);
+                            controllerButtonEvent(event);
                         }
                     }
                 } else {
@@ -1629,37 +1625,21 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         //sendSteerCommand(direction / 2, rot * 50, speed);
     }
 
-    private void controllerButtonPressed(Event event) {
-        switch (event.getComponent().getName()) {
-            case "Button 0":
-                break;
-            case "Button 1":
-                break;
-            case "Button 2":
-                break;
-            case "Button 3":
-                break;
-            case "Button 4":
-                // Left shoulder, send lower
-                sendElevationCommand(true);
-                break;
-            case "Button 5":
-                // Right shoulder, send raise
-                sendElevationCommand(false);
-                break;
-            case "Button 6":
-                break;
-            case "Button 7":
-                break;
-            case "Button 8":
-                break;
-            case "Button 9":
-                break;
-            case "Button 10":
-                break;
-            case "Styrknapp":
-                dPadValue = event.getValue();
-                break;
+    private void controllerButtonEvent(Event event) {
+        String name = event.getComponent().getName();
+        if (name.equals("Styrknapp")) {
+            dPadValue = event.getValue();
+        } else if (event.getValue() == 1) {
+            switch (name) {
+                case "Knapp 4":
+                    // Left shoulder, send lower
+                    sendElevationCommand(true);
+                    break;
+                case "Knapp 5":
+                    // Right shoulder, send raise
+                    sendElevationCommand(false);
+                    break;
+            }
         }
     }
 
