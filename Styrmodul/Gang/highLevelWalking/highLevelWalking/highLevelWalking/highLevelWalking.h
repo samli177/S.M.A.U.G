@@ -184,7 +184,9 @@ void leg_motion();
  */
 void move_to_std();
 
-void climb(float height);
+void climb();
+void leg_climb(struct LegData* leg);
+void change_z(float input);
 
 void update_leg_info(struct LegData* leg);
 uint16_t angle_to_servo_pos(float angle);
