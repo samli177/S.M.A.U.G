@@ -1,6 +1,5 @@
 /* Display.c
- * Include this file to get functions
- * for writing to the display.
+ * Defines functions for the display.
  * 
  * Created: 2014-04-02
  * Martin, Per
@@ -13,13 +12,13 @@
 #include <string.h>
 #include "display.h"
 
+static void toggle_enable();
+static int display_busy();
+static void print_int(int integer);
+static void print_digit(int digit);
+static uint8_t display_read_adress();
 
-static void toggle_enable(void);
-static int display_busy(void);
-static void print_int(int);
-static void print_digit(int);
-
-void display_init(void)
+void display_init()
 {
 	DDRB = 255;
 	DDRD |= 0b11100000;
@@ -40,7 +39,7 @@ void display_init(void)
 	toggle_enable();
 }
 
-void toggle_enable(void)
+void toggle_enable()
 {
 	PORTD |= (1<<PORTD6);
 	_delay_ms(10);
@@ -49,29 +48,29 @@ void toggle_enable(void)
 
 void display_char(char c)
 {
-	while(display_busy()); //Wait for display
+	//while(display_busy()); //Wait for display
 	PORTD |= (1<<PORTD5); //Data mode
 	PORTB = c;
 	toggle_enable();
 	
 	switch (display_read_adress())
 	{
-		case 0x40:
+		case 16:
 		display_set_pos(1,0);
 		break;
-		case 0x54:
+		case 80:
 		display_set_pos(2,0);
 		break;
-		case 0x50:
+		case 32:
 		display_set_pos(3,0);
 		break;
-		case 0x64:
+		case 96:
 		display_set_pos(0,0);
 		break;
 	}
 }
 
-int display_busy(void)
+int display_busy()
 {
 	PORTB = 0;
 	DDRB = 0;
@@ -97,16 +96,6 @@ void display_text(char text[])
 {
 	for(int i = 0; i < strlen(text); ++i)
 	{
-		/*if(i == 16)
-		{
-			set_display_pos(1,0);
-		} else if(i == 32)
-		{
-			set_display_pos(2,0);
-		} else if(i == 48)
-		{
-			set_display_pos(3,0);
-		}*/
 		display_char(text[i]);
 	}
 }
@@ -115,16 +104,6 @@ void display_text_fixed_length(char text[], int length)
 {
 	for(int i = 0; i < length; ++i)
 	{
-		if(i == 16)
-		{
-			display_set_pos(1,0);
-		} else if(i == 32)
-		{
-			display_set_pos(2,0);
-		} else if(i == 48)
-		{
-			display_set_pos(3,0);
-		}
 		display_char(text[i]);
 	}
 }
@@ -134,19 +113,19 @@ void display_text_line(int line, char text[])
 	switch(line)
 	{
 		case 0:
-		display_set_pos(0,0);
-		break;
+			display_set_pos(0,0);
+			break;
 		case 1:
-		display_set_pos(1,0);
-		break;
+			display_set_pos(1,0);
+			break;
 		case 2:
-		display_set_pos(2,0);
-		break;
+			display_set_pos(2,0);
+			break;
 		case 3:
-		display_set_pos(3,0);
-		break;
+			display_set_pos(3,0);
+			break;
 		default:
-		break;
+			break;
 	}
 	
 	for(int i = 0; i < strlen(text); ++i)
@@ -166,6 +145,18 @@ void display_value(float value)
 		} else 
 		{
 			print_int(value);
+		}
+	} else {
+		display_value((int) value);
+		display_char('.');
+		// Two decimals
+		int dec = (int) ((value - (int) value) * 100);
+		if(dec < 10)
+		{
+			print_digit(0);
+			print_digit(dec);
+		} else {
+			print_int(dec);
 		}
 	}
 }
@@ -229,7 +220,8 @@ void print_digit(int digit)
 
 void display_clear()
 {
-	PORTB = 0b00000001; //Clear Display
+	PORTB = 1<<PORTB0; //Clear Display
+	toggle_enable();
 	toggle_enable();
 }
 
@@ -263,12 +255,13 @@ void display_set_pos(int line, int pos)
 
 uint8_t display_read_adress()
 {
+	PORTB = 0;
+	DDRB = 0;
 	PORTD &= ~(1<<PORTD5);
 	PORTD |= 1<<PORTD7;
-	
+	_delay_us(10);
 	toggle_enable();
 	
-	DDRB = 0;
 	uint8_t adress = PINB;
 	DDRB = 0xFF;
 	PORTD |= 1<<PORTD5;

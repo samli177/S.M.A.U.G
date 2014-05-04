@@ -24,6 +24,9 @@ uint8_t gTxBuffer [517]; // if there are only control octets in data it needs to
 uint8_t gRxBuffer [517];
 uint16_t gRxBufferIndex = 0;
 uint16_t gInvertNextFlag = 0;
+uint16_t gMessageDesitnation = C_ADDRESS;
+
+uint8_t gGangReady = 0;
 
 
 
@@ -31,6 +34,13 @@ uint16_t gInvertNextFlag = 0;
 MK_FIFO(4096); // use 4 kB
 DEFINE_FIFO(gRxFIFO, 4096);
 
+
+// --------- TODOs -----------
+
+// decide what to do with error messages
+// figure out if is is possible to stop "package inception", flag maybe?
+
+// ---------------------------
 
 void USART_init()
 {
@@ -45,6 +55,11 @@ void USART_init()
 	//Frame format: 8data, no parity, 1 stop bit
 	UCSR0C = (1<<UCSZ00 | 1<<UCSZ01);
 
+}
+
+void USART_set_twi_message_destination(uint16_t address)
+{
+	gMessageDesitnation = address;
 }
 
 uint8_t USART_CheckRxComplete()
@@ -176,14 +191,11 @@ void USART_SendMessage(char msg[])
 
 void USART_SendSensors()
 {
-	for(int i = 0; i < 7; i++)
+	for(int i = 0; i < 8; i++)
 	{
 		gTxPayload[i] = TWI_get_sensor(i);
 	}
-	
-	//UL sensor
-	
-	gTxPayload[7] = 254;
+
 	gTxPayload[8] = TWI_get_servo();
 	
 	USART_SendPacket('S', 9);
@@ -197,6 +209,8 @@ void USART_SendCommand()
 	}
 	
 	USART_SendPacket('C', 3);
+	// clear flag
+	
 	
 }
 
@@ -208,7 +222,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		TWI_send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: LEN MISSING");
+		TWI_send_string(S_ADDRESS, "RxFIFO MESSAGE ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -223,7 +237,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	{
 		if(FifoRead(gRxFIFO, character))
 		{
-			TWI_send_string(S_ADRESS, "RxFIFO MESSAGE ERROR: DATA MISSING");
+			TWI_send_string(S_ADDRESS, "RxFIFO MESSAGE ERROR: DATA MISSING");
 			return 1; // error
 		}
 
@@ -231,11 +245,13 @@ uint8_t USART_DecodeMessageRxFIFO()
 	}
 	
 	
-	// TODO: send to relevant party... the display for now
-	TWI_send_string_fixed_length(S_ADRESS, msg, length);
-	
+	// TODO: make message destination configurable
+	TWI_send_string_fixed_length(gMessageDesitnation, msg, length);
+
 	return 0;
 }
+
+
 
 uint8_t USART_DecodeCommandRxFIFO()
 {
@@ -244,7 +260,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -256,14 +272,14 @@ uint8_t USART_DecodeCommandRxFIFO()
 		
 			if(FifoRead(gRxFIFO, data))
 			{
-				TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
+				TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
 				return 1; // error
 			}
 			direction = *data;
 			
 			if(FifoRead(gRxFIFO, data))
 			{
-				TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
+				TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: ROTATION MISSING");
 				return 1; // error
 			}
 			
@@ -271,7 +287,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 			
 			if(FifoRead(gRxFIFO, data))
 			{
-				TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: SPEED MISSING");
+				TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: SPEED MISSING");
 				return 1; // error
 			}
 			
@@ -281,7 +297,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 
 	}else
 	{
-		TWI_send_string(S_ADRESS, "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
+		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
 		return 1;
 	}
 
@@ -289,6 +305,79 @@ uint8_t USART_DecodeCommandRxFIFO()
 	
 }
 
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];
+};
+
+uint8_t USART_DecodeValueFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	union Union_floatcast foo;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO VALUE ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 4)
+	{
+		for(int i = 0; i < 4; ++i)
+		{
+				if(FifoRead(gRxFIFO, data))
+				{
+					//send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: DIRECTION MISSING");
+					return 1; // error
+				}
+				
+			foo.s[i] = *data;
+			TWI_send_float(C_ADDRESS, *data);		
+		}
+	TWI_send_float(C_ADDRESS, foo.f);
+	
+	return 0;
+	}
+	
+	return 1;
+}
+
+uint8_t USART_DecodeReadyFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	union Union_floatcast foo;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO COMMAND ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 0)
+	{
+		gGangReady = 1; // set flag
+		return 0;
+	}
+	
+	return 1;
+}
+
+uint8_t USART_ready()
+{
+	if(gGangReady)
+	{
+		gGangReady = 0;
+		return 1;
+	}
+	return 0;
+}
 
 void USART_DecodeRxFIFO()
 {
@@ -296,6 +385,7 @@ void USART_DecodeRxFIFO()
 	
 	while(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
 	{
+		
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{
@@ -311,9 +401,29 @@ void USART_DecodeRxFIFO()
 			{
 				if(USART_DecodeCommandRxFIFO())
 				{
-					// TODO: flush buffet?
+					// TODO: flush buffer?
 					return;
 				}
+				break;
+			}
+			case('V'):
+			{
+				if(USART_DecodeValueFIFO())
+				{
+					
+					return;
+				}
+				break;
+
+			}
+			case('R'):
+			{
+				if(USART_DecodeReadyFIFO())
+				{
+					return;
+				}
+				break;
+
 			}
 		}
 	}
@@ -336,8 +446,6 @@ ISR (USART0_RX_vect)
 	uint8_t data;
 	data = UDR0; // read data from buffer TODO: add check for overflow
 	
-	
-	
 	if(data == 0x7e)
 	{
 		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
@@ -348,14 +456,13 @@ ISR (USART0_RX_vect)
 				gInvertNextFlag = 0;
 			}
 			
-			//USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
 			{
 				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
 				{
-					TWI_send_string(S_ADRESS,"U_FIFO-full");
+					TWI_send_string(S_ADDRESS,"U_FIFO-full");
 				}
 			}
 		}
@@ -371,6 +478,18 @@ ISR (USART0_RX_vect)
 		++gRxBufferIndex;
 	}
 	
+	
+}
+
+void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed)
+{
+	gTxPayload[0] = direction;
+	gTxPayload[1] = rotation;
+	gTxPayload[2] = speed;
+	
+	
+	USART_SendPacket('C', 3);
+	// clear flag
 	
 }
 

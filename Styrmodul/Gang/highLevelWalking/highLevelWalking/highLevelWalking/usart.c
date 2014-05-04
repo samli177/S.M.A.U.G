@@ -22,13 +22,33 @@ uint8_t gRxBuffer [517];
 uint16_t gRxBufferIndex = 0;
 uint16_t gInvertNextFlag = 0;
 
-
+uint8_t gRotation=50, gSpeed=0, gDirection=0;
 
 // define FIFO for received packets (USART)
 MK_FIFO(4096); // use 4 kB
 DEFINE_FIFO(gRxFIFO, 4096);
 
 
+uint8_t USART_getRotation()
+{
+	uint8_t rotation = gRotation;
+	gRotation = 50;
+	return  rotation;
+}
+
+uint8_t USART_getSpeed()
+{
+	uint8_t speed = gSpeed;
+	gSpeed = 0;
+	return speed;
+}
+
+uint8_t USART_getDirection()
+{
+	uint8_t direction = gDirection;
+	gDirection = 0;
+	return direction;
+}
 
 void USART_init()
 {
@@ -42,6 +62,10 @@ void USART_init()
 
 	//Frame format: 8data, no parity, 1 stop bit
 	UCSR0C = (1<<UCSZ00 | 1<<UCSZ01);
+	
+	gRotation = 50;
+	gSpeed = 0;
+	gDirection = 0;
 
 }
 
@@ -187,9 +211,33 @@ void USART_SendSensors()
 	USART_SendPacket('S', 9);
 }
 
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];
+};
+
+void USART_SendValue(float flo)
+{
+	union Union_floatcast foo;
+	foo.f = flo;
+	
+	for(int i = 0; i < 4; ++i)
+	{
+		gTxPayload[i] = foo.s[i]; 
+	}
+	
+	USART_SendPacket('V', 4);
+	
+}
+
+void USART_send_ready()
+{
+	USART_SendPacket('R', 0);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
-	PORTD ^= (1<<PORTD5);
 	uint8_t *len = 0;
 	uint8_t *character = 0;
 	
@@ -227,6 +275,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 
 uint8_t USART_DecodeCommandRxFIFO()
 {
+	
 	uint8_t *len = 0;
 	uint8_t *data = 0;
 	
@@ -265,8 +314,11 @@ uint8_t USART_DecodeCommandRxFIFO()
 			
 			speed = *data;
 		
-		//send_command(direction, rotation, speed);
+		gSpeed = speed;
+		gDirection = direction;
+		gRotation = rotation;
 		
+		PORTD ^= (1<<PORTD5);
 
 	}else
 	{
@@ -285,7 +337,6 @@ void USART_DecodeRxFIFO()
 	
 	while(!(FifoRead(gRxFIFO, tag))) // if the buffer is NOT empty
 	{
-		
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{
@@ -301,9 +352,10 @@ void USART_DecodeRxFIFO()
 			{
 				if(USART_DecodeCommandRxFIFO())
 				{
-					// TODO: flush buffet?
+					// TODO: flush buffer?
 					return;
 				}
+				break;
 			}
 		}
 	}
@@ -338,8 +390,6 @@ ISR (USART0_RX_vect)
 				gInvertNextFlag = 0;
 			}
 			
-			
-			USART_Bounce();
 			
 			// Add packet (no crc) to fifo-buffer to cue it for decoding
 			for(int i = 0; i < gRxBuffer[1] + 2; ++i)

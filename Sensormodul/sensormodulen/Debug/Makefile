@@ -40,6 +40,7 @@ C_SRCS +=  \
 ../display.c \
 ../fifo.c \
 ../sensormodulen.c \
+../sensors.c \
 ../twi.c
 
 
@@ -54,6 +55,7 @@ counter.o \
 display.o \
 fifo.o \
 sensormodulen.o \
+sensors.o \
 twi.o
 
 OBJS_AS_ARGS +=  \
@@ -61,6 +63,7 @@ counter.o \
 display.o \
 fifo.o \
 sensormodulen.o \
+sensors.o \
 twi.o
 
 C_DEPS +=  \
@@ -68,6 +71,7 @@ counter.d \
 display.d \
 fifo.d \
 sensormodulen.d \
+sensors.d \
 twi.d
 
 C_DEPS_AS_ARGS +=  \
@@ -75,6 +79,7 @@ counter.d \
 display.d \
 fifo.d \
 sensormodulen.d \
+sensors.d \
 twi.d
 
 OUTPUT_FILE_PATH +=sensormodulen.elf
@@ -88,6 +93,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 
