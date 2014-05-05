@@ -39,6 +39,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     final int CONTROLL_DELAY = 100; // milli-seconds
+    final int MIN_SPEED = 20;
+    final int MIN_ROTATION = 15;
 
     SerialPort comPort;
     LinkedList<byte[]> messageBuffer;
@@ -399,7 +401,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
         jLabel11.setText("COM port namn:");
 
-        comNameTextField.setText("COM1");
+        comNameTextField.setText("COM4");
 
         connectButton.setText("Koppla upp");
         connectButton.addActionListener(new java.awt.event.ActionListener() {
@@ -783,6 +785,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         );
 
         jTabbedPane1.addTab("Debug", jPanel1);
+
+        jTabbedPane1.setSelectedIndex(1);
 
         jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -1374,6 +1378,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     public boolean sendElevationCommand(boolean up) {
+        System.out.println("Elevation");
         byte data[] = new byte[1];
         if (up) {
             data[0] = 1;
@@ -1681,7 +1686,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 angle -= 360;
             }
             speed = (int) Math.round(Math.sqrt(x * x + y * y) * 100);
-            if (speed < 10) {
+            if (speed < MIN_SPEED) {
                 speed = 0;
             } else if (speed > 100) {
                 speed = 100;
@@ -1693,7 +1698,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             rotation = rotationValue;
         } else {
             rotation = Math.round(50 * xrot);
-            if (Math.abs(rotation) < 2) {
+            if (Math.abs(rotation) < MIN_ROTATION) {
                 rotation = 0;
             }
         }

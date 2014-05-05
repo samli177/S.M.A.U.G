@@ -156,6 +156,9 @@
       </SubComponents>
     </Container>
     <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+      <Properties>
+        <Property name="selectedIndex" type="int" value="1"/>
+      </Properties>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
@@ -602,7 +605,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="comNameTextField">
               <Properties>
-                <Property name="text" type="java.lang.String" value="COM1"/>
+                <Property name="text" type="java.lang.String" value="COM4"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="connectButton">
