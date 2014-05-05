@@ -103,7 +103,7 @@ void navigation_stepping_delay();
  * 
  * \return void
  */
-void navigation_low_pass_obsticle();
+void navigation_low_pass_obstacle();
 
 /**
  * \brief 

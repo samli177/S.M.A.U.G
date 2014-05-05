@@ -177,7 +177,7 @@ void navigation_stepping_delay()
 	}
 }
 
-void navigation_low_pass_obsticle()
+void navigation_low_pass_obstacle()
 {
 	if(navigation_detect_low_pass_obsticle() && !(lowPassObstacleFlag))
 	{

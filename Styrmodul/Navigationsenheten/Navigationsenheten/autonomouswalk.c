@@ -25,6 +25,10 @@ uint8_t gSpeed = 50;
 //sent back to the PC.
 uint8_t gStatus = 1;
 
+//A counter to keep track of how many times the robot have
+//found itself unable to make a decision.
+uint8_t decisionCounter = 0;
+
 void autonomouswalk_set_speed(uint8_t speed)
 {
 	gSpeed=speed;
@@ -150,7 +154,7 @@ void walk_forward()
 
 void autonomouswalk_walk()
 {
-	navigation_low_pass_obsticle();
+	navigation_low_pass_obstacle();
 	if(navigation_left_algorithm())
 	{
 		if(navigation_check_left_turn() == 2)
@@ -200,9 +204,16 @@ void autonomouswalk_walk()
 		{
 			turn_around();
 		}
-		else
+		else if(decisionCounter < 4)
 		{
 			walk_forward();
+			++decisionCounter;
+		}
+		else
+		{
+			decisionCounter = 0;
+			navigation_set_autonomous_walk(0);
+			TWI_send_string_fixed_length(C_ADDRESS, "ERROR: Can't make a decision, turning off autonomous mode", 57);
 		}
 	}
 }
