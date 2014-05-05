@@ -17,19 +17,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   6 .debug_aranges 000003c0  00000000  00000000  00006d07  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00003588  00000000  00000000  000070c7  2**0
+  7 .debug_info   00003579  00000000  00000000  000070c7  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00000f87  00000000  00000000  0000a64f  2**0
+  8 .debug_abbrev 00000f7a  00000000  00000000  0000a640  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00002291  00000000  00000000  0000b5d6  2**0
+  9 .debug_line   00002291  00000000  00000000  0000b5ba  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  00000b44  00000000  00000000  0000d868  2**2
+ 10 .debug_frame  00000b44  00000000  00000000  0000d84c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000c6d  00000000  00000000  0000e3ac  2**0
+ 11 .debug_str    00000c6d  00000000  00000000  0000e390  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000216b  00000000  00000000  0000f019  2**0
+ 12 .debug_loc    00002198  00000000  00000000  0000effd  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 000003f8  00000000  00000000  00011184  2**0
+ 13 .debug_ranges 000003f8  00000000  00000000  00011195  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -1940,7 +1940,7 @@ int main(void)
 			}
 			autonomouswalk_walk();
      b24:	d3 db       	rcall	.-2138   	; 0x2cc <autonomouswalk_walk>
-     b26:	07 c0       	rjmp	.+14     	; 0xb36 <main+0x78>
+     b26:	0f c0       	rjmp	.+30     	; 0xb46 <main+0x88>
 		}
 		else
 		{
@@ -1956,21 +1956,22 @@ int main(void)
 				USART_SendCommand();
      b34:	d0 d4       	rcall	.+2464   	; 0x14d6 <USART_SendCommand>
 			}
-		}
-		
-		if(TWI_elevation_flag())
+			
+			if(TWI_elevation_flag())
      b36:	2b d2       	rcall	.+1110   	; 0xf8e <TWI_elevation_flag>
      b38:	88 23       	and	r24, r24
      b3a:	29 f0       	breq	.+10     	; 0xb46 <main+0x88>
-		{
-			PORTA ^= (1<<PORTA0); 
+			{
+				PORTA ^= (1<<PORTA0);
      b3c:	92 b1       	in	r25, 0x02	; 2
      b3e:	81 e0       	ldi	r24, 0x01	; 1
      b40:	89 27       	eor	r24, r25
      b42:	82 b9       	out	0x02, r24	; 2
-			USART_SendElevation();
+				USART_SendElevation();
      b44:	da d4       	rcall	.+2484   	; 0x14fa <USART_SendElevation>
+			}
 		}
+		
 		USART_DecodeRxFIFO();
      b46:	2c d6       	rcall	.+3160   	; 0x17a0 <USART_DecodeRxFIFO>
     }

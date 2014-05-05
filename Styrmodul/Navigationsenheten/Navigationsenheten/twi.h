@@ -241,6 +241,9 @@ uint8_t TWI_get_control_setting(int i);
  */
 uint8_t TWI_get_autonom_settings();
 
+
+uint8_t TWI_get_elevation();
+
 /**
  * \brief 
  * Decodes a message from the FIFO buffer.

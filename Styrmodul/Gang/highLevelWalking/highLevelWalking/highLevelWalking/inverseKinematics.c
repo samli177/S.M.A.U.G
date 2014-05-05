@@ -85,6 +85,7 @@ void height_change_all(float new_z)
 	height_change_leg4(new_z);
 	height_change_leg5(new_z);
 	height_change_leg6(new_z);
+	
 }
 
 float get_x0_1()

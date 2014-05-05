@@ -71,13 +71,14 @@ int main(void)
 				PORTA ^= (1<<PORTA1);
 				USART_SendCommand();
 			}
+			
+			if(TWI_elevation_flag())
+			{
+				PORTA ^= (1<<PORTA0);
+				USART_SendElevation();
+			}
 		}
 		
-		if(TWI_elevation_flag())
-		{
-			PORTA ^= (1<<PORTA0); 
-			USART_SendElevation();
-		}
 		USART_DecodeRxFIFO();
     }
 }

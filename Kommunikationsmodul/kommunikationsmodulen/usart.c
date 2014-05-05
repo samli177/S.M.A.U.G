@@ -398,6 +398,8 @@ uint8_t USART_DecodeElevationRxFIFO()
 	
 	direction = *data;
 	
+	PORTA ^= (1 << PORTA0);
+	
 	TWI_send_elevation(direction);
 
 	return 0;

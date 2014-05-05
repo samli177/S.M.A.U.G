@@ -87,9 +87,6 @@ void initvar()
 	maxStepLength = 40;
 	stdLength = sqrtf(get_x0_1()*get_x0_1() + get_y0_1()*get_y0_1());
 	
-	z = get_z0();
-	zInput = get_z0();
-	
 	init_struct(&leg1);
 	init_struct(&leg2);
 	init_struct(&leg3);
@@ -97,11 +94,12 @@ void initvar()
 	init_struct(&leg5);
 	init_struct(&leg6);
 	
+	/*
 	//TA BORT FÖR NORMAL FUNKTUÌON!!
 	leg1.newPosz = -60;
 	leg2.newPosz = -60;
 	leg3.newPosz = -60;
-	
+	*/
 	leg1.lift = 1;
 	leg2.lift = -1;
 	leg3.lift = 1;
@@ -480,7 +478,7 @@ void leg_motion()
 		SERVO_action();
 		_delay_ms(20);
 		
-		z = USART_get_z();
+		change_z(USART_get_z());
 		
 	}
 }
@@ -500,7 +498,7 @@ void change_z(float input)
 void move_to_std()
 {
 	
-	z = USART_get_z();
+	change_z(USART_get_z());
 	
 	leg1.lift = -1;
 	leg2.lift = 1;

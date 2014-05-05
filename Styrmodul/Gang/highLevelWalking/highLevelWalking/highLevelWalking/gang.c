@@ -14,7 +14,7 @@ uint8_t std_pos_flag = 1;
 
 int main(void)
 {
-	DDRD |= (1<<PORTD5); //init LED
+	DDRC |= (1<<PORTC6) | (1<<PORTC7); //init LEDs
 	//servoTx;
 
 	
@@ -43,7 +43,7 @@ int main(void)
 	
     while(1)
     {
-		/*
+		
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
 		uint8_t d = USART_getDirection();
@@ -59,18 +59,16 @@ int main(void)
 		if(r == 50 && s == 0 && d == 0)
 		{
 			_delay_ms(50);
-			PORTD ^= (1<<PORTD5);
+			//PORTD ^= (1<<PORTD5);
 			cli();
 			USART_send_ready();
 			sei();
 		}
-		*/
-		height_change_leg1(-60);
-		height_change_leg2(-60);
-		height_change_leg3(-60);
 		
 
-		for(int i = 0; i < 20; ++i)
+		
+/*
+		for(int i = 0; i < 5; ++i)
 		{
 			move_robot(0,50,100);
 			//_delay_ms(2000);
@@ -79,14 +77,14 @@ int main(void)
 		_delay_ms(1000);
 		move_to_std();
 	
-		_delay_ms(5000);
+		_delay_ms(1000);
 		
 		
-		
+		*/
 		
 		//climb();
 		USART_DecodeRxFIFO();
-		
+	
     }
 }
 

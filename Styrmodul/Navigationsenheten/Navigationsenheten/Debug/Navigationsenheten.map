@@ -1086,7 +1086,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x3588
+.debug_info     0x00000000     0x3579
  *(.debug_info)
  .debug_info    0x00000000      0x5e8 autonomouswalk.o
  .debug_info    0x000005e8      0x119 counter.o
@@ -1094,10 +1094,10 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_info    0x000008b2      0xa0e Navigation.o
  .debug_info    0x000012c0      0x3d8 Navigationsenheten.o
  .debug_info    0x00001698     0x12b7 twi.o
- .debug_info    0x0000294f      0xc39 usart.o
+ .debug_info    0x0000294f      0xc2a usart.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0xf87
+.debug_abbrev   0x00000000      0xf7a
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x19b autonomouswalk.o
  .debug_abbrev  0x0000019b       0x9c counter.o
@@ -1105,7 +1105,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_abbrev  0x00000305      0x3ca Navigation.o
  .debug_abbrev  0x000006cf      0x1a8 Navigationsenheten.o
  .debug_abbrev  0x00000877      0x331 twi.o
- .debug_abbrev  0x00000ba8      0x3df usart.o
+ .debug_abbrev  0x00000ba8      0x3d2 usart.o
 
 .debug_line     0x00000000     0x2291
  *(.debug_line)
@@ -1144,7 +1144,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_str     0x00000ac5      0x1a8 usart.o
                                 0x446 (size before relaxing)
 
-.debug_loc      0x00000000     0x216b
+.debug_loc      0x00000000     0x2198
  *(.debug_loc)
  .debug_loc     0x00000000      0x235 autonomouswalk.o
  .debug_loc     0x00000235       0x6c counter.o
@@ -1152,7 +1152,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_loc     0x0000041c      0x67a Navigation.o
  .debug_loc     0x00000a96       0x87 Navigationsenheten.o
  .debug_loc     0x00000b1d      0xc5c twi.o
- .debug_loc     0x00001779      0x9f2 usart.o
+ .debug_loc     0x00001779      0xa1f usart.o
 
 .debug_macinfo
  *(.debug_macinfo)
