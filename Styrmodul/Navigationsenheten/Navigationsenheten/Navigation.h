@@ -98,6 +98,15 @@ void navigation_stepping_delay();
 
 /**
  * \brief 
+ * Detects a low pass obstacle and manages it. Prints out
+ * the results on the display.
+ * 
+ * \return void
+ */
+void navigation_low_pass_obsticle();
+
+/**
+ * \brief 
  * Returns the offset angle of the robot during normal
  * normal walking in a corridor.
  *

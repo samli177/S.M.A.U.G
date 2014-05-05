@@ -19,7 +19,7 @@
 #include "Navigation.h"
 #include <math.h>
 
-#define sensorBufferSize 7
+#define sensorBufferSize 5
 
 // 0 means use a right side algorithm.
 // 1 means use a left side algorithm.
@@ -39,6 +39,10 @@ uint8_t medianBuffer[8];
 
 // A help variable to be used in fill_buffer().
 uint8_t currentBufferLine = 0;
+
+// A flag to note if the robot is in the middle of a 
+// low pass obstacle.
+uint8_t lowPassObstacleFlag = 0;
 
 //------------- Internal declarations ---------------
 
@@ -68,6 +72,18 @@ static uint8_t sortAndFilter(uint8_t data[sensorBufferSize]);
 	return ( *(uint8_t*)a - *(uint8_t*)b );
 }*/
 
+
+/**
+ * \brief 
+ * A function that takes a vector, sorts it using bubble sort and
+ * returns the median of it. 
+ *
+ * \param data
+ * The vector to be sorted.
+ * 
+ * \return uint8_t
+ * The returned median as a uint8_t
+ */
 uint8_t sortAndFilter(uint8_t data[sensorBufferSize])
 {
 	uint8_t largest;
@@ -161,6 +177,22 @@ void navigation_stepping_delay()
 	}
 }
 
+void navigation_low_pass_obsticle()
+{
+	if(navigation_detect_low_pass_obsticle() && !(lowPassObstacleFlag))
+	{
+		TWI_send_string_fixed_length(S_ADDRESS,"Low pass obstacle detected.", 27);
+		_delay_ms(30);
+		TWI_send_string_fixed_length(C_ADDRESS,"Low pass obstacle detected.", 27);
+		lowPassObstacleFlag = 1;
+	}
+	else if(!(navigation_detect_low_pass_obsticle()))
+	{
+		lowPassObstacleFlag = 0;
+	}
+	
+}
+
 float navigation_angle_offset()
 {
 	float angle = 0;
@@ -210,12 +242,20 @@ float navigation_direction_regulation(float angleOffset)
 		{
 			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
 		}
+		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
+		{
+			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
+		}
 	}
 	else 
 	{
 		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
 		{
 			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
+		}
+		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
+		{
+			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
 		}
 	}
 	
@@ -240,7 +280,7 @@ float navigation_direction_regulation(float angleOffset)
 
 uint8_t navigation_check_left_turn()
 {
-	if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH / 2 + 10) && navigation_get_sensor(2) >= (CORRIDOR_WIDTH / 2 + 10))
+	if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH / 2 + 20) && navigation_get_sensor(2) >= (CORRIDOR_WIDTH / 2 + 20))
 	{
 		return 2;
 	}
@@ -256,7 +296,7 @@ uint8_t navigation_check_left_turn()
 
 uint8_t navigation_check_right_turn()
 {
-	if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH / 2 + 10) && navigation_get_sensor(3) >= (CORRIDOR_WIDTH / 2 + 10))
+	if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH / 2 + 20) && navigation_get_sensor(3) >= (CORRIDOR_WIDTH / 2 + 20))
 	{
 		return 2;
 	}
