@@ -150,11 +150,12 @@ void walk_forward()
 
 void autonomouswalk_walk()
 {
+	navigation_low_pass_obsticle();
 	if(navigation_left_algorithm())
 	{
 		if(navigation_check_left_turn() == 2)
 		{
-			for(int i = 0;(i < 3 && TWI_get_autonom_settings() != 0); ++i)
+			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
 			{
 				walk_forward();
 			}
@@ -168,16 +169,20 @@ void autonomouswalk_walk()
 		{
 			turn_right();
 		}
-		else
+		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
 			turn_around();
+		}
+		else
+		{
+			walk_forward();
 		}
 	}
 	else
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			for(int i = 0;(i < 3 && TWI_get_autonom_settings() != 0); ++i)
+			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
 			{
 				walk_forward();
 			}
@@ -191,9 +196,13 @@ void autonomouswalk_walk()
 		{
 			turn_left();
 		}
-		else
+		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
 			turn_around();
+		}
+		else
+		{
+			walk_forward();
 		}
 	}
 }
