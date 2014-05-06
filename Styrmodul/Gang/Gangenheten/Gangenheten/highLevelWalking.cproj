@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>6.1</ProjectVersion>
     <ToolchainName>com.Atmel.AVRGCC8.C</ToolchainName>
-    <ProjectGuid>{53079b43-2ae6-471d-8db1-2293549cd12b}</ProjectGuid>
+    <ProjectGuid>{5ac55127-5dff-4e0a-a0c3-3af894d9172a}</ProjectGuid>
     <avrdevice>ATmega1284P</avrdevice>
     <avrdeviceseries>none</avrdeviceseries>
     <OutputType>Executable</OutputType>
@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>serialServoControl</AssemblyName>
-    <Name>serialServoControl</Name>
-    <RootNamespace>serialServoControl</RootNamespace>
+    <AssemblyName>highLevelWalking</AssemblyName>
+    <Name>highLevelWalking</Name>
+    <RootNamespace>highLevelWalking</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -38,6 +38,18 @@
       </framework-data>
     </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.jtagice3plus</avrtool>
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolOptions>
+        <InterfaceProperties>
+          <JtagEnableExtResetOnStartSession>false</JtagEnableExtResetOnStartSession>
+        </InterfaceProperties>
+        <InterfaceName>JTAG</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolNumber>
+      </ToolNumber>
+      <ToolName>Simulator</ToolName>
+    </com_atmel_avrdbg_tool_simulator>
     <com_atmel_avrdbg_tool_jtagice3plus>
       <ToolOptions>
         <InterfaceProperties>
@@ -109,10 +121,43 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="serialServoControl.h">
+    <Compile Include="counter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="counter.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="fifo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="fifo.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gang.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="highLevelWalking.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="highLevelWalking.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inverseKinematics.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="inverseKinematics.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="serialServoControl.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="serialServoControl.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="usart.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

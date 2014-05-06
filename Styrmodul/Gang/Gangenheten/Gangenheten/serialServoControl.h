@@ -10,7 +10,7 @@
 #define INCFILE1_H_
 
 #define F_CPU 16000000
-#define BaudRate 1000000
+#define ServoBaudRate 1000000
 
 
 // -- Direction control (tristate buffer) --
@@ -106,15 +106,41 @@
 #define BROADCASTING_ID 0xfe
 
 // -- Declarations --
+struct LegData;
 
-void initServoSerial();
-uint8_t servoCheckRxComplete();
-uint8_t servoCheckTxReady();
-void servolWriteByte(uint8_t DataByteOut);
-uint8_t servoReadByte();
-void sendServoPacket(uint8_t ID, uint8_t instruction, uint8_t parametersLength);
-void servoGoto(uint8_t ID, double angle, uint16_t speed);
-void servoAngleLimit(uint8_t ID, double minAngle, double maxAngle);
+void SERVO_init();
+
+// -- Private functions --
+
+// TODO: declare static, write descriptions
+uint8_t servo_check_rx_complete();
+uint8_t servo_check_tx_ready();
+void servo_write_byte(uint8_t DataByteOut);
+uint8_t servo_read_byte(); 
+void send_servo_packet(uint8_t ID, uint8_t instruction, uint8_t parametersLength);
+
+
+// -- Public functions --
+void SERVO_goto(uint8_t ID, double angle, uint16_t speed);
+void SERVO_set_angle_limit(uint8_t ID, double minAngle, double maxAngle);
+void SERVO_set_return_level(uint8_t ID, uint8_t level);
+void SERVO_set_torque_limit(uint8_t ID, uint16_t maxTorque);
+
+void SERVO_update_data(uint8_t ID);
+
+void SERVO_action();
+void SERVO_buffer_position(uint8_t ID, double angle, uint16_t speed);
+
+void SERVO_update_EEPROM(uint8_t ID);
+void SERVO_set_return_delay_time(uint8_t ID, uint8_t delay);
+
+void SERVO_update_leg_info(struct LegData* leg);
+
+uint16_t SERVO_get_pos();
+uint16_t SERVO_get_speed();
+uint16_t SERVO_get_load();
+uint8_t SERVO_get_temperature();
+uint8_t SERVO_get_voltage();
 
 
 

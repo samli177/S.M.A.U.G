@@ -2,5 +2,17 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
-serialServoControl.c
+counter.cpp
+
+fifo.cpp
+
+Gangenheten.cpp
+
+highLevelWalking.cpp
+
+inverseKinematics.cpp
+
+serialServoControl.cpp
+
+usart.cpp
 
