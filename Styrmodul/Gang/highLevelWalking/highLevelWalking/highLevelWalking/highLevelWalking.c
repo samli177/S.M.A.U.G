@@ -86,7 +86,7 @@ void initvar()
 	speedMultiplier = 1500;
 	speed = 300;
 	iterations = 5;
-	maxStepLength = 60;
+	maxStepLength = 55;
 	stdLength = sqrtf(get_x0_1()*get_x0_1() + get_y0_1()*get_y0_1());
 	z = -120;
 	
@@ -570,6 +570,8 @@ void climb()
 	height_flag = 0;
 	height = 60;
 	
+	height_change_leg1(-70);
+	
 	leg1.climbing = 1;
 	move_robot(0,50,100);
 	leg1.climbing = 0;
@@ -588,6 +590,8 @@ void climb()
 	leg4.climbing = 1;
 	move_robot(0,50,100);
 	leg4.climbing = 0;
+	
+	_delay_ms(5000);
 }
 
 void leg_climb(struct LegData* leg)
@@ -609,11 +613,11 @@ void leg_climb(struct LegData* leg)
 	SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
 	SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
 	
-	_delay_ms(2000);
+	_delay_ms(400);
 	
 	SERVO_goto(leg->servoGamma, leg->goalAngleGamma, 100);
 	
-	 _delay_ms(2000);
+	 _delay_ms(400);
 	 if(height_flag)
 	 {
 		 tempz = height+z;
@@ -632,37 +636,67 @@ void leg_climb(struct LegData* leg)
 		 switch(leg->servoGamma)
 		 {
 			 case 1:
-			 height_change_leg4(tempz);
-			 break;
-			 
-			 case 2:
-			 height_change_leg3(tempz);
-			 break;
-			 
-			 case 7:
-			 height_change_leg6(tempz);
-			 break;
-			 
-			 case 8:
 			 height_change_leg1(tempz);
 			 break;
 			 
-			 case 13:
+			 case 2:
+			 height_change_leg4(tempz);
+			 break;
+			 
+			 case 7:
 			 height_change_leg5(tempz);
 			 break;
 			 
-			 case 14:
+			 case 8:
+			 height_change_leg6(tempz);
+			 break;
+			 
+			 case 13:
 			 height_change_leg2(tempz);
+			 break;
+			 
+			 case 14:
+			 height_change_leg3(tempz);
 			 break;
 			 
 			 default:
 			 break;
 		 }
-		 _delay_ms(1000);
+		// _delay_ms(1000);
 	 }
 	 else
 	 {
 		 tempz = z + height + 30;
+		 
+		 		 switch(leg->servoGamma)
+		 {
+			 case 1:
+			 height_change_leg1(tempz);
+			 break;
+			 
+			 case 2:
+			 height_change_leg4(tempz);
+			 break;
+			 
+			 case 7:
+			 height_change_leg5(tempz);
+			 break;
+			 
+			 case 8:
+			 height_change_leg6(tempz);
+			 break;
+			 
+			 case 13:
+			 height_change_leg2(tempz);
+			 break;
+			 
+			 case 14:
+			 height_change_leg3(tempz);
+			 break;
+			 
+			 default:
+			 break;
+		 }
 		 
 		 tempx = leg->newPosx;
 		 tempy = leg->newPosy;
@@ -677,7 +711,7 @@ void leg_climb(struct LegData* leg)
 		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
 		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
 		 
-		 _delay_ms(1000);
+		 _delay_ms(400);
 	 
 	 do 
 	 {
@@ -695,12 +729,12 @@ void leg_climb(struct LegData* leg)
 		 
 		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
 		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100); 
-		 _delay_ms(1000);
+		 _delay_ms(100);
 		 update_leg_info(leg);
 		 
 	 } while (!(leg->currLoadAlpha > 235));
 	 
-	 tempz += 30;
+	 tempz += 20;
 	 
 	 calc_d(tempx, tempy, tempz);
 	 leg->temp2AngleBeta = get_beta();
@@ -710,7 +744,7 @@ void leg_climb(struct LegData* leg)
 	 
 	 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
 	 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
-	 _delay_ms(1000);
+	 _delay_ms(400);
 	 
 	 height_flag = 1;
 	 height = tempz - z;
