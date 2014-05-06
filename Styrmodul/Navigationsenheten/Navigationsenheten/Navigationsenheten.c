@@ -26,7 +26,16 @@ int main(void)
 	sei();
 	TWI_init(ST_ADDRESS);
 	init_counters();
+	
+	//LED
 	DDRA |= (1<<PORTA0 | 1<<PORTA1);
+	DDRC |= (1<<PORTC6 | 1<<PORTC7);
+	
+	//Buttons
+	DDRA &= ~(1<<PORTA6 | 1<<PORTA7); //For emphasize
+	PCICR |= (1<<PCIE0); //Interrupt enable
+	PCMSK0 |= (1<<PCINT6 | 1<<PCINT7); //mask for porta6 and porta7
+	
 	
 	_delay_ms(5000);
 	navigation_set_autonomous_walk(0);
@@ -93,4 +102,24 @@ ISR(TIMER3_COMPA_vect)
 {
 	//TWI_send_float(C_ADDRESS, (float)navigation_get_sensor(0));
 	TCNT3 = 0;
+}
+
+//-------------------Buttons PinChange interrupt---------------------
+
+ISR(PCINT0_vect)
+{
+	if(PINA & (1<<PINA6)) //Left walk
+	{
+		navigation_set_autonomous_walk(1);
+		navigation_set_algorithm(1);
+		//test
+		PORTC ^= (1<<PORTC6);
+	}
+	else if(PINA & (1<<PINA7)) //Right walk
+	{
+		navigation_set_autonomous_walk(1);
+		navigation_set_algorithm(0);
+		//test
+		PORTC ^= (1<<PORTC7);
+	}	
 }
