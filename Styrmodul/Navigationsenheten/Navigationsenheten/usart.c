@@ -341,10 +341,9 @@ uint8_t USART_DecodeValueFIFO()
 					return 1; // error
 				}
 				
-			foo.s[i] = *data;
-			TWI_send_float(C_ADDRESS, *data);		
+			foo.s[i] = *data;		
 		}
-	TWI_send_float(C_ADDRESS, foo.f);
+	TWI_send_float(gMessageDesitnation, foo.f);
 	
 	return 0;
 	}

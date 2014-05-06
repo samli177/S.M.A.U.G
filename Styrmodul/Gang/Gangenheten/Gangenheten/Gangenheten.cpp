@@ -9,6 +9,7 @@
 #include "highLevelWalking.h"
 #include "usart.h"
 #include "counter.h"
+#include "MpuInit.h"
 
 uint8_t std_pos_flag = 1;
 
@@ -18,17 +19,17 @@ int main(void)
 	//servoTx;
 
 	
-	
 	SERVO_init(); //Init servos
 	USART_init();
 	init_counters();
 	set_counter_1(10000);
 	initvar();
+	
 	sei();
-	
 	SERVO_update_EEPROM(BROADCASTING_ID);
-	
 	move_to_std();
+	MPU_init();
+	
 
 	// ------ TESTCODE FOR READING SERVO -------
 		
@@ -36,13 +37,14 @@ int main(void)
 	SERVO_update_EEPROM(BROADCASTING_ID); // NOTE: needs to run once for SERVO_get position to work	
 	//----------------------------
 	
-	_delay_ms(5000);
+	wait(5000);
 	
 	reset_counter_1();
 	set_counter_1(3000);
 	
     while(1)
     {
+		MPU_update();
 		
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
@@ -58,7 +60,7 @@ int main(void)
 		
 		if(r == 50 && s == 0 && d == 0)
 		{
-			_delay_ms(50);
+			wait(50);
 			PORTD ^= (1<<PORTD5);
 			cli();
 			USART_send_ready();
@@ -69,12 +71,12 @@ int main(void)
 		for(int i = 0; i < 5; ++i)
 		{
 			move_robot(22,50,100);
-			_delay_ms(2000);
+			wait(2000);
 			
 		}
 		move_to_std();
 
-		_delay_ms(5000);
+		wait(5000);
 		
 		//climb(30);
 		*/
@@ -89,5 +91,7 @@ ISR(TIMER1_COMPA_vect)
 		std_pos_flag = 1;
 		move_to_std();
 	}
+	
+	//USART_SendValue(MPU_get_y()*180/M_PI);
 	TCNT1 = 0;
 }

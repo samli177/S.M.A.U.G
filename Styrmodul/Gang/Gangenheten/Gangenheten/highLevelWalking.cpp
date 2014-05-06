@@ -430,7 +430,7 @@ void leg_motion()
 		move_leg(&leg6,i);
 
 		SERVO_action();
-		_delay_ms(20);
+		wait(20);
 		
 		z = USART_get_z();
 		
@@ -523,10 +523,10 @@ void climb(float height)
 	leg6.newPosz = leg6.newPosz + height;
 	leg6.climbing = 1;
 	move_robot(0,50,75);
-	_delay_ms(5000);
+	wait(5000);
 	leg1.newPosz = leg1.newPosz + height;
 	leg1.climbing = 1;
 	move_robot(0,50,75);
-	_delay_ms(5000);
+	wait(5000);
 }
 

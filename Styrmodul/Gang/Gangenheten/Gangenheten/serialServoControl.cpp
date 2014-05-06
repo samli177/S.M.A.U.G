@@ -271,7 +271,10 @@ void SERVO_update_data(uint8_t ID)
 	
 	servoTx;
 	servoReadMode = 'W';
-	
+	for(int i = 0; i>10; i++)
+	{
+		parameters[i] = 0;
+	}
 	while(!(FifoRead(gServoRxFIFO, data)) && !exitFlag)
 	{
 		dataint = *data;
@@ -379,9 +382,11 @@ void SERVO_update_data(uint8_t ID)
 		gServoSpeed = gServoSpeed + temp;
 		
 		temp = (uint16_t)parameters[5];
-		gServoLoad = (temp << 8);
+		gServoLoad = ((temp & 0x01) << 8);
 		temp = (uint16_t)parameters[4];
 		gServoLoad = gServoLoad + temp;
+		//TODO: direction i parameter[5] bit 2
+		
 		
 		gServoVoltage = parameters[6];
 		

@@ -15,7 +15,9 @@
 #include "fifo.h"
 #include "usart.h"
 #include "counter.h"
+#include "MpuInit.h"
 
+volatile uint8_t gWaitFlag = 0;
 
 //---------------------------------------COUNTERS/TIMERS-----------
 void init_counters()
@@ -26,7 +28,7 @@ void init_counters()
 	
 	// standardvalue for interrupt is 1000ms
 	set_counter_1(1000);
-	set_counter_2(1000);
+	set_counter_3(1000);
 	
 	TIMSK1 |= 0b00000010; // Enable interrupts when OCF1A, in TIFR1, is set.
 	TIMSK3 |= 0b00000010; // Enable interrupts when OCF2A, in TIFR2, is set.
@@ -41,7 +43,7 @@ void set_counter_1(uint16_t delay)
 	OCR1A = delay;
 }
 
-void set_counter_2(uint16_t delay)
+void set_counter_3(uint16_t delay)
 {
 	delay = 15.625 * delay;
 	OCR3A = delay;
@@ -58,10 +60,19 @@ void reset_counter_3()
 }
 
 //---------------------------------------------------------------------------------------
-
+void wait(uint16_t delaytime)
+{
+	gWaitFlag = 0;
+	set_counter_3(delaytime);
+	while(gWaitFlag == 0)
+	{
+		MPU_update();
+	}
+}
 
 
 ISR(TIMER3_COMPA_vect)
 {
+	gWaitFlag |= 1;
 	TCNT3 = 0;
 }

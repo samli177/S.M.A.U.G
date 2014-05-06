@@ -20,11 +20,11 @@
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
     <ProgFlashFromRam>true</ProgFlashFromRam>
-    <RamSnippetAddress />
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
     <UncachedRange />
-    <OverrideVtorValue />
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
     <BootSegment>2</BootSegment>
-    <eraseonlaunchrule>1</eraseonlaunchrule>
+    <eraseonlaunchrule>0</eraseonlaunchrule>
     <AsfFrameworkConfig>
       <framework-data xmlns="">
   <options />
@@ -37,6 +37,20 @@
   </dependencies>
 </framework-data>
     </AsfFrameworkConfig>
+    <avrtool>com.atmel.avrdbg.tool.jtagice3plus</avrtool>
+    <com_atmel_avrdbg_tool_jtagice3plus>
+      <ToolOptions>
+        <InterfaceProperties>
+          <JtagEnableExtResetOnStartSession>false</JtagEnableExtResetOnStartSession>
+          <JtagDbgClock>200000</JtagDbgClock>
+        </InterfaceProperties>
+        <InterfaceName>JTAG</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.jtagice3plus</ToolType>
+      <ToolNumber>J30200008868</ToolNumber>
+      <ToolName>JTAGICE3</ToolName>
+    </com_atmel_avrdbg_tool_jtagice3plus>
+    <avrtoolinterface>JTAG</avrtoolinterface>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -135,16 +149,40 @@
     <Compile Include="Gangenheten.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="helper_3dmath.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="highLevelWalking.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="highLevelWalking.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="I2Cdev.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="I2Cdev.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="inverseKinematics.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="inverseKinematics.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MPU6050.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MPU6050.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MPU6050_6Axis_MotionApps20.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MpuInit.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MpuInit.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="serialServoControl.cpp">
