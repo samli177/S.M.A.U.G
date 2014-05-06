@@ -43,7 +43,7 @@ int main(void)
 	
     while(1)
     {
-		
+		/*
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
 		uint8_t d = USART_getDirection();
@@ -65,7 +65,7 @@ int main(void)
 			sei();
 		}
 		
-
+*/
 		
 /*
 		for(int i = 0; i < 5; ++i)
@@ -82,8 +82,12 @@ int main(void)
 		
 		*/
 		
-		//climb();
+		climb();
+		
+		SERVO_update_data(12);
+		USART_SendValue(SERVO_get_load());
 		USART_DecodeRxFIFO();
+		_delay_ms(200);
 	
     }
 }
