@@ -29,6 +29,17 @@ uint8_t gStatus = 1;
 //found itself unable to make a decision.
 uint8_t decisionCounter = 0;
 
+//A flag that indicates if the robot is in a dead end.
+uint8_t deadEndFlag = 0;
+
+/**
+ * \brief 
+ * A function that handles dead ends.
+ * 
+ * \return void
+ */
+static void dead_end();
+
 void autonomouswalk_set_speed(uint8_t speed)
 {
 	gSpeed=speed;
@@ -152,6 +163,86 @@ void walk_forward()
 	//TWI_send_float(C_ADDRESS, adjustmentRotation);
 }
 
+void walk_bakwards()
+{
+	if(gStatus)
+	{
+		//TWI_send_string(C_ADDRESS, "Finding regulation parameters.");
+	}
+	float angleOffset = navigation_angle_offset();
+	float directionCompensationAngle = navigation_direction_regulation(angleOffset);
+	if(gStatus)
+	{
+		//TWI_send_string(C_ADDRESS, "Found regulation parameters.");
+	}
+	int adjustmentRotation = (51 + 50 * angleOffset * 2.0/PI);
+	if (adjustmentRotation >= 100)
+	{
+		adjustmentRotation = 100;
+	}
+	else if(adjustmentRotation <= 0)
+	{
+		adjustmentRotation = 0;
+	}
+	int adjustmentDirection = 90 * directionCompensationAngle/(2*PI);
+	if(adjustmentDirection <= 45)
+	{
+		adjustmentDirection = 45 - adjustmentDirection;
+	}
+	else
+	{
+		adjustmentDirection = adjustmentDirection - 45;
+	}
+	
+	if(gStatus)
+	{
+		//TWI_send_string(C_ADDRESS, "Taking a step.");
+	}
+	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
+	//TWI_send_float(C_ADDRESS, adjustmentDirection);
+	navigation_stepping_delay();
+	//TWI_send_float(C_ADDRESS, adjustmentRotation);
+}
+
+void dead_end()
+{
+	while(deadEndFlag)
+	{
+		if(navigation_left_algorithm() && navigation_check_right_turn())
+		{
+			deadEndFlag = 0;
+			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			{
+				walk_bakwards();
+			}
+			turn_right();
+		}
+		else if(navigation_left_algorithm() && navigation_check_left_turn())
+		{
+			deadEndFlag = 0;
+			turn_around();
+		}
+		else if(navigation_check_left_turn())
+		{
+			deadEndFlag = 0;
+			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			{
+				walk_bakwards();
+			}
+			turn_left();
+		}
+		else if(navigation_check_right_turn())
+		{
+			deadEndFlag = 0;
+			turn_around();
+		}
+		else
+		{
+			walk_bakwards();
+		}
+	}
+}
+
 void autonomouswalk_walk()
 {
 	navigation_low_pass_obstacle();
@@ -175,7 +266,8 @@ void autonomouswalk_walk()
 		}
 		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
-			turn_around();
+			deadEndFlag = 1;
+			dead_end();
 		}
 		else
 		{

@@ -115,6 +115,15 @@ void walk_forward();
 
 /**
  * \brief 
+ * works the same as walk_forward except that it a changes
+ * directionAngle so that it walks backwards.
+ * 
+ * \return void
+ */
+void walk_bakwards();
+
+/**
+ * \brief 
  * Cause the robot to make one movement according to a priority.
  *
  * \param sensors
