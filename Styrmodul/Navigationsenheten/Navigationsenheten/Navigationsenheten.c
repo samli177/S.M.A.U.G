@@ -39,12 +39,7 @@ int main(void)
 	
 	_delay_ms(5000);
 	navigation_set_autonomous_walk(0);
-	
-	while(1)
-	{
-		turn_degrees(90);
-		_delay_ms(4000);
-	}
+	set_counter_1(100);
 	
     while(1)
     {
@@ -53,7 +48,6 @@ int main(void)
 			PORTA ^= (1<<PORTA1);
 			navigation_fill_buffer();
 		}*/
-		
 		
 		
 		if(TWI_autonom_settings_flag())
@@ -96,6 +90,10 @@ int main(void)
 				PORTA ^= (1<<PORTA0);
 				USART_SendElevation();
 			}
+			/*if(USART_GyroFlag())
+			{
+				TWI_send_float(C_ADDRESS, USART_gyro_get_Y() * 180/PI);
+			}*/
 		}
 		
 		USART_DecodeRxFIFO();
@@ -106,6 +104,7 @@ int main(void)
 
 ISR(TIMER1_COMPA_vect)
 {
+	//USART_RequestGyro();
 	TCNT1 = 0;
 }
 

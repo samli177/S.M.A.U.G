@@ -316,6 +316,8 @@ uint8_t USART_DecodeGyroFIFO()
 					break;
 			}
 		}
+		
+		TWI_send_float(C_ADDRESS, gGyroY);
 	} else {
 		// Wrong length
 		return 1;

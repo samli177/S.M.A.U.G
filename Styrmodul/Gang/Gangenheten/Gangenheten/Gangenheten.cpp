@@ -17,20 +17,23 @@ int main(void)
 {
 	DDRD |= (1<<PORTD5); //init LED
 	//servoTx;
-
+	sei();
 	
 	SERVO_init(); //Init servos
 	USART_init();
-	init_counters();
-	set_counter_1(10000);
+	
 	initvar();
 	
-	sei();
+	
 	SERVO_update_EEPROM(BROADCASTING_ID);
-	move_to_std();
+	
 	MPU_init();
 	
-
+	init_counters();
+	set_counter_1(10000);
+	
+	move_to_std();
+	
 	// ------ TESTCODE FOR READING SERVO -------
 		
 	//servoGoto(1, 3.14/3, 0x200);
@@ -92,6 +95,6 @@ ISR(TIMER1_COMPA_vect)
 		move_to_std();
 	}
 	
-	//USART_SendValue(MPU_get_y()*180/M_PI);
+	//USART_SendValue(MPU_get_y() * 180/M_PI);
 	TCNT1 = 0;
 }
