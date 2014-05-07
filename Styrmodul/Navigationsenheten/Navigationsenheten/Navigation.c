@@ -44,10 +44,6 @@ uint8_t currentBufferLine = 0;
 // low pass obstacle.
 uint8_t lowPassObstacleFlag = 0;
 
-// A flag to note if the robot is in the middle of a
-// high pass obstacle.
-//uint8_t highPassObstacleFlag = 0;
-
 //------------- Internal declarations ---------------
 
 //static int compare(const void * a, const void * b);
@@ -197,21 +193,6 @@ void navigation_low_pass_obstacle()
 	
 }
 
-/*
-void navigation_high_pass_obstacle()
-{
-	if(navigation_detect_high_pass_obstacle() && !(highPassObstacleFlag))
-	{
-		// Send the command to climb the obstacle to gångenheten here.
-		highPassObstacleFlag = 1;
-	}
-	else if(!(navigation_detect_high_pass_obstacle()))
-	{
-		highPassObstacleFlag = 0;
-	}
-}
-*/
-
 float navigation_angle_offset()
 {
 	float angle = 0;
@@ -340,20 +321,6 @@ uint8_t navigation_detect_low_pass_obsticle()
 		return 0;
 	}
 }
-
-/*
-uint8_t navigation_detect_high_pass_obsticle()
-{	// Where in sensorBuffer is the one pointing downwards? 
-	if (navigation_get_sensor(sensorBufferSize)*high_pass_angle < DISTANCE_LIMIT) 
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-*/
 
 uint8_t navigation_dead_end(float angleOffset)
 {

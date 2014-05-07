@@ -17,19 +17,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   6 .debug_aranges 000003d0  00000000  00000000  00006f9b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   000038d5  00000000  00000000  0000736b  2**0
+  7 .debug_info   000038d4  00000000  00000000  0000736b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00000f65  00000000  00000000  0000ac40  2**0
+  8 .debug_abbrev 00000f74  00000000  00000000  0000ac3f  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00002397  00000000  00000000  0000bba5  2**0
+  9 .debug_line   00002397  00000000  00000000  0000bbb3  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  00000ba0  00000000  00000000  0000df3c  2**2
+ 10 .debug_frame  00000ba0  00000000  00000000  0000df4c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000cae  00000000  00000000  0000eadc  2**0
+ 11 .debug_str    00000cae  00000000  00000000  0000eaec  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00002325  00000000  00000000  0000f78a  2**0
+ 12 .debug_loc    00002325  00000000  00000000  0000f79a  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000408  00000000  00000000  00011aaf  2**0
+ 13 .debug_ranges 00000408  00000000  00000000  00011abf  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -1764,8 +1764,8 @@ float navigation_direction_regulation(float angleOffset)
 
 000009de <navigation_angle_offset>:
 	}
+	
 }
-*/
 
 float navigation_angle_offset()
 {

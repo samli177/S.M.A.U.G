@@ -10,10 +10,6 @@
 #define ACCEPTABLE_DISTANCE_OFFSET 2	// cm
 #define HEIGHT_LIMIT 100				// cm
 #define PI 3.14159265
-/* Used in navigation_detect_hight_pass_obstacle() which has crusial information missing
-#define high_pass_angle cos(PI/5)
-#define DISTANCE_LIMIT 15				// cm
-*/
 
 /**
  * \brief 
@@ -189,15 +185,6 @@ uint8_t navigation_check_right_turn();
  * Return 1 if an obstacle is found, 0 otherwise.
  */
 uint8_t navigation_detect_low_pass_obsticle();
-
-/**
- * \brief 
- * Detects if there is an obstacle ahead
- * 
- * \return uint8_t
- * returns 1 if an obstacle in found, 0 otherwise
- */
-// uint8_t navigation_detect_high_pass_obsticle();
 
 /**
  * \brief 

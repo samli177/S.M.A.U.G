@@ -1100,26 +1100,26 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x38d5
+.debug_info     0x00000000     0x38d4
  *(.debug_info)
  .debug_info    0x00000000      0x6c4 autonomouswalk.o
  .debug_info    0x000006c4      0x119 counter.o
  .debug_info    0x000007dd      0x1b1 fifo.o
- .debug_info    0x0000098e      0xc37 Navigation.o
- .debug_info    0x000015c5      0x43b Navigationsenheten.o
- .debug_info    0x00001a00     0x12b7 twi.o
- .debug_info    0x00002cb7      0xc1e usart.o
+ .debug_info    0x0000098e      0xc36 Navigation.o
+ .debug_info    0x000015c4      0x43b Navigationsenheten.o
+ .debug_info    0x000019ff     0x12b7 twi.o
+ .debug_info    0x00002cb6      0xc1e usart.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000      0xf65
+.debug_abbrev   0x00000000      0xf74
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x18a autonomouswalk.o
  .debug_abbrev  0x0000018a       0x9c counter.o
  .debug_abbrev  0x00000226       0xce fifo.o
- .debug_abbrev  0x000002f4      0x3b9 Navigation.o
- .debug_abbrev  0x000006ad      0x1c2 Navigationsenheten.o
- .debug_abbrev  0x0000086f      0x331 twi.o
- .debug_abbrev  0x00000ba0      0x3c5 usart.o
+ .debug_abbrev  0x000002f4      0x3c8 Navigation.o
+ .debug_abbrev  0x000006bc      0x1c2 Navigationsenheten.o
+ .debug_abbrev  0x0000087e      0x331 twi.o
+ .debug_abbrev  0x00000baf      0x3c5 usart.o
 
 .debug_line     0x00000000     0x2397
  *(.debug_line)
