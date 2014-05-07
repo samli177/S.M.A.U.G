@@ -39,6 +39,13 @@ int main(void)
 	
 	_delay_ms(5000);
 	navigation_set_autonomous_walk(0);
+	
+	while(1)
+	{
+		turn_degrees(90);
+		_delay_ms(4000);
+	}
+	
     while(1)
     {
 		/*if(TWI_sensor_flag())
@@ -46,6 +53,9 @@ int main(void)
 			PORTA ^= (1<<PORTA1);
 			navigation_fill_buffer();
 		}*/
+		
+		
+		
 		if(TWI_autonom_settings_flag())
 		{
 			uint8_t sett = TWI_get_autonom_settings();
@@ -80,13 +90,14 @@ int main(void)
 				PORTA ^= (1<<PORTA1);
 				USART_SendCommand();
 			}
+			
+			if(TWI_elevation_flag())
+			{
+				PORTA ^= (1<<PORTA0);
+				USART_SendElevation();
+			}
 		}
 		
-		if(TWI_elevation_flag())
-		{
-			PORTA ^= (1<<PORTA0); 
-			USART_SendElevation();
-		}
 		USART_DecodeRxFIFO();
     }
 }

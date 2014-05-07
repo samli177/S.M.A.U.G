@@ -168,7 +168,6 @@ void navigation_set_autonomous_walk(uint8_t walk)
 
 void navigation_stepping_delay()
 {
-	int temp = 20;
 	while(USART_ready() == 0)
 	{
 		USART_DecodeRxFIFO();

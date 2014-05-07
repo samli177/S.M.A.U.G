@@ -28,6 +28,10 @@ uint16_t gMessageDesitnation = C_ADDRESS;
 
 uint8_t gGangReady = 0;
 
+uint8_t gGyroFlag = 0;
+float gGyroP = 0;
+float gGyroR = 0;
+float gGyroY = 0;
 
 
 // define FIFO for received packets (USART)
@@ -41,6 +45,12 @@ DEFINE_FIFO(gRxFIFO, 4096);
 // figure out if is is possible to stop "package inception", flag maybe?
 
 // ---------------------------
+
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];
+};
 
 void USART_init()
 {
@@ -220,6 +230,11 @@ void USART_SendElevation()
 	USART_SendPacket('E', 1);
 }
 
+void USART_RequestGyro()
+{
+	USART_SendPacket('G', 0);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	
@@ -257,7 +272,57 @@ uint8_t USART_DecodeMessageRxFIFO()
 	return 0;
 }
 
+uint8_t USART_DecodeGyroFIFO()
+{
+	gGyroFlag = 1;
+	
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO GYRO ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
 
+	if(length == 12)
+	{
+		union Union_floatcast foo;
+		
+		for(int j = 0; j < 3; ++j)
+		{
+			for(int i = 0; i < 4; ++i)
+			{
+				if(FifoRead(gRxFIFO, data))
+				{
+					TWI_send_string(S_ADDRESS, "RxFIFO GYRO ERROR: DATA MISSING");
+					return 1; // error
+				}
+
+				foo.s[i] = *data;
+			}
+			switch (j)
+			{
+				case 0:
+					gGyroP = foo.f;
+					break;
+				case 1:
+					gGyroR = foo.f;
+					break;
+				case 2:
+					gGyroY = foo.f;
+					break;
+			}
+		}
+	} else {
+		// Wrong length
+		return 1;
+	}
+	
+	return 0;
+}
 
 uint8_t USART_DecodeCommandRxFIFO()
 {
@@ -311,12 +376,6 @@ uint8_t USART_DecodeCommandRxFIFO()
 	
 }
 
-union Union_floatcast
-{
-	float f;
-	char s[sizeof(float)];
-};
-
 uint8_t USART_DecodeValueFIFO()
 {
 	uint8_t *len = 0;
@@ -354,8 +413,6 @@ uint8_t USART_DecodeValueFIFO()
 uint8_t USART_DecodeReadyFIFO()
 {
 	uint8_t *len = 0;
-	uint8_t *data = 0;
-	union Union_floatcast foo;
 	
 	if(FifoRead(gRxFIFO, len))
 	{
@@ -382,6 +439,31 @@ uint8_t USART_ready()
 		return 1;
 	}
 	return 0;
+}
+
+uint8_t USART_GyroFlag()
+{
+	if(gGyroFlag == 1)
+	{
+		gGyroFlag = 0;
+		return 1;
+	}
+	return 0;
+}
+
+float USART_gyro_get_P()
+{
+	return gGyroP;
+}
+
+float USART_gyro_get_R()
+{
+	return gGyroR;
+}
+
+float USART_gyro_get_Y()
+{
+	return gGyroY;
 }
 
 void USART_DecodeRxFIFO()
@@ -428,13 +510,18 @@ void USART_DecodeRxFIFO()
 					return;
 				}
 				break;
-
+			}
+			case('G'):
+			{
+				if(USART_DecodeGyroFIFO())
+				{
+					return;
+				}
+				break;
 			}
 		}
 	}
 }
-
-
 
 void USART_Bounce()
 {

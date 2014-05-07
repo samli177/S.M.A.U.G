@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include "fifo.h"
 #include "usart.h"
+#include "MpuInit.h"
 
 
 // -- USART Stuff --
@@ -238,6 +239,32 @@ void USART_SendValue(float flo)
 	
 }
 
+void USART_SendGyro()
+{
+	union Union_floatcast foo;
+	
+	foo.f = MPU_get_p();
+	for(int i = 0; i < 4; ++i)
+	{
+		gTxPayload[i] = foo.s[i];
+	}
+	
+	foo.f = MPU_get_r();
+	for(int i = 0; i < 4; ++i)
+	{
+		gTxPayload[i + 4] = foo.s[i];
+	}
+	
+	foo.f = MPU_get_y();
+	for(int i = 0; i < 4; ++i)
+	{
+		gTxPayload[i + 8] = foo.s[i];
+	}
+	
+	USART_SendPacket('G', 12);	
+}
+
+
 void USART_send_ready()
 {
 	USART_SendPacket('R', 0);
@@ -418,6 +445,12 @@ void USART_DecodeRxFIFO()
 					// TODO: flush buffer?
 					return;
 				}
+				break;
+			}
+			case('G'):
+			{
+				// Maybe must do check like the others?
+				USART_SendGyro();
 				break;
 			}
 		}

@@ -49,6 +49,55 @@ uint8_t autonomouswalk_get_return_status()
 	return gStatus;
 }
 
+void turn_degrees(int16_t degrees)
+{
+	if(degrees == 0)
+	{
+		return;
+	}
+	
+	USART_RequestGyro();
+	while(USART_GyroFlag() == 0)
+	{
+		USART_DecodeRxFIFO();
+	}
+	
+	float startDegree = USART_gyro_get_Y() * 180/PI;
+	float newDegree = startDegree;
+	uint8_t steps = 0;
+	float tolerance = 0;
+	uint8_t done = 0;
+	
+	do
+	{
+		if(degrees > 0)
+		{
+			USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
+		} else {
+			USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
+		}
+		
+		while(USART_ready() == 0)
+		{
+			PORTA ^= (1 << PORTA1);
+			USART_RequestGyro();
+			while(USART_GyroFlag() == 0)
+			{
+				USART_DecodeRxFIFO();
+			}
+		}
+		newDegree = USART_gyro_get_Y() * 180/PI;
+		++steps;
+		
+		float turned = fmod(fabs(newDegree - startDegree), 180);
+		if(turned >= fabs(degrees) - tolerance)
+		{
+			done = 1;
+			PORTA ^= (1 << PORTA0);
+		}
+	} while (done == 0);
+}
+
 void turn_left()
 {
 	if(gStatus)

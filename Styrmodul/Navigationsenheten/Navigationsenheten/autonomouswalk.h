@@ -59,28 +59,23 @@ uint8_t autonomouswalk_get_return_status();
 
 /**
  * \brief 
+ * Turns the robot a specific amount of degrees, using the gyro.
+ * \param degrees
+ * The number of degrees to turn, in the range [-180, 180].
+ * \return void
+ */
+void turn_degrees(int16_t degrees);
+
+/**
+ * \brief 
  * Makes the robot turn 90 deg. to the left.
- *
- * \param sensors
- * The distances from the front and back side sensors
- * in centimeters as unsigned integers. Sensor 4 is the
- * front sensor, sensor 5 is
- * the rear sensor. Needed to regulate.
- * 
  * \return void
  */
 void turn_left();
 
 /**
  * \brief 
- * Makes the robot turn 90 deg. to the right.
- *
- * \param sensors
- * The distances from the front and back side sensors
- * in centimeters as unsigned integers. Sensor 4 is the
- * front sensor, sensor 5 is
- * the rear sensor. Needed to regulate.
- * 
+ * Makes the robot turn 90 deg. to the right. 
  * \return void
  */
 void turn_right();
