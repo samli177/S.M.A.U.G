@@ -82,7 +82,7 @@ int main(void)
 		
 		*/
 		
-		//climb();
+		//climb_down();
 		
 		SERVO_update_data(12);
 		USART_SendValue(SERVO_get_load());

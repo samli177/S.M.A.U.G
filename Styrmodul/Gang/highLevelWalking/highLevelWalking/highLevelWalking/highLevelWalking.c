@@ -428,43 +428,67 @@ void leg_motion()
 		{
 			leg_climb(&leg1);
 		}
+		/*else if(leg1.climbing == 2)
+		{
+			leg_climb_down(&leg1);
+		}*/
 		
-			move_leg(&leg1,i);
+		move_leg(&leg1,i);
 		
 		if(leg2.climbing == 1)
 		{
 			leg_climb(&leg2);
-		}
+		}/*
+		else if(leg2.climbing == 2)
+		{
+			leg_climb_down(&leg2);
+		}*/
 		
-			move_leg(&leg2,i);
+		move_leg(&leg2,i);
 		
 		if(leg3.climbing == 1)
 		{
 			leg_climb(&leg3);
-		}
+		}/*
+		else if(leg3.climbing == 2)
+		{
+			leg_climb_down(&leg3);
+		}*/
 		
-			move_leg(&leg3,i);
+		move_leg(&leg3,i);
 		
 		if(leg4.climbing == 1)
 		{
 			leg_climb(&leg4);
-		}
+		}/*
+		else if(leg4.climbing == 2)
+		{
+			leg_climb_down(&leg4);
+		}*/
 		
-			move_leg(&leg4,i);
+		move_leg(&leg4,i);
 		
 		if(leg5.climbing == 1)
 		{
 			leg_climb(&leg5);
-		}
+		}/*
+		else if(leg5.climbing == 2)
+		{
+			leg_climb_down(&leg5);
+		}*/
 		
-			move_leg(&leg5,i);
+		move_leg(&leg5,i);
 		
 		if(leg6.climbing == 1)
 		{
 			leg_climb(&leg6);
-		}
+		}/*
+		else if(leg6.climbing == 2)
+		{
+			leg_climb_down(&leg6);
+		}*/
 		
-			move_leg(&leg6,i);
+		move_leg(&leg6,i);
 		
 
 		SERVO_action();
@@ -668,7 +692,7 @@ void leg_climb(struct LegData* leg)
 	 {
 		 tempz = z + height + 30;
 		 
-		 		 switch(leg->servoGamma)
+		 switch(leg->servoGamma)
 		 {
 			 case 1:
 			 height_change_leg1(tempz);
@@ -789,3 +813,246 @@ void leg_climb(struct LegData* leg)
 
 }
 
+
+
+
+
+
+/*
+
+void climb_down()
+{
+	z = -90;
+	change_z(z);
+	
+	move_to_std();
+	
+	leg1.lift = -1;
+	leg2.lift = 1;
+	leg3.lift = -1;
+	leg4.lift = 1;
+	leg5.lift = -1;
+	leg6.lift = 1;
+	
+	height_flag = 0;
+	height = 60;
+	
+	height_change_leg1(-140);
+	
+	leg1.climbing = 2;
+	move_robot(0,50,100);
+	leg1.climbing = 0;
+	leg6.climbing = 2;
+	move_robot(0,50,100);
+	leg6.climbing = 0;
+	leg5.climbing = 2;
+	move_robot(0,50,100);
+	leg5.climbing = 0;
+	leg2.climbing = 2;
+	move_robot(0,50,100);
+	leg2.climbing = 0;
+	leg3.climbing = 2;
+	move_robot(0,50,100);
+	leg3.climbing = 0;
+	leg4.climbing = 2;
+	move_robot(0,50,100);
+	leg4.climbing = 0;
+	
+	_delay_ms(5000);
+}
+
+void leg_climb_down(struct LegData* leg) // To descend from the high pass obstacle
+{
+	
+	tempz = z - height + 30;
+	
+	tempx = leg->newPosx;
+	tempy = leg->newPosy;
+
+	calc_d(tempx, tempy, tempz);
+	leg->temp2AngleGamma = get_gamma(tempx, tempy);
+	leg->temp2AngleBeta = get_beta();
+	leg->temp2AngleAlpha = get_alpha(tempz);
+	leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
+	leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
+	leg->goalAngleGamma = leg->temp2AngleGamma;
+	
+	SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
+	SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
+	
+	_delay_ms(400);
+	
+	SERVO_goto(leg->servoGamma, leg->goalAngleGamma, 100);
+	
+	 _delay_ms(400);
+	 if(height_flag)
+	 {
+		 tempz = -height + z;
+		 */
+		 /* Detta ska vara botrkommenterat...
+		 tempz = height - 120;
+		 calc_d(tempx, tempy, tempz);
+		 leg->temp2AngleBeta = get_beta();
+		 leg->temp2AngleAlpha = get_alpha(tempz);
+		 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
+		 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
+		 
+		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
+		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
+		 */
+		 /*
+		 switch(leg->servoGamma)
+		 {
+			 case 1:
+			 height_change_leg1(tempz);
+			 break;
+			 
+			 case 2:
+			 height_change_leg4(tempz);
+			 break;
+			 
+			 case 7:
+			 height_change_leg5(tempz);
+			 break;
+			 
+			 case 8:
+			 height_change_leg6(tempz);
+			 break;
+			 
+			 case 13:
+			 height_change_leg2(tempz);
+			 break;
+			 
+			 case 14:
+			 height_change_leg3(tempz);
+			 break;
+			 
+			 default:
+			 break;
+		 }
+		// _delay_ms(1000);
+	 }
+	 else
+	 {
+		 tempz = z - height + 30;
+		 
+		 switch(leg->servoGamma)
+		 {
+			 case 1:
+			 height_change_leg1(tempz);
+			 break;
+			 
+			 case 2:
+			 height_change_leg4(tempz);
+			 break;
+			 
+			 case 7:
+			 height_change_leg5(tempz);
+			 break;
+			 
+			 case 8:
+			 height_change_leg6(tempz);
+			 break;
+			 
+			 case 13:
+			 height_change_leg2(tempz);
+			 break;
+			 
+			 case 14:
+			 height_change_leg3(tempz);
+			 break;
+			 
+			 default:
+			 break;
+		 }
+		 
+		 tempx = leg->newPosx;
+		 tempy = leg->newPosy;
+		 
+		 
+		 calc_d(tempx, tempy, tempz);
+		 leg->temp2AngleBeta = get_beta();
+		 leg->temp2AngleAlpha = get_alpha(tempz);
+		 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
+		 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
+		 
+		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
+		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
+		 
+		 _delay_ms(400);
+	 
+	 do 
+	 {
+		 
+		 
+		 tempz -= 10;
+		 
+		 
+		 
+		 calc_d(tempx, tempy, tempz);
+		 leg->temp2AngleBeta = get_beta();
+		 leg->temp2AngleAlpha = get_alpha(tempz);
+		 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
+		 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);	
+		 
+		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
+		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100); 
+		 _delay_ms(100);
+		 update_leg_info(leg);
+		 
+	 } while (!(leg->currLoadAlpha > 235));
+	 
+	 tempz += 20;
+	 
+	 calc_d(tempx, tempy, tempz);
+	 leg->temp2AngleBeta = get_beta();
+	 leg->temp2AngleAlpha = get_alpha(tempz);
+	 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
+	 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
+	 
+	 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
+	 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
+	 _delay_ms(400);
+	 
+	 height_flag = 1;
+	 height = tempz - z;
+	 
+	 }
+	 
+	 leg->climbing = 2;
+	 step_start(leg);
+	 leg->newPosz = tempz;
+	 */
+	 /* Detta ska vara bortkommenterat...
+	 switch(leg->servoGamma)
+	 {
+		 case 1:
+		 height_change_leg4(tempz);
+		 break;
+		 
+		 case 2:
+		 height_change_leg3(tempz);
+		 break;
+		 
+		 case 7:
+		 height_change_leg6(tempz);
+		 break;
+		 
+		 case 8:
+		 height_change_leg1(tempz);
+		 break;
+		 
+		 case 13:
+		 height_change_leg5(tempz);
+		 break;
+		 
+		 case 14:
+		 height_change_leg2(tempz);
+		 break;
+		 
+		 default:
+		 break;
+	 }
+	*/
+/*
+}*/
