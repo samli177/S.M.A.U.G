@@ -170,10 +170,21 @@ void walk_bakwards()
 		//TWI_send_string(C_ADDRESS, "Finding regulation parameters.");
 	}
 	float angleOffset = navigation_angle_offset();
+	angleOffset = -angleOffset;
 	float directionCompensationAngle = navigation_direction_regulation(angleOffset);
+	
+	if(directionCompensationAngle>PI)
+	{
+		directionCompensationAngle = PI - (directionCompensationAngle - 2*PI);
+	}
+	else
+	{
+		directionCompensationAngle = PI - directionCompensationAngle;
+	}
+	
 	if(gStatus)
 	{
-		//TWI_send_string(C_ADDRESS, "Found regulation parameters.");
+		//TWI_send_string(C_ADDRESS, "Found 6t666regulation parameters.");
 	}
 	int adjustmentRotation = (51 + 50 * angleOffset * 2.0/PI);
 	if (adjustmentRotation >= 100)
@@ -185,14 +196,14 @@ void walk_bakwards()
 		adjustmentRotation = 0;
 	}
 	int adjustmentDirection = 90 * directionCompensationAngle/(2*PI);
-	if(adjustmentDirection <= 45)
+	/*if(adjustmentDirection <= 45)
 	{
 		adjustmentDirection = 45 - adjustmentDirection;
 	}
 	else
 	{
 		adjustmentDirection = adjustmentDirection - 45;
-	}
+	}*/
 	
 	if(gStatus)
 	{
@@ -206,7 +217,7 @@ void walk_bakwards()
 
 void dead_end()
 {
-	while(deadEndFlag)
+	while(deadEndFlag = 1 && TWI_get_autonom_settings() != 0)
 	{
 		if(navigation_left_algorithm() && navigation_check_right_turn())
 		{
@@ -241,6 +252,7 @@ void dead_end()
 			walk_bakwards();
 		}
 	}
+	deadEndFlag = 0;
 }
 
 void autonomouswalk_walk()
@@ -294,7 +306,8 @@ void autonomouswalk_walk()
 		}
 		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
-			turn_around();
+			deadEndFlag = 1;
+			dead_end();
 		}
 		else if(decisionCounter < 4)
 		{
