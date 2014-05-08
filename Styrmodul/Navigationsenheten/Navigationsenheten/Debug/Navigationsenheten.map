@@ -1175,22 +1175,22 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x0000050c      0x454 twi.o
  .debug_frame   0x00000960      0x334 usart.o
 
-.debug_str      0x00000000      0xdec
+.debug_str      0x00000000      0xde8
  *(.debug_str)
- .debug_str     0x00000000      0x3cd autonomouswalk.o
-                                0x429 (size before relaxing)
- .debug_str     0x000003cd       0xae counter.o
-                                0x12f (size before relaxing)
- .debug_str     0x0000047b       0x9a fifo.o
+ .debug_str     0x00000000      0x3c9 autonomouswalk.o
+                                0x425 (size before relaxing)
+ .debug_str     0x000003c9       0x4b counter.o
+                                0x120 (size before relaxing)
+ .debug_str     0x00000414       0x9a fifo.o
                                 0x138 (size before relaxing)
- .debug_str     0x00000515      0x1ca Navigation.o
-                                0x40e (size before relaxing)
- .debug_str     0x000006df      0x113 Navigationsenheten.o
-                                0x303 (size before relaxing)
- .debug_str     0x000007f2      0x3fc twi.o
+ .debug_str     0x000004ae      0x1ca Navigation.o
+                                0x3ff (size before relaxing)
+ .debug_str     0x00000678      0x113 Navigationsenheten.o
+                                0x2ff (size before relaxing)
+ .debug_str     0x0000078b      0x45f twi.o
                                 0x653 (size before relaxing)
- .debug_str     0x00000bee      0x1fe usart.o
-                                0x4d2 (size before relaxing)
+ .debug_str     0x00000bea      0x1fe usart.o
+                                0x4ce (size before relaxing)
 
 .debug_loc      0x00000000     0x2639
  *(.debug_loc)

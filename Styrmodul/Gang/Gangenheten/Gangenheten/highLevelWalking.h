@@ -52,11 +52,11 @@ struct LegData
 	uint16_t currTempAlpha;
 	uint16_t currTempBeta;
 	uint16_t currTempGamma;
-	
+
 	float goalAngleAlpha;
 	float goalAngleBeta;
 	float goalAngleGamma;
-	
+
 };
 
 //void moveRobotTob(int direction, int rotation, int speed);
@@ -89,7 +89,7 @@ void move_robot(int dir, int rot, int spd);
  *
  * \return void
  */
-void leg_motion();
+void leg_motion();											// This one is at two places!
 
 /**
  * \brief 
@@ -174,7 +174,7 @@ void move_leg(struct LegData* leg, float n);
  *
  * \return void
  */
-void leg_motion();
+void leg_motion();										// This one is at two places!
 
 /**
  * \brief 
@@ -184,7 +184,11 @@ void leg_motion();
  */
 void move_to_std();
 
-void climb(float height);
+void climb();
+// void climb_down();
+void leg_climb(struct LegData* leg);
+// void leg_climb_down(struct LegData* leg);
+void change_z(float input);
 
 void update_leg_info(struct LegData* leg);
 uint16_t angle_to_servo_pos(float angle);

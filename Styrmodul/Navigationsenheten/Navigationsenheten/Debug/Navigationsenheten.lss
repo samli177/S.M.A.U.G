@@ -25,11 +25,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  10 .debug_frame  00000c94  00000000  00000000  0000eb1c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000dec  00000000  00000000  0000f7b0  2**0
+ 11 .debug_str    00000de8  00000000  00000000  0000f7b0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00002639  00000000  00000000  0001059c  2**0
+ 12 .debug_loc    00002639  00000000  00000000  00010598  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000490  00000000  00000000  00012bd5  2**0
+ 13 .debug_ranges 00000490  00000000  00000000  00012bd1  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -771,6 +771,12 @@ void autonomouswalk_walk()
      398:	08 95       	ret
 
 0000039a <set_counter_1>:
+	TCNT3 = 0;
+}
+
+void set_counter_1(uint16_t delay)
+{
+	delay = 15.625 * delay;
      39a:	bc 01       	movw	r22, r24
      39c:	80 e0       	ldi	r24, 0x00	; 0
      39e:	90 e0       	ldi	r25, 0x00	; 0
@@ -781,11 +787,17 @@ void autonomouswalk_walk()
      3aa:	51 e4       	ldi	r21, 0x41	; 65
      3ac:	0e 94 ae 10 	call	0x215c	; 0x215c <__mulsf3>
      3b0:	0e 94 59 0f 	call	0x1eb2	; 0x1eb2 <__fixunssfsi>
+	OCR1A = delay;
      3b4:	70 93 89 00 	sts	0x0089, r23
      3b8:	60 93 88 00 	sts	0x0088, r22
      3bc:	08 95       	ret
 
 000003be <set_counter_2>:
+}
+
+void set_counter_2(uint16_t delay)
+{
+	delay = 15.625 * delay;
      3be:	bc 01       	movw	r22, r24
      3c0:	80 e0       	ldi	r24, 0x00	; 0
      3c2:	90 e0       	ldi	r25, 0x00	; 0
@@ -796,39 +808,57 @@ void autonomouswalk_walk()
      3ce:	51 e4       	ldi	r21, 0x41	; 65
      3d0:	0e 94 ae 10 	call	0x215c	; 0x215c <__mulsf3>
      3d4:	0e 94 59 0f 	call	0x1eb2	; 0x1eb2 <__fixunssfsi>
+	OCR3A = delay;
      3d8:	70 93 99 00 	sts	0x0099, r23
      3dc:	60 93 98 00 	sts	0x0098, r22
      3e0:	08 95       	ret
 
 000003e2 <init_counters>:
+
+//---------------------------------------COUNTERS/TIMERS-----------
+void init_counters()
+{
+	// WGMn3:0 = 4 (OCRnA) or 12 (OCRn), where top value is read from.
+	TCCR1B |= 0b00000101; // clock 1, prescaler 1024
      3e2:	e1 e8       	ldi	r30, 0x81	; 129
      3e4:	f0 e0       	ldi	r31, 0x00	; 0
      3e6:	80 81       	ld	r24, Z
      3e8:	85 60       	ori	r24, 0x05	; 5
      3ea:	80 83       	st	Z, r24
+	TCCR3B |= 0b00000101; // clock 2, prescaler 1024
      3ec:	e1 e9       	ldi	r30, 0x91	; 145
      3ee:	f0 e0       	ldi	r31, 0x00	; 0
      3f0:	80 81       	ld	r24, Z
      3f2:	85 60       	ori	r24, 0x05	; 5
      3f4:	80 83       	st	Z, r24
+	
+	// standardvalue for interrupt is 1000ms
+	set_counter_1(1000);
      3f6:	88 ee       	ldi	r24, 0xE8	; 232
      3f8:	93 e0       	ldi	r25, 0x03	; 3
      3fa:	cf df       	rcall	.-98     	; 0x39a <set_counter_1>
+	set_counter_2(1000);
      3fc:	88 ee       	ldi	r24, 0xE8	; 232
      3fe:	93 e0       	ldi	r25, 0x03	; 3
      400:	de df       	rcall	.-68     	; 0x3be <set_counter_2>
+	
+	TIMSK1 |= 0b00000010; // Enable interrupts when OCF1A, in TIFR1, is set.
      402:	ef e6       	ldi	r30, 0x6F	; 111
      404:	f0 e0       	ldi	r31, 0x00	; 0
      406:	80 81       	ld	r24, Z
      408:	82 60       	ori	r24, 0x02	; 2
      40a:	80 83       	st	Z, r24
+	TIMSK3 |= 0b00000010; // Enable interrupts when OCF2A, in TIFR2, is set.
      40c:	e1 e7       	ldi	r30, 0x71	; 113
      40e:	f0 e0       	ldi	r31, 0x00	; 0
      410:	80 81       	ld	r24, Z
      412:	82 60       	ori	r24, 0x02	; 2
      414:	80 83       	st	Z, r24
+	// OCF1A (or ICFn) Flag, in TIFR1, can be used to generate interrupts.
+	TCNT1 = 0;
      416:	10 92 85 00 	sts	0x0085, r1
      41a:	10 92 84 00 	sts	0x0084, r1
+	TCNT3 = 0;
      41e:	10 92 95 00 	sts	0x0095, r1
      422:	10 92 94 00 	sts	0x0094, r1
      426:	08 95       	ret
@@ -915,6 +945,12 @@ void autonomouswalk_walk()
      4bc:	08 95       	ret
 
 000004be <navigation_set_Kp>:
+	}
+	else
+	{
+		return 0;
+	}
+}
      4be:	68 2f       	mov	r22, r24
      4c0:	70 e0       	ldi	r23, 0x00	; 0
      4c2:	80 e0       	ldi	r24, 0x00	; 0
@@ -1071,6 +1107,12 @@ void autonomouswalk_walk()
      5f2:	08 95       	ret
 
 000005f4 <navigation_detect_low_pass_obsticle>:
+	}
+}
+
+uint8_t navigation_detect_low_pass_obsticle()
+{
+	if (navigation_get_sensor(sensorBufferSize) < HEIGHT_LIMIT)
      5f4:	85 e0       	ldi	r24, 0x05	; 5
      5f6:	90 e0       	ldi	r25, 0x00	; 0
      5f8:	bf df       	rcall	.-130    	; 0x578 <navigation_get_sensor>
@@ -1078,16 +1120,30 @@ void autonomouswalk_walk()
      5fc:	84 36       	cpi	r24, 0x64	; 100
      5fe:	08 f0       	brcs	.+2      	; 0x602 <navigation_detect_low_pass_obsticle+0xe>
      600:	90 e0       	ldi	r25, 0x00	; 0
+	}
+	else
+	{
+		return 0;
+	}
+}
      602:	89 2f       	mov	r24, r25
      604:	08 95       	ret
 
 00000606 <navigation_low_pass_obstacle>:
+	}
+}
+
+void navigation_low_pass_obstacle()
+{
+	if(navigation_detect_low_pass_obsticle() && !(lowPassObstacleFlag))
      606:	f6 df       	rcall	.-20     	; 0x5f4 <navigation_detect_low_pass_obsticle>
      608:	88 23       	and	r24, r24
      60a:	e9 f0       	breq	.+58     	; 0x646 <navigation_low_pass_obstacle+0x40>
      60c:	80 91 73 13 	lds	r24, 0x1373
      610:	81 11       	cpse	r24, r1
      612:	19 c0       	rjmp	.+50     	; 0x646 <navigation_low_pass_obstacle+0x40>
+	{
+		TWI_send_string_fixed_length(S_ADDRESS,"Low pass obstacle detected.", 27);
      614:	4b e1       	ldi	r20, 0x1B	; 27
      616:	50 e0       	ldi	r21, 0x00	; 0
      618:	69 ee       	ldi	r22, 0xE9	; 233
@@ -1109,22 +1165,35 @@ void autonomouswalk_walk()
      62c:	e1 f7       	brne	.-8      	; 0x626 <navigation_low_pass_obstacle+0x20>
      62e:	00 c0       	rjmp	.+0      	; 0x630 <navigation_low_pass_obstacle+0x2a>
      630:	00 00       	nop
+		_delay_ms(30);
+		TWI_send_string_fixed_length(C_ADDRESS,"Low pass obstacle detected.", 27);
      632:	4b e1       	ldi	r20, 0x1B	; 27
      634:	50 e0       	ldi	r21, 0x00	; 0
      636:	69 ee       	ldi	r22, 0xE9	; 233
      638:	71 e1       	ldi	r23, 0x11	; 17
      63a:	80 e8       	ldi	r24, 0x80	; 128
      63c:	1a d5       	rcall	.+2612   	; 0x1072 <TWI_send_string_fixed_length>
+		lowPassObstacleFlag = 1;
      63e:	81 e0       	ldi	r24, 0x01	; 1
      640:	80 93 73 13 	sts	0x1373, r24
      644:	08 95       	ret
+	}
+	else if(!(navigation_detect_low_pass_obsticle()))
      646:	d6 df       	rcall	.-84     	; 0x5f4 <navigation_detect_low_pass_obsticle>
      648:	81 11       	cpse	r24, r1
      64a:	02 c0       	rjmp	.+4      	; 0x650 <navigation_low_pass_obstacle+0x4a>
+	{
+		lowPassObstacleFlag = 0;
      64c:	10 92 73 13 	sts	0x1373, r1
      650:	08 95       	ret
 
 00000652 <navigation_check_right_turn>:
+	}
+}
+
+uint8_t navigation_check_right_turn()
+{
+	if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH / 2 + 20) && navigation_get_sensor(3) >= (CORRIDOR_WIDTH / 2 + 20))
      652:	81 e0       	ldi	r24, 0x01	; 1
      654:	90 e0       	ldi	r25, 0x00	; 0
      656:	90 df       	rcall	.-224    	; 0x578 <navigation_get_sensor>
@@ -1135,6 +1204,10 @@ void autonomouswalk_walk()
      660:	8b df       	rcall	.-234    	; 0x578 <navigation_get_sensor>
      662:	8c 33       	cpi	r24, 0x3C	; 60
      664:	40 f4       	brcc	.+16     	; 0x676 <navigation_check_right_turn+0x24>
+	{
+		return 2;
+	}
+	else if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH - 10))
      666:	81 e0       	ldi	r24, 0x01	; 1
      668:	90 e0       	ldi	r25, 0x00	; 0
      66a:	86 df       	rcall	.-244    	; 0x578 <navigation_get_sensor>
@@ -1143,11 +1216,29 @@ void autonomouswalk_walk()
      670:	18 f4       	brcc	.+6      	; 0x678 <navigation_check_right_turn+0x26>
      672:	90 e0       	ldi	r25, 0x00	; 0
      674:	01 c0       	rjmp	.+2      	; 0x678 <navigation_check_right_turn+0x26>
+
+uint8_t navigation_check_right_turn()
+{
+	if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH / 2 + 20) && navigation_get_sensor(3) >= (CORRIDOR_WIDTH / 2 + 20))
+	{
+		return 2;
      676:	92 e0       	ldi	r25, 0x02	; 2
+	}
+	else
+	{
+		return 0;
+	}
+}
      678:	89 2f       	mov	r24, r25
      67a:	08 95       	ret
 
 0000067c <navigation_check_left_turn>:
+	}
+}
+
+uint8_t navigation_check_left_turn()
+{
+	if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH / 2 + 20) && navigation_get_sensor(2) >= (CORRIDOR_WIDTH / 2 + 20))
      67c:	80 e0       	ldi	r24, 0x00	; 0
      67e:	90 e0       	ldi	r25, 0x00	; 0
      680:	7b df       	rcall	.-266    	; 0x578 <navigation_get_sensor>
@@ -1158,6 +1249,10 @@ void autonomouswalk_walk()
      68a:	76 df       	rcall	.-276    	; 0x578 <navigation_get_sensor>
      68c:	8c 33       	cpi	r24, 0x3C	; 60
      68e:	40 f4       	brcc	.+16     	; 0x6a0 <navigation_check_left_turn+0x24>
+	{
+		return 2;
+	}
+	else if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH - 10))
      690:	80 e0       	ldi	r24, 0x00	; 0
      692:	90 e0       	ldi	r25, 0x00	; 0
      694:	71 df       	rcall	.-286    	; 0x578 <navigation_get_sensor>
@@ -1166,11 +1261,29 @@ void autonomouswalk_walk()
      69a:	18 f4       	brcc	.+6      	; 0x6a2 <navigation_check_left_turn+0x26>
      69c:	90 e0       	ldi	r25, 0x00	; 0
      69e:	01 c0       	rjmp	.+2      	; 0x6a2 <navigation_check_left_turn+0x26>
+
+uint8_t navigation_check_left_turn()
+{
+	if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH / 2 + 20) && navigation_get_sensor(2) >= (CORRIDOR_WIDTH / 2 + 20))
+	{
+		return 2;
      6a0:	92 e0       	ldi	r25, 0x02	; 2
+	}
+	else
+	{
+		return 0;
+	}
+}
      6a2:	89 2f       	mov	r24, r25
      6a4:	08 95       	ret
 
 000006a6 <navigation_direction_regulation>:
+		return 0;
+	}
+}
+
+float navigation_direction_regulation(float angleOffset)
+{
      6a6:	cf 92       	push	r12
      6a8:	df 92       	push	r13
      6aa:	ef 92       	push	r14
@@ -1179,10 +1292,14 @@ void autonomouswalk_walk()
      6b0:	df 93       	push	r29
      6b2:	6b 01       	movw	r12, r22
      6b4:	7c 01       	movw	r14, r24
+	int d = 0;
+	if(gAlgorithm)
      6b6:	80 91 07 01 	lds	r24, 0x0107
      6ba:	88 23       	and	r24, r24
      6bc:	09 f4       	brne	.+2      	; 0x6c0 <navigation_direction_regulation+0x1a>
      6be:	98 c0       	rjmp	.+304    	; 0x7f0 <navigation_direction_regulation+0x14a>
+	{
+		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
      6c0:	82 e0       	ldi	r24, 0x02	; 2
      6c2:	90 e0       	ldi	r25, 0x00	; 0
      6c4:	59 df       	rcall	.-334    	; 0x578 <navigation_get_sensor>
@@ -1208,6 +1325,8 @@ void autonomouswalk_walk()
      6ec:	45 df       	rcall	.-374    	; 0x578 <navigation_get_sensor>
      6ee:	82 33       	cpi	r24, 0x32	; 50
      6f0:	88 f5       	brcc	.+98     	; 0x754 <navigation_direction_regulation+0xae>
+		{
+			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
      6f2:	82 e0       	ldi	r24, 0x02	; 2
      6f4:	90 e0       	ldi	r25, 0x00	; 0
      6f6:	40 df       	rcall	.-384    	; 0x578 <navigation_get_sensor>
@@ -1250,6 +1369,8 @@ void autonomouswalk_walk()
      74a:	0e 94 58 0e 	call	0x1cb0	; 0x1cb0 <__subsf3>
      74e:	0e 94 54 0f 	call	0x1ea8	; 0x1ea8 <__fixsfsi>
      752:	e5 c0       	rjmp	.+458    	; 0x91e <navigation_direction_regulation+0x278>
+		}
+		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
      754:	81 e0       	ldi	r24, 0x01	; 1
      756:	90 e0       	ldi	r25, 0x00	; 0
      758:	0f df       	rcall	.-482    	; 0x578 <navigation_get_sensor>
@@ -1277,6 +1398,8 @@ void autonomouswalk_walk()
      784:	82 33       	cpi	r24, 0x32	; 50
      786:	08 f0       	brcs	.+2      	; 0x78a <navigation_direction_regulation+0xe4>
      788:	1b c1       	rjmp	.+566    	; 0x9c0 <navigation_direction_regulation+0x31a>
+		{
+			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
      78a:	81 e0       	ldi	r24, 0x01	; 1
      78c:	90 e0       	ldi	r25, 0x00	; 0
      78e:	f4 de       	rcall	.-536    	; 0x578 <navigation_get_sensor>
@@ -1321,6 +1444,11 @@ void autonomouswalk_walk()
      7e6:	0e 94 58 0e 	call	0x1cb0	; 0x1cb0 <__subsf3>
      7ea:	0e 94 54 0f 	call	0x1ea8	; 0x1ea8 <__fixsfsi>
      7ee:	97 c0       	rjmp	.+302    	; 0x91e <navigation_direction_regulation+0x278>
+		}
+	}
+	else 
+	{
+		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
      7f0:	81 e0       	ldi	r24, 0x01	; 1
      7f2:	90 e0       	ldi	r25, 0x00	; 0
      7f4:	c1 de       	rcall	.-638    	; 0x578 <navigation_get_sensor>
@@ -1346,6 +1474,8 @@ void autonomouswalk_walk()
      81c:	ad de       	rcall	.-678    	; 0x578 <navigation_get_sensor>
      81e:	82 33       	cpi	r24, 0x32	; 50
      820:	98 f5       	brcc	.+102    	; 0x888 <navigation_direction_regulation+0x1e2>
+		{
+			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
      822:	81 e0       	ldi	r24, 0x01	; 1
      824:	90 e0       	ldi	r25, 0x00	; 0
      826:	a8 de       	rcall	.-688    	; 0x578 <navigation_get_sensor>
@@ -1390,6 +1520,8 @@ void autonomouswalk_walk()
      87e:	0e 94 58 0e 	call	0x1cb0	; 0x1cb0 <__subsf3>
      882:	0e 94 54 0f 	call	0x1ea8	; 0x1ea8 <__fixsfsi>
      886:	4b c0       	rjmp	.+150    	; 0x91e <navigation_direction_regulation+0x278>
+		}
+		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
      888:	82 e0       	ldi	r24, 0x02	; 2
      88a:	90 e0       	ldi	r25, 0x00	; 0
      88c:	75 de       	rcall	.-790    	; 0x578 <navigation_get_sensor>
@@ -1417,6 +1549,8 @@ void autonomouswalk_walk()
      8b8:	82 33       	cpi	r24, 0x32	; 50
      8ba:	08 f0       	brcs	.+2      	; 0x8be <navigation_direction_regulation+0x218>
      8bc:	81 c0       	rjmp	.+258    	; 0x9c0 <navigation_direction_regulation+0x31a>
+		{
+			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
      8be:	82 e0       	ldi	r24, 0x02	; 2
      8c0:	90 e0       	ldi	r25, 0x00	; 0
      8c2:	5a de       	rcall	.-844    	; 0x578 <navigation_get_sensor>
@@ -1458,11 +1592,21 @@ void autonomouswalk_walk()
      914:	52 e4       	ldi	r21, 0x42	; 66
      916:	0e 94 58 0e 	call	0x1cb0	; 0x1cb0 <__subsf3>
      91a:	0e 94 54 0f 	call	0x1ea8	; 0x1ea8 <__fixsfsi>
+		}
+	}
+	
+	if(abs(d) < ACCEPTABLE_DISTANCE_OFFSET)
      91e:	cb 01       	movw	r24, r22
      920:	01 96       	adiw	r24, 0x01	; 1
      922:	03 97       	sbiw	r24, 0x03	; 3
      924:	08 f4       	brcc	.+2      	; 0x928 <navigation_direction_regulation+0x282>
      926:	47 c0       	rjmp	.+142    	; 0x9b6 <navigation_direction_regulation+0x310>
+	{
+		return 0;
+	}
+	else
+	{
+		float dir = atanf(d * gKp);
      928:	88 27       	eor	r24, r24
      92a:	77 fd       	sbrc	r23, 7
      92c:	80 95       	com	r24
@@ -1478,12 +1622,15 @@ void autonomouswalk_walk()
      94e:	d7 2e       	mov	r13, r23
      950:	e8 2e       	mov	r14, r24
      952:	f9 2e       	mov	r15, r25
+		if(dir < 0)
      954:	20 e0       	ldi	r18, 0x00	; 0
      956:	30 e0       	ldi	r19, 0x00	; 0
      958:	a9 01       	movw	r20, r18
      95a:	0e 94 e5 0e 	call	0x1dca	; 0x1dca <__cmpsf2>
      95e:	88 23       	and	r24, r24
      960:	7c f4       	brge	.+30     	; 0x980 <navigation_direction_regulation+0x2da>
+		{
+			dir += 2*PI;
      962:	2b ed       	ldi	r18, 0xDB	; 219
      964:	3f e0       	ldi	r19, 0x0F	; 15
      966:	49 ec       	ldi	r20, 0xC9	; 201
@@ -1498,6 +1645,7 @@ void autonomouswalk_walk()
      97a:	e8 2e       	mov	r14, r24
      97c:	f9 2e       	mov	r15, r25
      97e:	24 c0       	rjmp	.+72     	; 0x9c8 <navigation_direction_regulation+0x322>
+		} else if(dir >= 2*PI)
      980:	2b ed       	ldi	r18, 0xDB	; 219
      982:	3f e0       	ldi	r19, 0x0F	; 15
      984:	49 ec       	ldi	r20, 0xC9	; 201
@@ -1509,6 +1657,8 @@ void autonomouswalk_walk()
      990:	0e 94 a3 10 	call	0x2146	; 0x2146 <__gesf2>
      994:	88 23       	and	r24, r24
      996:	c4 f0       	brlt	.+48     	; 0x9c8 <navigation_direction_regulation+0x322>
+		{
+			dir -= 2*PI;
      998:	2b ed       	ldi	r18, 0xDB	; 219
      99a:	3f e0       	ldi	r19, 0x0F	; 15
      99c:	49 ec       	ldi	r20, 0xC9	; 201
@@ -1523,6 +1673,12 @@ void autonomouswalk_walk()
      9b0:	e8 2e       	mov	r14, r24
      9b2:	f9 2e       	mov	r15, r25
      9b4:	09 c0       	rjmp	.+18     	; 0x9c8 <navigation_direction_regulation+0x322>
+		}
+	}
+	
+	if(abs(d) < ACCEPTABLE_DISTANCE_OFFSET)
+	{
+		return 0;
      9b6:	c1 2c       	mov	r12, r1
      9b8:	d1 2c       	mov	r13, r1
      9ba:	e1 2c       	mov	r14, r1
@@ -1532,6 +1688,12 @@ void autonomouswalk_walk()
      9c2:	d1 2c       	mov	r13, r1
      9c4:	e1 2c       	mov	r14, r1
      9c6:	f1 2c       	mov	r15, r1
+			dir -= 2*PI;
+		}
+		// Dir is between 0 and 2*PI radians
+		return dir;
+	}
+}
      9c8:	6c 2d       	mov	r22, r12
      9ca:	7d 2d       	mov	r23, r13
      9cc:	8e 2d       	mov	r24, r14
@@ -1545,14 +1707,24 @@ void autonomouswalk_walk()
      9dc:	08 95       	ret
 
 000009de <navigation_angle_offset>:
+	}
+	
+}
+
+float navigation_angle_offset()
+{
      9de:	cf 92       	push	r12
      9e0:	df 92       	push	r13
      9e2:	ef 92       	push	r14
      9e4:	ff 92       	push	r15
+	float angle = 0;
+	if (gAlgorithm)
      9e6:	80 91 07 01 	lds	r24, 0x0107
      9ea:	88 23       	and	r24, r24
      9ec:	09 f4       	brne	.+2      	; 0x9f0 <navigation_angle_offset+0x12>
      9ee:	6c c0       	rjmp	.+216    	; 0xac8 <navigation_angle_offset+0xea>
+	{
+		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
      9f0:	82 e0       	ldi	r24, 0x02	; 2
      9f2:	90 e0       	ldi	r25, 0x00	; 0
      9f4:	c1 dd       	rcall	.-1150   	; 0x578 <navigation_get_sensor>
@@ -1578,6 +1750,9 @@ void autonomouswalk_walk()
      a1c:	ad dd       	rcall	.-1190   	; 0x578 <navigation_get_sensor>
      a1e:	82 33       	cpi	r24, 0x32	; 50
      a20:	e0 f4       	brcc	.+56     	; 0xa5a <navigation_angle_offset+0x7c>
+		{
+			// Use wall to the left
+			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
      a22:	82 e0       	ldi	r24, 0x02	; 2
      a24:	90 e0       	ldi	r25, 0x00	; 0
      a26:	a8 dd       	rcall	.-1200   	; 0x578 <navigation_get_sensor>
@@ -1603,6 +1778,8 @@ void autonomouswalk_walk()
      a54:	6b 01       	movw	r12, r22
      a56:	7c 01       	movw	r14, r24
      a58:	a0 c0       	rjmp	.+320    	; 0xb9a <navigation_angle_offset+0x1bc>
+		}
+		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
      a5a:	81 e0       	ldi	r24, 0x01	; 1
      a5c:	90 e0       	ldi	r25, 0x00	; 0
      a5e:	8c dd       	rcall	.-1256   	; 0x578 <navigation_get_sensor>
@@ -1630,6 +1807,9 @@ void autonomouswalk_walk()
      a8a:	82 33       	cpi	r24, 0x32	; 50
      a8c:	08 f0       	brcs	.+2      	; 0xa90 <navigation_angle_offset+0xb2>
      a8e:	94 c0       	rjmp	.+296    	; 0xbb8 <navigation_angle_offset+0x1da>
+		{
+			// Use wall to the right
+			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
      a90:	81 e0       	ldi	r24, 0x01	; 1
      a92:	90 e0       	ldi	r25, 0x00	; 0
      a94:	71 dd       	rcall	.-1310   	; 0x578 <navigation_get_sensor>
@@ -1655,6 +1835,11 @@ void autonomouswalk_walk()
      ac2:	6b 01       	movw	r12, r22
      ac4:	7c 01       	movw	r14, r24
      ac6:	69 c0       	rjmp	.+210    	; 0xb9a <navigation_angle_offset+0x1bc>
+		}
+	}
+	else 
+	{
+		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
      ac8:	81 e0       	ldi	r24, 0x01	; 1
      aca:	90 e0       	ldi	r25, 0x00	; 0
      acc:	55 dd       	rcall	.-1366   	; 0x578 <navigation_get_sensor>
@@ -1680,6 +1865,9 @@ void autonomouswalk_walk()
      af4:	41 dd       	rcall	.-1406   	; 0x578 <navigation_get_sensor>
      af6:	82 33       	cpi	r24, 0x32	; 50
      af8:	e0 f4       	brcc	.+56     	; 0xb32 <navigation_angle_offset+0x154>
+		{
+			// Use wall to the right
+			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
      afa:	81 e0       	ldi	r24, 0x01	; 1
      afc:	90 e0       	ldi	r25, 0x00	; 0
      afe:	3c dd       	rcall	.-1416   	; 0x578 <navigation_get_sensor>
@@ -1705,6 +1893,8 @@ void autonomouswalk_walk()
      b2c:	6b 01       	movw	r12, r22
      b2e:	7c 01       	movw	r14, r24
      b30:	34 c0       	rjmp	.+104    	; 0xb9a <navigation_angle_offset+0x1bc>
+		}
+		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
      b32:	82 e0       	ldi	r24, 0x02	; 2
      b34:	90 e0       	ldi	r25, 0x00	; 0
      b36:	20 dd       	rcall	.-1472   	; 0x578 <navigation_get_sensor>
@@ -1730,6 +1920,9 @@ void autonomouswalk_walk()
      b5e:	0c dd       	rcall	.-1512   	; 0x578 <navigation_get_sensor>
      b60:	82 33       	cpi	r24, 0x32	; 50
      b62:	50 f5       	brcc	.+84     	; 0xbb8 <navigation_angle_offset+0x1da>
+		{
+			// Use wall to the left
+			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
      b64:	82 e0       	ldi	r24, 0x02	; 2
      b66:	90 e0       	ldi	r25, 0x00	; 0
      b68:	07 dd       	rcall	.-1522   	; 0x578 <navigation_get_sensor>
@@ -1754,6 +1947,10 @@ void autonomouswalk_walk()
      b92:	0e 94 bd 0e 	call	0x1d7a	; 0x1d7a <atan>
      b96:	6b 01       	movw	r12, r22
      b98:	7c 01       	movw	r14, r24
+		}
+	}
+	
+	if(fabs(angle) > ACCEPTABLE_OFFSET_ANGLE)
      b9a:	c7 01       	movw	r24, r14
      b9c:	b6 01       	movw	r22, r12
      b9e:	9f 77       	andi	r25, 0x7F	; 127
@@ -1764,6 +1961,12 @@ void autonomouswalk_walk()
      ba8:	0e 94 a3 10 	call	0x2146	; 0x2146 <__gesf2>
      bac:	18 16       	cp	r1, r24
      bae:	3c f0       	brlt	.+14     	; 0xbbe <navigation_angle_offset+0x1e0>
+	{
+		return angle;
+	}
+	else
+	{
+		return 0;
      bb0:	c1 2c       	mov	r12, r1
      bb2:	d1 2c       	mov	r13, r1
      bb4:	76 01       	movw	r14, r12
@@ -1772,6 +1975,8 @@ void autonomouswalk_walk()
      bba:	d1 2c       	mov	r13, r1
      bbc:	76 01       	movw	r14, r12
      bbe:	7c 2d       	mov	r23, r12
+	}
+}
      bc0:	67 2f       	mov	r22, r23
      bc2:	7d 2d       	mov	r23, r13
      bc4:	8e 2d       	mov	r24, r14
@@ -1783,6 +1988,12 @@ void autonomouswalk_walk()
      bd0:	08 95       	ret
 
 00000bd2 <__vector_1>:
+
+//-------------------------------Interrupts--------------------------------
+
+//External interrupt INT0, to activate autonomous walk and set left hand navigation
+ISR(INT0_vect)
+{
      bd2:	1f 92       	push	r1
      bd4:	0f 92       	push	r0
      bd6:	0f b6       	in	r0, 0x3f	; 63
@@ -1802,10 +2013,13 @@ void autonomouswalk_walk()
      bf2:	bf 93       	push	r27
      bf4:	ef 93       	push	r30
      bf6:	ff 93       	push	r31
+	navigation_set_algorithm(1); //Left hand
      bf8:	81 e0       	ldi	r24, 0x01	; 1
      bfa:	73 dc       	rcall	.-1818   	; 0x4e2 <navigation_set_algorithm>
+	navigation_set_autonomous_walk(1);
      bfc:	81 e0       	ldi	r24, 0x01	; 1
      bfe:	77 dc       	rcall	.-1810   	; 0x4ee <navigation_set_autonomous_walk>
+}
      c00:	ff 91       	pop	r31
      c02:	ef 91       	pop	r30
      c04:	bf 91       	pop	r27
@@ -1827,6 +2041,10 @@ void autonomouswalk_walk()
      c24:	18 95       	reti
 
 00000c26 <__vector_2>:
+
+//External interrupt INT1, to activate autonomous walk and set right hand navigation
+ISR(INT1_vect)
+{
      c26:	1f 92       	push	r1
      c28:	0f 92       	push	r0
      c2a:	0f b6       	in	r0, 0x3f	; 63
@@ -1846,8 +2064,10 @@ void autonomouswalk_walk()
      c46:	bf 93       	push	r27
      c48:	ef 93       	push	r30
      c4a:	ff 93       	push	r31
+	navigation_set_algorithm(0); //Right hand
      c4c:	80 e0       	ldi	r24, 0x00	; 0
      c4e:	49 dc       	rcall	.-1902   	; 0x4e2 <navigation_set_algorithm>
+	navigation_set_autonomous_walk(1);
      c50:	81 e0       	ldi	r24, 0x01	; 1
      c52:	4d dc       	rcall	.-1894   	; 0x4ee <navigation_set_autonomous_walk>
      c54:	ff 91       	pop	r31
@@ -2032,10 +2252,10 @@ int main(void)
      d24:	82 b9       	out	0x02, r24	; 2
 				USART_SendElevation();
      d26:	14 d5       	rcall	.+2600   	; 0x1750 <USART_SendElevation>
-			{
-				TWI_send_float(C_ADDRESS, USART_gyro_get_Y() * 180/PI);
 			}*/
 		}
+		
+		
 		
 		USART_DecodeRxFIFO();
      d28:	00 d7       	rcall	.+3584   	; 0x1b2a <USART_DecodeRxFIFO>

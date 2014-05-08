@@ -18,20 +18,21 @@ int main(void)
 	DDRD |= (1<<PORTD5); //init LED
 	//servoTx;
 	sei();
-	
-	SERVO_init(); //Init servos
 	USART_init();
+	MPU_init();
+	SERVO_init(); //Init servos
+	
 	
 	initvar();
 	
 	
 	SERVO_update_EEPROM(BROADCASTING_ID);
 	
-	MPU_init();
+	
 	
 	init_counters();
 	set_counter_1(10000);
-	
+	wait(10);
 	move_to_std();
 	
 	// ------ TESTCODE FOR READING SERVO -------

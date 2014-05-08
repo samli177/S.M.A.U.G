@@ -90,11 +90,14 @@ int main(void)
 				PORTA ^= (1<<PORTA0);
 				USART_SendElevation();
 			}
+			
 			/*if(USART_GyroFlag())
 			{
 				TWI_send_float(C_ADDRESS, USART_gyro_get_Y() * 180/PI);
 			}*/
 		}
+		
+		
 		
 		USART_DecodeRxFIFO();
     }
