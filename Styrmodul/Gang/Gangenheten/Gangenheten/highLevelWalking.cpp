@@ -240,8 +240,29 @@ void step_part2_calculator(struct LegData* leg)
 void move_robot(int dir, int rot, int spd)
 {
 	direction = (float)dir;
+	if(direction < 0 || direction > 90)
+	{
+		direction = 0;
+	}
+	
 	rotation = (float)rot / 50 -1;
+	if(rotation < -1)
+	{
+		rotation = -1;
+	} else if(rotation > 1)
+	{
+		rotation = 1;
+	}
+	
 	speedf = (float)spd;
+	if(speedf < 0)
+	{
+		speedf = 0;
+	} else if(speedf > 100)
+	{
+		speedf = 100;
+	}
+	
 	if (speedf != 0 || rotation != 0)
 	{
 	step_start(&leg1);
@@ -1058,31 +1079,61 @@ void leg_climb_down(struct LegData* leg) // To descend from the high pass obstac
 
 void turn_degrees(uint16_t degrees, int8_t dir)
 {
-	MPU_update();
+	float radians = degrees * M_PI/180;
+	float tolerance = 2.0 * M_PI/180;
+	wait(10);
+	float startAngle = MPU_get_y();
+	float newAngle;
+	float angleLeft;
+	USART_SendValue(startAngle*180/M_PI);
+	float diff;
+	
+	do
+	{
+		wait(10);
+		newAngle = MPU_get_y();
+		
+		diff = newAngle - startAngle;
+		if(fabs(diff) <= M_PI)
+		{
+			angleLeft = radians - fabs(diff);
+		} else if(diff < 0) {
+			angleLeft = radians - M_PI - fmod(diff, M_PI);
+		} else {
+			angleLeft = radians - fmod(diff, M_PI);
+		}
+		USART_SendValue(angleLeft*180/M_PI);
+		
+		move_robot(0, 50 + dir * 50 * angleLeft*8.0/M_PI, 0);
+	} while(fabs(angleLeft) > tolerance);
+	
+	/*wait(10);
 	float startAngle = MPU_get_y() * 180/pi;
 	float totalDegrees = 0;
 	float lastDegree = startAngle;
 	float degreesLeft = degrees;
 	
-	while (degreesLeft > 5)
+	while (fabs(degreesLeft) > 2)
 	{
 		PORTD ^= (1 << PORTD5);
-		MPU_update();
-		float tempDegree = MPU_get_y() * 180/pi;
-		float change = fmod(fabs(lastDegree - tempDegree), 180);
-		lastDegree = tempDegree;
+		wait(10);
+		float newDegree = MPU_get_y() * 180/pi;
+		float change = fmod(newDegree - lastDegree, 180);
+		lastDegree = newDegree;
 		totalDegrees += change;
-		degreesLeft = fabs(startAngle - totalDegrees) - (float) degrees;
+		degreesLeft = (float) degrees - totalDegrees;
 		
-		if(change < degreesLeft)
+		USART_SendValue(degreesLeft);
+		
+		if(change < fabs(degreesLeft))
 		{
 			move_robot(0,50+dir*50,0);
 		}
 		else
 		{
-			move_robot(0,50+dir*50*degreesLeft/change,0);
+			move_robot(0,50+dir*50*fabs(degreesLeft/change),0);
 		}
 		
 		
-	} 
+	} */
 }

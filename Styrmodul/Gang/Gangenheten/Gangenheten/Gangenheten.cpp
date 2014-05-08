@@ -11,29 +11,38 @@
 #include "counter.h"
 #include "MpuInit.h"
 
+#define LED1_ON PORTC |= (1<<PORTC6)
+#define LED1_OFF PORTC &= ~(1<<PORTC6)
+#define LED1_TOGGLE PORTC ^= (1<<PORTC6)
+
+#define LED2_ON PORTC |= (1<<PORTC7)
+#define LED2_OFF PORTC &= ~(1<<PORTC7)
+#define LED2_TOGGLE PORTC ^= (1<<PORTC7)
+
 uint8_t std_pos_flag = 1;
+uint8_t move_to_std_flag = 0;
+
+void wait_until_gyro_stable();
 
 int main(void)
 {
-	DDRD |= (1<<PORTD5); //init LED
+	DDRC |= (1<<PORTC6 | 1<<PORTC7); //init LED
 	//servoTx;
 	sei();
 	USART_init();
 	MPU_init();
 	SERVO_init(); //Init servos
-	
+	init_counters();
 	
 	initvar();
 	
-	
 	SERVO_update_EEPROM(BROADCASTING_ID);
 	
-	
-	
-	init_counters();
-	set_counter_1(10000);
 	wait(10);
 	move_to_std();
+	wait_until_gyro_stable();
+	LED1_TOGGLE;
+	USART_SendMessage("Gyro Stable");
 	
 	// ------ TESTCODE FOR READING SERVO -------
 		
@@ -51,7 +60,15 @@ int main(void)
 	while(1)
 	{
 		turn_degrees(90, 1);
-		wait(2000);
+		wait(3000);
+		turn_degrees(90, -1);
+		wait(3000);
+		turn_degrees(180, 1);
+		wait(3000);
+		turn_degrees(45, -1);
+		wait(3000);
+		turn_degrees(135, -1);
+		wait(3000);
 	}
 	
 	wait(2000);
@@ -84,6 +101,12 @@ int main(void)
 		}
 		*/
 		
+		if(move_to_std_flag == 1)
+		{
+			move_to_std_flag = 0;
+			move_to_std();
+		}
+		
 		for(int i = 0; i < 5; ++i)
 		{
 			move_robot(0,50,100);
@@ -105,9 +128,24 @@ ISR(TIMER1_COMPA_vect)
 	if(std_pos_flag == 0)
 	{
 		std_pos_flag = 1;
-		move_to_std();
+		move_to_std_flag = 1;
 	}
 	
 	//USART_SendValue(MPU_get_y() * 180/M_PI);
 	TCNT1 = 0;
+}
+
+void wait_until_gyro_stable()
+{
+	_delay_ms(20000);
+	/*MPU_update();
+	float value1 = MPU_get_y();
+	float value2 = 100;
+	do
+	{
+		wait(100);
+		value2 = value1;
+		value1 = MPU_get_y();
+		//USART_SendValue(fabs(value1 - value2));
+	} while (fabs(value1 - value2) > 0.001);*/
 }

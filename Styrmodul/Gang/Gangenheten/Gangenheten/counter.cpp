@@ -41,12 +41,14 @@ void set_counter_1(uint16_t delay)
 {
 	delay = 15.625 * delay;
 	OCR1A = delay;
+	reset_counter_1();
 }
 
 void set_counter_3(uint16_t delay)
 {
 	delay = 15.625 * delay;
 	OCR3A = delay;
+	reset_counter_3();
 }
 
 void reset_counter_1()
@@ -70,9 +72,8 @@ void wait(uint16_t delaytime)
 	}
 }
 
-
 ISR(TIMER3_COMPA_vect)
 {
-	gWaitFlag |= 1;
+	gWaitFlag = 1;
 	TCNT3 = 0;
 }
