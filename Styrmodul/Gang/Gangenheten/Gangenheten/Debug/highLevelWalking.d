@@ -15,7 +15,7 @@ highLevelWalking.d highLevelWalking.o: .././highLevelWalking.cpp \
  c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/util/delay_basic.h \
  c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/avr/interrupt.h \
  .././serialServoControl.h .././inverseKinematics.h \
- .././highLevelWalking.h .././usart.h .././counter.h
+ .././highLevelWalking.h .././usart.h .././counter.h .././MpuInit.h
 
 c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/avr/io.h:
 
@@ -56,3 +56,5 @@ c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8
 .././usart.h:
 
 .././counter.h:
+
+.././MpuInit.h:

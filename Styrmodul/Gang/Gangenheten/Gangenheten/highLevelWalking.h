@@ -194,4 +194,6 @@ void update_leg_info(struct LegData* leg);
 uint16_t angle_to_servo_pos(float angle);
 uint8_t close_enough(struct LegData* leg, uint8_t tolerance);
 
+void turn_degrees(uint16_t degrees, int8_t dir);
+
 #endif /* HIGHLEVELWALKING_H_ */

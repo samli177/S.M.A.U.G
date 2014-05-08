@@ -46,10 +46,22 @@ int main(void)
 	reset_counter_1();
 	set_counter_1(3000);
 	
+	//climb();
+	
+	while(1)
+	{
+		turn_degrees(90, 1);
+		wait(2000);
+	}
+	
+	wait(2000);
+	
+	
+	
     while(1)
     {
 		MPU_update();
-		
+		/*
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
 		uint8_t d = USART_getDirection();
@@ -70,11 +82,11 @@ int main(void)
 			USART_send_ready();
 			sei();
 		}
+		*/
 		
-		/*
 		for(int i = 0; i < 5; ++i)
 		{
-			move_robot(22,50,100);
+			move_robot(0,50,100);
 			wait(2000);
 			
 		}
@@ -82,10 +94,10 @@ int main(void)
 
 		wait(5000);
 		
-		//climb(30);
-		*/
+		
+		
 		USART_DecodeRxFIFO();
-    }
+	}
 }
 
 ISR(TIMER1_COMPA_vect)

@@ -16,6 +16,7 @@
 #include "highLevelWalking.h"
 #include "usart.h"
 #include "counter.h"
+#include "MpuInit.h"
 
 int speed;
 float iterations;
@@ -490,9 +491,9 @@ void leg_motion()
 		move_leg(&leg6,i);
 
 		SERVO_action();
-		wait(20);
+		wait(30);
 		
-		change_z(USART_get_z());
+		//change_z(USART_get_z());
 		
 
 	}
@@ -513,7 +514,7 @@ void change_z(float input)
 void move_to_std()
 {
 	
-	change_z(USART_get_z());
+	//change_z(USART_get_z());
 	
 	leg1.lift = -1;
 	leg2.lift = 1;
@@ -635,7 +636,7 @@ void leg_climb(struct LegData* leg)
 	SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
 	SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
 
-	_delay_ms(400);
+	_delay_ms(800);
 
 	SERVO_goto(leg->servoGamma, leg->goalAngleGamma, 100);
 
@@ -1054,3 +1055,34 @@ void leg_climb_down(struct LegData* leg) // To descend from the high pass obstac
 	*/
 /*
 }*/
+
+void turn_degrees(uint16_t degrees, int8_t dir)
+{
+	MPU_update();
+	float startAngle = MPU_get_y() * 180/pi;
+	float totalDegrees = 0;
+	float lastDegree = startAngle;
+	float degreesLeft = degrees;
+	
+	while (degreesLeft > 5)
+	{
+		PORTD ^= (1 << PORTD5);
+		MPU_update();
+		float tempDegree = MPU_get_y() * 180/pi;
+		float change = fmod(fabs(lastDegree - tempDegree), 180);
+		lastDegree = tempDegree;
+		totalDegrees += change;
+		degreesLeft = fabs(startAngle - totalDegrees) - (float) degrees;
+		
+		if(change < degreesLeft)
+		{
+			move_robot(0,50+dir*50,0);
+		}
+		else
+		{
+			move_robot(0,50+dir*50*degreesLeft/change,0);
+		}
+		
+		
+	} 
+}
