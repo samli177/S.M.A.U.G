@@ -193,5 +193,8 @@ void change_z(float input);
 void update_leg_info(struct LegData* leg);
 uint16_t angle_to_servo_pos(float angle);
 uint8_t close_enough(struct LegData* leg, uint8_t tolerance);
+void move_climb(struct LegData* leg, float n);
+void leg_check_down(struct LegData* leg);
+void leg_move_down(struct LegData* leg);
 
 #endif /* HIGHLEVELWALKING_H_ */

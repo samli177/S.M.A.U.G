@@ -40,6 +40,8 @@ float speedGamma;
 float speedMultiplier;
 
 int height_flag;
+int climbing_flag;
+int legsNotDown;
 
 float tempx;
 float tempy;
@@ -409,9 +411,9 @@ void move_leg(struct LegData* leg, float n)
 	leg->temp2AngleGamma = get_gamma(tempx, tempy);
 	leg->temp2AngleBeta = get_beta();
 	leg->temp2AngleAlpha = get_alpha(tempz);
-	speedAlpha = fabsf(leg->temp1AngleAlpha - leg->temp2AngleAlpha)*speedMultiplier;
-	speedBeta = fabsf(leg->temp1AngleBeta - leg->temp2AngleBeta)*speedMultiplier;
-	speedGamma = fabsf(leg->temp1AngleGamma - leg->temp2AngleGamma)*speedMultiplier;
+	//speedAlpha = fabsf(leg->temp1AngleAlpha - leg->temp2AngleAlpha)*speedMultiplier;
+	//speedBeta = fabsf(leg->temp1AngleBeta - leg->temp2AngleBeta)*speedMultiplier;
+	//speedGamma = fabsf(leg->temp1AngleGamma - leg->temp2AngleGamma)*speedMultiplier;
 	leg->goalAngleAlpha = leg->side *(leg->temp2AngleAlpha + femurAngleAddition);
 	leg->goalAngleBeta = leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition);
 	leg->goalAngleGamma = leg->temp2AngleGamma;
@@ -426,79 +428,322 @@ void leg_motion()
 	{
 		if(leg1.climbing == 1)
 		{
-			leg_climb(&leg1);
+			move_climb(&leg1, i);
 		}
 		/*else if(leg1.climbing == 2)
 		{
 			leg_climb_down(&leg1);
 		}*/
-		
-		move_leg(&leg1,i);
-		
+		else
+		{
+			move_leg(&leg1,i);
+		}
 		if(leg2.climbing == 1)
 		{
-			leg_climb(&leg2);
+			move_climb(&leg2, i);
 		}/*
 		else if(leg2.climbing == 2)
 		{
 			leg_climb_down(&leg2);
 		}*/
-		
-		move_leg(&leg2,i);
+		else
+		{
+			move_leg(&leg2,i);
+		}
 		
 		if(leg3.climbing == 1)
 		{
-			leg_climb(&leg3);
+			move_climb(&leg3, i);
 		}/*
 		else if(leg3.climbing == 2)
 		{
 			leg_climb_down(&leg3);
 		}*/
-		
-		move_leg(&leg3,i);
-		
+		else
+		{
+			move_leg(&leg3,i);
+		}
 		if(leg4.climbing == 1)
 		{
-			leg_climb(&leg4);
+			move_climb(&leg4, i);
 		}/*
 		else if(leg4.climbing == 2)
 		{
 			leg_climb_down(&leg4);
 		}*/
-		
-		move_leg(&leg4,i);
-		
+		else
+		{
+			move_leg(&leg4,i);
+		}
 		if(leg5.climbing == 1)
 		{
-			leg_climb(&leg5);
+			move_climb(&leg5, i);
 		}/*
 		else if(leg5.climbing == 2)
 		{
 			leg_climb_down(&leg5);
 		}*/
-		
-		move_leg(&leg5,i);
-		
+		else
+		{
+			move_leg(&leg5,i);
+		}
 		if(leg6.climbing == 1)
 		{
-			leg_climb(&leg6);
+			move_climb(&leg6, i);
 		}/*
 		else if(leg6.climbing == 2)
 		{
 			leg_climb_down(&leg6);
 		}*/
-		
-		move_leg(&leg6,i);
-		
+		else
+		{
+			move_leg(&leg6,i);
+		}
 
 		SERVO_action();
-		_delay_ms(100);
+		_delay_ms(300);
 		
 		
 		//change_z(USART_get_z());
-		
+	}
+	if(climbing_flag)
+	{
+		legsNotDown = 1;
+		while(legsNotDown)
+		{
+			legsNotDown = 0;
+			
+			if(leg1.lift == 1 && leg1.climbing == 1)
+			{
+				leg_move_down(&leg1);
+			}
+			if(leg2.lift == 1 && leg2.climbing == 1)
+			{
+				leg_move_down(&leg2);
+			}
+			if(leg3.lift == 1 && leg3.climbing == 1)
+			{
+				leg_move_down(&leg3);
+			}
+			if(leg4.lift == 1 && leg4.climbing == 1)
+			{
+				leg_move_down(&leg4);
+			}
+			if(leg5.lift == 1 && leg5.climbing == 1)
+			{
+				leg_move_down(&leg5);
+			}
+			if(leg6.lift == 1 && leg6.climbing == 1)
+			{
+				leg_move_down(&leg6);
+			}
+			
+			SERVO_action();
+			_delay_ms(200);
+			
+			if(leg1.lift == 1 && leg1.climbing == 1)
+			{
+				leg_check_down(&leg1);
+			}
+			if(leg2.lift == 1 && leg2.climbing == 1)
+			{
+				leg_check_down(&leg2);
+			}
+			if(leg3.lift == 1 && leg3.climbing == 1)
+			{
+				leg_check_down(&leg3);
+			}
+			if(leg4.lift == 1 && leg4.climbing == 1)
+			{
+				leg_check_down(&leg4);
+			}
+			if(leg5.lift == 1 && leg5.climbing == 1)
+			{
+				leg_check_down(&leg5);
+			}
+			if(leg6.lift == 1 && leg6.climbing == 1)
+			{
+				leg_check_down(&leg6);
+			}
+			
+			SERVO_action();
+			_delay_ms(200);
+		}
 	}
 }
+
+void leg_move_down(struct LegData* leg)
+{
+	leg->newPosz -=10;
+	tempz = leg->newPosz;
+	leg->newPosx -=5;
+	tempx = leg->newPosx;
+	tempy = leg->newPosy;
+	
+	calc_d(tempx, tempy, tempz);
+	leg->temp2AngleGamma = get_gamma(tempx, tempy);
+	leg->temp2AngleBeta = get_beta();
+	leg->temp2AngleAlpha = get_alpha(tempz);
+	leg->goalAngleAlpha = leg->side *(leg->temp2AngleAlpha + femurAngleAddition);
+	leg->goalAngleBeta = leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition);
+	leg->goalAngleGamma = leg->temp2AngleGamma;
+	SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,200);
+	SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,200);
+	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,200);
+}
+
+void leg_check_down(struct LegData* leg)
+{
+	update_leg_info(leg);
+	if(leg->currLoadAlpha > 250)
+	{
+		
+		//leg->newPosz += 20;
+		//leg->newPosx -= 10;
+		tempz = leg->newPosz;
+		tempx = leg->newPosx;
+		tempy = leg->newPosy;
+		
+		calc_d(tempx, tempy, tempz);
+		leg->temp2AngleBeta = get_beta();
+		leg->temp2AngleAlpha = get_alpha(tempz);
+		leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
+		leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
+	 
+		SERVO_buffer_position(leg->servoAlpha,leg->goalAngleAlpha,100);
+		SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,100);
+		
+		switch(leg->servoGamma)
+		{
+			case 8:
+			height_change_leg1(tempz);
+			break;
+			
+			case 14:
+			height_change_leg2(tempz);
+			break;
+			
+			case 2:
+			height_change_leg3(tempz);
+			break;
+			
+			case 7:
+			height_change_leg4(tempz);
+			break;
+			
+			case 13:
+			height_change_leg5(tempz);
+			break;
+			
+			case 1:
+			height_change_leg6(tempz);
+			break;
+			
+			default:
+			break;
+		}
+		
+		 
+		
+		leg->climbing = 0;
+	}
+	
+	if(legsNotDown == 0 && leg->climbing == 1)
+	{
+		legsNotDown = 1;
+	}
+}
+
+void climb()
+{
+	climbing_flag = 1;
+	height = 70;
+	
+	z = -120;
+	change_z(z);
+	
+	move_to_std();
+	
+	while(climbing_flag)
+	{
+		if(leg1.lift)
+		{
+			height_change_leg2(z + height);
+			height_change_leg4(z + height);
+			height_change_leg6(z + height);
+			leg2.climbing = 1;
+			leg4.climbing = 1;
+			leg6.climbing = 1;
+			leg2.newPosz = z + height;
+			leg4.newPosz = z + height;
+			leg6.newPosz = z + height;
+		}
+		else
+		{
+			height_change_leg1(leg1.newPosz + height);
+			height_change_leg3(leg3.newPosz + height);
+			height_change_leg5(leg5.newPosz + height);
+			leg1.climbing = 1;
+			leg3.climbing = 1;
+			leg5.climbing = 1;
+			leg1.newPosz = z + height;
+			leg3.newPosz = z + height;
+			leg5.newPosz = z + height;
+		}
+	
+	
+		  move_robot(0,50,100);
+		  
+		  _delay_ms(2000);
+	}
+	
+}
+
+void move_climb(struct LegData* leg, float n)
+{
+	
+	tempz = z + height + 30;
+	
+	if(leg->lift == 1 && n == 0)
+	{		
+		tempx = leg->newPosx;
+		tempy = leg->newPosy;
+
+		calc_d(tempx, tempy, tempz);
+		leg->temp2AngleGamma = get_gamma(tempx, tempy);
+		leg->temp2AngleBeta = get_beta();
+		leg->temp2AngleAlpha = get_alpha(tempz);
+		leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
+		leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
+		leg->goalAngleGamma = leg->temp2AngleGamma;
+			
+		SERVO_buffer_position(leg->servoAlpha,leg->goalAngleAlpha,200);
+		SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,200);
+	}
+	else if(n != iterations + 1)
+	{
+		leg->temp1AngleGamma = leg->temp2AngleGamma;
+		leg->temp1AngleBeta = leg->temp2AngleBeta;
+		leg->temp1AngleAlpha = leg->temp2AngleAlpha;
+
+		tempx = leg->prevPosx + n*(leg->newPosx - leg->prevPosx)/iterations;
+		tempy = leg->prevPosy + n*(leg->newPosy - leg->prevPosy)/iterations;
+		calc_d(tempx, tempy, tempz);
+		leg->temp2AngleGamma = get_gamma(tempx, tempy);
+		leg->temp2AngleBeta = get_beta();
+		leg->temp2AngleAlpha = get_alpha(tempz);
+		speedAlpha = fabsf(leg->temp1AngleAlpha - leg->temp2AngleAlpha)*speedMultiplier;
+		speedBeta = fabsf(leg->temp1AngleBeta - leg->temp2AngleBeta)*speedMultiplier;
+		speedGamma = fabsf(leg->temp1AngleGamma - leg->temp2AngleGamma)*speedMultiplier;
+		leg->goalAngleAlpha = leg->side *(leg->temp2AngleAlpha + femurAngleAddition);
+		leg->goalAngleBeta = leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition);
+		leg->goalAngleGamma = leg->temp2AngleGamma;
+		//SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,200);
+		//SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,200);
+		SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,200);
+	}
+}
+
 
 void change_z(float input)
 {
@@ -575,7 +820,7 @@ void move_to_std()
 	
 	
 }
-
+/*
 void climb()
 {
 	
@@ -656,7 +901,7 @@ void leg_climb(struct LegData* leg)
 		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
 		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
 		 */
-		 
+		 /*
 		 switch(leg->servoGamma)
 		 {
 			 case 1:
@@ -810,7 +1055,7 @@ void leg_climb(struct LegData* leg)
 		 break;
 	 }
 	*/
-
+/*
 }
 
 

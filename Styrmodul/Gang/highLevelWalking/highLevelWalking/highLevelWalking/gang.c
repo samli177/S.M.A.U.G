@@ -43,7 +43,7 @@ int main(void)
 	
     while(1)
     {
-		
+		/*
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
 		uint8_t d = USART_getDirection();
@@ -64,10 +64,11 @@ int main(void)
 			USART_send_ready();
 			sei();
 		}
-		
+		*/
 
 		
-/*
+/*change_z(-130);
+move_to_std();
 		for(int i = 0; i < 5; ++i)
 		{
 			move_robot(0,50,100);
@@ -82,10 +83,10 @@ int main(void)
 		
 		*/
 		
-		//climb_down();
+		climb();
 		
-		SERVO_update_data(12);
-		USART_SendValue(SERVO_get_load());
+		//SERVO_update_data(12);
+		//USART_SendValue(SERVO_get_load());
 		USART_DecodeRxFIFO();
 		_delay_ms(200);
 	
