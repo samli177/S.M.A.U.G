@@ -20,6 +20,7 @@
 int speed;
 float iterations;
 float height;
+int climb_step;
 
 
 
@@ -117,35 +118,48 @@ void initvar()
 	leg1.servoAlpha = 10;
 	leg1.servoBeta = 12;
 	leg1.servoGamma = 8;
-	leg1.loadLimit = 400;
+	leg1.loadLimitTot = 590; 
+	leg1.loadLimitAlpha = 440;
+	leg1.loadLimitBeta = 240;
 	
 	leg2.servoAlpha = 16;
 	leg2.servoBeta = 18;
 	leg2.servoGamma = 14;
-	leg2.loadLimit = 350;
+	leg2.loadLimitTot = 550; 
+	leg2.loadLimitAlpha = 350;
+	leg2.loadLimitBeta = 290;
 	
 	leg3.servoAlpha = 4;
 	leg3.servoBeta = 6;
 	leg3.servoGamma = 2;
-	leg3.loadLimit = 400;
+	leg3.loadLimitTot = 620; 
+	leg3.loadLimitAlpha = 420;
+	leg3.loadLimitBeta = 220;
 	
 	leg4.servoAlpha = 3;
 	leg4.servoBeta = 5;
 	leg4.servoGamma = 1;
-	leg4.loadLimit = 450;
+	leg4.loadLimitTot = 583; 
+	leg4.loadLimitAlpha = 480;
+	leg4.loadLimitBeta = 330;
 	
 	leg5.servoAlpha = 15;
 	leg5.servoBeta = 17;
 	leg5.servoGamma = 13;
-	leg5.loadLimit = 400;
+	leg5.loadLimitTot = 600; 
+	leg5.loadLimitAlpha = 400;
+	leg5.loadLimitBeta = 150;
 	
 	leg6.servoAlpha = 9;
 	leg6.servoBeta = 11;
 	leg6.servoGamma = 7;
-	leg6.loadLimit = 225;
+	leg6.loadLimitTot = 443;
+	leg6.loadLimitAlpha = 330;
+	leg6.loadLimitBeta = 145;
 	
 	// To count x and y from a new z:
 	// sign*(120 + 0.5 *(new_z - z0))/divider + term
+	/*
 	leg1.signX = -1;
 	leg1.dividerX = sqrt2;
 	leg1.termX = -61.85;
@@ -193,6 +207,7 @@ void initvar()
 	leg6.signY = 1;
 	leg6.dividerY = sqrt2;
 	leg6.termY = 120;
+	*/
 }
 
 void update_leg_info(struct LegData* leg)
@@ -476,6 +491,138 @@ void move_leg(struct LegData* leg, float n)
 	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,200);
 }
 
+void climb_all_one_leg()
+{
+	climbing_flag = 1;
+	height = 70;
+	
+	z = -120;
+	change_z(z);
+	
+	move_to_std();
+	
+	while(climbing_flag)
+	{
+		leg1.lift = -1;
+		leg2.lift = 1;
+		leg3.lift = -1;
+		leg4.lift = 1;
+		leg5.lift = -1;
+		leg6.lift = 1;
+		height_change_leg1(z + height);
+		leg1.climbing = 1;
+		leg1.newPosz = z + height;
+		climb_one_leg(&leg1);
+		move_robot(0,50,100);
+		
+		_delay_ms(1000);
+		
+		leg1.lift = 1;
+		leg2.lift = -1;
+		leg3.lift = 1;
+		leg4.lift = -1;
+		leg5.lift = 1;
+		leg6.lift = -1;
+		height_change_leg2(z + height);
+		leg2.climbing = 1;
+		leg2.newPosz = z + height;
+		climb_one_leg(&leg2);
+		move_robot(0,50,100);
+		
+		_delay_ms(1000);
+		
+		leg1.lift = -1;
+		leg2.lift = 1;
+		leg3.lift = -1;
+		leg4.lift = 1;
+		leg5.lift = -1;
+		leg6.lift = 1;
+		height_change_leg3(z + height);
+		leg3.climbing = 1;
+		leg3.newPosz = z + height;
+		climb_one_leg(&leg3);
+		move_robot(0,50,100);
+		
+		_delay_ms(1000);
+		
+		leg1.lift = 1;
+		leg2.lift = -1;
+		leg3.lift = 1;
+		leg4.lift = -1;
+		leg5.lift = 1;
+		leg6.lift = -1;
+		height_change_leg4(z + height);
+		leg4.newPosz = z + height;
+		leg4.climbing = 1;
+		climb_one_leg(&leg4);
+		move_robot(0,50,100);
+		
+		_delay_ms(1000);
+		
+		leg1.lift = -1;
+		leg2.lift = 1;
+		leg3.lift = -1;
+		leg4.lift = 1;
+		leg5.lift = -1;
+		leg6.lift = 1;
+		height_change_leg5(z + height);
+		leg5.climbing = 1;
+		leg5.newPosz = z + height;
+		climb_one_leg(&leg5);
+		move_robot(0,50,100);
+		
+		_delay_ms(1000);
+		
+		leg1.lift = 1;
+		leg2.lift = -1;
+		leg3.lift = 1;
+		leg4.lift = -1;
+		leg5.lift = 1;
+		leg6.lift = -1;
+		height_change_leg6(z + height);
+		leg6.climbing = 1;
+		leg6.newPosz = z + height;
+		climb_one_leg(&leg6);
+		move_robot(0,50,100);
+		
+		_delay_ms(5000);
+	}
+}
+
+void climb_one_leg(struct LegData* leg)
+{
+	for(int i = 0; i <= (int)iterations+1; ++i)
+	{
+		move_climb(leg,i);
+		
+		SERVO_action();
+		_delay_ms(300);
+	}
+	
+	if(climbing_flag)
+	{
+		legsNotDown = 1;
+		while(legsNotDown)
+		{
+			legsNotDown = 0;
+			
+			if(leg->lift == 1 && leg->climbing == 1)
+			{
+				leg_move_down(leg);
+			}
+			SERVO_action();
+			_delay_ms(200);
+			
+			if(leg->lift == 1 && leg->climbing == 1)
+			{
+				leg_check_down(leg);
+			}
+			SERVO_action();
+			_delay_ms(200);
+		}
+	}
+}
+
 void leg_motion()
 {
 	leg_motion_init();
@@ -561,6 +708,7 @@ void leg_motion()
 		
 		//change_z(USART_get_z());
 	}
+	
 	if(climbing_flag)
 	{
 		legsNotDown = 1;
@@ -651,7 +799,9 @@ void leg_move_down(struct LegData* leg)
 void leg_check_down(struct LegData* leg)
 {
 	update_leg_info(leg);
-	if(leg->currLoadAlpha > leg->loadLimit)
+	if(leg->currLoadAlpha + leg->currLoadBeta > leg->loadLimitTot || 
+		leg->currLoadAlpha > leg->loadLimitAlpha ||
+		leg->currLoadBeta > leg->loadLimitBeta)
 	{
 		
 		//leg->newPosz += 20;
@@ -714,6 +864,7 @@ void climb()
 {
 	climbing_flag = 1;
 	height = 70;
+	climb_step = 0;
 	
 	z = -120;
 	change_z(z);
@@ -722,35 +873,45 @@ void climb()
 	
 	while(climbing_flag)
 	{
-		if(leg1.lift)
+		if(leg1.lift && climb_step == 0)
 		{
-			height_change_leg2(z + height);
-			height_change_leg4(z + height);
 			height_change_leg6(z + height);
-			leg2.climbing = 1;
-			leg4.climbing = 1;
 			leg6.climbing = 1;
-			leg2.newPosz = z + height;
-			leg4.newPosz = z + height;
 			leg6.newPosz = z + height;
 		}
-		else
+		else if (!(leg1.lift) && climb_step == 0)
 		{
 			height_change_leg1(leg1.newPosz + height);
-			height_change_leg3(leg3.newPosz + height);
-			height_change_leg5(leg5.newPosz + height);
 			leg1.climbing = 1;
-			leg3.climbing = 1;
-			leg5.climbing = 1;
 			leg1.newPosz = z + height;
-			leg3.newPosz = z + height;
+		}
+		else if (leg1.lift && climb_step == 1)
+		{
+			height_change_leg2(z + height);
+			leg2.climbing = 1;
+			leg2.newPosz = z + height;
+		}
+		else if (!(leg1.lift) && climb_step == 1)
+		{
+			height_change_leg5(z + height);
+			leg5.climbing = 1;
 			leg5.newPosz = z + height;
 		}
-	
-	
-		  move_robot(0,50,100);
-		  
-		  _delay_ms(2000);
+		else if (leg1.lift && climb_step == 2)
+		{
+			height_change_leg4(z + height);
+			leg4.climbing = 1;
+			leg4.newPosz = z + height;
+		}
+		else if (!(leg1.lift) && climb_step == 2)
+		{
+			height_change_leg3(z + height);
+			leg3.climbing = 1;
+			leg3.newPosz = z + height;
+		}
+		
+		move_robot(0,50,100);
+		_delay_ms(2000);
 	}
 	
 }

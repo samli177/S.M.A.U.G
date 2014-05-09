@@ -83,7 +83,8 @@ move_to_std();
 		
 		*/
 		
-		climb();
+		//climb();
+		climb_all_one_leg();
 		
 		//SERVO_update_data(12);
 		//USART_SendValue(SERVO_get_load());

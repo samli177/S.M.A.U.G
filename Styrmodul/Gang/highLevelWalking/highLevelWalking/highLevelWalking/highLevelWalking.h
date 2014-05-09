@@ -36,7 +36,9 @@ struct LegData
 	int servoGamma;
 	int servoBeta;
 	int servoAlpha;
-	int loadLimit;
+	int loadLimitTot;
+	int loadLimitAlpha;
+	int loadLimitBeta;
 	int climbing;
 	uint16_t currPosAlpha;
 	uint16_t currPosBeta;
@@ -179,6 +181,10 @@ void leg_motion_init();
  */
 void move_leg(struct LegData* leg, float n);
 
+void climb_all_one_leg();
+
+void climb_one_leg(struct LegData* leg);			// Climbs with one leg.
+
 /**
  * \brief 
  * Moves all legs one step.
@@ -201,7 +207,8 @@ void leg_climb(struct LegData* leg);
 // void leg_climb_down(struct LegData* leg);
 void change_z(float input);
 
-void update_leg_info(struct LegData* leg);
+void update_leg_info(struct LegData*);
+struct LegData get_leg1();
 uint16_t angle_to_servo_pos(float angle);
 uint8_t close_enough(struct LegData* leg, uint8_t tolerance);
 void move_climb(struct LegData* leg, float n);
