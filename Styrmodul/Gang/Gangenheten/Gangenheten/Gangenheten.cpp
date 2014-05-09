@@ -41,7 +41,6 @@ int main(void)
 	wait(10);
 	move_to_std();
 	wait_until_gyro_stable();
-	LED1_TOGGLE;
 	USART_SendMessage("Gyro Stable");
 	
 	// ------ TESTCODE FOR READING SERVO -------
@@ -59,15 +58,7 @@ int main(void)
 	
 	while(1)
 	{
-		turn_degrees(90, 1);
-		wait(3000);
 		turn_degrees(90, -1);
-		wait(3000);
-		turn_degrees(180, 1);
-		wait(3000);
-		turn_degrees(45, -1);
-		wait(3000);
-		turn_degrees(135, -1);
 		wait(3000);
 	}
 	
