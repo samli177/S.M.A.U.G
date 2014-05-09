@@ -1129,33 +1129,5 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 		move_robot(0, move, 0);
 	} while(fabs(angleLeft) > tolerance);
 	
-	/*wait(10);
-	float startAngle = MPU_get_y() * 180/pi;
-	float totalDegrees = 0;
-	float lastDegree = startAngle;
-	float degreesLeft = degrees;
-	
-	while (fabs(degreesLeft) > 2)
-	{
-		PORTD ^= (1 << PORTD5);
-		wait(10);
-		float newDegree = MPU_get_y() * 180/pi;
-		float change = fmod(newDegree - lastDegree, 180);
-		lastDegree = newDegree;
-		totalDegrees += change;
-		degreesLeft = (float) degrees - totalDegrees;
-		
-		USART_SendValue(degreesLeft);
-		
-		if(change < fabs(degreesLeft))
-		{
-			move_robot(0,50+dir*50,0);
-		}
-		else
-		{
-			move_robot(0,50+dir*50*fabs(degreesLeft/change),0);
-		}
-		
-		
-	} */
+	USART_send_turn_done();
 }

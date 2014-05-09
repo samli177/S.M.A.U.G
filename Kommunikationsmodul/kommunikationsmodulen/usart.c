@@ -196,6 +196,12 @@ void USART_SendSensors()
 	USART_SendPacket('S', 9);
 }
 
+void USART_send_autonom(uint8_t settings)
+{
+	gTxPayload[0] = settings;
+	USART_SendPacket('A', 1);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	

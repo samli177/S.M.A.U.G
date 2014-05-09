@@ -24,6 +24,9 @@ uint16_t gRxBufferIndex = 0;
 uint16_t gInvertNextFlag = 0;
 
 uint8_t gRotation=50, gSpeed=0, gDirection=0;
+uint16_t gTurnAngle = 0;
+int8_t gTurnDirection = 1;
+uint8_t gTurnFlag = 0;
 
 float gZ = -120;
 
@@ -51,6 +54,26 @@ uint8_t USART_getDirection()
 	uint8_t direction = gDirection;
 	gDirection = 0;
 	return direction;
+}
+
+uint8_t USART_get_turn_dir()
+{
+	return gTurnDirection;
+}
+
+uint8_t USART_get_turn_flag()
+{
+	if(gTurnFlag)
+	{
+		gTurnFlag = 0;
+		return 1;
+	}
+	return 0;
+}
+
+uint16_t USART_get_turn_angle()
+{
+	return gTurnAngle;
 }
 
 float USART_get_z()
@@ -270,6 +293,11 @@ void USART_send_ready()
 	USART_SendPacket('R', 0);
 }
 
+void USART_send_turn_done()
+{
+	USART_SendPacket('T', 0);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	uint8_t *len = 0;
@@ -411,6 +439,56 @@ uint8_t USART_DecodeElevationRxFIFO()
 	
 }
 
+uint8_t USART_DecodeTurnRxFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	
+	int length = 0;
+	uint16_t angle;
+	uint8_t dir;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		return 1; // error
+	}
+	
+	length = *len;
+	
+	if(length != 3)
+	{
+		return 1;
+	}
+	
+	if(FifoRead(gRxFIFO, data))
+	{
+		return 1;
+	}
+	angle = 0x0000 | *data;
+	
+	if(FifoRead(gRxFIFO, data))
+	{
+		return 1;
+	}
+	angle = (angle << 8) | *data;
+	
+	if(FifoRead(gRxFIFO, data))
+	{
+		return 1;
+	}
+	dir = *data;
+	
+	gTurnAngle = angle;
+	if(dir == 0)
+	{
+		gTurnDirection = -1;
+	} else {
+		gTurnDirection = 1;
+	}
+	gTurnFlag = 1;
+	
+	return 0;
+}
 
 void USART_DecodeRxFIFO()
 {
@@ -451,6 +529,15 @@ void USART_DecodeRxFIFO()
 			{
 				// Maybe must do check like the others?
 				USART_SendGyro();
+				break;
+			}
+			case('T'):
+			{
+				if(USART_DecodeTurnRxFIFO())
+				{
+					// TODO: flush buffer?
+					return;
+				}
 				break;
 			}
 		}

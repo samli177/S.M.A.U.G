@@ -39,7 +39,8 @@ int main(void)
 	
 	_delay_ms(5000);
 	navigation_set_autonomous_walk(0);
-	set_counter_1(100);
+	//set_counter_1(100);
+	set_counter_2(200);
 	
     while(1)
     {
@@ -50,24 +51,7 @@ int main(void)
 		}*/
 		
 		
-		if(TWI_autonom_settings_flag())
-		{
-			uint8_t sett = TWI_get_autonom_settings();
-			if(sett == 0)
-			{
-				navigation_set_autonomous_walk(0);
-			}
-			else if(sett == 1)
-			{
-				navigation_set_autonomous_walk(1);
-				navigation_set_algorithm(1);
-			}
-			else //sett == 2
-			{
-				navigation_set_autonomous_walk(1);
-				navigation_set_algorithm(0);
-			}
-		}
+		
 		
 		if(navigation_autonomous_walk() == 1)
 		{
@@ -113,7 +97,24 @@ ISR(TIMER1_COMPA_vect)
 
 ISR(TIMER3_COMPA_vect)
 {
-	//TWI_send_float(C_ADDRESS, (float)navigation_get_sensor(0));
+	if(TWI_autonom_settings_flag())
+	{
+		uint8_t sett = TWI_get_autonom_settings();
+		if(sett == 0)
+		{
+			navigation_set_autonomous_walk(0);
+		}
+		else if(sett == 1)
+		{
+			navigation_set_autonomous_walk(1);
+			navigation_set_algorithm(1);
+		}
+		else //sett == 2
+		{
+			navigation_set_autonomous_walk(1);
+			navigation_set_algorithm(0);
+		}
+	}
 	TCNT3 = 0;
 }
 
@@ -134,5 +135,6 @@ ISR(PCINT0_vect)
 		navigation_set_algorithm(0);
 		//test
 		PORTC ^= (1<<PORTC7);
-	}	
+	}
+	TWI_send_autonom_settings(C_ADDRESS, navigation_left_algorithm());
 }

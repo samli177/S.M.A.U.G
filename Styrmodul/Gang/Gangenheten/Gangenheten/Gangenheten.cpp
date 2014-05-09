@@ -56,20 +56,15 @@ int main(void)
 	
 	//climb();
 	
-	while(1)
-	{
-		turn_degrees(90, -1);
-		wait(3000);
-	}
-	
-	wait(2000);
-	
-	
-	
     while(1)
     {
 		MPU_update();
-		/*
+		
+		if(USART_get_turn_flag())
+		{
+			turn_degrees(USART_get_turn_angle(), USART_get_turn_dir());
+		}
+		
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
 		uint8_t d = USART_getDirection();
@@ -90,7 +85,8 @@ int main(void)
 			USART_send_ready();
 			sei();
 		}
-		*/
+		
+		
 		
 		if(move_to_std_flag == 1)
 		{
@@ -98,6 +94,7 @@ int main(void)
 			move_to_std();
 		}
 		
+		/*
 		for(int i = 0; i < 5; ++i)
 		{
 			move_robot(0,50,100);
@@ -107,7 +104,7 @@ int main(void)
 		move_to_std();
 
 		wait(5000);
-		
+		*/
 		
 		
 		USART_DecodeRxFIFO();

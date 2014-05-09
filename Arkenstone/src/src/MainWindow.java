@@ -837,10 +837,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private void autoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoButtonActionPerformed
         if (autoButton.isSelected()) {
             autoButton.setText("Autonomt läge (på)");
-            writeMessage("Autonomt läge aktiverat");
         } else {
             autoButton.setText("Autonomt läge (av)");
-            writeMessage("Autonomt läge avaktiverat");
         }
     }//GEN-LAST:event_autoButtonActionPerformed
 
@@ -1089,7 +1087,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             data[0] = 0;
         }
         if (sendData('A', data)) {
-            writeMessage("Uppdaterade inställningar");
+            writeMessage("Skickade inställningar");
         } else {
             writeMessage("Kunde inte skicka!");
         }
@@ -1489,8 +1487,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
 
         switch (tag) {
-            case 'P':
-                parametersUpdate(data);
+            case 'A':
+                autonomousUpdate(data);
                 break;
             case 'M':
                 messageRecieved(data);
@@ -1507,11 +1505,16 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
 
-    private void parametersUpdate(byte[] data) {
-        parameter1TextField.setText("" + data[0]);
-        parameter2TextField.setText("" + data[1]);
-        parameter3TextField.setText("" + data[2]);
-        writeMessage("Tog emot uppdaterade parametrar ");
+    private void autonomousUpdate(byte[] data) {
+        int a = data[0];
+        if(a == 0){
+            autoRightRadioButton.setSelected(true);
+            writeMessage("Autonomt högerläge aktiverat på roboten");
+        } else {
+            autoLeftRadioButton.setSelected(true);
+            writeMessage("Autonomt vänsterläge aktiverat på roboten");
+        }
+        autoButton.setSelected(true);
     }
 
     private void messageRecieved(byte[] data) {

@@ -311,7 +311,7 @@ uint8_t navigation_check_right_turn()
 
 uint8_t navigation_detect_low_pass_obsticle()
 {
-	if (navigation_get_sensor(sensorBufferSize) < HEIGHT_LIMIT)
+	if (navigation_get_sensor(7) < HEIGHT_LIMIT)
 	{
 		return 1;
 	}

@@ -59,15 +59,6 @@ uint8_t autonomouswalk_get_return_status();
 
 /**
  * \brief 
- * Turns the robot a specific amount of degrees, using the gyro.
- * \param degrees
- * The number of degrees to turn, in the range [-180, 180].
- * \return void
- */
-void turn_degrees(int16_t degrees);
-
-/**
- * \brief 
  * Makes the robot turn 90 deg. to the left.
  * \return void
  */

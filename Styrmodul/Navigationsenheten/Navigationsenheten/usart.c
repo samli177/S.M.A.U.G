@@ -27,6 +27,7 @@ uint16_t gInvertNextFlag = 0;
 uint16_t gMessageDesitnation = C_ADDRESS;
 
 uint8_t gGangReady = 0;
+uint8_t gTurnDone = 0;
 
 uint8_t gGyroFlag = 0;
 float gGyroP = 0;
@@ -228,6 +229,16 @@ void USART_SendElevation()
 	int temp = TWI_get_elevation();
 	gTxPayload[0] = temp;
 	USART_SendPacket('E', 1);
+}
+
+void USART_SendTurn(uint16_t angle, uint8_t dir)
+{
+	uint8_t b1 = (uint8_t) ((angle >> 8) & 0x00FF);
+	uint8_t b2 = (uint8_t) (angle & 0x00FF);
+	gTxPayload[0] = b1;
+	gTxPayload[1] = b2;
+	gTxPayload[2] = dir;
+	USART_SendPacket('T', 3);
 }
 
 void USART_RequestGyro()
@@ -433,6 +444,27 @@ uint8_t USART_DecodeReadyFIFO()
 	return 1;
 }
 
+uint8_t USART_DecodeTurnDoneRxFIFO()
+{
+	uint8_t *len = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO TURN-DONE ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 0)
+	{
+		gTurnDone = 1; // set flag
+		return 0;
+	}
+	
+	return 1;
+}
+
 uint8_t USART_ready()
 {
 	if(gGangReady)
@@ -466,6 +498,16 @@ float USART_gyro_get_R()
 float USART_gyro_get_Y()
 {
 	return gGyroY;
+}
+
+uint8_t USART_turn_done()
+{
+	if(gTurnDone)
+	{
+		gTurnDone = 0;
+		return 1;
+	}
+	return 0;
 }
 
 void USART_DecodeRxFIFO()
@@ -516,6 +558,14 @@ void USART_DecodeRxFIFO()
 			case('G'):
 			{
 				if(USART_DecodeGyroFIFO())
+				{
+					return;
+				}
+				break;
+			}
+			case('T'):
+			{
+				if(USART_DecodeTurnDoneRxFIFO())
 				{
 					return;
 				}
