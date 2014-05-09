@@ -117,28 +117,82 @@ void initvar()
 	leg1.servoAlpha = 10;
 	leg1.servoBeta = 12;
 	leg1.servoGamma = 8;
+	leg1.loadLimit = 400;
 	
 	leg2.servoAlpha = 16;
 	leg2.servoBeta = 18;
 	leg2.servoGamma = 14;
+	leg2.loadLimit = 350;
 	
 	leg3.servoAlpha = 4;
 	leg3.servoBeta = 6;
 	leg3.servoGamma = 2;
+	leg3.loadLimit = 400;
 	
 	leg4.servoAlpha = 3;
 	leg4.servoBeta = 5;
 	leg4.servoGamma = 1;
+	leg4.loadLimit = 450;
 	
 	leg5.servoAlpha = 15;
 	leg5.servoBeta = 17;
 	leg5.servoGamma = 13;
+	leg5.loadLimit = 400;
 	
 	leg6.servoAlpha = 9;
 	leg6.servoBeta = 11;
 	leg6.servoGamma = 7;
+	leg6.loadLimit = 225;
 	
+	// To count x and y from a new z:
+	// sign*(120 + 0.5 *(new_z - z0))/divider + term
+	leg1.signX = -1;
+	leg1.dividerX = sqrt2;
+	leg1.termX = -61.85;
 	
+	leg1.signY = 1;
+	leg1.dividerY = sqrt2;
+	leg1.termY = 120;
+	
+	leg2.signX = -1;
+	leg2.dividerX = 1;
+	leg2.termX = -100;
+	
+	leg2.signY = 0;
+	leg2.dividerY = 1;
+	leg2.termY = get_y0_2();
+	
+	leg3.signX = -1;
+	leg3.dividerX = sqrt2;
+	leg3.termX = -61.85;
+	
+	leg3.signY = -1;
+	leg3.dividerY = sqrt2;
+	leg3.termY = -120;
+	
+	leg4.signX = 1;
+	leg4.dividerX = sqrt2;
+	leg4.termX = 61.85;
+
+	leg4.signY = -1;
+	leg4.dividerY = sqrt2;
+	leg4.termY = -120;
+	
+	leg5.signX = 1;
+	leg5.dividerX = 1;
+	leg5.termX = 100;
+	
+	leg5.signY = 0;
+	leg5.dividerY = 1;
+	leg5.termY = get_y0_5();
+	
+	leg6.signX = 1;
+	leg6.dividerX = sqrt2;
+	leg6.termX = 61.85;
+
+	leg6.signY = 1;
+	leg6.dividerY = sqrt2;
+	leg6.termY = 120;
 }
 
 void update_leg_info(struct LegData* leg)
@@ -421,6 +475,7 @@ void move_leg(struct LegData* leg, float n)
 	SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,200);
 	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,200);
 }
+
 void leg_motion()
 {
 	leg_motion_init();
@@ -576,7 +631,8 @@ void leg_move_down(struct LegData* leg)
 {
 	leg->newPosz -=10;
 	tempz = leg->newPosz;
-	leg->newPosx -=5;
+	// To count new x and y positions: sign*(120 + 0.5 *(new_z - z0))/divider + term
+	leg->newPosx -= 5;
 	tempx = leg->newPosx;
 	tempy = leg->newPosy;
 	
@@ -595,7 +651,7 @@ void leg_move_down(struct LegData* leg)
 void leg_check_down(struct LegData* leg)
 {
 	update_leg_info(leg);
-	if(leg->currLoadAlpha > 250)
+	if(leg->currLoadAlpha > leg->loadLimit)
 	{
 		
 		//leg->newPosz += 20;

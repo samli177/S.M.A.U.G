@@ -36,7 +36,7 @@ int main(void)
 	SERVO_update_EEPROM(BROADCASTING_ID); // NOTE: needs to run once for SERVO_get position to work	
 	//----------------------------
 	
-	_delay_ms(5000);
+	_delay_ms(3000);
 	
 	reset_counter_1();
 	set_counter_1(3000);

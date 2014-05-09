@@ -260,6 +260,8 @@ void height_change_all(float new_z);
 
 float get_x0_1();
 float get_y0_1();
+float get_y0_2();
+float get_y0_5();
 float get_x0();
 float get_y0();
 float get_z0();

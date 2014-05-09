@@ -36,6 +36,7 @@ struct LegData
 	int servoGamma;
 	int servoBeta;
 	int servoAlpha;
+	int loadLimit;
 	int climbing;
 	uint16_t currPosAlpha;
 	uint16_t currPosBeta;
@@ -56,6 +57,16 @@ struct LegData
 	float goalAngleAlpha;
 	float goalAngleBeta;
 	float goalAngleGamma;
+	
+	// To count x and y from a new z:
+	// sign*(120 + 0.5 *(new_z - z0))/divider + term
+	float signX;
+	float dividerX;
+	float termX;
+	
+	float signY;
+	float dividerY;
+	float termY;
 	
 };
 

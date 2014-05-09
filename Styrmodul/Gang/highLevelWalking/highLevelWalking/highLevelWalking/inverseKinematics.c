@@ -98,6 +98,16 @@ float get_y0_1()
 	return y0_1;
 }
 
+float get_y0_2()
+{
+	return y0_2;
+}
+
+float get_y0_5()
+{
+	return y0_5;
+}
+
 float get_x0()
 {
 	return x0;
