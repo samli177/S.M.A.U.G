@@ -784,6 +784,7 @@ void leg_check_down(struct LegData* leg)
 		{
 			obstacle_height = z_in_use + 60;
 			tempz = obstacle_height;
+			leg->climbing = 0;
 		}
 		else if (leg->newPosz < z_in_use + 30)
 		{
@@ -838,7 +839,6 @@ void leg_check_down(struct LegData* leg)
 			default:
 			break;
 		}
-		leg->climbing = 0;
 	}
 	
 	else //if(legsNotDown == 0 && leg->climbing == 1)
