@@ -95,14 +95,18 @@ int main(void)
 		}*/
 		
 		climb();
-		climb();
-		change_z(-160);
+		change_z(-130);
 		move_to_std();
+		wait(100);
 		for(int i = 0; i < 10; ++i)
 		{
 			move_robot(0,50,100);
 			wait(2000);
 		}
+		//The plan right now is to just let the robot "walk" 
+		//off the edge and pray it stays upright.
+		//it would be great if someone(hint hint Tobias) could make it take
+		//taller steps during this bit though.
 		move_to_std();
 
 		wait(5000);
