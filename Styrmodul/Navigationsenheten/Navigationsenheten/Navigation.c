@@ -168,7 +168,6 @@ void navigation_set_autonomous_walk(uint8_t walk)
 
 void navigation_stepping_delay()
 {
-	int temp = 20;
 	while(USART_ready() == 0)
 	{
 		USART_DecodeRxFIFO();
@@ -177,7 +176,7 @@ void navigation_stepping_delay()
 	}
 }
 
-void navigation_low_pass_obsticle()
+void navigation_low_pass_obstacle()
 {
 	if(navigation_detect_low_pass_obsticle() && !(lowPassObstacleFlag))
 	{
@@ -312,7 +311,7 @@ uint8_t navigation_check_right_turn()
 
 uint8_t navigation_detect_low_pass_obsticle()
 {
-	if (navigation_get_sensor(sensorBufferSize) < HEIGHT_LIMIT)
+	if (navigation_get_sensor(7) < HEIGHT_LIMIT)
 	{
 		return 1;
 	}

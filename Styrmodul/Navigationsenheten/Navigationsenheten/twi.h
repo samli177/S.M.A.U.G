@@ -233,6 +233,7 @@ uint8_t TWI_get_command(int i);
  * The value of the setting
  */
 uint8_t TWI_get_control_setting(int i);
+
 /**
  * \brief 
  * Retrieves the autonomous settings
@@ -242,6 +243,15 @@ uint8_t TWI_get_control_setting(int i);
 uint8_t TWI_get_autonom_settings();
 
 
+uint8_t TWI_get_elevation();
+
+/**
+ * \brief
+ * Retrieves the elevation.
+ * 
+ * \return uint8_t
+ * The elevation
+ */
 uint8_t TWI_get_elevation();
 
 /**

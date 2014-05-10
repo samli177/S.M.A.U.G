@@ -3,12 +3,12 @@
 
 #include <avr/io.h>
 
-#define DISTANCE_FRONT_TO_BACK 14.5   // cm
-#define DISTANCE_MIDDLE_TO_SIDE 7.5   // cm
+#define DISTANCE_FRONT_TO_BACK 16.0   // cm
+#define DISTANCE_MIDDLE_TO_SIDE 6.7   // cm
 #define CORRIDOR_WIDTH 80             // cm
 #define ACCEPTABLE_OFFSET_ANGLE 0.07   // radians
 #define ACCEPTABLE_DISTANCE_OFFSET 2  // cm
-#define HEIGHT_LIMIT 100              // cm
+#define HEIGHT_LIMIT 40              // cm
 #define PI 3.14159265
 
 /**
@@ -103,7 +103,7 @@ void navigation_stepping_delay();
  * 
  * \return void
  */
-void navigation_low_pass_obsticle();
+void navigation_low_pass_obstacle();
 
 /**
  * \brief 

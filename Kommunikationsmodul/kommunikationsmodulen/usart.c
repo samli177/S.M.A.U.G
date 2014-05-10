@@ -196,6 +196,12 @@ void USART_SendSensors()
 	USART_SendPacket('S', 9);
 }
 
+void USART_send_autonom(uint8_t settings)
+{
+	gTxPayload[0] = settings;
+	USART_SendPacket('A', 1);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	
@@ -398,8 +404,9 @@ uint8_t USART_DecodeElevationRxFIFO()
 	
 	direction = *data;
 	
-	PORTA ^= (1 << PORTA0);
-	
+
+	PORTA ^= (1 << PORTA1);
+
 	TWI_send_elevation(direction);
 
 	return 0;

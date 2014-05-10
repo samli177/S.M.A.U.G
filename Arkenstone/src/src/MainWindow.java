@@ -39,6 +39,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     final int CONTROLL_DELAY = 100; // milli-seconds
+    final int MIN_SPEED = 20;
+    final int MIN_ROTATION = 15;
 
     SerialPort comPort;
     LinkedList<byte[]> messageBuffer;
@@ -399,7 +401,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
         jLabel11.setText("COM port namn:");
 
-        comNameTextField.setText("COM1");
+        comNameTextField.setText("COM4");
 
         connectButton.setText("Koppla upp");
         connectButton.addActionListener(new java.awt.event.ActionListener() {
@@ -784,6 +786,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
         jTabbedPane1.addTab("Debug", jPanel1);
 
+        jTabbedPane1.setSelectedIndex(1);
+
         jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -833,10 +837,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private void autoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoButtonActionPerformed
         if (autoButton.isSelected()) {
             autoButton.setText("Autonomt läge (på)");
-            writeMessage("Autonomt läge aktiverat");
         } else {
             autoButton.setText("Autonomt läge (av)");
-            writeMessage("Autonomt läge avaktiverat");
         }
     }//GEN-LAST:event_autoButtonActionPerformed
 
@@ -1085,7 +1087,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             data[0] = 0;
         }
         if (sendData('A', data)) {
-            writeMessage("Uppdaterade inställningar");
+            writeMessage("Skickade inställningar");
         } else {
             writeMessage("Kunde inte skicka!");
         }
@@ -1374,6 +1376,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     public boolean sendElevationCommand(boolean up) {
+        System.out.println("Elevation");
         byte data[] = new byte[1];
         if (up) {
             data[0] = 1;
@@ -1484,8 +1487,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
 
         switch (tag) {
-            case 'P':
-                parametersUpdate(data);
+            case 'A':
+                autonomousUpdate(data);
                 break;
             case 'M':
                 messageRecieved(data);
@@ -1502,11 +1505,16 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
 
-    private void parametersUpdate(byte[] data) {
-        parameter1TextField.setText("" + data[0]);
-        parameter2TextField.setText("" + data[1]);
-        parameter3TextField.setText("" + data[2]);
-        writeMessage("Tog emot uppdaterade parametrar ");
+    private void autonomousUpdate(byte[] data) {
+        int a = data[0];
+        if(a == 0){
+            autoRightRadioButton.setSelected(true);
+            writeMessage("Autonomt högerläge aktiverat på roboten");
+        } else {
+            autoLeftRadioButton.setSelected(true);
+            writeMessage("Autonomt vänsterläge aktiverat på roboten");
+        }
+        autoButton.setSelected(true);
     }
 
     private void messageRecieved(byte[] data) {
@@ -1681,7 +1689,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 angle -= 360;
             }
             speed = (int) Math.round(Math.sqrt(x * x + y * y) * 100);
-            if (speed < 10) {
+            if (speed < MIN_SPEED) {
                 speed = 0;
             } else if (speed > 100) {
                 speed = 100;
@@ -1693,7 +1701,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             rotation = rotationValue;
         } else {
             rotation = Math.round(50 * xrot);
-            if (Math.abs(rotation) < 2) {
+            if (Math.abs(rotation) < MIN_ROTATION) {
                 rotation = 0;
             }
         }

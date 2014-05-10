@@ -25,6 +25,10 @@ uint8_t gSpeed = 50;
 //sent back to the PC.
 uint8_t gStatus = 1;
 
+//A counter to keep track of how many times the robot have
+//found itself unable to make a decision.
+uint8_t decisionCounter = 0;
+
 void autonomouswalk_set_speed(uint8_t speed)
 {
 	gSpeed=speed;
@@ -51,7 +55,7 @@ void turn_left()
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning left.");
 	}
-	for(int i = 0; (i < 20 && TWI_get_autonom_settings() != 0); ++i)
+	/*for(int i = 0; (i < 20 && navigation_autonomous_walk() != 0); ++i)
 	{
 		if(gStatus)
 		{
@@ -59,8 +63,15 @@ void turn_left()
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
+	}*/
+	USART_SendTurn(90, 0);
+	while(USART_turn_done() == 0)
+	{
+		USART_DecodeRxFIFO();
+		_delay_ms(10);
 	}
-	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
+	
+	for(int i = 0; (i < 12 && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -76,7 +87,7 @@ void turn_right()
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning right.");
 	}
-	for(int i = 0; (i < 20 && TWI_get_autonom_settings() != 0); ++i)
+	/*for(int i = 0; (i < 20 && navigation_autonomous_walk() != 0); ++i)
 	{
 		if(gStatus)
 		{
@@ -84,8 +95,15 @@ void turn_right()
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		navigation_stepping_delay();
+	}*/
+	USART_SendTurn(90, 1);
+	while(USART_turn_done() == 0)
+	{
+		USART_DecodeRxFIFO();
+		_delay_ms(10);
 	}
-	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
+	
+	for(int i = 0; (i < 12 && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -101,7 +119,7 @@ void turn_around()
 	{
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
-	for(int i = 0; (i < 40 && TWI_get_autonom_settings() != 0); ++i)
+	/*for(int i = 0; (i < 40 && navigation_autonomous_walk() != 0); ++i)
 	{
 		if(gStatus)
 		{
@@ -109,7 +127,14 @@ void turn_around()
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
+	}*/
+	USART_SendTurn(180, 0);
+	while(USART_turn_done() == 0)
+	{
+		USART_DecodeRxFIFO();
+		_delay_ms(10);
 	}
+	
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Corridor ahead, done turning around.");
@@ -150,12 +175,12 @@ void walk_forward()
 
 void autonomouswalk_walk()
 {
-	navigation_low_pass_obsticle();
+	navigation_low_pass_obstacle();
 	if(navigation_left_algorithm())
 	{
 		if(navigation_check_left_turn() == 2)
 		{
-			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			for(int i = 0;i < 3; ++i)
 			{
 				walk_forward();
 			}
@@ -182,7 +207,7 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			for(int i = 0;i < 3; ++i)
 			{
 				walk_forward();
 			}
@@ -200,9 +225,16 @@ void autonomouswalk_walk()
 		{
 			turn_around();
 		}
-		else
+		else if(decisionCounter < 4)
 		{
 			walk_forward();
+			++decisionCounter;
+		}
+		else
+		{
+			decisionCounter = 0;
+			navigation_set_autonomous_walk(0);
+			TWI_send_string_fixed_length(C_ADDRESS, "ERROR: Can't make a decision, turning off autonomous mode", 57);
 		}
 	}
 }
