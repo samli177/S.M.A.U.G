@@ -28,7 +28,7 @@ int main(void)
 	
 	SERVO_update_EEPROM(BROADCASTING_ID);
 	
-	move_to_std();
+	//move_to_std();
 
 	// ------ TESTCODE FOR READING SERVO -------
 		
@@ -83,8 +83,8 @@ move_to_std();
 		
 		*/
 		
-		//climb();
-		climb_all_one_leg();
+		climb();
+		//climb_all_one_leg();
 		
 		//SERVO_update_data(12);
 		//USART_SendValue(SERVO_get_load());
