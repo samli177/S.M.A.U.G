@@ -75,7 +75,7 @@ void turn_left()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}
-	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 18 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -100,7 +100,7 @@ void turn_right()
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}
-	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
+	for(int i = 0; (i < 18 && TWI_get_autonom_settings() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -186,7 +186,7 @@ void walk_bakwards()
 	{
 		//TWI_send_string(C_ADDRESS, "Found 6t666regulation parameters.");
 	}
-	int adjustmentRotation = (51 + 50 * angleOffset * 2.0/PI);
+	int adjustmentRotation = (49 - 50 * angleOffset * 2.0/PI);
 	if (adjustmentRotation >= 100)
 	{
 		adjustmentRotation = 100;
@@ -217,14 +217,15 @@ void walk_bakwards()
 
 void dead_end()
 {
-	while(deadEndFlag = 1 && TWI_get_autonom_settings() != 0)
+	while(deadEndFlag == 1 && TWI_get_autonom_settings() != 0)
 	{
 		if(navigation_left_algorithm() && navigation_check_right_turn())
 		{
 			deadEndFlag = 0;
-			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			for(int i = 0;(i < 8 && TWI_get_autonom_settings() != 0); ++i)
 			{
-				walk_bakwards();
+				USART_send_command_parameters(90, 0, gSpeed);
+				navigation_stepping_delay();
 			}
 			turn_right();
 		}
@@ -236,9 +237,10 @@ void dead_end()
 		else if(navigation_check_left_turn())
 		{
 			deadEndFlag = 0;
-			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			for(int i = 0;(i < 8 && TWI_get_autonom_settings() != 0); ++i)
 			{
-				walk_bakwards();
+				USART_send_command_parameters(90, 0, gSpeed);
+				navigation_stepping_delay();
 			}
 			turn_left();
 		}

@@ -25,11 +25,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  10 .debug_frame  00003514  00000000  00000000  00026084  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    000066b4  00000000  00000000  00029598  2**0
+ 11 .debug_str    000066ff  00000000  00000000  00029598  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000fddd  00000000  00000000  0002fc4c  2**0
+ 12 .debug_loc    0000fddd  00000000  00000000  0002fc97  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000d90  00000000  00000000  0003fa29  2**0
+ 13 .debug_ranges 00000d90  00000000  00000000  0003fa74  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -497,34 +497,21 @@ ISR(TIMER3_COMPA_vect)
      ac8:	18 95       	reti
 
 00000aca <_Z14FifoDataLengthP4fifo>:
-
-#include <avr/io.h>
-#include "fifo.h"
-
-uint8_t FifoDataLength (struct fifo *fifo)
-{
      aca:	fc 01       	movw	r30, r24
-	return (fifo->write - fifo->read) & (fifo->size -1);
      acc:	90 81       	ld	r25, Z
      ace:	91 50       	subi	r25, 0x01	; 1
      ad0:	84 81       	ldd	r24, Z+4	; 0x04
      ad2:	22 81       	ldd	r18, Z+2	; 0x02
      ad4:	82 1b       	sub	r24, r18
-};
      ad6:	89 23       	and	r24, r25
      ad8:	08 95       	ret
 
 00000ada <_Z9FifoWriteP4fifoh>:
-
-uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
-{
      ada:	1f 93       	push	r17
      adc:	cf 93       	push	r28
      ade:	df 93       	push	r29
      ae0:	ec 01       	movw	r28, r24
      ae2:	16 2f       	mov	r17, r22
-	// fifo full : error
-	if (FifoDataLength(fifo) == (fifo->size - 1))
      ae4:	f2 df       	rcall	.-28     	; 0xaca <_Z14FifoDataLengthP4fifo>
      ae6:	28 81       	ld	r18, Y
      ae8:	39 81       	ldd	r19, Y+1	; 0x01
@@ -534,65 +521,35 @@ uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
      af0:	82 17       	cp	r24, r18
      af2:	93 07       	cpc	r25, r19
      af4:	69 f0       	breq	.+26     	; 0xb10 <_Z9FifoWriteP4fifoh+0x36>
-	{
-		return 1;
-	}
-	// write data & increment write pointer
-	fifo->buffer[fifo->write] = data;
      af6:	8c 81       	ldd	r24, Y+4	; 0x04
      af8:	9d 81       	ldd	r25, Y+5	; 0x05
      afa:	fe 01       	movw	r30, r28
      afc:	e8 0f       	add	r30, r24
      afe:	f9 1f       	adc	r31, r25
      b00:	16 83       	std	Z+6, r17	; 0x06
-	fifo->write = (fifo->write + 1) & (fifo->size - 1);
      b02:	01 96       	adiw	r24, 0x01	; 1
      b04:	28 23       	and	r18, r24
      b06:	39 23       	and	r19, r25
      b08:	3d 83       	std	Y+5, r19	; 0x05
      b0a:	2c 83       	std	Y+4, r18	; 0x04
-	return 0;
      b0c:	80 e0       	ldi	r24, 0x00	; 0
      b0e:	01 c0       	rjmp	.+2      	; 0xb12 <_Z9FifoWriteP4fifoh+0x38>
-uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
-{
-	// fifo full : error
-	if (FifoDataLength(fifo) == (fifo->size - 1))
-	{
-		return 1;
      b10:	81 e0       	ldi	r24, 0x01	; 1
-	}
-	// write data & increment write pointer
-	fifo->buffer[fifo->write] = data;
-	fifo->write = (fifo->write + 1) & (fifo->size - 1);
-	return 0;
-};
      b12:	df 91       	pop	r29
      b14:	cf 91       	pop	r28
      b16:	1f 91       	pop	r17
      b18:	08 95       	ret
 
 00000b1a <_Z8FifoReadP4fifoPh>:
-
-
-uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
-{
      b1a:	0f 93       	push	r16
      b1c:	1f 93       	push	r17
      b1e:	cf 93       	push	r28
      b20:	df 93       	push	r29
      b22:	ec 01       	movw	r28, r24
      b24:	8b 01       	movw	r16, r22
-	// fifo empty : error
-	if (FifoDataLength(fifo) == 0)
      b26:	d1 df       	rcall	.-94     	; 0xaca <_Z14FifoDataLengthP4fifo>
      b28:	88 23       	and	r24, r24
      b2a:	a1 f0       	breq	.+40     	; 0xb54 <_Z8FifoReadP4fifoPh+0x3a>
-	{
-		return 1;
-	}
-	// read data & increment read pointer
-	*data = fifo->buffer[fifo->read];
      b2c:	ea 81       	ldd	r30, Y+2	; 0x02
      b2e:	fb 81       	ldd	r31, Y+3	; 0x03
      b30:	ec 0f       	add	r30, r28
@@ -600,7 +557,6 @@ uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
      b34:	86 81       	ldd	r24, Z+6	; 0x06
      b36:	f8 01       	movw	r30, r16
      b38:	80 83       	st	Z, r24
-	fifo->read = (fifo->read + 1) & (fifo->size - 1);
      b3a:	28 81       	ld	r18, Y
      b3c:	39 81       	ldd	r19, Y+1	; 0x01
      b3e:	21 50       	subi	r18, 0x01	; 1
@@ -612,21 +568,9 @@ uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
      b4a:	93 23       	and	r25, r19
      b4c:	9b 83       	std	Y+3, r25	; 0x03
      b4e:	8a 83       	std	Y+2, r24	; 0x02
-	return 0;
      b50:	80 e0       	ldi	r24, 0x00	; 0
      b52:	01 c0       	rjmp	.+2      	; 0xb56 <_Z8FifoReadP4fifoPh+0x3c>
-uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
-{
-	// fifo empty : error
-	if (FifoDataLength(fifo) == 0)
-	{
-		return 1;
      b54:	81 e0       	ldi	r24, 0x01	; 1
-	}
-	// read data & increment read pointer
-	*data = fifo->buffer[fifo->read];
-	fifo->read = (fifo->read + 1) & (fifo->size - 1);
-	return 0;
      b56:	df 91       	pop	r29
      b58:	cf 91       	pop	r28
      b5a:	1f 91       	pop	r17
@@ -3618,12 +3562,6 @@ void move_to_std()
     2594:	08 95       	ret
 
 00002596 <__vector_18>:
-bool I2Cdev::writeBitW(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16_t data) {
-    uint16_t w;
-    readWord(devAddr, regAddr, &w);
-    w = (data != 0) ? (w | (1 << bitNum)) : (w & ~(1 << bitNum));
-    return writeWord(devAddr, regAddr, w);
-}
     2596:	1f 92       	push	r1
     2598:	0f 92       	push	r0
     259a:	0f b6       	in	r0, 0x3f	; 63
@@ -4394,12 +4332,6 @@ bool I2Cdev::writeBitW(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint16_
     2ba4:	08 95       	ret
 
 00002ba6 <_ZN6I2Cdev10writeBytesEhhhPh>:
- * @param regAddr First register address to write to
- * @param length Number of bytes to write
- * @param data Buffer to copy new data from
- * @return Status of operation (true = success)
- */
-bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t* data) {
     2ba6:	ff 92       	push	r15
     2ba8:	0f 93       	push	r16
     2baa:	1f 93       	push	r17
@@ -4409,28 +4341,13 @@ bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_
     2bb2:	14 2f       	mov	r17, r20
     2bb4:	f2 2e       	mov	r15, r18
     2bb6:	03 2f       	mov	r16, r19
-        Wire.send((uint8_t) regAddr); // send address
-    #elif (I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE && ARDUINO >= 100)
-        Wire.beginTransmission(devAddr);
-        Wire.write((uint8_t) regAddr); // send address
-    #elif (I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE)
-        Fastwire::beginTransmission(devAddr);
     2bb8:	8d dd       	rcall	.-1254   	; 0x26d4 <_ZN8Fastwire17beginTransmissionEh>
-        Fastwire::write(regAddr);
     2bba:	8c 2f       	mov	r24, r28
     2bbc:	dc dd       	rcall	.-1096   	; 0x2776 <_ZN8Fastwire5writeEh>
-    #endif
-    for (uint8_t i = 0; i < length; i++) {
     2bbe:	11 23       	and	r17, r17
     2bc0:	71 f0       	breq	.+28     	; 0x2bde <_ZN6I2Cdev10writeBytesEhhhPh+0x38>
     2bc2:	cf 2d       	mov	r28, r15
     2bc4:	d0 2f       	mov	r29, r16
- * @param regAddr First register address to write to
- * @param length Number of bytes to write
- * @param data Buffer to copy new data from
- * @return Status of operation (true = success)
- */
-bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t* data) {
     2bc6:	11 50       	subi	r17, 0x01	; 1
     2bc8:	ce 01       	movw	r24, r28
     2bca:	81 0f       	add	r24, r17
@@ -4438,36 +4355,12 @@ bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_
     2bce:	8c 01       	movw	r16, r24
     2bd0:	0f 5f       	subi	r16, 0xFF	; 255
     2bd2:	1f 4f       	sbci	r17, 0xFF	; 255
-        #if ((I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE && ARDUINO < 100) || I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_NBWIRE)
-            Wire.send((uint8_t) data[i]);
-        #elif (I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE && ARDUINO >= 100)
-            Wire.write((uint8_t) data[i]);
-        #elif (I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE)
-            Fastwire::write((uint8_t) data[i]);
     2bd4:	89 91       	ld	r24, Y+
     2bd6:	cf dd       	rcall	.-1122   	; 0x2776 <_ZN8Fastwire5writeEh>
-        Wire.write((uint8_t) regAddr); // send address
-    #elif (I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE)
-        Fastwire::beginTransmission(devAddr);
-        Fastwire::write(regAddr);
-    #endif
-    for (uint8_t i = 0; i < length; i++) {
     2bd8:	c0 17       	cp	r28, r16
     2bda:	d1 07       	cpc	r29, r17
     2bdc:	d9 f7       	brne	.-10     	; 0x2bd4 <_ZN6I2Cdev10writeBytesEhhhPh+0x2e>
-    #if ((I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE && ARDUINO < 100) || I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_NBWIRE)
-        Wire.endTransmission();
-    #elif (I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE && ARDUINO >= 100)
-        status = Wire.endTransmission();
-    #elif (I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE)
-        Fastwire::stop();
     2bde:	de dd       	rcall	.-1092   	; 0x279c <_ZN8Fastwire4stopEv>
-    #endif
-    #ifdef I2CDEV_SERIAL_DEBUG
-        Serial.println(". Done.");
-    #endif
-    return status == 0;
-}
     2be0:	81 e0       	ldi	r24, 0x01	; 1
     2be2:	df 91       	pop	r29
     2be4:	cf 91       	pop	r28
@@ -4477,37 +4370,23 @@ bool I2Cdev::writeBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_
     2bec:	08 95       	ret
 
 00002bee <_ZN6I2Cdev9writeByteEhhh>:
- * @param devAddr I2C slave device address
- * @param regAddr Register address to write to
- * @param data New byte value to write
- * @return Status of operation (true = success)
- */
-bool I2Cdev::writeByte(uint8_t devAddr, uint8_t regAddr, uint8_t data) {
     2bee:	cf 93       	push	r28
     2bf0:	df 93       	push	r29
     2bf2:	1f 92       	push	r1
     2bf4:	cd b7       	in	r28, 0x3d	; 61
     2bf6:	de b7       	in	r29, 0x3e	; 62
     2bf8:	49 83       	std	Y+1, r20	; 0x01
-    return writeBytes(devAddr, regAddr, 1, &data);
     2bfa:	9e 01       	movw	r18, r28
     2bfc:	2f 5f       	subi	r18, 0xFF	; 255
     2bfe:	3f 4f       	sbci	r19, 0xFF	; 255
     2c00:	41 e0       	ldi	r20, 0x01	; 1
     2c02:	d1 df       	rcall	.-94     	; 0x2ba6 <_ZN6I2Cdev10writeBytesEhhhPh>
-}
     2c04:	0f 90       	pop	r0
     2c06:	df 91       	pop	r29
     2c08:	cf 91       	pop	r28
     2c0a:	08 95       	ret
 
 00002c0c <_ZN6I2Cdev9writeBitsEhhhhh>:
- * @param bitStart First bit position to write (0-7)
- * @param length Number of bits to write (not more than 8)
- * @param data Right-aligned value to write
- * @return Status of operation (true = success)
- */
-bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data) {
     2c0c:	df 92       	push	r13
     2c0e:	ef 92       	push	r14
     2c10:	ff 92       	push	r15
@@ -4522,12 +4401,6 @@ bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8
     2c22:	f6 2e       	mov	r15, r22
     2c24:	d4 2e       	mov	r13, r20
     2c26:	e2 2e       	mov	r14, r18
-    // 00011100 mask byte
-    // 10101111 original value (sample)
-    // 10100011 original & ~mask
-    // 10101011 masked | value
-    uint8_t b;
-    if (readByte(devAddr, regAddr, &b) != 0) {
     2c28:	20 91 07 01 	lds	r18, 0x0107
     2c2c:	30 91 08 01 	lds	r19, 0x0108
     2c30:	ae 01       	movw	r20, r28
@@ -4536,7 +4409,6 @@ bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8
     2c36:	02 df       	rcall	.-508    	; 0x2a3c <_ZN6I2Cdev8readByteEhhPhj>
     2c38:	88 23       	and	r24, r24
     2c3a:	19 f1       	breq	.+70     	; 0x2c82 <_ZN6I2Cdev9writeBitsEhhhhh+0x76>
-        uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
     2c3c:	ed 2d       	mov	r30, r13
     2c3e:	f0 e0       	ldi	r31, 0x00	; 0
     2c40:	ee 19       	sub	r30, r14
@@ -4557,38 +4429,22 @@ bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8
     2c5e:	22 0f       	add	r18, r18
     2c60:	0a 94       	dec	r0
     2c62:	ea f7       	brpl	.-6      	; 0x2c5e <_ZN6I2Cdev9writeBitsEhhhhh+0x52>
-        data <<= (bitStart - length + 1); // shift data into correct position
     2c64:	01 c0       	rjmp	.+2      	; 0x2c68 <_ZN6I2Cdev9writeBitsEhhhhh+0x5c>
     2c66:	00 0f       	add	r16, r16
     2c68:	ea 95       	dec	r30
     2c6a:	ea f7       	brpl	.-6      	; 0x2c66 <_ZN6I2Cdev9writeBitsEhhhhh+0x5a>
-        data &= mask; // zero all non-important bits in data
-        b &= ~(mask); // zero all important bits in existing byte
     2c6c:	42 2f       	mov	r20, r18
     2c6e:	40 95       	com	r20
     2c70:	89 81       	ldd	r24, Y+1	; 0x01
     2c72:	48 23       	and	r20, r24
-    // 10101011 masked | value
-    uint8_t b;
-    if (readByte(devAddr, regAddr, &b) != 0) {
-        uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
-        data <<= (bitStart - length + 1); // shift data into correct position
-        data &= mask; // zero all non-important bits in data
     2c74:	20 23       	and	r18, r16
-        b &= ~(mask); // zero all important bits in existing byte
-        b |= data; // combine data with existing byte
     2c76:	42 2b       	or	r20, r18
     2c78:	49 83       	std	Y+1, r20	; 0x01
-        return writeByte(devAddr, regAddr, b);
     2c7a:	6f 2d       	mov	r22, r15
     2c7c:	81 2f       	mov	r24, r17
     2c7e:	b7 df       	rcall	.-146    	; 0x2bee <_ZN6I2Cdev9writeByteEhhh>
     2c80:	01 c0       	rjmp	.+2      	; 0x2c84 <_ZN6I2Cdev9writeBitsEhhhhh+0x78>
-    } else {
-        return false;
     2c82:	80 e0       	ldi	r24, 0x00	; 0
-    }
-}
     2c84:	0f 90       	pop	r0
     2c86:	df 91       	pop	r29
     2c88:	cf 91       	pop	r28
@@ -4600,12 +4456,6 @@ bool I2Cdev::writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8
     2c94:	08 95       	ret
 
 00002c96 <_ZN6I2Cdev8writeBitEhhhh>:
- * @param regAddr Register regAddr to write to
- * @param bitNum Bit position to write (0-7)
- * @param value New bit value to write
- * @return Status of operation (true = success)
- */
-bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data) {
     2c96:	ef 92       	push	r14
     2c98:	ff 92       	push	r15
     2c9a:	0f 93       	push	r16
@@ -4619,15 +4469,12 @@ bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t 
     2caa:	06 2f       	mov	r16, r22
     2cac:	f4 2e       	mov	r15, r20
     2cae:	e2 2e       	mov	r14, r18
-    uint8_t b;
-    readByte(devAddr, regAddr, &b);
     2cb0:	20 91 07 01 	lds	r18, 0x0107
     2cb4:	30 91 08 01 	lds	r19, 0x0108
     2cb8:	ae 01       	movw	r20, r28
     2cba:	4f 5f       	subi	r20, 0xFF	; 255
     2cbc:	5f 4f       	sbci	r21, 0xFF	; 255
     2cbe:	be de       	rcall	.-644    	; 0x2a3c <_ZN6I2Cdev8readByteEhhPhj>
-    b = (data != 0) ? (b | (1 << bitNum)) : (b & ~(1 << bitNum));
     2cc0:	ee 20       	and	r14, r14
     2cc2:	59 f0       	breq	.+22     	; 0x2cda <_ZN6I2Cdev8writeBitEhhhh+0x44>
     2cc4:	21 e0       	ldi	r18, 0x01	; 1
@@ -4653,11 +4500,9 @@ bool I2Cdev::writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t 
     2cec:	89 81       	ldd	r24, Y+1	; 0x01
     2cee:	48 23       	and	r20, r24
     2cf0:	49 83       	std	Y+1, r20	; 0x01
-    return writeByte(devAddr, regAddr, b);
     2cf2:	60 2f       	mov	r22, r16
     2cf4:	81 2f       	mov	r24, r17
     2cf6:	7b df       	rcall	.-266    	; 0x2bee <_ZN6I2Cdev9writeByteEhhh>
-}
     2cf8:	0f 90       	pop	r0
     2cfa:	df 91       	pop	r29
     2cfc:	cf 91       	pop	r28
@@ -5510,12 +5355,6 @@ float basis_change_leg6y(float x, float y) {
     33ae:	08 95       	ret
 
 000033b0 <_ZN7MPU6050C1Ev>:
-// DMP_CFG_2 register
-
-uint8_t MPU6050::getDMPConfig2() {
-    I2Cdev::readByte(devAddr, MPU6050_RA_DMP_CFG_2, buffer);
-    return buffer[0];
-}
     33b0:	28 e6       	ldi	r18, 0x68	; 104
     33b2:	fc 01       	movw	r30, r24
     33b4:	20 83       	st	Z, r18
@@ -6504,21 +6343,13 @@ uint8_t MPU6050::getDMPConfig2() {
     3af4:	7c c8       	rjmp	.-3848   	; 0x2bee <_ZN6I2Cdev9writeByteEhhh>
 
 00003af6 <_ZN7MPU605013setDMPConfig2Eh>:
-void MPU6050::setDMPConfig2(uint8_t config) {
     3af6:	46 2f       	mov	r20, r22
-    I2Cdev::writeByte(devAddr, MPU6050_RA_DMP_CFG_2, config);
     3af8:	61 e7       	ldi	r22, 0x71	; 113
     3afa:	fc 01       	movw	r30, r24
     3afc:	80 81       	ld	r24, Z
     3afe:	77 c8       	rjmp	.-3858   	; 0x2bee <_ZN6I2Cdev9writeByteEhhh>
 
 00003b00 <_ZN7MPU605013dmpInitializeEv>:
-}
-
-float MPU_get_r()
-{
-	return ypr[2];
-}
     3b00:	8f 92       	push	r8
     3b02:	9f 92       	push	r9
     3b04:	af 92       	push	r10
@@ -7734,83 +7565,48 @@ float MPU_get_r()
     4492:	08 95       	ret
 
 00004494 <_Z8MPU_initv>:
-
-void MPU_init(void)
-{
-
-
-	Fastwire::setup(400, true);
     4494:	61 e0       	ldi	r22, 0x01	; 1
     4496:	80 e9       	ldi	r24, 0x90	; 144
     4498:	91 e0       	ldi	r25, 0x01	; 1
     449a:	0e 94 3a 13 	call	0x2674	; 0x2674 <_ZN8Fastwire5setupEih>
-	
-	//accelgyro.initialize();
-	// load and configure the DMP
-	
-	devStatus = mpu.dmpInitialize();
     449e:	8d e8       	ldi	r24, 0x8D	; 141
     44a0:	99 e1       	ldi	r25, 0x19	; 25
     44a2:	2e db       	rcall	.-2468   	; 0x3b00 <_ZN7MPU605013dmpInitializeEv>
     44a4:	80 93 77 19 	sts	0x1977, r24
-
-	 // supply your own gyro offsets here, scaled for min sensitivity
-	mpu.setXGyroOffset(220);
     44a8:	6c ed       	ldi	r22, 0xDC	; 220
     44aa:	70 e0       	ldi	r23, 0x00	; 0
     44ac:	8d e8       	ldi	r24, 0x8D	; 141
     44ae:	99 e1       	ldi	r25, 0x19	; 25
     44b0:	cb d8       	rcall	.-3690   	; 0x3648 <_ZN7MPU605014setXGyroOffsetEi>
-	mpu.setYGyroOffset(76);
     44b2:	6c e4       	ldi	r22, 0x4C	; 76
     44b4:	70 e0       	ldi	r23, 0x00	; 0
     44b6:	8d e8       	ldi	r24, 0x8D	; 141
     44b8:	99 e1       	ldi	r25, 0x19	; 25
     44ba:	cb d8       	rcall	.-3690   	; 0x3652 <_ZN7MPU605014setYGyroOffsetEi>
-	mpu.setZGyroOffset(-85);
     44bc:	6b ea       	ldi	r22, 0xAB	; 171
     44be:	7f ef       	ldi	r23, 0xFF	; 255
     44c0:	8d e8       	ldi	r24, 0x8D	; 141
     44c2:	99 e1       	ldi	r25, 0x19	; 25
     44c4:	cb d8       	rcall	.-3690   	; 0x365c <_ZN7MPU605014setZGyroOffsetEi>
-	mpu.setZAccelOffset(1788); // 1688 factory default
     44c6:	6c ef       	ldi	r22, 0xFC	; 252
     44c8:	76 e0       	ldi	r23, 0x06	; 6
     44ca:	8d e8       	ldi	r24, 0x8D	; 141
     44cc:	99 e1       	ldi	r25, 0x19	; 25
     44ce:	b7 d8       	rcall	.-3730   	; 0x363e <_ZN7MPU605015setZAccelOffsetEi>
-
-
-	
-	 // make sure it worked (returns 0 if so)
-	 if (devStatus == 0) {
     44d0:	80 91 77 19 	lds	r24, 0x1977
     44d4:	81 11       	cpse	r24, r1
     44d6:	15 c0       	rjmp	.+42     	; 0x4502 <_Z8MPU_initv+0x6e>
-		 // turn on the DMP, now that it's ready
-		 mpu.setDMPEnabled(true);
     44d8:	61 e0       	ldi	r22, 0x01	; 1
     44da:	8d e8       	ldi	r24, 0x8D	; 141
     44dc:	99 e1       	ldi	r25, 0x19	; 25
     44de:	c3 d8       	rcall	.-3706   	; 0x3666 <_ZN7MPU605013setDMPEnabledEb>
-
-		enable_interrupt0();
     44e0:	cd df       	rcall	.-102    	; 0x447c <_Z17enable_interrupt0v>
-		 	
-		 mpuIntStatus = mpu.getIntStatus();
     44e2:	8d e8       	ldi	r24, 0x8D	; 141
     44e4:	99 e1       	ldi	r25, 0x19	; 25
     44e6:	0e 94 22 1a 	call	0x3444	; 0x3444 <_ZN7MPU605012getIntStatusEv>
     44ea:	80 93 78 19 	sts	0x1978, r24
-
-		 // set our DMP Ready flag so the main loop() function knows it's okay to use it
-		 //Serial.println(F("DMP ready! Waiting for first interrupt..."));
-		 dmpReady = true;
     44ee:	81 e0       	ldi	r24, 0x01	; 1
     44f0:	80 93 79 19 	sts	0x1979, r24
-
-		 // get expected DMP packet size for later comparison
-		 packetSize = mpu.dmpGetFIFOPacketSize();
     44f4:	8d e8       	ldi	r24, 0x8D	; 141
     44f6:	99 e1       	ldi	r25, 0x19	; 25
     44f8:	ae df       	rcall	.-164    	; 0x4456 <_ZN7MPU605020dmpGetFIFOPacketSizeEv>
@@ -7819,12 +7615,6 @@ void MPU_init(void)
     4502:	08 95       	ret
 
 00004504 <_Z10MPU_updatev>:
-
-
-void MPU_update()
-{
-	// wait for MPU interrupt or extra packet(s) available
-		if (!mpuInterrupt && fifoCount < packetSize) {
     4504:	80 91 f8 18 	lds	r24, 0x18F8
     4508:	81 11       	cpse	r24, r1
     450a:	58 c0       	rjmp	.+176    	; 0x45bc <_Z10MPU_updatev+0xb8>
@@ -7837,28 +7627,15 @@ void MPU_update()
     4520:	08 f4       	brcc	.+2      	; 0x4524 <_Z10MPU_updatev+0x20>
     4522:	61 c0       	rjmp	.+194    	; 0x45e6 <_Z10MPU_updatev+0xe2>
     4524:	4b c0       	rjmp	.+150    	; 0x45bc <_Z10MPU_updatev+0xb8>
-
-		// get current FIFO count
-		fifoCount = mpu.getFIFOCount();
-
-		// check for overflow (this should never happen unless our code is too inefficient)
-		if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
     4526:	81 15       	cp	r24, r1
     4528:	34 e0       	ldi	r19, 0x04	; 4
     452a:	93 07       	cpc	r25, r19
     452c:	21 f4       	brne	.+8      	; 0x4536 <_Z10MPU_updatev+0x32>
-			// reset so we can continue cleanly
-			mpu.resetFIFO();
     452e:	8d e8       	ldi	r24, 0x8D	; 141
     4530:	99 e1       	ldi	r25, 0x19	; 25
     4532:	0c 94 3f 1a 	jmp	0x347e	; 0x347e <_ZN7MPU60509resetFIFOEv>
-
-			// otherwise, check for DMP data ready interrupt (this should happen frequently)
-			} else if (mpuIntStatus & 0x02) {
     4536:	21 ff       	sbrs	r18, 1
     4538:	56 c0       	rjmp	.+172    	; 0x45e6 <_Z10MPU_updatev+0xe2>
-			// wait for correct available data length, should be a VERY short wait
-			while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
     453a:	40 91 75 19 	lds	r20, 0x1975
     453e:	50 91 76 19 	lds	r21, 0x1976
     4542:	84 17       	cp	r24, r20
@@ -7874,18 +7651,11 @@ void MPU_update()
     4560:	84 17       	cp	r24, r20
     4562:	95 07       	cpc	r25, r21
     4564:	88 f3       	brcs	.-30     	; 0x4548 <_Z10MPU_updatev+0x44>
-
-			// read a packet from FIFO
-			mpu.getFIFOBytes(fifoBuffer, packetSize);
     4566:	63 e3       	ldi	r22, 0x33	; 51
     4568:	79 e1       	ldi	r23, 0x19	; 25
     456a:	8d e8       	ldi	r24, 0x8D	; 141
     456c:	99 e1       	ldi	r25, 0x19	; 25
     456e:	0e 94 7e 1a 	call	0x34fc	; 0x34fc <_ZN7MPU605012getFIFOBytesEPhj>
-			
-			// track FIFO count here in case there is > 1 packet available
-			// (this lets us immediately read more without waiting for an interrupt)
-			fifoCount -= packetSize;
     4572:	80 91 73 19 	lds	r24, 0x1973
     4576:	90 91 74 19 	lds	r25, 0x1974
     457a:	20 91 75 19 	lds	r18, 0x1975
@@ -7894,9 +7664,6 @@ void MPU_update()
     4584:	93 0b       	sbc	r25, r19
     4586:	90 93 74 19 	sts	0x1974, r25
     458a:	80 93 73 19 	sts	0x1973, r24
-
-			// display Euler angles in degrees
-			mpu.dmpGetQuaternion(&q, fifoBuffer);
     458e:	43 e3       	ldi	r20, 0x33	; 51
     4590:	59 e1       	ldi	r21, 0x19	; 25
     4592:	63 e2       	ldi	r22, 0x23	; 35
@@ -7904,7 +7671,6 @@ void MPU_update()
     4596:	8d e8       	ldi	r24, 0x8D	; 141
     4598:	99 e1       	ldi	r25, 0x19	; 25
     459a:	3c dd       	rcall	.-1416   	; 0x4014 <_ZN7MPU605016dmpGetQuaternionEP10QuaternionPKh>
-			mpu.dmpGetGravity(&gravity, &q);
     459c:	43 e2       	ldi	r20, 0x23	; 35
     459e:	59 e1       	ldi	r21, 0x19	; 25
     45a0:	65 e0       	ldi	r22, 0x05	; 5
@@ -7912,7 +7678,6 @@ void MPU_update()
     45a4:	8d e8       	ldi	r24, 0x8D	; 141
     45a6:	99 e1       	ldi	r25, 0x19	; 25
     45a8:	a3 dd       	rcall	.-1210   	; 0x40f0 <_ZN7MPU605013dmpGetGravityEP11VectorFloatP10Quaternion>
-			mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
     45aa:	25 e0       	ldi	r18, 0x05	; 5
     45ac:	39 e1       	ldi	r19, 0x19	; 25
     45ae:	43 e2       	ldi	r20, 0x23	; 35
@@ -7922,29 +7687,16 @@ void MPU_update()
     45b6:	8d e8       	ldi	r24, 0x8D	; 141
     45b8:	99 e1       	ldi	r25, 0x19	; 25
     45ba:	59 ce       	rjmp	.-846    	; 0x426e <_ZN7MPU605018dmpGetYawPitchRollEPfP10QuaternionP11VectorFloat>
-			return;
-		}
-		
-
-		// reset interrupt flag and get INT_STATUS byte
-		mpuInterrupt = false;
     45bc:	10 92 f8 18 	sts	0x18F8, r1
-		mpuIntStatus = mpu.getIntStatus();
     45c0:	8d e8       	ldi	r24, 0x8D	; 141
     45c2:	99 e1       	ldi	r25, 0x19	; 25
     45c4:	0e 94 22 1a 	call	0x3444	; 0x3444 <_ZN7MPU605012getIntStatusEv>
     45c8:	80 93 78 19 	sts	0x1978, r24
-
-		// get current FIFO count
-		fifoCount = mpu.getFIFOCount();
     45cc:	8d e8       	ldi	r24, 0x8D	; 141
     45ce:	99 e1       	ldi	r25, 0x19	; 25
     45d0:	0e 94 61 1a 	call	0x34c2	; 0x34c2 <_ZN7MPU605012getFIFOCountEv>
     45d4:	90 93 74 19 	sts	0x1974, r25
     45d8:	80 93 73 19 	sts	0x1973, r24
-
-		// check for overflow (this should never happen unless our code is too inefficient)
-		if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
     45dc:	20 91 78 19 	lds	r18, 0x1978
     45e0:	24 ff       	sbrs	r18, 4
     45e2:	a1 cf       	rjmp	.-190    	; 0x4526 <_Z10MPU_updatev+0x22>
@@ -7952,30 +7704,12 @@ void MPU_update()
     45e6:	08 95       	ret
 
 000045e8 <_GLOBAL__sub_I__ZN7MPU605013dmpInitializeEv>:
-
-#include "MpuInit.h"
-#include "I2Cdev.h"
-#include "MPU6050_6Axis_MotionApps20.h"
-
-MPU6050 mpu;
     45e8:	8d e8       	ldi	r24, 0x8D	; 141
     45ea:	99 e1       	ldi	r25, 0x19	; 25
     45ec:	0e 94 d8 19 	call	0x33b0	; 0x33b0 <_ZN7MPU6050C1Ev>
-
-// class default I2C address is 0x68
-// specific I2C addresses may be passed as a parameter here
-// AD0 low = 0x68 (default for InvenSense evaluation board)
-// AD0 high = 0x69
-MPU6050 accelgyro;
     45f0:	8a e7       	ldi	r24, 0x7A	; 122
     45f2:	99 e1       	ldi	r25, 0x19	; 25
     45f4:	0e 94 d8 19 	call	0x33b0	; 0x33b0 <_ZN7MPU6050C1Ev>
-        float x;
-        float y;
-        float z;
-        
-        Quaternion() {
-            w = 1.0f;
     45f8:	80 e0       	ldi	r24, 0x00	; 0
     45fa:	90 e0       	ldi	r25, 0x00	; 0
     45fc:	a0 e8       	ldi	r26, 0x80	; 128
@@ -7984,79 +7718,44 @@ MPU6050 accelgyro;
     4604:	90 93 24 19 	sts	0x1924, r25
     4608:	a0 93 25 19 	sts	0x1925, r26
     460c:	b0 93 26 19 	sts	0x1926, r27
-            x = 0.0f;
     4610:	10 92 27 19 	sts	0x1927, r1
     4614:	10 92 28 19 	sts	0x1928, r1
     4618:	10 92 29 19 	sts	0x1929, r1
     461c:	10 92 2a 19 	sts	0x192A, r1
-            y = 0.0f;
     4620:	10 92 2b 19 	sts	0x192B, r1
     4624:	10 92 2c 19 	sts	0x192C, r1
     4628:	10 92 2d 19 	sts	0x192D, r1
     462c:	10 92 2e 19 	sts	0x192E, r1
-            z = 0.0f;
     4630:	10 92 2f 19 	sts	0x192F, r1
     4634:	10 92 30 19 	sts	0x1930, r1
     4638:	10 92 31 19 	sts	0x1931, r1
     463c:	10 92 32 19 	sts	0x1932, r1
-        int16_t x;
-        int16_t y;
-        int16_t z;
-
-        VectorInt16() {
-            x = 0;
     4640:	10 92 1e 19 	sts	0x191E, r1
     4644:	10 92 1d 19 	sts	0x191D, r1
-            y = 0;
     4648:	10 92 20 19 	sts	0x1920, r1
     464c:	10 92 1f 19 	sts	0x191F, r1
-            z = 0;
     4650:	10 92 22 19 	sts	0x1922, r1
     4654:	10 92 21 19 	sts	0x1921, r1
-        int16_t x;
-        int16_t y;
-        int16_t z;
-
-        VectorInt16() {
-            x = 0;
     4658:	10 92 18 19 	sts	0x1918, r1
     465c:	10 92 17 19 	sts	0x1917, r1
-            y = 0;
     4660:	10 92 1a 19 	sts	0x191A, r1
     4664:	10 92 19 19 	sts	0x1919, r1
-            z = 0;
     4668:	10 92 1c 19 	sts	0x191C, r1
     466c:	10 92 1b 19 	sts	0x191B, r1
-        int16_t x;
-        int16_t y;
-        int16_t z;
-
-        VectorInt16() {
-            x = 0;
     4670:	10 92 12 19 	sts	0x1912, r1
     4674:	10 92 11 19 	sts	0x1911, r1
-            y = 0;
     4678:	10 92 14 19 	sts	0x1914, r1
     467c:	10 92 13 19 	sts	0x1913, r1
-            z = 0;
     4680:	10 92 16 19 	sts	0x1916, r1
     4684:	10 92 15 19 	sts	0x1915, r1
-        float x;
-        float y;
-        float z;
-
-        VectorFloat() {
-            x = 0;
     4688:	10 92 05 19 	sts	0x1905, r1
     468c:	10 92 06 19 	sts	0x1906, r1
     4690:	10 92 07 19 	sts	0x1907, r1
     4694:	10 92 08 19 	sts	0x1908, r1
-            y = 0;
     4698:	10 92 09 19 	sts	0x1909, r1
     469c:	10 92 0a 19 	sts	0x190A, r1
     46a0:	10 92 0b 19 	sts	0x190B, r1
     46a4:	10 92 0c 19 	sts	0x190C, r1
-            z = 0;
     46a8:	10 92 0d 19 	sts	0x190D, r1
     46ac:	10 92 0e 19 	sts	0x190E, r1
     46b0:	10 92 0f 19 	sts	0x190F, r1
@@ -8414,12 +8113,6 @@ ISR (USART1_RX_vect)
     4958:	18 95       	reti
 
 0000495a <_Z17USART_getRotationv>:
-{
-	for(int i = 0; i < gRxBuffer[1]; i++)
-	{
-		gTxPayload[i] = gRxBuffer[i+2];
-	}
-	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
     495a:	80 91 1d 15 	lds	r24, 0x151D
     495e:	92 e3       	ldi	r25, 0x32	; 50
     4960:	90 93 1d 15 	sts	0x151D, r25
@@ -8930,11 +8623,6 @@ ISR (USART1_RX_vect)
     4db0:	08 95       	ret
 
 00004db2 <__vector_20>:
-}
-
-
-ISR (USART0_RX_vect)
-{
     4db2:	1f 92       	push	r1
     4db4:	0f 92       	push	r0
     4db6:	0f b6       	in	r0, 0x3f	; 63
@@ -8960,17 +8648,9 @@ ISR (USART0_RX_vect)
     4dde:	df 93       	push	r29
     4de0:	ef 93       	push	r30
     4de2:	ff 93       	push	r31
-	uint8_t data;
-	data = UDR0; // read data from buffer TODO: add check for overflow
     4de4:	20 91 c6 00 	lds	r18, 0x00C6
-	
-	
-	
-	if(data == 0x7e)
     4de8:	2e 37       	cpi	r18, 0x7E	; 126
     4dea:	c9 f5       	brne	.+114    	; 0x4e5e <__vector_20+0xac>
-	{
-		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
     4dec:	80 91 a4 1a 	lds	r24, 0x1AA4
     4df0:	90 91 a5 1a 	lds	r25, 0x1AA5
     4df4:	84 30       	cpi	r24, 0x04	; 4
@@ -8983,24 +8663,14 @@ ISR (USART0_RX_vect)
     4e04:	82 17       	cp	r24, r18
     4e06:	93 07       	cpc	r25, r19
     4e08:	29 f5       	brne	.+74     	; 0x4e54 <__vector_20+0xa2>
-		{
-			if(gInvertNextFlag)
     4e0a:	80 91 a2 1a 	lds	r24, 0x1AA2
     4e0e:	90 91 a3 1a 	lds	r25, 0x1AA3
     4e12:	89 2b       	or	r24, r25
     4e14:	21 f0       	breq	.+8      	; 0x4e1e <__vector_20+0x6c>
-			{
-				data = (1<<5)^data;
-				gInvertNextFlag = 0;
     4e16:	10 92 a3 1a 	sts	0x1AA3, r1
     4e1a:	10 92 a2 1a 	sts	0x1AA2, r1
     4e1e:	06 ea       	ldi	r16, 0xA6	; 166
     4e20:	1a e1       	ldi	r17, 0x1A	; 26
-			}
-			
-			
-			// Add packet (no crc) to fifo-buffer to cue it for decoding
-			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     4e22:	c0 e0       	ldi	r28, 0x00	; 0
     4e24:	d0 e0       	ldi	r29, 0x00	; 0
     4e26:	0f 2e       	mov	r0, r31
@@ -9009,20 +8679,12 @@ ISR (USART0_RX_vect)
     4e2c:	fa e1       	ldi	r31, 0x1A	; 26
     4e2e:	ff 2e       	mov	r15, r31
     4e30:	f0 2d       	mov	r31, r0
-			{
-				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
     4e32:	f8 01       	movw	r30, r16
     4e34:	61 91       	ld	r22, Z+
     4e36:	8f 01       	movw	r16, r30
     4e38:	80 91 11 05 	lds	r24, 0x0511
     4e3c:	90 91 12 05 	lds	r25, 0x0512
     4e40:	0e 94 6d 05 	call	0xada	; 0xada <_Z9FifoWriteP4fifoh>
-				gInvertNextFlag = 0;
-			}
-			
-			
-			// Add packet (no crc) to fifo-buffer to cue it for decoding
-			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     4e44:	21 96       	adiw	r28, 0x01	; 1
     4e46:	f7 01       	movw	r30, r14
     4e48:	80 81       	ld	r24, Z
@@ -9031,43 +8693,25 @@ ISR (USART0_RX_vect)
     4e4e:	c8 17       	cp	r28, r24
     4e50:	d9 07       	cpc	r29, r25
     4e52:	7c f3       	brlt	.-34     	; 0x4e32 <__vector_20+0x80>
-					//send_string(S_ADRESS,"U_FIFO-full");
-				}
-			}
-		}
-		
-		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read
     4e54:	10 92 a5 1a 	sts	0x1AA5, r1
     4e58:	10 92 a4 1a 	sts	0x1AA4, r1
     4e5c:	16 c0       	rjmp	.+44     	; 0x4e8a <__vector_20+0xd8>
-		
-	}else if(data == 0x7d)
     4e5e:	2d 37       	cpi	r18, 0x7D	; 125
     4e60:	39 f4       	brne	.+14     	; 0x4e70 <__vector_20+0xbe>
-	{
-		gInvertNextFlag = 1;
     4e62:	81 e0       	ldi	r24, 0x01	; 1
     4e64:	90 e0       	ldi	r25, 0x00	; 0
     4e66:	90 93 a3 1a 	sts	0x1AA3, r25
     4e6a:	80 93 a2 1a 	sts	0x1AA2, r24
     4e6e:	0d c0       	rjmp	.+26     	; 0x4e8a <__vector_20+0xd8>
-	}else
-	{
-		gRxBuffer[gRxBufferIndex] = data;
     4e70:	80 91 a4 1a 	lds	r24, 0x1AA4
     4e74:	90 91 a5 1a 	lds	r25, 0x1AA5
     4e78:	fc 01       	movw	r30, r24
     4e7a:	ea 55       	subi	r30, 0x5A	; 90
     4e7c:	f5 4e       	sbci	r31, 0xE5	; 229
     4e7e:	20 83       	st	Z, r18
-		++gRxBufferIndex;
     4e80:	01 96       	adiw	r24, 0x01	; 1
     4e82:	90 93 a5 1a 	sts	0x1AA5, r25
     4e86:	80 93 a4 1a 	sts	0x1AA4, r24
-	}
-	
-	
-}
     4e8a:	ff 91       	pop	r31
     4e8c:	ef 91       	pop	r30
     4e8e:	df 91       	pop	r29
