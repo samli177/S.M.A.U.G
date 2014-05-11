@@ -95,6 +95,8 @@ int main(void)
 		}*/
 		
 		climb();
+		
+		/*
 		change_z(-130);
 		move_to_std();
 		wait(100);
@@ -107,6 +109,9 @@ int main(void)
 		//off the edge and pray it stays upright.
 		//it would be great if someone(hint hint Tobias) could make it take
 		//taller steps during this bit though.
+		*/
+		
+		change_z(-120);
 		move_to_std();
 
 		wait(5000);

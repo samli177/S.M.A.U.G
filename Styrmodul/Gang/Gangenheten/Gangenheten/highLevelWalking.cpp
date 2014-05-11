@@ -439,138 +439,6 @@ void move_leg(struct LegData* leg, float n)
 	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,200);
 }
 
-void climb_all_one_leg()
-{
-	climbing_flag = 1;
-	height = 70;
-	
-	z = -120;
-	change_z(z);
-	
-	move_to_std();
-	
-	while(climbing_flag)
-	{
-		leg1.lift = -1;
-		leg2.lift = 1;
-		leg3.lift = -1;
-		leg4.lift = 1;
-		leg5.lift = -1;
-		leg6.lift = 1;
-		height_change_leg1(z + height);
-		leg1.climbing = 1;
-		leg1.newPosz = z + height;
-		climb_one_leg(&leg1);
-		move_robot(0,50,100);
-		
-		wait(1000);
-		
-		leg1.lift = 1;
-		leg2.lift = -1;
-		leg3.lift = 1;
-		leg4.lift = -1;
-		leg5.lift = 1;
-		leg6.lift = -1;
-		height_change_leg2(z + height);
-		leg2.climbing = 1;
-		leg2.newPosz = z + height;
-		climb_one_leg(&leg2);
-		move_robot(0,50,100);
-		
-		wait(1000);
-		
-		leg1.lift = -1;
-		leg2.lift = 1;
-		leg3.lift = -1;
-		leg4.lift = 1;
-		leg5.lift = -1;
-		leg6.lift = 1;
-		height_change_leg3(z + height);
-		leg3.climbing = 1;
-		leg3.newPosz = z + height;
-		climb_one_leg(&leg3);
-		move_robot(0,50,100);
-		
-		wait(1000);
-		
-		leg1.lift = 1;
-		leg2.lift = -1;
-		leg3.lift = 1;
-		leg4.lift = -1;
-		leg5.lift = 1;
-		leg6.lift = -1;
-		height_change_leg4(z + height);
-		leg4.newPosz = z + height;
-		leg4.climbing = 1;
-		climb_one_leg(&leg4);
-		move_robot(0,50,100);
-		
-		wait(1000);
-		
-		leg1.lift = -1;
-		leg2.lift = 1;
-		leg3.lift = -1;
-		leg4.lift = 1;
-		leg5.lift = -1;
-		leg6.lift = 1;
-		height_change_leg5(z + height);
-		leg5.climbing = 1;
-		leg5.newPosz = z + height;
-		climb_one_leg(&leg5);
-		move_robot(0,50,100);
-		
-		wait(1000);
-		
-		leg1.lift = 1;
-		leg2.lift = -1;
-		leg3.lift = 1;
-		leg4.lift = -1;
-		leg5.lift = 1;
-		leg6.lift = -1;
-		height_change_leg6(z + height);
-		leg6.climbing = 1;
-		leg6.newPosz = z + height;
-		climb_one_leg(&leg6);
-		move_robot(0,50,100);
-		
-		wait(5000);
-	}
-}
-
-void climb_one_leg(struct LegData* leg)
-{
-	for(int i = 0; i <= (int)iterations+1; ++i)
-	{
-		move_climb(leg,i);
-		
-		SERVO_action();
-		wait(300);
-	}
-	
-	if(climbing_flag)
-	{
-		legsNotDown = 1;
-		while(legsNotDown)
-		{
-			legsNotDown = 0;
-			
-			if(leg->lift == 1 && leg->climbing == 1)
-			{
-				leg_move_down(leg);
-			}
-			SERVO_action();
-			wait(200);
-			
-			if(leg->lift == 1 && leg->climbing == 1)
-			{
-				leg_check_down(leg);
-			}
-			SERVO_action();
-			wait(200);
-		}
-	}
-}
-
 void leg_motion()
 {
 	leg_motion_init();
@@ -659,6 +527,11 @@ void leg_motion()
 	
 	if(climbing_flag)
 	{
+		PORTC ^= (1<<PORTC6);
+		MPU_update();
+		climb_start_slope_r = MPU_get_r();
+		climb_start_slope_p = MPU_get_p();
+		
 		legsNotDown = 1;
 		while(legsNotDown)
 		{
@@ -718,42 +591,52 @@ void leg_motion()
 			}
 			
 			SERVO_action();
-			wait(200);
+			wait(100);
 		}
 		
-		if (leg3.newPosz > z_in_use && leg4.newPosz > z_in_use)
+		if (leg3.newPosz > z_in_use && leg4.newPosz > z_in_use && climb_step < 3)
 		{
-			PORTC ^= (1<<PORTC6);
 			climb_step = 3;
 			climb_step2 = 1;
-			climbing_flag = 0;
 			leg1.climbing = 0;
 			leg2.climbing = 0;
 			leg3.climbing = 0;
 			leg4.climbing = 0;
 			leg5.climbing = 0;
 			leg6.climbing = 0;
+			
+			/*MPU_update();
+			climb_start_slope_r = MPU_get_r();
+			climb_start_slope_p = MPU_get_p();*/
 		}
-		else if (leg2.newPosz > z_in_use && leg5.newPosz > z_in_use)
+		else if (leg2.newPosz > z_in_use && leg5.newPosz > z_in_use && climb_step < 3)
 		{
 			climb_step = 2;
 		}
-		else if (leg1.newPosz > z_in_use && leg6.newPosz > z_in_use)
+		else if (leg1.newPosz > z_in_use && leg6.newPosz > z_in_use && climb_step < 3)
 		{
 			climb_step = 1;
 		}
-		/*
+		
 		if (leg1.newPosz < z_in_use + 20 && 
 			leg6.newPosz < z_in_use + 20 && 
 			climb_step2 == 1)
 		{
 			climb_step2 = 2;
+			
+			MPU_update();
+			climb_start_slope_r = MPU_get_r();
+			climb_start_slope_p = MPU_get_p();
 		}
 		else if (leg2.newPosz < z_in_use + 20 && 
 			leg5.newPosz < z_in_use + 20 && 
 			climb_step2 == 2)
 		{
 			climb_step2 = 3;
+			
+			MPU_update();
+			climb_start_slope_r = MPU_get_r();
+			climb_start_slope_p = MPU_get_p();
 		}
 		else if (leg3.newPosz < z_in_use + 20 &&
 			leg4.newPosz < z_in_use + 20 &&
@@ -762,7 +645,7 @@ void leg_motion()
 			climb_step = 0;
 			climb_step2 = 0;
 			climbing_flag = 0;
-		}*/
+		}
 	}
 }
 
@@ -964,7 +847,7 @@ void climb()
 			leg3.climbing = 1;
 			leg3.newPosz = obstacle_height;
 		}
-		/*
+		
 		// Here the part about climbing down starts. 
 		if (leg1.lift != 1 && climb_step2 == 1)
 		{
@@ -996,7 +879,7 @@ void climb()
 			leg3.climbing = 1;
 			leg3.newPosz = obstacle_height;
 		}
-		*/
+		
 		move_robot(0,50,100);
 		wait(2000);
 	}
