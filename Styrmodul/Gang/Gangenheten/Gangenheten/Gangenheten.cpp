@@ -49,8 +49,6 @@ int main(void)
 	SERVO_update_EEPROM(BROADCASTING_ID); // NOTE: needs to run once for SERVO_get position to work	
 	//----------------------------
 	
-	wait(5000);
-	
 	reset_counter_1();
 	set_counter_1(3000);
 	
@@ -60,7 +58,7 @@ int main(void)
     {
 		MPU_update();
 		
-		/*if(USART_get_turn_flag())
+		if(USART_get_turn_flag())
 		{
 			turn_degrees(USART_get_turn_angle(), USART_get_turn_dir());
 		}
@@ -92,9 +90,9 @@ int main(void)
 		{
 			move_to_std_flag = 0;
 			move_to_std();
-		}*/
+		}
 		
-		climb();
+		//climb();
 		
 		/*
 		change_z(-130);
@@ -111,14 +109,14 @@ int main(void)
 		//taller steps during this bit though.
 		*/
 		
-		change_z(-120);
-		move_to_std();
+		//change_z(-120);
+		//move_to_std();
 
-		wait(5000);
+		//wait(5000);
 		
 		
 
-		//USART_DecodeRxFIFO();
+		USART_DecodeRxFIFO();
 	}
 }
 
@@ -136,7 +134,11 @@ ISR(TIMER1_COMPA_vect)
 
 void wait_until_gyro_stable()
 {
-	wait(20000);
+	wait(4000);
+	wait(4000);
+	wait(4000);
+	wait(4000);
+	wait(4000);
 	/*MPU_update();
 	float value1 = MPU_get_y();
 	float value2 = 100;

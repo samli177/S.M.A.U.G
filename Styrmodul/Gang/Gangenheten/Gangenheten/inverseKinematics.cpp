@@ -44,36 +44,36 @@ void height_change_x0(float new_z)
 
 void height_change_leg1(float new_z)
 {
-	x0_1 = -(120 + (new_z - z0))/sqrt2-61.85; 
-	y0_1 = (120 + (new_z - z0))/sqrt2+120;
+	x0_1 = -(120 + 0.5*(new_z - z0))/sqrt2-61.85; 
+	y0_1 = (120 + 0.5*(new_z - z0))/sqrt2+120;
 }
 
 void height_change_leg2(float new_z)
 {
-	x0_2 = -(120 + (new_z - z0))-100;
+	x0_2 = -(120 + 0.5*(new_z - z0))-100;
 }
 
 void height_change_leg3(float new_z)
 {
-	x0_3 = -(120 + (new_z - z0))/sqrt2-61.85;
-	y0_3 = -(120 + (new_z - z0))/sqrt2-120; 
+	x0_3 = -(120 + 0.5*(new_z - z0))/sqrt2-61.85;
+	y0_3 = -(120 + 0.5*(new_z - z0))/sqrt2-120; 
 }
 
 void height_change_leg4(float new_z)
 {
-	x0_4 = (120 + (new_z - z0))/sqrt2+61.85;
-	y0_4 = -(120 + (new_z - z0))/sqrt2-120; 
+	x0_4 = (120 + 0.5*(new_z - z0))/sqrt2+61.85;
+	y0_4 = -(120 + 0.5*(new_z - z0))/sqrt2-120; 
 }
 
 void height_change_leg5(float new_z)
 {
-	x0_5 = (120 + (new_z - z0))+100;
+	x0_5 = (120 + 0.5*(new_z - z0))+100;
 }
 
 void height_change_leg6(float new_z)
 {
-	x0_6 = (120 + (new_z - z0))/sqrt2+61.85;
-	y0_6 = (120 + (new_z - z0))/sqrt2+120;
+	x0_6 = (120 + 0.5*(new_z - z0))/sqrt2+61.85;
+	y0_6 = (120 + 0.5*(new_z - z0))/sqrt2+120;
 }
 
 void height_change_all(float new_z)

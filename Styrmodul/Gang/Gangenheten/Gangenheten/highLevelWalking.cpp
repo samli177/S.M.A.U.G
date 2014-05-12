@@ -25,8 +25,11 @@ float climb_step;
 float climb_step2;
 float obstacle_height;
 float z_in_use;
+float climb_start_control;
 float climb_start_slope_r;
 float climb_start_slope_p;
+int servo_speed = 300;
+uint8_t rotation_flag = 0;
 
 
 
@@ -258,9 +261,23 @@ void step_part2_calculator(struct LegData* leg)
 //av ben för förra steget och räknar ut position för nästa steg.
 void move_robot(int dir, int rot, int spd)
 {
+	if(dir < 0 || dir >= 90){
+		dir = 0;
+	}
 	direction = (float)dir;
+	if(rot < 0){
+		rot = 0;
+	} else if(rot > 100){
+		rot = 100;
+	}
 	rotation = (float)rot / 50 -1;
+	if(spd < 0){
+		spd = 0;
+	} else if(spd > 100){
+		spd = 100;
+	}
 	speedf = (float)spd;
+	
 	if (speedf != 0 || rotation != 0)
 	{
 	step_start(&leg1);
@@ -398,7 +415,15 @@ void move_leg(struct LegData* leg, float n)
 {
 	if(leg->lift == 1 && n != iterations+1)
 	{
-		tempz = leg->newPosz + 30;
+		if (leg->climbing == 2)
+		{
+			tempz = obstacle_height + 30;
+		}
+		else
+		{
+			tempz = leg->newPosz + 30;
+		}
+		
 	}
 	else
 	{
@@ -434,9 +459,9 @@ void move_leg(struct LegData* leg, float n)
 	leg->goalAngleAlpha = leg->side *(leg->temp2AngleAlpha + femurAngleAddition);
 	leg->goalAngleBeta = leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition);
 	leg->goalAngleGamma = leg->temp2AngleGamma;
-	SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,200);
-	SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,200);
-	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,200);
+	SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,servo_speed);
+	SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,servo_speed);
+	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,servo_speed);
 }
 
 void leg_motion()
@@ -519,18 +544,23 @@ void leg_motion()
 		}
 
 		SERVO_action();
-		wait(300);
+		wait(25);
 		
 		
-		//change_z(USART_get_z());
+		if(USART_elevation_flag())
+		{
+			change_z(USART_get_z());
+		}
 	}
 	
 	if(climbing_flag)
 	{
-		PORTC ^= (1<<PORTC6);
+		wait(300);
 		MPU_update();
-		climb_start_slope_r = MPU_get_r();
-		climb_start_slope_p = MPU_get_p();
+		//climb_start_slope_r = MPU_get_r();
+		//climb_start_slope_p = MPU_get_p();
+		PORTC ^= (1<<PORTC6);
+	
 		
 		legsNotDown = 1;
 		while(legsNotDown)
@@ -563,7 +593,7 @@ void leg_motion()
 			}
 			
 			SERVO_action();
-			wait(200);
+			wait(100);
 			
 			if(leg1.lift == 1 && leg1.climbing == 1)
 			{
@@ -590,32 +620,36 @@ void leg_motion()
 				leg_check_down(&leg6);
 			}
 			
-			SERVO_action();
-			wait(100);
+			//SERVO_action();
+			//wait(100);
 		}
 		
 		if (leg3.newPosz > z_in_use && leg4.newPosz > z_in_use && climb_step < 3)
 		{
 			climb_step = 3;
 			climb_step2 = 1;
+			rotation_flag = 1;
+			/*
 			leg1.climbing = 0;
 			leg2.climbing = 0;
 			leg3.climbing = 0;
 			leg4.climbing = 0;
 			leg5.climbing = 0;
-			leg6.climbing = 0;
+			leg6.climbing = 0;*/
 			
-			/*MPU_update();
-			climb_start_slope_r = MPU_get_r();
-			climb_start_slope_p = MPU_get_p();*/
+			MPU_update();
+			//climb_start_slope_r = MPU_get_r();
+			//climb_start_slope_p = MPU_get_p();
 		}
 		else if (leg2.newPosz > z_in_use && leg5.newPosz > z_in_use && climb_step < 3)
 		{
 			climb_step = 2;
+			rotation_flag = 1;
 		}
 		else if (leg1.newPosz > z_in_use && leg6.newPosz > z_in_use && climb_step < 3)
 		{
 			climb_step = 1;
+			rotation_flag = 1;
 		}
 		
 		if (leg1.newPosz < z_in_use + 20 && 
@@ -623,20 +657,22 @@ void leg_motion()
 			climb_step2 == 1)
 		{
 			climb_step2 = 2;
+			rotation_flag = 1;
 			
 			MPU_update();
-			climb_start_slope_r = MPU_get_r();
-			climb_start_slope_p = MPU_get_p();
+			//climb_start_slope_r = MPU_get_r();
+			//climb_start_slope_p = MPU_get_p();
 		}
 		else if (leg2.newPosz < z_in_use + 20 && 
 			leg5.newPosz < z_in_use + 20 && 
 			climb_step2 == 2)
 		{
 			climb_step2 = 3;
+			rotation_flag = 1;
 			
 			MPU_update();
-			climb_start_slope_r = MPU_get_r();
-			climb_start_slope_p = MPU_get_p();
+			//climb_start_slope_r = MPU_get_r();
+			//climb_start_slope_p = MPU_get_p();
 		}
 		else if (leg3.newPosz < z_in_use + 20 &&
 			leg4.newPosz < z_in_use + 20 &&
@@ -645,6 +681,8 @@ void leg_motion()
 			climb_step = 0;
 			climb_step2 = 0;
 			climbing_flag = 0;
+			servo_speed = 200;
+			rotation_flag = 1;
 		}
 	}
 }
@@ -665,38 +703,32 @@ void leg_move_down(struct LegData* leg)
 	leg->goalAngleAlpha = leg->side *(leg->temp2AngleAlpha + femurAngleAddition);
 	leg->goalAngleBeta = leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition);
 	leg->goalAngleGamma = leg->temp2AngleGamma;
-	SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,200);
-	SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,200);
-	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,200);
+	SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,servo_speed);
+	SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,servo_speed);
+	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,servo_speed);
 }
 
 void leg_check_down(struct LegData* leg)
 {
 	update_leg_info(leg);
 	MPU_update();
-	USART_SendValue(MPU_get_r()-climb_start_slope_r);
-	wait(200);
-	if(fabs(MPU_get_r() - climb_start_slope_r) > 0.03 || fabs(MPU_get_p() - climb_start_slope_p) > 0.03 || leg->newPosz < z_in_use - 10)
+	//wait(300);
+	if(fabs(MPU_get_r() - climb_start_slope_r) > 0.02 || fabs(MPU_get_p() - climb_start_slope_p) > 0.02 || leg->newPosz < z_in_use - 10)
 	{
 		//leg->newPosz += 20;
 		//leg->newPosx -= 10;
-		if (leg->newPosz >= z_in_use)
+		if (leg->newPosz >= z_in_use - 10)
 		{
 			obstacle_height = z_in_use + 60;
 			tempz = obstacle_height;
-			if (climb_step < 3)
-			{
-				leg->climbing = 0;
-			}
+			leg->climbing = 0;
 			leg->newPosz = obstacle_height;
 		}
 		else
 		{
 			tempz = z_in_use;
-			if (climb_step2 > 0)
-			{
-				leg->climbing = 0;
-			}
+			leg->newPosz = tempz;
+			leg->climbing = 0;
 		}
 		tempx = leg->newPosx;
 		tempy = leg->newPosy;
@@ -709,6 +741,9 @@ void leg_check_down(struct LegData* leg)
 	 
 		SERVO_buffer_position(leg->servoAlpha,leg->goalAngleAlpha,100);
 		SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,100);
+		
+		SERVO_action();
+		wait(100);
 		
 		switch(leg->servoGamma)
 		{
@@ -760,8 +795,10 @@ void climb()
 	change_z(z_in_use);
 	
 	move_to_std();
+	servo_speed = 100;
 	
 	MPU_update();
+	climb_start_control = MPU_get_y();
 	climb_start_slope_r = MPU_get_r();
 	climb_start_slope_p = MPU_get_p();
 	
@@ -849,30 +886,66 @@ void climb()
 		}
 		
 		// Here the part about climbing down starts. 
-		if (leg1.lift != 1 && climb_step2 == 1)
+		if (leg1.lift != 1 && climb_step2 == 1 && leg6.newPosz == z_in_use)
+		{
+			leg1.climbing = 2;
+			leg1.newPosz = z_in_use;
+			height_change_leg1(z_in_use);
+		}
+		else if (leg1.lift != 1 && climb_step2 == 1)
 		{
 			leg1.climbing = 1;
 			leg1.newPosz = obstacle_height;
+		}
+		else if (leg6.lift != 1 && climb_step2 == 1 && leg1.newPosz == z_in_use)
+		{
+			leg6.climbing = 2;
+			leg6.newPosz = z_in_use;
+			height_change_leg6(z_in_use);
 		}
 		else if (leg6.lift != 1 && climb_step2 == 1)
 		{
 			leg6.climbing = 1;
 			leg6.newPosz = obstacle_height;
 		}
+		else if (leg2.lift != 1 && climb_step2 == 2 && leg5.newPosz == z_in_use)
+		{
+			leg2.climbing = 2;
+			leg2.newPosz = z_in_use;
+			height_change_leg2(z_in_use);
+		}
 		else if (leg2.lift != 1 && climb_step2 == 2)
 		{
 			leg2.climbing = 1;
 			leg2.newPosz = obstacle_height;
+		}
+		else if (leg5.lift != 1 && climb_step2 == 2 && leg2.newPosz == z_in_use)
+		{
+			leg5.climbing = 2;
+			leg5.newPosz = z_in_use;
+			height_change_leg5(z_in_use);
 		}
 		else if (leg5.lift != 1 && climb_step2 == 2)
 		{
 			leg5.climbing = 1;
 			leg5.newPosz = obstacle_height;
 		}
+		else if (leg4.lift != 1 && climb_step2 == 3 && leg3.newPosz == z_in_use)
+		{
+			leg4.climbing = 2;
+			leg4.newPosz = z_in_use;
+			height_change_leg4(z_in_use);
+		}
 		else if (leg4.lift != 1 && climb_step2 == 3)
 		{
 			leg4.climbing = 1;
 			leg4.newPosz = obstacle_height;
+		}
+		else if (leg3.lift != 1 && climb_step2 == 3 && leg4.newPosz == z_in_use)
+		{
+			leg3.climbing = 2;
+			leg3.newPosz = z_in_use;
+			height_change_leg3(z_in_use);
 		}
 		else if (leg3.lift != 1 && climb_step2 == 3)
 		{
@@ -882,6 +955,21 @@ void climb()
 		
 		move_robot(0,50,100);
 		wait(2000);
+		MPU_update();
+		
+		while(fabs(MPU_get_y() - climb_start_control) > 0.10 && rotation_flag)
+		{
+			MPU_update();
+			if (MPU_get_y() - climb_start_control > 0)
+			{
+				move_robot(0, 40, 0);
+			}
+			else
+			{
+				move_robot(0, 60, 0);
+			}
+		}
+		rotation_flag = 0;
 	}
 	
 }
@@ -903,8 +991,10 @@ void move_climb(struct LegData* leg, float n)
 		leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
 		leg->goalAngleGamma = leg->temp2AngleGamma;
 			
-		SERVO_buffer_position(leg->servoAlpha,leg->goalAngleAlpha,200);
-		SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,200);
+		SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,200);
+		SERVO_goto(leg->servoBeta, leg->goalAngleBeta,200);
+		
+		wait(200);
 	}
 	else if(n != iterations + 1)
 	{
@@ -945,8 +1035,10 @@ void change_z(float input)
 
 void move_to_std()
 {
-	
-	//change_z(USART_get_z());
+	if(USART_elevation_flag())
+	{
+		change_z(USART_get_z());
+	}
 	
 	leg1.lift = -1;
 	leg2.lift = 1;
@@ -1491,7 +1583,7 @@ void leg_climb_down(struct LegData* leg) // To descend from the high pass obstac
 void turn_degrees(uint16_t degrees, int8_t dir)
 {
 	float radians = degrees * M_PI/180;
-	float tolerance = 2 * M_PI/180;
+	float tolerance = 4 * M_PI/180;
 	wait(10);
 	float startAngle = MPU_get_y();
 	float newAngle;
@@ -1501,6 +1593,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 	
 	do
 	{
+		reset_counter_1();
 		wait(10);
 		newAngle = MPU_get_y();
 		

@@ -44,6 +44,7 @@ uint8_t USART_get_turn_dir();
 uint16_t USART_get_turn_angle();
 
 float USART_get_z();
+uint8_t USART_elevation_flag();
 
 
 #endif /* USART_H_ */

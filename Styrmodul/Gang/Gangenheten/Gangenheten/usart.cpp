@@ -27,6 +27,7 @@ uint8_t gRotation=50, gSpeed=0, gDirection=0;
 uint16_t gTurnAngle = 0;
 int8_t gTurnDirection = 1;
 uint8_t gTurnFlag = 0;
+uint8_t gElevationFlag = 0;
 
 float gZ = -120;
 
@@ -425,6 +426,7 @@ uint8_t USART_DecodeElevationRxFIFO()
 		if(gZ > -150)
 		{
 			gZ -= 5;
+			gElevationFlag = 1;
 		}
 		
 	}else if(direction == 0)
@@ -432,6 +434,7 @@ uint8_t USART_DecodeElevationRxFIFO()
 		if(gZ < -80)
 		{
 			gZ += 5;
+			gElevationFlag = 1;
 		}
 	}
 	
@@ -544,6 +547,15 @@ void USART_DecodeRxFIFO()
 	}
 }
 
+uint8_t USART_elevation_flag()
+{
+	if(gElevationFlag)
+	{
+		gElevationFlag = 0;
+		return 1;
+	}
+	return 0;
+}
 
 
 void USART_Bounce()

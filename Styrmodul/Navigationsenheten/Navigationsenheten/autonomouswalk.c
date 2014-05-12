@@ -207,7 +207,7 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			for(int i = 0;i < 3; ++i)
+			for(int i = 0;i < 2; ++i)
 			{
 				walk_forward();
 			}
