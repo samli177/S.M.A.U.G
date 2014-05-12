@@ -557,10 +557,6 @@ void leg_motion()
 	{
 		wait(300);
 		MPU_update();
-		//climb_start_slope_r = MPU_get_r();
-		//climb_start_slope_p = MPU_get_p();
-		PORTC ^= (1<<PORTC6);
-	
 		
 		legsNotDown = 1;
 		while(legsNotDown)
@@ -955,7 +951,14 @@ void climb()
 		
 		move_robot(0,50,100);
 		wait(2000);
-		MPU_update();
+		MPU_update();	
+		
+		/* Behöver ställa sig på nya positionen också! :p
+		while (fabs(MPU_get_r() - climb_start_slope_r) > 0.04 || fabs(MPU_get_p() - climb_start_slope_p) > 0.04)
+		{
+			leaning_robot();
+		}*/
+		
 		
 		while(fabs(MPU_get_y() - climb_start_control) > 0.10 && rotation_flag)
 		{
@@ -972,6 +975,55 @@ void climb()
 		rotation_flag = 0;
 	}
 	
+}
+
+void leaning_robot()
+{
+	MPU_update();
+	
+	if (MPU_get_r() - climb_start_slope_r > 0)
+	{
+		leg1.newPosz -= 10;
+		leg6.newPosz -= 10;
+				
+		leg3.newPosz += 10;
+		leg4.newPosz += 10;
+	}
+	else if (MPU_get_r() - climb_start_slope_r < 0)
+	{
+		leg1.newPosz += 10;
+		leg6.newPosz += 10;
+
+		leg3.newPosz -= 10;
+		leg4.newPosz -= 10;
+	}
+	else if (MPU_get_p() - climb_start_slope_p > 0)
+	{
+		leg1.newPosz -= 10;
+		leg2.newPosz -= 10;
+		leg3.newPosz -= 10;
+		
+		leg4.newPosz += 10;
+		leg5.newPosz += 10;
+		leg6.newPosz += 10;
+	}
+	else if (MPU_get_p() - climb_start_slope_p < 0)
+	{
+		leg1.newPosz += 10;
+		leg2.newPosz += 10;
+		leg3.newPosz += 10;
+		
+		leg4.newPosz -= 10;
+		leg5.newPosz -= 10;
+		leg6.newPosz -= 10;
+	}
+	
+	height_change_leg1(leg1.newPosz);
+	height_change_leg2(leg2.newPosz);
+	height_change_leg3(leg3.newPosz);
+	height_change_leg4(leg4.newPosz);
+	height_change_leg5(leg5.newPosz);
+	height_change_leg6(leg6.newPosz);
 }
 
 void move_climb(struct LegData* leg, float n)

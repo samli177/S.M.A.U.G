@@ -190,6 +190,7 @@ void leg_motion();										// This one is at two places!
 void move_to_std();
 
 void climb();
+void leaning_robot();
 // void climb_down();
 void leg_climb(struct LegData* leg);
 // void leg_climb_down(struct LegData* leg);

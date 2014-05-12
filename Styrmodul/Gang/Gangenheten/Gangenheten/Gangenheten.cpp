@@ -56,7 +56,7 @@ int main(void)
 	
     while(1)
     {
-		MPU_update();
+		/*MPU_update();
 		
 		if(USART_get_turn_flag())
 		{
@@ -90,9 +90,9 @@ int main(void)
 		{
 			move_to_std_flag = 0;
 			move_to_std();
-		}
+		}*/
 		
-		//climb();
+		climb();
 		
 		/*
 		change_z(-130);
@@ -109,10 +109,10 @@ int main(void)
 		//taller steps during this bit though.
 		*/
 		
-		//change_z(-120);
-		//move_to_std();
+		change_z(-120);
+		move_to_std();
 
-		//wait(5000);
+		wait(4000);
 		
 		
 
