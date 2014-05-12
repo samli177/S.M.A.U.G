@@ -137,12 +137,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         sendMessageButton = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
         messageTextField = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
-        parameter2TextField = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
-        parameter1TextField = new javax.swing.JTextField();
-        jLabel16 = new javax.swing.JLabel();
-        parameter3TextField = new javax.swing.JTextField();
         jSeparator6 = new javax.swing.JSeparator();
         jLabel5 = new javax.swing.JLabel();
         searchControllersButton = new javax.swing.JButton();
@@ -150,7 +144,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         connectControllerButton = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
         chosenControllerLabel = new javax.swing.JLabel();
-        changeParametersButton = new javax.swing.JButton();
         sendAutoSettingsButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -330,7 +323,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(ultraSoundTextField)
                             .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(318, Short.MAX_VALUE))
+                .addContainerGap(239, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -380,7 +373,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ultraSoundTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(117, Short.MAX_VALUE))
+                .addContainerGap(147, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Sensorvärden", jPanel4);
@@ -411,7 +404,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         });
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel12.setText("Parametrar");
+        jLabel12.setText("Skicka meddelanden");
 
         sendMessageButton.setText("Skicka meddelande");
         sendMessageButton.addActionListener(new java.awt.event.ActionListener() {
@@ -423,18 +416,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         jLabel13.setText("Meddelandefält");
 
         messageTextField.setText("Test message");
-
-        jLabel14.setText("Parameter Ki");
-
-        parameter2TextField.setText("5");
-
-        jLabel15.setText("Parameter Kp");
-
-        parameter1TextField.setText("5");
-
-        jLabel16.setText("Parameter Kd");
-
-        parameter3TextField.setText("5");
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel5.setText("Koppla upp till handkontroll");
@@ -456,13 +437,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         jLabel17.setText("Vald kontroll:");
 
         chosenControllerLabel.setText("Ingen");
-
-        changeParametersButton.setText("Skicka parametrar");
-        changeParametersButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                changeParametersButtonActionPerformed(evt);
-            }
-        });
 
         sendAutoSettingsButton.setText("Skicka inställningar");
         sendAutoSettingsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -488,27 +462,11 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                         .addGap(18, 18, 18)
                         .addComponent(controllersComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(messageTextField)
-                            .addComponent(sendMessageButton, javax.swing.GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(parameter1TextField))
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(parameter2TextField, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.LEADING))
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(parameter3TextField, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING)))
-                            .addComponent(changeParametersButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(sendAutoSettingsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addComponent(jLabel11)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -521,17 +479,16 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                                 .addComponent(jLabel17)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(chosenControllerLabel))
-                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addComponent(autoButton)
                                 .addGap(18, 18, 18)
                                 .addComponent(autoLeftRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(autoRightRadioButton)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(sendAutoSettingsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(autoRightRadioButton))
+                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 233, Short.MAX_VALUE))
+                    .addComponent(messageTextField)
+                    .addComponent(sendMessageButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -568,29 +525,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel15)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(parameter1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel5Layout.createSequentialGroup()
-                            .addComponent(jLabel14)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(parameter2TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel5Layout.createSequentialGroup()
-                            .addComponent(jLabel16)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(parameter3TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addComponent(jLabel13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(sendMessageButton)
-                    .addComponent(changeParametersButton))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addComponent(sendMessageButton)
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Inställningar", jPanel5);
@@ -687,14 +627,14 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 578, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 479, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(clearDebugButton, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
-                            .addComponent(debugCallsTextField)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(clearDebugButton, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel19)
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                                .addGap(66, 66, 66))
+                            .addComponent(debugCallsTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jSeparator7)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -713,23 +653,23 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(debugTagTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
                                     .addComponent(debugDataTextField)))
+                            .addComponent(jLabel23)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel23)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jRadioButton5, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jRadioButton3, javax.swing.GroupLayout.Alignment.LEADING))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButton4)
-                            .addComponent(addDebugDataButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jRadioButton6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jRadioButton3)
+                                    .addComponent(jRadioButton5))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jRadioButton6)
+                                    .addComponent(jRadioButton4))))
+                        .addGap(25, 25, 25)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(deleteDebugDataButton, javax.swing.GroupLayout.PREFERRED_SIZE, 127, Short.MAX_VALUE)
-                            .addComponent(deleteAllDebugDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(deleteDebugDataButton, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(deleteAllDebugDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(addDebugDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -763,30 +703,32 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                                 .addComponent(addDebugDataButton))
                             .addComponent(jRadioButton1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jRadioButton2)
+                                    .addComponent(jLabel23))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jRadioButton3)
+                                    .addComponent(jRadioButton4))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(deleteDebugDataButton)
+                                .addGap(16, 16, 16)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jRadioButton2)
-                            .addComponent(jLabel23)
-                            .addComponent(jRadioButton3)
-                            .addComponent(jRadioButton4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jRadioButton5)
                             .addComponent(jRadioButton6)
-                            .addComponent(jRadioButton5))
-                        .addGap(0, 12, Short.MAX_VALUE))
+                            .addComponent(deleteAllDebugDataButton))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(deleteDebugDataButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(sendDebugDataButton)
-                            .addComponent(deleteAllDebugDataButton)))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(sendDebugDataButton))
+                    .addComponent(jScrollPane3))
                 .addContainerGap())
         );
 
         jTabbedPane1.addTab("Debug", jPanel1);
-
-        jTabbedPane1.setSelectedIndex(1);
 
         jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -840,6 +782,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         } else {
             autoButton.setText("Autonomt läge (av)");
         }
+        System.out.println(getWidth() + ", " + getHeight());
     }//GEN-LAST:event_autoButtonActionPerformed
 
     private void sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtonActionPerformed
@@ -980,101 +923,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         lowerDrawArea.requestFocus();
     }//GEN-LAST:event_lowerDrawAreaMouseClicked
 
-    private void changeParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeParametersButtonActionPerformed
-        byte data[] = new byte[3];
-        data[0] = Byte.parseByte(parameter1TextField.getText());
-        data[1] = Byte.parseByte(parameter2TextField.getText());
-        data[2] = Byte.parseByte(parameter3TextField.getText());
-
-        if (sendData('P', data)) {
-            writeMessage("Parametrar uppdaterade");
-        } else {
-            writeMessage("Kunde inte skicka");
-        }
-    }//GEN-LAST:event_changeParametersButtonActionPerformed
-
-    private void clearDebugButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearDebugButtonActionPerformed
-        debugTextArea.setText("");
-        debugCallsTextField.setText("0");
-    }//GEN-LAST:event_clearDebugButtonActionPerformed
-
-    private void addDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDebugDataButtonActionPerformed
-        String name = dataParseButtonGroup.getSelection().getActionCommand();
-        String data = debugDataTextField.getText();
-        if (data == "") {
-            writeDebugMessage("Ange data innan du lägger till den.");
-            return;
-        }
-
-        switch (name) {
-            case "B":
-                debugData.add(Byte.parseByte(data, 2));
-                break;
-            case "F":
-                Float f = Float.parseFloat(data);
-                for (byte b : ByteBuffer.allocate(4).putFloat(f).array()) {
-                    debugData.add(b);
-                }
-                break;
-            case "I":
-                Integer i = Integer.parseInt(data);
-                debugData.add(ByteBuffer.allocate(4).putInt(i).array()[3]);
-                break;
-            case "S":
-                for (byte b : data.getBytes()) {
-                    debugData.add(b);
-                }
-                break;
-        }
-
-        debugDataList.setListData(debugData);
-
-        int lastIndex = debugDataList.getModel().getSize() - 1;
-        if (lastIndex >= 0) {
-            debugDataList.ensureIndexIsVisible(lastIndex);
-        }
-    }//GEN-LAST:event_addDebugDataButtonActionPerformed
-
-    private void deleteAllDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteAllDebugDataButtonActionPerformed
-        debugData.clear();
-        debugDataList.setListData(debugData);
-    }//GEN-LAST:event_deleteAllDebugDataButtonActionPerformed
-
-    private void deleteDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteDebugDataButtonActionPerformed
-        if (debugDataList.getSelectedValue() != null) {
-            debugData.remove(debugDataList.getSelectedIndex());
-            debugDataList.setListData(debugData);
-            int lastIndex = debugDataList.getModel().getSize() - 1;
-            if (lastIndex >= 0) {
-                debugDataList.ensureIndexIsVisible(lastIndex);
-            }
-        }
-    }//GEN-LAST:event_deleteDebugDataButtonActionPerformed
-
-    private void sendDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendDebugDataButtonActionPerformed
-        String name = inOutButtonGroup.getSelection().getActionCommand();
-        byte[] data;
-        switch (name) {
-            case "I":
-                data = new byte[debugData.size() + 2];
-                data[0] = (byte) debugTagTextField.getText().charAt(0);
-                data[1] = (byte) debugData.size();
-                for (int i = 0; i < debugData.size(); i++) {
-                    data[i + 2] = debugData.elementAt(i);
-                }
-                messageBuffer.addFirst(data);
-                decodeMessage();
-                break;
-            case "O":
-                data = new byte[debugData.size()];
-                for (int i = 0; i < debugData.size(); i++) {
-                    data[i] = debugData.elementAt(i);
-                }
-                sendData(debugTagTextField.getText().charAt(0), data);
-                break;
-        }
-    }//GEN-LAST:event_sendDebugDataButtonActionPerformed
-
     private void sendAutoSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendAutoSettingsButtonActionPerformed
         byte data[] = new byte[1];
         if (autoButton.isSelected()) {
@@ -1092,6 +940,88 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             writeMessage("Kunde inte skicka!");
         }
     }//GEN-LAST:event_sendAutoSettingsButtonActionPerformed
+
+    private void deleteDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteDebugDataButtonActionPerformed
+        if (debugDataList.getSelectedValue() != null) {
+            debugData.remove(debugDataList.getSelectedIndex());
+            debugDataList.setListData(debugData);
+            int lastIndex = debugDataList.getModel().getSize() - 1;
+            if (lastIndex >= 0) {
+                debugDataList.ensureIndexIsVisible(lastIndex);
+            }
+        }
+    }//GEN-LAST:event_deleteDebugDataButtonActionPerformed
+
+    private void deleteAllDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteAllDebugDataButtonActionPerformed
+        debugData.clear();
+        debugDataList.setListData(debugData);
+    }//GEN-LAST:event_deleteAllDebugDataButtonActionPerformed
+
+    private void addDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDebugDataButtonActionPerformed
+        String name = dataParseButtonGroup.getSelection().getActionCommand();
+        String data = debugDataTextField.getText();
+        if (data == "") {
+            writeDebugMessage("Ange data innan du lägger till den.");
+            return;
+        }
+
+        switch (name) {
+            case "B":
+            debugData.add(Byte.parseByte(data, 2));
+            break;
+            case "F":
+            Float f = Float.parseFloat(data);
+            for (byte b : ByteBuffer.allocate(4).putFloat(f).array()) {
+                debugData.add(b);
+            }
+            break;
+            case "I":
+            Integer i = Integer.parseInt(data);
+            debugData.add(ByteBuffer.allocate(4).putInt(i).array()[3]);
+            break;
+            case "S":
+            for (byte b : data.getBytes()) {
+                debugData.add(b);
+            }
+            break;
+        }
+
+        debugDataList.setListData(debugData);
+
+        int lastIndex = debugDataList.getModel().getSize() - 1;
+        if (lastIndex >= 0) {
+            debugDataList.ensureIndexIsVisible(lastIndex);
+        }
+    }//GEN-LAST:event_addDebugDataButtonActionPerformed
+
+    private void sendDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendDebugDataButtonActionPerformed
+        String name = inOutButtonGroup.getSelection().getActionCommand();
+        byte[] data;
+        switch (name) {
+            case "I":
+            data = new byte[debugData.size() + 2];
+            data[0] = (byte) debugTagTextField.getText().charAt(0);
+            data[1] = (byte) debugData.size();
+            for (int i = 0; i < debugData.size(); i++) {
+                data[i + 2] = debugData.elementAt(i);
+            }
+            messageBuffer.addFirst(data);
+            decodeMessage();
+            break;
+            case "O":
+            data = new byte[debugData.size()];
+            for (int i = 0; i < debugData.size(); i++) {
+                data[i] = debugData.elementAt(i);
+            }
+            sendData(debugTagTextField.getText().charAt(0), data);
+            break;
+        }
+    }//GEN-LAST:event_sendDebugDataButtonActionPerformed
+
+    private void clearDebugButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearDebugButtonActionPerformed
+        debugTextArea.setText("");
+        debugCallsTextField.setText("0");
+    }//GEN-LAST:event_clearDebugButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1134,7 +1064,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.ButtonGroup autoButtonGroup;
     private javax.swing.JRadioButton autoLeftRadioButton;
     private javax.swing.JRadioButton autoRightRadioButton;
-    private javax.swing.JButton changeParametersButton;
     private javax.swing.JLabel chosenControllerLabel;
     private javax.swing.JButton clearDebugButton;
     private javax.swing.JTextField comNameTextField;
@@ -1163,9 +1092,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
@@ -1204,9 +1130,6 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JPanel lowerDrawArea;
     private javax.swing.JTextArea messageTextArea;
     private javax.swing.JTextField messageTextField;
-    private javax.swing.JTextField parameter1TextField;
-    private javax.swing.JTextField parameter2TextField;
-    private javax.swing.JTextField parameter3TextField;
     private javax.swing.JButton searchControllersButton;
     private javax.swing.JButton sendAutoSettingsButton;
     private javax.swing.JButton sendDebugDataButton;
