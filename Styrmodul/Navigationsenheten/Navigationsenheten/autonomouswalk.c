@@ -185,22 +185,33 @@ void autonomouswalk_walk()
 				walk_forward();
 			}
 			turn_left();
+			decisionCounter = 0;
 		}
 		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
 		{
 			walk_forward();
+			decisionCounter = 0;
 		}
 		else if(navigation_check_right_turn() == 2)
 		{
 			turn_right();
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
 			turn_around();
+			decisionCounter = 0;
+		}
+		else if(decisionCounter < 4)
+		{
+			walk_forward();
+			++decisionCounter;
 		}
 		else
 		{
-			walk_forward();
+			decisionCounter = 0;
+			navigation_set_autonomous_walk(0);
+			TWI_send_string_fixed_length(C_ADDRESS, "ERROR: Can't make a decision, turning off autonomous mode", 57);
 		}
 	}
 	else
@@ -212,18 +223,22 @@ void autonomouswalk_walk()
 				walk_forward();
 			}
 			turn_right();
+			decisionCounter = 0;
 		}
 		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
 		{
 			walk_forward();
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 2)
 		{
 			turn_left();
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
 			turn_around();
+			decisionCounter = 0;
 		}
 		else if(decisionCounter < 4)
 		{

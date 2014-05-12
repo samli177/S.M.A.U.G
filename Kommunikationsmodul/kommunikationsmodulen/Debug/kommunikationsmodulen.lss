@@ -15,21 +15,21 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   5 .comment      0000002f  00000000  00000000  00005234  2**0
                   CONTENTS, READONLY
-  6 .debug_aranges 000002a8  00000000  00000000  00005263  2**0
+  6 .debug_aranges 000002b0  00000000  00000000  00005263  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   0000243e  00000000  00000000  0000550b  2**0
+  7 .debug_info   0000247d  00000000  00000000  00005513  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 0000095e  00000000  00000000  00007949  2**0
+  8 .debug_abbrev 0000095e  00000000  00000000  00007990  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   000019ca  00000000  00000000  000082a7  2**0
+  9 .debug_line   000019e7  00000000  00000000  000082ee  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  000007c0  00000000  00000000  00009c74  2**2
+ 10 .debug_frame  000007d0  00000000  00000000  00009cd8  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    000008b9  00000000  00000000  0000a434  2**0
+ 11 .debug_str    0000090f  00000000  00000000  0000a4a8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00001906  00000000  00000000  0000aced  2**0
+ 12 .debug_loc    00001936  00000000  00000000  0000adb7  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 000002a0  00000000  00000000  0000c5f3  2**0
+ 13 .debug_ranges 000002a8  00000000  00000000  0000c6ed  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -378,40 +378,22 @@ uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
      1ec:	08 95       	ret
 
 000001ee <init>:
-// --  END MAIN --
-
-
-void init()
-{
-	DDRA |= (1<<PORTA0|1<<PORTA1); //set status diodes to outputs
      1ee:	81 b1       	in	r24, 0x01	; 1
      1f0:	83 60       	ori	r24, 0x03	; 3
      1f2:	81 b9       	out	0x01, r24	; 1
-	DDRC |= (1<<PORTC6|1<<PORTC7); //set status diodes to outputs
      1f4:	87 b1       	in	r24, 0x07	; 7
      1f6:	80 6c       	ori	r24, 0xC0	; 192
      1f8:	87 b9       	out	0x07, r24	; 7
-	USART_init();
      1fa:	90 d4       	rcall	.+2336   	; 0xb1c <USART_init>
-	TWI_init(C_ADDRESS);
      1fc:	80 e8       	ldi	r24, 0x80	; 128
      1fe:	cc d0       	rcall	.+408    	; 0x398 <TWI_init>
-	init_counters();
      200:	88 df       	rcall	.-240    	; 0x112 <init_counters>
-	set_counter_2(2000);
      202:	80 ed       	ldi	r24, 0xD0	; 208
      204:	97 e0       	ldi	r25, 0x07	; 7
      206:	73 cf       	rjmp	.-282    	; 0xee <set_counter_2>
 
 00000208 <main>:
-
-// -- MAIN --
-
-int main(void)
-{
-	init();
      208:	f2 df       	rcall	.-28     	; 0x1ee <init>
-	sei();
      20a:	78 94       	sei
 	#else
 		//round up by default
@@ -428,50 +410,21 @@ int main(void)
      218:	e1 f7       	brne	.-8      	; 0x212 <main+0xa>
      21a:	00 c0       	rjmp	.+0      	; 0x21c <main+0x14>
      21c:	00 00       	nop
-<<<<<<< HEAD
-	_delay_ms(500);
-	while(1)
-	{
-		//PORTA ^= (1<<PORTA0);
-		
-		USART_DecodeRxFIFO();
      21e:	07 d7       	rcall	.+3598   	; 0x102e <USART_DecodeRxFIFO>
-		if(TWI_sensor_flag())
-=======
-     21e:	07 d7       	rcall	.+3598   	; 0x102e <USART_DecodeRxFIFO>
->>>>>>> GyroTurn
      220:	16 d2       	rcall	.+1068   	; 0x64e <TWI_sensor_flag>
      222:	81 11       	cpse	r24, r1
-		{
-			USART_SendSensors();
      224:	7c d5       	rcall	.+2808   	; 0xd1e <USART_SendSensors>
-		}
-		decode_message_TwiFIFO();
      226:	1d d2       	rcall	.+1082   	; 0x662 <decode_message_TwiFIFO>
-		
-		// TODO: put this on timer
-		//if(TWI_send_status(ST_ADRESS))
-			//PORTA ^= (1<<PORTA1);
-		//TWI_send_string(S_ADDRESS, "Hejsan lulzi!");
-	}
      228:	fa cf       	rjmp	.-12     	; 0x21e <main+0x16>
 
 0000022a <__vector_13>:
-}
-
-//Interrupt vectors
-
-ISR(TIMER1_COMPA_vect)
-{
      22a:	1f 92       	push	r1
      22c:	0f 92       	push	r0
      22e:	0f b6       	in	r0, 0x3f	; 63
      230:	0f 92       	push	r0
      232:	11 24       	eor	r1, r1
-	TCNT1 = 0;
      234:	10 92 85 00 	sts	0x0085, r1
      238:	10 92 84 00 	sts	0x0084, r1
-}
      23c:	0f 90       	pop	r0
      23e:	0f be       	out	0x3f, r0	; 63
      240:	0f 90       	pop	r0
@@ -479,15 +432,11 @@ ISR(TIMER1_COMPA_vect)
      244:	18 95       	reti
 
 00000246 <__vector_32>:
-
-ISR(TIMER3_COMPA_vect)
-{
      246:	1f 92       	push	r1
      248:	0f 92       	push	r0
      24a:	0f b6       	in	r0, 0x3f	; 63
      24c:	0f 92       	push	r0
      24e:	11 24       	eor	r1, r1
-	TCNT3 = 0;
      250:	10 92 95 00 	sts	0x0095, r1
      254:	10 92 94 00 	sts	0x0094, r1
      258:	0f 90       	pop	r0
@@ -2110,11 +2059,7 @@ ISR(TIMER3_COMPA_vect)
     100e:	0d c0       	rjmp	.+26     	; 0x102a <USART_DecodeElevationRxFIFO+0x46>
     1010:	80 91 00 00 	lds	r24, 0x0000
     1014:	22 b1       	in	r18, 0x02	; 2
-<<<<<<< HEAD
-    1016:	91 e0       	ldi	r25, 0x01	; 1
-=======
     1016:	92 e0       	ldi	r25, 0x02	; 2
->>>>>>> GyroTurn
     1018:	92 27       	eor	r25, r18
     101a:	92 b9       	out	0x02, r25	; 2
     101c:	a4 da       	rcall	.-2744   	; 0x566 <TWI_send_elevation>
