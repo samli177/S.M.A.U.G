@@ -18,6 +18,7 @@
 #include "counter.h"
 #include "Navigation.h"
 #include "autonomouswalk.h"
+#include "LED.h"
 
 //Flag to know if to send the autonom settings to the computer.
 uint8_t autonom_flag = 1;
@@ -30,9 +31,7 @@ int main(void)
 	TWI_init(ST_ADDRESS);
 	init_counters();
 	
-	//LED
-	DDRA |= (1<<PORTA0 | 1<<PORTA1);
-	DDRC |= (1<<PORTC6 | 1<<PORTC7);
+	LED_INIT;
 	
 	//Buttons
 	DDRA &= ~(1<<PORTA6 | 1<<PORTA7); //For emphasize
@@ -49,7 +48,7 @@ int main(void)
     {
 		/*if(TWI_sensor_flag())
 		{
-			PORTA ^= (1<<PORTA1);
+			LED1_TOGGLE;
 			navigation_fill_buffer();
 		}*/
 		
@@ -72,13 +71,13 @@ int main(void)
 		{
 			if(TWI_command_flag())
 			{
-				PORTA ^= (1<<PORTA1);
+				LED1_TOGGLE;
 				USART_SendCommand();
 			}
 			
 			if(TWI_elevation_flag())
 			{
-				PORTA ^= (1<<PORTA0);
+				LED0_TOGGLE;
 				USART_SendElevation();
 			}
 		USART_DecodeRxFIFO();
@@ -126,14 +125,14 @@ ISR(PCINT0_vect)
 		navigation_set_autonomous_walk(1);
 		navigation_set_algorithm(1);
 		//test
-		PORTC ^= (1<<PORTC6);
+		LED2_TOGGLE;
 	}
 	else if(PINA & (1<<PINA7)) //Right walk
 	{
 		navigation_set_autonomous_walk(1);
 		navigation_set_algorithm(0);
 		//test
-		PORTC ^= (1<<PORTC7);
+		LED3_TOGGLE;
 	}
 	autonom_flag = 1;
 }

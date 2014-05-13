@@ -12,6 +12,7 @@
 #include "fifo.h"
 #include "usart.h"
 #include "MpuInit.h"
+#include "LED.h"
 
 
 // -- USART Stuff --
@@ -381,7 +382,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 		gDirection = direction;
 		gRotation = rotation;
 		
-		PORTD ^= (1<<PORTD5);
+		LED0_TOGGLE;
 
 	}else
 	{
