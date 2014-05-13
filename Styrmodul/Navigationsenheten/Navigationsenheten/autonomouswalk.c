@@ -18,6 +18,8 @@
 #define MAX_ROTATION_COUNTER_CLOCKWISE 30
 #define MAX_ROTATION_RADIANS 0.52
 #define STEPPING_TIME 400
+#define TURN_EXIT_ITTERATIONS 12
+#define TURN_ENTRY_ITTERATIONS 3
 //Variable for the speed parameter in movement commands. 
 uint8_t gSpeed = 50;
 
@@ -71,7 +73,7 @@ void turn_left()
 		_delay_ms(10);
 	}
 	
-	for(int i = 0; (i < 12 && navigation_autonomous_walk() != 0); ++i)
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -103,7 +105,7 @@ void turn_right()
 		_delay_ms(10);
 	}
 	
-	for(int i = 0; (i < 12 && navigation_autonomous_walk() != 0); ++i)
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -180,7 +182,7 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_left_turn() == 2)
 		{
-			for(int i = 0;i < 3; ++i)
+			for(int i = 0;i < TURN_ENTRY_ITTERATIONS; ++i)
 			{
 				walk_forward();
 			}
@@ -218,7 +220,7 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			for(int i = 0;i < 2; ++i)
+			for(int i = 0;i < TURN_ENTRY_ITTERATIONS - 1; ++i)
 			{
 				walk_forward();
 			}
