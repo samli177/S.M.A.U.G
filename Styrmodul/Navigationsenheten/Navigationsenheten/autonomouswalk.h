@@ -101,6 +101,15 @@ void walk_forward();
 
 /**
  * \brief 
+ * Tells gångmodulen to enter climbing mode,
+ * and waits for done confirmation in return.
+ * 
+ * \return void
+ */
+void climb();
+
+/**
+ * \brief 
  * Cause the robot to make one movement according to a priority.
  *
  * \param sensors

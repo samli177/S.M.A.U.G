@@ -29,6 +29,7 @@ uint16_t gTurnAngle = 0;
 int8_t gTurnDirection = 1;
 uint8_t gTurnFlag = 0;
 uint8_t gElevationFlag = 0;
+uint8_t gClimbFlag = 0;
 
 float gZ = -120;
 
@@ -81,6 +82,16 @@ uint16_t USART_get_turn_angle()
 float USART_get_z()
 {
 	return gZ;
+}
+
+uint8_t USART_climb_flag()
+{
+	if(gClimbFlag)
+	{
+		gClimbFlag = 0;
+		return 1;
+	}
+	return 0;
 }
 
 void USART_init()
@@ -300,6 +311,11 @@ void USART_send_turn_done()
 	USART_SendPacket('T', 0);
 }
 
+void USART_send_climb_done()
+{
+	USART_SendPacket('O', 0);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	uint8_t *len = 0;
@@ -490,6 +506,29 @@ uint8_t USART_DecodeTurnRxFIFO()
 		gTurnDirection = 1;
 	}
 	gTurnFlag = 1;
+	
+	return 0;
+}
+
+uint8_t USART_DecodeClimbRxFIFO()
+{
+	uint8_t *len = 0;
+	
+	int length = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		return 1; // error
+	}
+	
+	length = *len;
+	
+	if(length != 0)
+	{
+		return 1;
+	}
+	
+	gClimbFlag = 1;
 	
 	return 0;
 }

@@ -11,6 +11,7 @@
 #include "Navigation.h"
 #include "usart.h"
 #include "twi.h"
+#include "LED.h"
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -173,6 +174,29 @@ void walk_forward()
 	//TWI_send_float(C_ADDRESS, adjustmentRotation);
 }
 
+void climb()
+{
+	if(gStatus)
+	{
+		TWI_send_string_fixed_length(C_ADDRESS, "Starting climb", 14);
+	}
+	
+	LED1_TOGGLE;
+	USART_send_climb();
+	while(USART_climb_done() == 0)
+	{
+		LED0_TOGGLE;
+		USART_DecodeRxFIFO();
+		_delay_ms(100);
+	}
+	LED1_TOGGLE;
+	
+	if(gStatus)
+	{
+		TWI_send_string_fixed_length(C_ADDRESS, "Climbing done", 13);
+	}
+}
+
 void autonomouswalk_walk()
 {
 	navigation_low_pass_obstacle();
@@ -189,7 +213,12 @@ void autonomouswalk_walk()
 		}
 		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
 		{
-			walk_forward();
+			if(navigation_get_sensor(6) < 38)
+			{
+				climb();
+			} else {
+				walk_forward();	
+			}
 			decisionCounter = 0;
 		}
 		else if(navigation_check_right_turn() == 2)
@@ -227,7 +256,12 @@ void autonomouswalk_walk()
 		}
 		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
 		{
-			walk_forward();
+			if(navigation_get_sensor(6) < 38)
+			{
+				climb();
+			} else {
+				walk_forward();
+			}
 			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 2)

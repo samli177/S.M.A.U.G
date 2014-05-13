@@ -34,6 +34,8 @@ float gGyroP = 0;
 float gGyroR = 0;
 float gGyroY = 0;
 
+uint8_t gClimbDone = 0;
+
 
 // define FIFO for received packets (USART)
 MK_FIFO(4096); // use 4 kB
@@ -244,6 +246,11 @@ void USART_SendTurn(uint16_t angle, uint8_t dir)
 void USART_RequestGyro()
 {
 	USART_SendPacket('G', 0);
+}
+
+void USART_send_climb()
+{
+	USART_SendPacket('O', 0);
 }
 
 uint8_t USART_DecodeMessageRxFIFO()
@@ -465,6 +472,27 @@ uint8_t USART_DecodeTurnDoneRxFIFO()
 	return 1;
 }
 
+uint8_t USART_DecodeClimbDoneRxFIFO()
+{
+	uint8_t *len = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO CLIMB-DONE ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 0)
+	{
+		gClimbDone = 1; // set flag
+		return 0;
+	}
+	
+	return 1;
+}
+
 uint8_t USART_ready()
 {
 	if(gGangReady)
@@ -505,6 +533,16 @@ uint8_t USART_turn_done()
 	if(gTurnDone)
 	{
 		gTurnDone = 0;
+		return 1;
+	}
+	return 0;
+}
+
+uint8_t USART_climb_done()
+{
+	if(gClimbDone)
+	{
+		gClimbDone = 0;
 		return 1;
 	}
 	return 0;
@@ -566,6 +604,15 @@ void USART_DecodeRxFIFO()
 			case('T'):
 			{
 				if(USART_DecodeTurnDoneRxFIFO())
+				{
+					return;
+				}
+				break;
+			}
+			case('O'):
+			{
+				// O for obstacle
+				if(USART_DecodeClimbDoneRxFIFO())
 				{
 					return;
 				}

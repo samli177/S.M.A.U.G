@@ -150,7 +150,6 @@ void navigation_stepping_delay()
 	{
 		USART_DecodeRxFIFO();
 		_delay_ms(20);
-		LED1_TOGGLE;
 	}
 }
 

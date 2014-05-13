@@ -641,6 +641,8 @@ Discarded input sections
                 0x00000000       0x14 usart.o
  .text._Z20USART_get_turn_anglev
                 0x00000000        0xa usart.o
+ .text._Z16USART_climb_flagv
+                0x00000000       0x14 usart.o
  .text._Z21USART_CheckRxCompletev
                 0x00000000        0x8 usart.o
  .text._Z14USART_ReadBytev
@@ -653,8 +655,14 @@ Discarded input sections
                 0x00000000        0xa usart.o
  .text._Z20USART_send_turn_donev
                 0x00000000        0xa usart.o
+ .text._Z21USART_send_climb_donev
+                0x00000000        0xa usart.o
+ .text._Z23USART_DecodeClimbRxFIFOv
+                0x00000000       0x2e usart.o
  .text._Z12USART_Bouncev
                 0x00000000       0x30 usart.o
+ .bss.gClimbFlag
+                0x00000000        0x1 usart.o
  .text          0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(acos.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(acos.o)
  .text          0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(addsf3.o)
@@ -2236,7 +2244,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0xe78
+.debug_aranges  0x00000000      0xe90
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x50 counter.o
@@ -2257,16 +2265,16 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_aranges
                 0x00000c80       0xb8 serialServoControl.o
  .debug_aranges
-                0x00000d38       0xf8 usart.o
+                0x00000d38      0x110 usart.o
  .debug_aranges
-                0x00000e30       0x28 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
+                0x00000e48       0x28 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
  .debug_aranges
-                0x00000e58       0x20 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
+                0x00000e70       0x20 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000    0x13673
+.debug_info     0x00000000    0x1373a
  *(.debug_info)
  .debug_info    0x00000000      0x1f4 counter.o
  .debug_info    0x000001f4      0x1bc fifo.o
@@ -2277,12 +2285,12 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_info    0x000044fd     0x8705 MPU6050.o
  .debug_info    0x0000cc02     0x4df7 MpuInit.o
  .debug_info    0x000119f9      0xb8d serialServoControl.o
- .debug_info    0x00012586      0xc16 usart.o
- .debug_info    0x0001319c      0x23d c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
- .debug_info    0x000133d9      0x29a c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
+ .debug_info    0x00012586      0xcdd usart.o
+ .debug_info    0x00013263      0x23d c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
+ .debug_info    0x000134a0      0x29a c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x00000000     0x19e1
+.debug_abbrev   0x00000000     0x1a00
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x106 counter.o
  .debug_abbrev  0x00000106       0xd2 fifo.o
@@ -2293,11 +2301,11 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_abbrev  0x00000a2c      0x2be MPU6050.o
  .debug_abbrev  0x00000cea      0x4d1 MpuInit.o
  .debug_abbrev  0x000011bb      0x2be serialServoControl.o
- .debug_abbrev  0x00001479      0x335 usart.o
- .debug_abbrev  0x000017ae       0xf9 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
- .debug_abbrev  0x000018a7      0x13a c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
+ .debug_abbrev  0x00001479      0x354 usart.o
+ .debug_abbrev  0x000017cd       0xf9 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
+ .debug_abbrev  0x000018c6      0x13a c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
 
-.debug_line     0x00000000     0x6745
+.debug_line     0x00000000     0x67c6
  *(.debug_line)
  .debug_line    0x00000000      0x1d5 counter.o
  .debug_line    0x000001d5      0x151 fifo.o
@@ -2308,11 +2316,11 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_line    0x00002723     0x2333 MPU6050.o
  .debug_line    0x00004a56      0x9c4 MpuInit.o
  .debug_line    0x0000541a      0x779 serialServoControl.o
- .debug_line    0x00005b93      0x7ab usart.o
- .debug_line    0x0000633e      0x20e c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
- .debug_line    0x0000654c      0x1f9 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
+ .debug_line    0x00005b93      0x82c usart.o
+ .debug_line    0x000063bf      0x20e c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
+ .debug_line    0x000065cd      0x1f9 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
 
-.debug_frame    0x00000000     0x38f4
+.debug_frame    0x00000000     0x3924
  *(.debug_frame)
  .debug_frame   0x00000000       0x94 counter.o
  .debug_frame   0x00000094       0x68 fifo.o
@@ -2323,38 +2331,38 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x0000103c     0x1de4 MPU6050.o
  .debug_frame   0x00002e20      0x47c MpuInit.o
  .debug_frame   0x0000329c      0x2c8 serialServoControl.o
- .debug_frame   0x00003564      0x2c8 usart.o
- .debug_frame   0x0000382c       0x68 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
- .debug_frame   0x00003894       0x60 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
+ .debug_frame   0x00003564      0x2f8 usart.o
+ .debug_frame   0x0000385c       0x68 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
+ .debug_frame   0x000038c4       0x60 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
 
-.debug_str      0x00000000     0x6cde
+.debug_str      0x00000000     0x6d76
  *(.debug_str)
- .debug_str     0x00000000      0x197 counter.o
-                                0x1e7 (size before relaxing)
- .debug_str     0x00000197       0xc3 fifo.o
+ .debug_str     0x00000000      0x19b counter.o
+                                0x1eb (size before relaxing)
+ .debug_str     0x0000019b       0xc3 fifo.o
                                 0x161 (size before relaxing)
- .debug_str     0x0000025a      0x19c Gangenheten.o
-                                0x2ed (size before relaxing)
- .debug_str     0x000003f6      0xd3d highLevelWalking.o
+ .debug_str     0x0000025e      0x19c Gangenheten.o
+                                0x2f1 (size before relaxing)
+ .debug_str     0x000003fa      0xcee highLevelWalking.o
                                 0xeb6 (size before relaxing)
- .debug_str     0x00001133      0x4cd I2Cdev.o
+ .debug_str     0x000010e8      0x4cd I2Cdev.o
                                 0x57b (size before relaxing)
- .debug_str     0x00001600       0x89 inverseKinematics.o
+ .debug_str     0x000015b5       0xd4 inverseKinematics.o
                                 0x56a (size before relaxing)
  .debug_str     0x00001689     0x387d MPU6050.o
                                0x3b24 (size before relaxing)
  .debug_str     0x00004f06     0x14c4 MpuInit.o
                                0x4e2a (size before relaxing)
  .debug_str     0x000063ca      0x365 serialServoControl.o
-                                0x6fe (size before relaxing)
- .debug_str     0x0000672f      0x440 usart.o
-                                0x734 (size before relaxing)
- .debug_str     0x00006b6f       0xf4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
+                                0x702 (size before relaxing)
+ .debug_str     0x0000672f      0x4d8 usart.o
+                                0x7d0 (size before relaxing)
+ .debug_str     0x00006c07       0xf4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
                                 0x17c (size before relaxing)
- .debug_str     0x00006c63       0x7b c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
+ .debug_str     0x00006cfb       0x7b c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
                                 0x15c (size before relaxing)
 
-.debug_loc      0x00000000    0x10b6e
+.debug_loc      0x00000000    0x10bc0
  *(.debug_loc)
  .debug_loc     0x00000000       0xce counter.o
  .debug_loc     0x000000ce      0x17b fifo.o
@@ -2365,9 +2373,9 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_loc     0x000045a3     0x8b28 MPU6050.o
  .debug_loc     0x0000d0cb     0x1693 MpuInit.o
  .debug_loc     0x0000e75e      0xe95 serialServoControl.o
- .debug_loc     0x0000f5f3      0xaa5 usart.o
- .debug_loc     0x00010098      0x4f8 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
- .debug_loc     0x00010590      0x5de c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
+ .debug_loc     0x0000f5f3      0xaf7 usart.o
+ .debug_loc     0x000100ea      0x4f8 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
+ .debug_loc     0x000105e2      0x5de c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -2375,7 +2383,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0xe50
+.debug_ranges   0x00000000      0xe68
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x40 counter.o
  .debug_ranges  0x00000040       0x20 fifo.o
@@ -2386,9 +2394,9 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_ranges  0x00000328      0x860 MPU6050.o
  .debug_ranges  0x00000b88       0xf8 MpuInit.o
  .debug_ranges  0x00000c80       0xa8 serialServoControl.o
- .debug_ranges  0x00000d28      0x100 usart.o
- .debug_ranges  0x00000e28       0x18 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
- .debug_ranges  0x00000e40       0x10 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
+ .debug_ranges  0x00000d28      0x118 usart.o
+ .debug_ranges  0x00000e40       0x18 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(malloc.o)
+ .debug_ranges  0x00000e58       0x10 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libc.a(realloc.o)
 
 .debug_macro
  *(.debug_macro)
