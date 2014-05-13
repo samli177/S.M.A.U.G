@@ -144,15 +144,15 @@ Discarded input sections
                 0x00000000       0xde twi.o
  .text          0x00000000        0x0 usart.o
  .bss           0x00000000        0x0 usart.o
- .text.USART_CheckRxComplete
+ .text.USART_check_rx_complete
                 0x00000000        0x8 usart.o
- .text.USART_ReadByte
+ .text.USART_read_byte
                 0x00000000        0x6 usart.o
- .text.USART_SendMessage
+ .text.USART_send_message
                 0x00000000       0x44 usart.o
- .text.USART_SendSensors
+ .text.USART_send_sensors
                 0x00000000       0x3e usart.o
- .text.USART_RequestGyro
+ .text.USART_request_gyro
                 0x00000000        0xa usart.o
  .text.USART_GyroFlag
                 0x00000000       0x12 usart.o
@@ -162,7 +162,7 @@ Discarded input sections
                 0x00000000       0x1a usart.o
  .text.USART_gyro_get_Y
                 0x00000000       0x1a usart.o
- .text.USART_Bounce
+ .text.USART_bounce
                 0x00000000       0x30 usart.o
  .text          0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(addsf3.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(addsf3.o)
@@ -647,54 +647,54 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .text.USART_set_twi_message_destination
                 0x0000166e        0xa usart.o
                 0x0000166e                USART_set_twi_message_destination
- .text.USART_CheckTxReady
+ .text.USART_check_tx_ready
                 0x00001678        0x8 usart.o
-                0x00001678                USART_CheckTxReady
- .text.USART_WriteByte
+                0x00001678                USART_check_tx_ready
+ .text.USART_write_byte
                 0x00001680       0x12 usart.o
-                0x00001680                USART_WriteByte
+                0x00001680                USART_write_byte
  .text.USART_crc16
                 0x00001692       0xb2 usart.o
                 0x00001692                USART_crc16
- .text.USART_SendPacket
+ .text.USART_send_packet
                 0x00001744       0xc0 usart.o
-                0x00001744                USART_SendPacket
- .text.USART_SendCommand
+                0x00001744                USART_send_packet
+ .text.USART_send_command
                 0x00001804       0x24 usart.o
-                0x00001804                USART_SendCommand
- .text.USART_SendElevation
+                0x00001804                USART_send_command
+ .text.USART_send_elevation
                 0x00001828        0xc usart.o
-                0x00001828                USART_SendElevation
- .text.USART_SendTurn
+                0x00001828                USART_send_elevation
+ .text.USART_send_turn
                 0x00001834       0x12 usart.o
-                0x00001834                USART_SendTurn
- .text.USART_DecodeMessageRxFIFO
+                0x00001834                USART_send_turn
+ .text.USART_decode_message_rx_fifo
                 0x00001846       0xee usart.o
-                0x00001846                USART_DecodeMessageRxFIFO
- .text.USART_DecodeGyroFIFO
+                0x00001846                USART_decode_message_rx_fifo
+ .text.USART_decode_gyro_rx_fifo
                 0x00001934      0x146 usart.o
-                0x00001934                USART_DecodeGyroFIFO
- .text.USART_DecodeCommandRxFIFO
+                0x00001934                USART_decode_gyro_rx_fifo
+ .text.USART_decode_command_rx_fifo
                 0x00001a7a       0xb4 usart.o
-                0x00001a7a                USART_DecodeCommandRxFIFO
+                0x00001a7a                USART_decode_command_rx_fifo
  .text.USART_DecodeValueFIFO
                 0x00001b2e       0x9c usart.o
                 0x00001b2e                USART_DecodeValueFIFO
  .text.USART_DecodeReadyFIFO
                 0x00001bca       0x36 usart.o
                 0x00001bca                USART_DecodeReadyFIFO
- .text.USART_DecodeTurnDoneRxFIFO
+ .text.USART_decode_turn_done_rx_fifo
                 0x00001c00       0x36 usart.o
-                0x00001c00                USART_DecodeTurnDoneRxFIFO
+                0x00001c00                USART_decode_turn_done_rx_fifo
  .text.USART_ready
                 0x00001c36       0x14 usart.o
                 0x00001c36                USART_ready
  .text.USART_turn_done
                 0x00001c4a       0x14 usart.o
                 0x00001c4a                USART_turn_done
- .text.USART_DecodeRxFIFO
+ .text.USART_decode_rx_fifo
                 0x00001c5e       0x68 usart.o
-                0x00001c5e                USART_DecodeRxFIFO
+                0x00001c5e                USART_decode_rx_fifo
  .text.__vector_20
                 0x00001cc6      0x118 usart.o
                 0x00001cc6                __vector_20
@@ -1179,22 +1179,22 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x000004d4      0x454 twi.o
  .debug_frame   0x00000928      0x364 usart.o
 
-.debug_str      0x00000000      0xd83
+.debug_str      0x00000000      0xde9
  *(.debug_str)
- .debug_str     0x00000000      0x3c1 autonomouswalk.o
-                                0x40d (size before relaxing)
- .debug_str     0x000003c1       0x42 counter.o
-                                0x124 (size before relaxing)
- .debug_str     0x00000403       0x87 fifo.o
+ .debug_str     0x00000000      0x3c8 autonomouswalk.o
+                                0x414 (size before relaxing)
+ .debug_str     0x000003c8       0x42 counter.o
+                                0x128 (size before relaxing)
+ .debug_str     0x0000040a       0x82 fifo.o
                                 0x125 (size before relaxing)
- .debug_str     0x0000048a      0x16f Navigation.o
-                                0x403 (size before relaxing)
- .debug_str     0x000005f9      0x153 Navigationsenheten.o
-                                0x344 (size before relaxing)
- .debug_str     0x0000074c      0x3e2 twi.o
+ .debug_str     0x0000048c      0x16f Navigation.o
+                                0x409 (size before relaxing)
+ .debug_str     0x000005fb      0x155 Navigationsenheten.o
+                                0x34c (size before relaxing)
+ .debug_str     0x00000750      0x42b twi.o
                                 0x648 (size before relaxing)
- .debug_str     0x00000b2e      0x255 usart.o
-                                0x50d (size before relaxing)
+ .debug_str     0x00000b7b      0x26e usart.o
+                                0x53e (size before relaxing)
 
 .debug_loc      0x00000000     0x262a
  *(.debug_loc)

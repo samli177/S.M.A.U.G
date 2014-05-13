@@ -1640,7 +1640,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 	float startAngle = MPU_get_y();
 	float newAngle;
 	float angleLeft, move;
-	USART_SendValue(startAngle*180/M_PI);
+	USART_send_value(startAngle*180/M_PI);
 	float diff, realDiff;
 	
 	do
@@ -1681,7 +1681,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 		{
 			move = 50 + 5 * dir * angleLeft / fabs(angleLeft);
 		}
-		USART_SendValue(move);
+		USART_send_value(move);
 		move_robot(0, move, 0);
 	} while(fabs(angleLeft) > tolerance);
 	

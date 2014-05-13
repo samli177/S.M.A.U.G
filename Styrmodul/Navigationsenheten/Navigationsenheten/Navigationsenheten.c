@@ -72,15 +72,15 @@ int main(void)
 			if(TWI_command_flag())
 			{
 				LED1_TOGGLE;
-				USART_SendCommand();
+				USART_send_command();
 			}
 			
 			if(TWI_elevation_flag())
 			{
 				LED0_TOGGLE;
-				USART_SendElevation();
+				USART_send_elevation();
 			}
-		USART_DecodeRxFIFO();
+		USART_decode_rx_fifo();
 	    }
 	}
 }

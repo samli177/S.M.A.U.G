@@ -40,10 +40,10 @@ int main(void)
 	{
 		//PORTA ^= (1<<PORTA0);
 		
-		USART_DecodeRxFIFO();
+		USART_decode_rx_fifo();
 		if(TWI_sensor_flag())
 		{
-			USART_SendSensors();
+			USART_send_sensors();
 		}
 		decode_message_TwiFIFO();
 		

@@ -148,7 +148,7 @@ void navigation_stepping_delay()
 {
 	while(USART_ready() == 0)
 	{
-		USART_DecodeRxFIFO();
+		USART_decode_rx_fifo();
 		_delay_ms(20);
 		LED1_TOGGLE;
 	}

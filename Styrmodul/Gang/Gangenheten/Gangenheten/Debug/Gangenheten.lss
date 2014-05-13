@@ -15,21 +15,21 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   5 .comment      0000002f  00000000  00000000  0000ec6e  2**0
                   CONTENTS, READONLY
-  6 .debug_aranges 00000e78  00000000  00000000  0000ec9d  2**0
+  6 .debug_aranges 00000e70  00000000  00000000  0000ec9d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00013673  00000000  00000000  0000fb15  2**0
+  7 .debug_info   0001363d  00000000  00000000  0000fb0d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 000019e1  00000000  00000000  00023188  2**0
+  8 .debug_abbrev 000019d4  00000000  00000000  0002314a  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00006745  00000000  00000000  00024b69  2**0
+  9 .debug_line   00006728  00000000  00000000  00024b1e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  000038f4  00000000  00000000  0002b2b0  2**2
+ 10 .debug_frame  000038e4  00000000  00000000  0002b248  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00006cde  00000000  00000000  0002eba4  2**0
+ 11 .debug_str    00006ce3  00000000  00000000  0002eb2c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00010b6e  00000000  00000000  00035882  2**0
+ 12 .debug_loc    00010b6e  00000000  00000000  0003580f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000e50  00000000  00000000  000463f0  2**0
+ 13 .debug_ranges 00000e48  00000000  00000000  0004637d  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -368,11 +368,23 @@ Disassembly of section .text:
      9ea:	0a cb       	rjmp	.-2540   	; 0x0 <__vectors>
 
 000009ec <_Z15reset_counter_1v>:
+	reset_counter_3();
+}
+
+void reset_counter_1()
+{
+	TCNT1 = 0;
      9ec:	10 92 85 00 	sts	0x0085, r1
      9f0:	10 92 84 00 	sts	0x0084, r1
      9f4:	08 95       	ret
 
 000009f6 <_Z13set_counter_1j>:
+	TCNT3 = 0;
+}
+
+void set_counter_1(uint16_t delay)
+{
+	delay = 15.625 * delay;
      9f6:	bc 01       	movw	r22, r24
      9f8:	80 e0       	ldi	r24, 0x00	; 0
      9fa:	90 e0       	ldi	r25, 0x00	; 0
@@ -383,16 +395,30 @@ Disassembly of section .text:
      a06:	51 e4       	ldi	r21, 0x41	; 65
      a08:	0e 94 6a 3f 	call	0x7ed4	; 0x7ed4 <__mulsf3>
      a0c:	0e 94 ca 3d 	call	0x7b94	; 0x7b94 <__fixunssfsi>
+	OCR1A = delay;
      a10:	70 93 89 00 	sts	0x0089, r23
      a14:	60 93 88 00 	sts	0x0088, r22
+	reset_counter_1();
      a18:	e9 cf       	rjmp	.-46     	; 0x9ec <_Z15reset_counter_1v>
 
 00000a1a <_Z15reset_counter_3v>:
+	TCNT1 = 0;
+}
+
+void reset_counter_3()
+{
+	TCNT3 = 0;
      a1a:	10 92 95 00 	sts	0x0095, r1
      a1e:	10 92 94 00 	sts	0x0094, r1
      a22:	08 95       	ret
 
 00000a24 <_Z13set_counter_3j>:
+	reset_counter_1();
+}
+
+void set_counter_3(uint16_t delay)
+{
+	delay = 15.625 * delay;
      a24:	bc 01       	movw	r22, r24
      a26:	80 e0       	ldi	r24, 0x00	; 0
      a28:	90 e0       	ldi	r25, 0x00	; 0
@@ -403,64 +429,107 @@ Disassembly of section .text:
      a34:	51 e4       	ldi	r21, 0x41	; 65
      a36:	0e 94 6a 3f 	call	0x7ed4	; 0x7ed4 <__mulsf3>
      a3a:	0e 94 ca 3d 	call	0x7b94	; 0x7b94 <__fixunssfsi>
+	OCR3A = delay;
      a3e:	70 93 99 00 	sts	0x0099, r23
      a42:	60 93 98 00 	sts	0x0098, r22
+	reset_counter_3();
      a46:	e9 cf       	rjmp	.-46     	; 0xa1a <_Z15reset_counter_3v>
 
 00000a48 <_Z13init_countersv>:
+
+//---------------------------------------COUNTERS/TIMERS-----------
+void init_counters()
+{
+	// WGMn3:0 = 4 (OCRnA) or 12 (OCRn), where top value is read from.
+	TCCR1B |= 0b00000101; // clock 1, prescaler 1024
      a48:	e1 e8       	ldi	r30, 0x81	; 129
      a4a:	f0 e0       	ldi	r31, 0x00	; 0
      a4c:	80 81       	ld	r24, Z
      a4e:	85 60       	ori	r24, 0x05	; 5
      a50:	80 83       	st	Z, r24
+	TCCR3B |= 0b00000101; // clock 2, prescaler 1024
      a52:	e1 e9       	ldi	r30, 0x91	; 145
      a54:	f0 e0       	ldi	r31, 0x00	; 0
      a56:	80 81       	ld	r24, Z
      a58:	85 60       	ori	r24, 0x05	; 5
      a5a:	80 83       	st	Z, r24
+	
+	// standardvalue for interrupt is 1000ms
+	set_counter_1(1000);
      a5c:	88 ee       	ldi	r24, 0xE8	; 232
      a5e:	93 e0       	ldi	r25, 0x03	; 3
      a60:	ca df       	rcall	.-108    	; 0x9f6 <_Z13set_counter_1j>
+	set_counter_3(1000);
      a62:	88 ee       	ldi	r24, 0xE8	; 232
      a64:	93 e0       	ldi	r25, 0x03	; 3
      a66:	de df       	rcall	.-68     	; 0xa24 <_Z13set_counter_3j>
+	
+	TIMSK1 |= 0b00000010; // Enable interrupts when OCF1A, in TIFR1, is set.
      a68:	ef e6       	ldi	r30, 0x6F	; 111
      a6a:	f0 e0       	ldi	r31, 0x00	; 0
      a6c:	80 81       	ld	r24, Z
      a6e:	82 60       	ori	r24, 0x02	; 2
      a70:	80 83       	st	Z, r24
+	TIMSK3 |= 0b00000010; // Enable interrupts when OCF2A, in TIFR2, is set.
      a72:	e1 e7       	ldi	r30, 0x71	; 113
      a74:	f0 e0       	ldi	r31, 0x00	; 0
      a76:	80 81       	ld	r24, Z
      a78:	82 60       	ori	r24, 0x02	; 2
      a7a:	80 83       	st	Z, r24
+	// OCF1A (or ICFn) Flag, in TIFR1, can be used to generate interrupts.
+	TCNT1 = 0;
      a7c:	10 92 85 00 	sts	0x0085, r1
      a80:	10 92 84 00 	sts	0x0084, r1
+	TCNT3 = 0;
      a84:	10 92 95 00 	sts	0x0095, r1
      a88:	10 92 94 00 	sts	0x0094, r1
      a8c:	08 95       	ret
 
 00000a8e <_Z4waitj>:
+}
+
+//---------------------------------------------------------------------------------------
+void wait(uint16_t delaytime)
+{
+	gWaitFlag = 0;
      a8e:	10 92 88 15 	sts	0x1588, r1
+	set_counter_3(delaytime);
      a92:	c8 df       	rcall	.-112    	; 0xa24 <_Z13set_counter_3j>
+	while(gWaitFlag == 0)
      a94:	80 91 88 15 	lds	r24, 0x1588
      a98:	81 11       	cpse	r24, r1
      a9a:	06 c0       	rjmp	.+12     	; 0xaa8 <_Z4waitj+0x1a>
+	{
+		MPU_update();
      a9c:	0e 94 6e 35 	call	0x6adc	; 0x6adc <_Z10MPU_updatev>
+//---------------------------------------------------------------------------------------
+void wait(uint16_t delaytime)
+{
+	gWaitFlag = 0;
+	set_counter_3(delaytime);
+	while(gWaitFlag == 0)
      aa0:	80 91 88 15 	lds	r24, 0x1588
      aa4:	88 23       	and	r24, r24
      aa6:	d1 f3       	breq	.-12     	; 0xa9c <_Z4waitj+0xe>
      aa8:	08 95       	ret
 
 00000aaa <__vector_32>:
+		MPU_update();
+	}
+}
+
+ISR(TIMER3_COMPA_vect)
+{
      aaa:	1f 92       	push	r1
      aac:	0f 92       	push	r0
      aae:	0f b6       	in	r0, 0x3f	; 63
      ab0:	0f 92       	push	r0
      ab2:	11 24       	eor	r1, r1
      ab4:	8f 93       	push	r24
+	gWaitFlag = 1;
      ab6:	81 e0       	ldi	r24, 0x01	; 1
      ab8:	80 93 88 15 	sts	0x1588, r24
+	TCNT3 = 0;
      abc:	10 92 95 00 	sts	0x0095, r1
      ac0:	10 92 94 00 	sts	0x0094, r1
      ac4:	8f 91       	pop	r24
@@ -552,20 +621,35 @@ Disassembly of section .text:
      b64:	08 95       	ret
 
 00000b66 <__vector_13>:
+		USART_decode_rx_fifo();
+	}
+}
+
+ISR(TIMER1_COMPA_vect)
+{
      b66:	1f 92       	push	r1
      b68:	0f 92       	push	r0
      b6a:	0f b6       	in	r0, 0x3f	; 63
      b6c:	0f 92       	push	r0
      b6e:	11 24       	eor	r1, r1
      b70:	8f 93       	push	r24
+	if(std_pos_flag == 0)
      b72:	80 91 06 01 	lds	r24, 0x0106
      b76:	81 11       	cpse	r24, r1
      b78:	05 c0       	rjmp	.+10     	; 0xb84 <__vector_13+0x1e>
+	{
+		std_pos_flag = 1;
      b7a:	81 e0       	ldi	r24, 0x01	; 1
      b7c:	80 93 06 01 	sts	0x0106, r24
+		move_to_std_flag = 1;
      b80:	80 93 89 15 	sts	0x1589, r24
+	}
+	
+	//USART_SendValue(MPU_get_y() * 180/M_PI);
+	TCNT1 = 0;
      b84:	10 92 85 00 	sts	0x0085, r1
      b88:	10 92 84 00 	sts	0x0084, r1
+}
      b8c:	8f 91       	pop	r24
      b8e:	0f 90       	pop	r0
      b90:	0f be       	out	0x3f, r0	; 63
@@ -574,59 +658,116 @@ Disassembly of section .text:
      b96:	18 95       	reti
 
 00000b98 <_Z22wait_until_gyro_stablev>:
+
+void wait_until_gyro_stable()
+{
+	wait(4000);
      b98:	80 ea       	ldi	r24, 0xA0	; 160
      b9a:	9f e0       	ldi	r25, 0x0F	; 15
      b9c:	78 df       	rcall	.-272    	; 0xa8e <_Z4waitj>
+	wait(4000);
      b9e:	80 ea       	ldi	r24, 0xA0	; 160
      ba0:	9f e0       	ldi	r25, 0x0F	; 15
      ba2:	75 df       	rcall	.-278    	; 0xa8e <_Z4waitj>
+	wait(4000);
      ba4:	80 ea       	ldi	r24, 0xA0	; 160
      ba6:	9f e0       	ldi	r25, 0x0F	; 15
      ba8:	72 df       	rcall	.-284    	; 0xa8e <_Z4waitj>
+	wait(4000);
      baa:	80 ea       	ldi	r24, 0xA0	; 160
      bac:	9f e0       	ldi	r25, 0x0F	; 15
      bae:	6f df       	rcall	.-290    	; 0xa8e <_Z4waitj>
+	wait(4000);
      bb0:	80 ea       	ldi	r24, 0xA0	; 160
      bb2:	9f e0       	ldi	r25, 0x0F	; 15
      bb4:	6c cf       	rjmp	.-296    	; 0xa8e <_Z4waitj>
 
 00000bb6 <main>:
+
+void wait_until_gyro_stable();
+
+int main(void)
+{
+	LED_INIT;
      bb6:	87 b1       	in	r24, 0x07	; 7
      bb8:	80 6c       	ori	r24, 0xC0	; 192
      bba:	87 b9       	out	0x07, r24	; 7
+	//servoTx;
+	sei();
      bbc:	78 94       	sei
+	USART_init();
      bbe:	0e 94 49 39 	call	0x7292	; 0x7292 <_Z10USART_initv>
+	MPU_init();
      bc2:	0e 94 36 35 	call	0x6a6c	; 0x6a6c <_Z8MPU_initv>
+	SERVO_init(); //Init servos
      bc6:	0e 94 b5 37 	call	0x6f6a	; 0x6f6a <_Z10SERVO_initv>
+	init_counters();
      bca:	3e df       	rcall	.-388    	; 0xa48 <_Z13init_countersv>
+	
+	initvar();
      bcc:	5c d0       	rcall	.+184    	; 0xc86 <_Z7initvarv>
+	
+	SERVO_update_EEPROM(BROADCASTING_ID);
      bce:	8e ef       	ldi	r24, 0xFE	; 254
      bd0:	0e 94 d5 37 	call	0x6faa	; 0x6faa <_Z19SERVO_update_EEPROMh>
+	
+	wait(10);
      bd4:	8a e0       	ldi	r24, 0x0A	; 10
      bd6:	90 e0       	ldi	r25, 0x00	; 0
      bd8:	5a df       	rcall	.-332    	; 0xa8e <_Z4waitj>
+	move_to_std();
      bda:	0e 94 16 1c 	call	0x382c	; 0x382c <_Z11move_to_stdv>
+	wait_until_gyro_stable();
      bde:	dc df       	rcall	.-72     	; 0xb98 <_Z22wait_until_gyro_stablev>
+	USART_send_message("Gyro Stable");
      be0:	81 e5       	ldi	r24, 0x51	; 81
      be2:	95 e1       	ldi	r25, 0x15	; 21
-     be4:	0e 94 22 3a 	call	0x7444	; 0x7444 <_Z17USART_SendMessagePc>
+     be4:	0e 94 22 3a 	call	0x7444	; 0x7444 <_Z18USART_send_messagePc>
+	
+	// ------ TESTCODE FOR READING SERVO -------
+		
+	//servoGoto(1, 3.14/3, 0x200);
+	SERVO_update_EEPROM(BROADCASTING_ID); // NOTE: needs to run once for SERVO_get position to work	
      be8:	8e ef       	ldi	r24, 0xFE	; 254
      bea:	0e 94 d5 37 	call	0x6faa	; 0x6faa <_Z19SERVO_update_EEPROMh>
+	//----------------------------
+	
+	reset_counter_1();
      bee:	fe de       	rcall	.-516    	; 0x9ec <_Z15reset_counter_1v>
+	set_counter_1(3000);
      bf0:	88 eb       	ldi	r24, 0xB8	; 184
      bf2:	9b e0       	ldi	r25, 0x0B	; 11
      bf4:	00 df       	rcall	.-512    	; 0x9f6 <_Z13set_counter_1j>
+		{
+			move_to_std_flag = 0;
+			move_to_std();
+		}*/
+		
+		climb();
      bf6:	0e 94 69 1d 	call	0x3ad2	; 0x3ad2 <_Z5climbv>
+		//off the edge and pray it stays upright.
+		//it would be great if someone(hint hint Tobias) could make it take
+		//taller steps during this bit though.
+		*/
+		
+		change_z(-120);
      bfa:	60 e0       	ldi	r22, 0x00	; 0
      bfc:	70 e0       	ldi	r23, 0x00	; 0
      bfe:	80 ef       	ldi	r24, 0xF0	; 240
      c00:	92 ec       	ldi	r25, 0xC2	; 194
      c02:	0e 94 27 12 	call	0x244e	; 0x244e <_Z8change_zf>
+		move_to_std();
      c06:	0e 94 16 1c 	call	0x382c	; 0x382c <_Z11move_to_stdv>
+
+		wait(4000);
      c0a:	80 ea       	ldi	r24, 0xA0	; 160
      c0c:	9f e0       	ldi	r25, 0x0F	; 15
      c0e:	3f df       	rcall	.-386    	; 0xa8e <_Z4waitj>
-     c10:	0e 94 af 3b 	call	0x775e	; 0x775e <_Z18USART_DecodeRxFIFOv>
+		
+		
+
+		USART_decode_rx_fifo();
+     c10:	0e 94 af 3b 	call	0x775e	; 0x775e <_Z20USART_decode_rx_fifov>
      c14:	f0 cf       	rjmp	.-32     	; 0xbf6 <main+0x40>
 
 00000c16 <_Z11init_structP7LegData>:
@@ -11778,6 +11919,12 @@ void climb()
     6c90:	08 95       	ret
 
 00006c92 <_Z20servo_check_tx_readyv>:
+	gServoParameters[2] = (uint8_t)(minPosition>>8); //high byte
+	gServoParameters[3] = (uint8_t)maxPosition;
+	gServoParameters[4] = (uint8_t)(maxPosition>>8);
+	
+	send_servo_packet(ID, INST_WRITE, 5);	
+}
     6c92:	80 91 c8 00 	lds	r24, 0x00C8
     6c96:	80 72       	andi	r24, 0x20	; 32
     6c98:	08 95       	ret
@@ -12122,48 +12269,100 @@ void climb()
     6f54:	ab ce       	rjmp	.-682    	; 0x6cac <_Z17send_servo_packethhh>
 
 00006f56 <_Z22SERVO_set_torque_limithj>:
+
+void SERVO_set_torque_limit(uint8_t ID, uint16_t maxTorque)
+{
+	gServoParameters[0] = P_TORQUE_LIMIT_L; 
     6f56:	92 e2       	ldi	r25, 0x22	; 34
     6f58:	90 93 ae 1a 	sts	0x1AAE, r25
+	gServoParameters[1] = (uint8_t)maxTorque; //truncates to low byte
     6f5c:	60 93 af 1a 	sts	0x1AAF, r22
+	gServoParameters[2] = (uint8_t)(maxTorque>>8); //high byte
     6f60:	70 93 b0 1a 	sts	0x1AB0, r23
+	
+	send_servo_packet(ID, INST_WRITE, 3);
     6f64:	43 e0       	ldi	r20, 0x03	; 3
     6f66:	63 e0       	ldi	r22, 0x03	; 3
     6f68:	a1 ce       	rjmp	.-702    	; 0x6cac <_Z17send_servo_packethhh>
 
 00006f6a <_Z10SERVO_initv>:
+DEFINE_FIFO(gServoRxFIFO, 1024);
+
+
+void SERVO_init()
+{
+	servoTx;
     6f6a:	5c 98       	cbi	0x0b, 4	; 11
+	//set baud rate
+	//typecasting of "int" to byte truncates to the lowest uint8_t
+	UBRR1H = (uint8_t) (((F_CPU / 16 / ServoBaudRate ) - 1)>>8);
     6f6c:	10 92 cd 00 	sts	0x00CD, r1
+	UBRR1L = (uint8_t) ((F_CPU / 16 / ServoBaudRate ) - 1);
     6f70:	10 92 cc 00 	sts	0x00CC, r1
+	
+	//enable receiver and transmitter and enable interrupts
+	UCSR1B = (1<<RXEN1)|(1<<TXEN1)|(1<<RXCIE1);
     6f74:	88 e9       	ldi	r24, 0x98	; 152
     6f76:	80 93 c9 00 	sts	0x00C9, r24
+	
+	//Frame format: 8data, no parity, 1 stop bit
+	UCSR1C = (1<<UCSZ10 | 1<<UCSZ11);
     6f7a:	86 e0       	ldi	r24, 0x06	; 6
     6f7c:	80 93 ca 00 	sts	0x00CA, r24
+	
+	servoDDR |= (1<<servoDirPin); //set pin for controlling direction of serial communication w. servo.
     6f80:	54 9a       	sbi	0x0a, 4	; 10
+	
+	// Set torque limit
+	SERVO_set_torque_limit(BROADCASTING_ID, 0x3ff); // 100% of max
     6f82:	6f ef       	ldi	r22, 0xFF	; 255
     6f84:	73 e0       	ldi	r23, 0x03	; 3
     6f86:	8e ef       	ldi	r24, 0xFE	; 254
     6f88:	e6 cf       	rjmp	.-52     	; 0x6f56 <_Z22SERVO_set_torque_limithj>
 
 00006f8a <_Z22SERVO_set_return_levelhh>:
+	send_servo_packet(ID, INST_WRITE, 3);
+}
+
+void SERVO_set_return_level(uint8_t ID, uint8_t level)
+{
+	gServoParameters[0] = P_RETURN_LEVEL; 
     6f8a:	90 e1       	ldi	r25, 0x10	; 16
     6f8c:	90 93 ae 1a 	sts	0x1AAE, r25
+	gServoParameters[1] = level;
     6f90:	60 93 af 1a 	sts	0x1AAF, r22
+	send_servo_packet(ID, INST_WRITE, 2);	
     6f94:	42 e0       	ldi	r20, 0x02	; 2
     6f96:	63 e0       	ldi	r22, 0x03	; 3
     6f98:	89 ce       	rjmp	.-750    	; 0x6cac <_Z17send_servo_packethhh>
 
 00006f9a <_Z27SERVO_set_return_delay_timehh>:
+}
+
+void SERVO_set_return_delay_time(uint8_t ID, uint8_t delay)
+{
+	gServoParameters[0] = P_RETURN_DELAY_TIME;
     6f9a:	95 e0       	ldi	r25, 0x05	; 5
     6f9c:	90 93 ae 1a 	sts	0x1AAE, r25
+	gServoParameters[1] = delay;
     6fa0:	60 93 af 1a 	sts	0x1AAF, r22
+	send_servo_packet(ID, INST_WRITE, 2);
     6fa4:	42 e0       	ldi	r20, 0x02	; 2
     6fa6:	63 e0       	ldi	r22, 0x03	; 3
     6fa8:	81 ce       	rjmp	.-766    	; 0x6cac <_Z17send_servo_packethhh>
 
 00006faa <_Z19SERVO_update_EEPROMh>:
+	// Set torque limit
+	SERVO_set_torque_limit(BROADCASTING_ID, 0x3ff); // 100% of max
+}
+
+void SERVO_update_EEPROM(uint8_t ID)
+{	
     6faa:	cf 93       	push	r28
     6fac:	c8 2f       	mov	r28, r24
+	servoTx;
     6fae:	5c 98       	cbi	0x0b, 4	; 11
+	SERVO_set_return_level(ID, 1);
     6fb0:	61 e0       	ldi	r22, 0x01	; 1
     6fb2:	eb df       	rcall	.-42     	; 0x6f8a <_Z22SERVO_set_return_levelhh>
 	#else
@@ -12178,13 +12377,22 @@ void climb()
     6fba:	f1 f7       	brne	.-4      	; 0x6fb8 <_Z19SERVO_update_EEPROMh+0xe>
     6fbc:	00 c0       	rjmp	.+0      	; 0x6fbe <_Z19SERVO_update_EEPROMh+0x14>
     6fbe:	00 00       	nop
+	_delay_ms(2);
+	SERVO_set_return_delay_time(ID, 20);
     6fc0:	64 e1       	ldi	r22, 0x14	; 20
     6fc2:	8c 2f       	mov	r24, r28
     6fc4:	ea df       	rcall	.-44     	; 0x6f9a <_Z27SERVO_set_return_delay_timehh>
+}
     6fc6:	cf 91       	pop	r28
     6fc8:	08 95       	ret
 
 00006fca <_Z17SERVO_update_datah>:
+	gServoParameters[1] = delay;
+	send_servo_packet(ID, INST_WRITE, 2);
+}
+
+void SERVO_update_data(uint8_t ID)
+{
     6fca:	9f 92       	push	r9
     6fcc:	af 92       	push	r10
     6fce:	bf 92       	push	r11
@@ -12205,15 +12413,26 @@ void climb()
     6fec:	0f be       	out	0x3f, r0	; 63
     6fee:	cd bf       	out	0x3d, r28	; 61
     6ff0:	e8 2e       	mov	r14, r24
+	uint8_t exitFlag = 0;
+	
+	uint8_t error = 0;
+	
+
+	servoTx;
     6ff2:	5c 98       	cbi	0x0b, 4	; 11
+
+	gServoParameters[0] = P_PRESENT_POSITION_L;
     6ff4:	84 e2       	ldi	r24, 0x24	; 36
     6ff6:	80 93 ae 1a 	sts	0x1AAE, r24
+	gServoParameters[1] = 8; // read 8 bytes
     6ffa:	88 e0       	ldi	r24, 0x08	; 8
     6ffc:	80 93 af 1a 	sts	0x1AAF, r24
+	send_servo_packet(ID, INST_READ, 2);
     7000:	42 e0       	ldi	r20, 0x02	; 2
     7002:	62 e0       	ldi	r22, 0x02	; 2
     7004:	8e 2d       	mov	r24, r14
     7006:	52 de       	rcall	.-860    	; 0x6cac <_Z17send_servo_packethhh>
+	while(servo_check_tx_ready() == 0) // wait until last byte has been transmitted
     7008:	04 c0       	rjmp	.+8      	; 0x7012 <_Z17SERVO_update_datah+0x48>
 	#else
 		//round up by default
@@ -12228,6 +12447,8 @@ void climb()
     7012:	3f de       	rcall	.-898    	; 0x6c92 <_Z20servo_check_tx_readyv>
     7014:	88 23       	and	r24, r24
     7016:	c9 f3       	breq	.-14     	; 0x700a <_Z17SERVO_update_datah+0x40>
+	_delay_us(20); // wait for stop bits
+	servoRx;
     7018:	5c 9a       	sbi	0x0b, 4	; 11
     701a:	87 ee       	ldi	r24, 0xE7	; 231
     701c:	93 e0       	ldi	r25, 0x03	; 3
@@ -12235,32 +12456,107 @@ void climb()
     7020:	f1 f7       	brne	.-4      	; 0x701e <_Z17SERVO_update_datah+0x54>
     7022:	00 c0       	rjmp	.+0      	; 0x7024 <_Z17SERVO_update_datah+0x5a>
     7024:	00 00       	nop
+	
+	_delay_us(250); // receive packet
+	
+	servoTx;
     7026:	5c 98       	cbi	0x0b, 4	; 11
+	uint8_t checkSum = 0;
+	uint8_t inverseCheckSum = 0;
+	uint8_t checkSumValid = 0;
+	uint8_t exitFlag = 0;
+	
+	uint8_t error = 0;
     7028:	d1 2c       	mov	r13, r1
+	uint8_t parameters[10]; // TODO: look up max length
+
+	uint8_t checkSum = 0;
+	uint8_t inverseCheckSum = 0;
+	uint8_t checkSumValid = 0;
+	uint8_t exitFlag = 0;
     702a:	91 2c       	mov	r9, r1
+	uint8_t packetLength = 0;
+	uint8_t parameters[10]; // TODO: look up max length
+
+	uint8_t checkSum = 0;
+	uint8_t inverseCheckSum = 0;
+	uint8_t checkSumValid = 0;
     702c:	b1 2c       	mov	r11, r1
+	uint8_t *data = 0;
+	uint8_t dataint;
+	
+	char servoReadMode;
+	uint8_t byteCount = 0;
+	uint8_t packetLength = 0;
     702e:	00 e0       	ldi	r16, 0x00	; 0
+{
+	uint8_t *data = 0;
+	uint8_t dataint;
+	
+	char servoReadMode;
+	uint8_t byteCount = 0;
     7030:	f1 2c       	mov	r15, r1
+	servoRx;
+	
+	_delay_us(250); // receive packet
+	
+	servoTx;
+	servoReadMode = 'W';
     7032:	17 e5       	ldi	r17, 0x57	; 87
+					// correct packet
+					checkSumValid = 1; // set flag
+				}
+				
+				
+				exitFlag = 1;
     7034:	cc 24       	eor	r12, r12
     7036:	c3 94       	inc	r12
+				break;
+			}
+			case('L'):
+			{
+				packetLength = dataint;
+				byteCount = 0;
     7038:	a1 2c       	mov	r10, r1
     703a:	5d c0       	rjmp	.+186    	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+	{
+		dataint = *data;
+		switch(servoReadMode){
+			case('W'): // wait for start
+			{
+				if(dataint == 0xff)
     703c:	6f 3f       	cpi	r22, 0xFF	; 255
     703e:	09 f0       	breq	.+2      	; 0x7042 <_Z17SERVO_update_datah+0x78>
     7040:	5a c0       	rjmp	.+180    	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
     7042:	4d c0       	rjmp	.+154    	; 0x70de <_Z17SERVO_update_datah+0x114>
+				}
+				break;
+			}
+			case('S'): // check for second start
+			{
+				if(dataint == 0xff)
     7044:	6f 3f       	cpi	r22, 0xFF	; 255
     7046:	09 f0       	breq	.+2      	; 0x704a <_Z17SERVO_update_datah+0x80>
     7048:	4c c0       	rjmp	.+152    	; 0x70e2 <_Z17SERVO_update_datah+0x118>
+				{
+					servoReadMode = 'I';
     704a:	19 e4       	ldi	r17, 0x49	; 73
     704c:	54 c0       	rjmp	.+168    	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+				break;
+			}
+			case('I'):
+			{
+				
+				if(!(*data == ID))
     704e:	e6 16       	cp	r14, r22
     7050:	09 f4       	brne	.+2      	; 0x7054 <_Z17SERVO_update_datah+0x8a>
     7052:	49 c0       	rjmp	.+146    	; 0x70e6 <_Z17SERVO_update_datah+0x11c>
+				{
+					USART_send_message("ServoError: 2");
     7054:	8d e5       	ldi	r24, 0x5D	; 93
     7056:	95 e1       	ldi	r25, 0x15	; 21
-    7058:	f5 d1       	rcall	.+1002   	; 0x7444 <_Z17USART_SendMessagePc>
+    7058:	f5 d1       	rcall	.+1002   	; 0x7444 <_Z18USART_send_messagePc>
+					while(!(FifoRead(gServoRxFIFO, data))); //flush buffer
     705a:	60 e0       	ldi	r22, 0x00	; 0
     705c:	70 e0       	ldi	r23, 0x00	; 0
     705e:	80 91 3b 01 	lds	r24, 0x013B
@@ -12268,11 +12564,26 @@ void climb()
     7066:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     706a:	88 23       	and	r24, r24
     706c:	b1 f3       	breq	.-20     	; 0x705a <_Z17SERVO_update_datah+0x90>
+				}
+				
+				servoReadMode = 'L';
     706e:	1c e4       	ldi	r17, 0x4C	; 76
     7070:	42 c0       	rjmp	.+132    	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+				break;
+			}
+			case('E'):
+			{
+				// TODO: something...probably...
+				error = *data;
     7072:	d6 2e       	mov	r13, r22
+				servoReadMode = 'P';
     7074:	10 e5       	ldi	r17, 0x50	; 80
+				break;
     7076:	3f c0       	rjmp	.+126    	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+			}
+			case('P'):
+			{
+				if(byteCount < packetLength-2)
     7078:	2f 2d       	mov	r18, r15
     707a:	30 e0       	ldi	r19, 0x00	; 0
     707c:	40 2f       	mov	r20, r16
@@ -12282,6 +12593,8 @@ void climb()
     7084:	28 17       	cp	r18, r24
     7086:	39 07       	cpc	r19, r25
     7088:	3c f4       	brge	.+14     	; 0x7098 <_Z17SERVO_update_datah+0xce>
+				{
+					parameters[byteCount] = dataint;
     708a:	e1 e0       	ldi	r30, 0x01	; 1
     708c:	f0 e0       	ldi	r31, 0x00	; 0
     708e:	ec 0f       	add	r30, r28
@@ -12289,17 +12602,32 @@ void climb()
     7092:	e2 0f       	add	r30, r18
     7094:	f3 1f       	adc	r31, r19
     7096:	60 83       	st	Z, r22
+				}
+				
+				if(byteCount == packetLength-3){
     7098:	43 50       	subi	r20, 0x03	; 3
     709a:	51 09       	sbc	r21, r1
     709c:	24 17       	cp	r18, r20
     709e:	35 07       	cpc	r19, r21
     70a0:	09 f4       	brne	.+2      	; 0x70a4 <_Z17SERVO_update_datah+0xda>
+					servoReadMode = 'C';
     70a2:	13 e4       	ldi	r17, 0x43	; 67
+				}
+	
+				++byteCount;
     70a4:	f3 94       	inc	r15
+				break;
     70a6:	27 c0       	rjmp	.+78     	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+			}
+			case('C'):
+			{
+				// calculate checksum
+				checkSum = ID + packetLength + error;
     70a8:	40 2f       	mov	r20, r16
     70aa:	4d 0d       	add	r20, r13
     70ac:	4e 0d       	add	r20, r14
+
+				for(int count = 0; count < packetLength -2; ++count) // calculation of checksum starts with ID-byte
     70ae:	80 2f       	mov	r24, r16
     70b0:	90 e0       	ldi	r25, 0x00	; 0
     70b2:	02 97       	sbiw	r24, 0x02	; 2
@@ -12308,34 +12636,107 @@ void climb()
     70b8:	6c f4       	brge	.+26     	; 0x70d4 <_Z17SERVO_update_datah+0x10a>
     70ba:	fe 01       	movw	r30, r28
     70bc:	31 96       	adiw	r30, 0x01	; 1
+	gServoParameters[0] = P_RETURN_DELAY_TIME;
+	gServoParameters[1] = delay;
+	send_servo_packet(ID, INST_WRITE, 2);
+}
+
+void SERVO_update_data(uint8_t ID)
     70be:	2f ef       	ldi	r18, 0xFF	; 255
     70c0:	3f ef       	ldi	r19, 0xFF	; 255
     70c2:	2c 0f       	add	r18, r28
     70c4:	3d 1f       	adc	r19, r29
     70c6:	20 0f       	add	r18, r16
     70c8:	31 1d       	adc	r19, r1
+				// calculate checksum
+				checkSum = ID + packetLength + error;
+
+				for(int count = 0; count < packetLength -2; ++count) // calculation of checksum starts with ID-byte
+				{
+					checkSum += parameters[count]; // NOTE: make sure overflow truncates to lower byte
     70ca:	81 91       	ld	r24, Z+
     70cc:	48 0f       	add	r20, r24
+			case('C'):
+			{
+				// calculate checksum
+				checkSum = ID + packetLength + error;
+
+				for(int count = 0; count < packetLength -2; ++count) // calculation of checksum starts with ID-byte
     70ce:	e2 17       	cp	r30, r18
     70d0:	f3 07       	cpc	r31, r19
     70d2:	d9 f7       	brne	.-10     	; 0x70ca <_Z17SERVO_update_datah+0x100>
+				{
+					checkSum += parameters[count]; // NOTE: make sure overflow truncates to lower byte
+				}
+				inverseCheckSum = ~checkSum; // don't know why you need to do this...
     70d4:	40 95       	com	r20
+				if(inverseCheckSum == dataint)
     70d6:	46 17       	cp	r20, r22
     70d8:	41 f0       	breq	.+16     	; 0x70ea <_Z17SERVO_update_datah+0x120>
+					// correct packet
+					checkSumValid = 1; // set flag
+				}
+				
+				
+				exitFlag = 1;
     70da:	9c 2c       	mov	r9, r12
     70dc:	0c c0       	rjmp	.+24     	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+		switch(servoReadMode){
+			case('W'): // wait for start
+			{
+				if(dataint == 0xff)
+				{
+					servoReadMode = 'S';
     70de:	13 e5       	ldi	r17, 0x53	; 83
     70e0:	0a c0       	rjmp	.+20     	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+				if(dataint == 0xff)
+				{
+					servoReadMode = 'I';
+				}else
+				{
+					servoReadMode = 'W';
     70e2:	17 e5       	ldi	r17, 0x57	; 87
     70e4:	08 c0       	rjmp	.+16     	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+				{
+					USART_send_message("ServoError: 2");
+					while(!(FifoRead(gServoRxFIFO, data))); //flush buffer
+				}
+				
+				servoReadMode = 'L';
     70e6:	1c e4       	ldi	r17, 0x4C	; 76
     70e8:	06 c0       	rjmp	.+12     	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+					// correct packet
+					checkSumValid = 1; // set flag
+				}
+				
+				
+				exitFlag = 1;
     70ea:	9c 2c       	mov	r9, r12
+				}
+				inverseCheckSum = ~checkSum; // don't know why you need to do this...
+				if(inverseCheckSum == dataint)
+				{
+					// correct packet
+					checkSumValid = 1; // set flag
     70ec:	bc 2c       	mov	r11, r12
     70ee:	03 c0       	rjmp	.+6      	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
+				servoReadMode = 'L';
+				break;
+			}
+			case('L'):
+			{
+				packetLength = dataint;
     70f0:	06 2f       	mov	r16, r22
+				byteCount = 0;
     70f2:	fa 2c       	mov	r15, r10
+				servoReadMode = 'E';
     70f4:	15 e4       	ldi	r17, 0x45	; 69
+	servoReadMode = 'W';
+	for(int i = 0; i>10; i++)
+	{
+		parameters[i] = 0;
+	}
+	while(!(FifoRead(gServoRxFIFO, data)) && !exitFlag)
     70f6:	60 e0       	ldi	r22, 0x00	; 0
     70f8:	70 e0       	ldi	r23, 0x00	; 0
     70fa:	80 91 3b 01 	lds	r24, 0x013B
@@ -12347,9 +12748,16 @@ void climb()
     710c:	09 f4       	brne	.+2      	; 0x7110 <_Z17SERVO_update_datah+0x146>
     710e:	40 c0       	rjmp	.+128    	; 0x7190 <_Z17SERVO_update_datah+0x1c6>
     7110:	34 c0       	rjmp	.+104    	; 0x717a <_Z17SERVO_update_datah+0x1b0>
+	}
+	
+	// if there is stuff left in buffer
+	if(!(FifoRead(gServoRxFIFO, data)))
+	{
+		USART_send_message("ServoError: 3");
     7112:	8b e6       	ldi	r24, 0x6B	; 107
     7114:	95 e1       	ldi	r25, 0x15	; 21
-    7116:	96 d1       	rcall	.+812    	; 0x7444 <_Z17USART_SendMessagePc>
+    7116:	96 d1       	rcall	.+812    	; 0x7444 <_Z18USART_send_messagePc>
+		while(!(FifoRead(gServoRxFIFO, data))); //flush buffer
     7118:	60 e0       	ldi	r22, 0x00	; 0
     711a:	70 e0       	ldi	r23, 0x00	; 0
     711c:	80 91 3b 01 	lds	r24, 0x013B
@@ -12357,37 +12765,67 @@ void climb()
     7124:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7128:	88 23       	and	r24, r24
     712a:	b1 f3       	breq	.-20     	; 0x7118 <_Z17SERVO_update_datah+0x14e>
+	}
+	
+	if(checkSumValid)
     712c:	bb 20       	and	r11, r11
     712e:	09 f4       	brne	.+2      	; 0x7132 <_Z17SERVO_update_datah+0x168>
     7130:	49 c0       	rjmp	.+146    	; 0x71c4 <_Z17SERVO_update_datah+0x1fa>
+	{
+		uint16_t temp = (uint16_t)parameters[1];
+		gServoPos = temp << 8;
     7132:	9a 81       	ldd	r25, Y+2	; 0x02
     7134:	80 e0       	ldi	r24, 0x00	; 0
+		temp = (uint16_t) parameters[0];
     7136:	29 81       	ldd	r18, Y+1	; 0x01
+		gServoPos = gServoPos + temp;
     7138:	82 0f       	add	r24, r18
     713a:	91 1d       	adc	r25, r1
     713c:	90 93 2d 1a 	sts	0x1A2D, r25
     7140:	80 93 2c 1a 	sts	0x1A2C, r24
+		
+		temp = (uint16_t)parameters[3];
+		gServoSpeed = (temp << 8);
     7144:	9c 81       	ldd	r25, Y+4	; 0x04
     7146:	80 e0       	ldi	r24, 0x00	; 0
+		temp = (uint16_t)parameters[2];
     7148:	2b 81       	ldd	r18, Y+3	; 0x03
+		gServoSpeed = gServoSpeed + temp;
     714a:	82 0f       	add	r24, r18
     714c:	91 1d       	adc	r25, r1
     714e:	90 93 2b 1a 	sts	0x1A2B, r25
     7152:	80 93 2a 1a 	sts	0x1A2A, r24
+		
+		temp = (uint16_t)parameters[5];
+		gServoLoad = ((temp & 0x01) << 8);
     7156:	2e 81       	ldd	r18, Y+6	; 0x06
     7158:	92 2f       	mov	r25, r18
     715a:	91 70       	andi	r25, 0x01	; 1
     715c:	80 e0       	ldi	r24, 0x00	; 0
+		temp = (uint16_t)parameters[4];
     715e:	2d 81       	ldd	r18, Y+5	; 0x05
+		gServoLoad = gServoLoad + temp;
     7160:	82 0f       	add	r24, r18
     7162:	91 1d       	adc	r25, r1
     7164:	90 93 29 1a 	sts	0x1A29, r25
     7168:	80 93 28 1a 	sts	0x1A28, r24
+		//TODO: direction i parameter[5] bit 2
+		
+		
+		gServoVoltage = parameters[6];
     716c:	8f 81       	ldd	r24, Y+7	; 0x07
     716e:	80 93 27 1a 	sts	0x1A27, r24
+		
+		gServoTemperature = parameters[7];
     7172:	88 85       	ldd	r24, Y+8	; 0x08
     7174:	80 93 26 1a 	sts	0x1A26, r24
     7178:	25 c0       	rjmp	.+74     	; 0x71c4 <_Z17SERVO_update_datah+0x1fa>
+		}
+		
+	}
+	
+	// if there is stuff left in buffer
+	if(!(FifoRead(gServoRxFIFO, data)))
     717a:	60 e0       	ldi	r22, 0x00	; 0
     717c:	70 e0       	ldi	r23, 0x00	; 0
     717e:	80 91 3b 01 	lds	r24, 0x013B
@@ -12396,7 +12834,14 @@ void climb()
     718a:	81 11       	cpse	r24, r1
     718c:	cf cf       	rjmp	.-98     	; 0x712c <_Z17SERVO_update_datah+0x162>
     718e:	c1 cf       	rjmp	.-126    	; 0x7112 <_Z17SERVO_update_datah+0x148>
+	{
+		parameters[i] = 0;
+	}
+	while(!(FifoRead(gServoRxFIFO, data)) && !exitFlag)
+	{
+		dataint = *data;
     7190:	60 91 00 00 	lds	r22, 0x0000
+		switch(servoReadMode){
     7194:	1c 34       	cpi	r17, 0x4C	; 76
     7196:	09 f4       	brne	.+2      	; 0x719a <_Z17SERVO_update_datah+0x1d0>
     7198:	ab cf       	rjmp	.-170    	; 0x70f0 <_Z17SERVO_update_datah+0x126>
@@ -12421,6 +12866,12 @@ void climb()
     71be:	09 f0       	breq	.+2      	; 0x71c2 <_Z17SERVO_update_datah+0x1f8>
     71c0:	9a cf       	rjmp	.-204    	; 0x70f6 <_Z17SERVO_update_datah+0x12c>
     71c2:	5a cf       	rjmp	.-332    	; 0x7078 <_Z17SERVO_update_datah+0xae>
+		gServoTemperature = parameters[7];
+			
+	}
+	
+	
+}
     71c4:	2a 96       	adiw	r28, 0x0a	; 10
     71c6:	0f b6       	in	r0, 0x3f	; 63
     71c8:	f8 94       	cli
@@ -12441,29 +12892,61 @@ void climb()
     71e6:	08 95       	ret
 
 000071e8 <_Z13SERVO_get_posv>:
+
+
+uint16_t SERVO_get_pos()
+{
+	return gServoPos;
+}
     71e8:	80 91 2c 1a 	lds	r24, 0x1A2C
     71ec:	90 91 2d 1a 	lds	r25, 0x1A2D
     71f0:	08 95       	ret
 
 000071f2 <_Z15SERVO_get_speedv>:
+
+uint16_t SERVO_get_speed()
+{
+	return gServoSpeed;
+}
     71f2:	80 91 2a 1a 	lds	r24, 0x1A2A
     71f6:	90 91 2b 1a 	lds	r25, 0x1A2B
     71fa:	08 95       	ret
 
 000071fc <_Z14SERVO_get_loadv>:
+
+uint16_t SERVO_get_load()
+{
+	return gServoLoad;
+}
     71fc:	80 91 28 1a 	lds	r24, 0x1A28
     7200:	90 91 29 1a 	lds	r25, 0x1A29
     7204:	08 95       	ret
 
 00007206 <_Z21SERVO_get_temperaturev>:
+
+uint8_t SERVO_get_temperature()
+{
+	return gServoTemperature;
+}
     7206:	80 91 26 1a 	lds	r24, 0x1A26
     720a:	08 95       	ret
 
 0000720c <_Z17SERVO_get_voltagev>:
+
+uint8_t SERVO_get_voltage()
+{
+	return gServoVoltage;
+}
     720c:	80 91 27 1a 	lds	r24, 0x1A27
     7210:	08 95       	ret
 
 00007212 <__vector_28>:
+
+
+// -- Interrupts --
+
+ISR (USART1_RX_vect)
+{
     7212:	1f 92       	push	r1
     7214:	0f 92       	push	r0
     7216:	0f b6       	in	r0, 0x3f	; 63
@@ -12483,15 +12966,22 @@ void climb()
     7232:	bf 93       	push	r27
     7234:	ef 93       	push	r30
     7236:	ff 93       	push	r31
+	uint8_t data;
+	data = UDR1;
     7238:	60 91 ce 00 	lds	r22, 0x00CE
+	if(FifoWrite(gServoRxFIFO, data))
     723c:	80 91 3b 01 	lds	r24, 0x013B
     7240:	90 91 3c 01 	lds	r25, 0x013C
     7244:	0e 94 70 05 	call	0xae0	; 0xae0 <_Z9FifoWriteP4fifoh>
     7248:	88 23       	and	r24, r24
     724a:	19 f0       	breq	.+6      	; 0x7252 <__vector_28+0x40>
+	{
+		USART_send_message("ServoError: 1");
     724c:	89 e7       	ldi	r24, 0x79	; 121
     724e:	95 e1       	ldi	r25, 0x15	; 21
-    7250:	f9 d0       	rcall	.+498    	; 0x7444 <_Z17USART_SendMessagePc>
+    7250:	f9 d0       	rcall	.+498    	; 0x7444 <_Z18USART_send_messagePc>
+	}
+}
     7252:	ff 91       	pop	r31
     7254:	ef 91       	pop	r30
     7256:	bf 91       	pop	r27
@@ -12513,6 +13003,12 @@ void climb()
     7276:	18 95       	reti
 
 00007278 <_Z11USART_get_zv>:
+{
+	for(int i = 0; i < gRxBuffer[1]; i++)
+	{
+		gTxPayload[i] = gRxBuffer[i+2];
+	}
+	USART_send_packet(gRxBuffer[0], gRxBuffer[1]);
     7278:	50 91 4b 15 	lds	r21, 0x154B
     727c:	40 91 4c 15 	lds	r20, 0x154C
     7280:	30 91 4d 15 	lds	r19, 0x154D
@@ -12537,17 +13033,17 @@ void climb()
     72b2:	10 92 32 1b 	sts	0x1B32, r1
     72b6:	08 95       	ret
 
-000072b8 <_Z18USART_CheckTxReadyv>:
+000072b8 <_Z20USART_check_tx_readyv>:
     72b8:	80 91 c0 00 	lds	r24, 0x00C0
     72bc:	80 72       	andi	r24, 0x20	; 32
     72be:	08 95       	ret
 
-000072c0 <_Z15USART_WriteByteh>:
+000072c0 <_Z16USART_write_byteh>:
     72c0:	cf 93       	push	r28
     72c2:	c8 2f       	mov	r28, r24
-    72c4:	f9 df       	rcall	.-14     	; 0x72b8 <_Z18USART_CheckTxReadyv>
+    72c4:	f9 df       	rcall	.-14     	; 0x72b8 <_Z20USART_check_tx_readyv>
     72c6:	88 23       	and	r24, r24
-    72c8:	e9 f3       	breq	.-6      	; 0x72c4 <_Z15USART_WriteByteh+0x4>
+    72c8:	e9 f3       	breq	.-6      	; 0x72c4 <_Z16USART_write_byteh+0x4>
     72ca:	c0 93 c6 00 	sts	0x00C6, r28
     72ce:	cf 91       	pop	r28
     72d0:	08 95       	ret
@@ -12643,7 +13139,7 @@ void climb()
     7380:	cf 90       	pop	r12
     7382:	08 95       	ret
 
-00007384 <_Z16USART_SendPacketch>:
+00007384 <_Z17USART_send_packetch>:
     7384:	0f 93       	push	r16
     7386:	1f 93       	push	r17
     7388:	cf 93       	push	r28
@@ -12656,7 +13152,7 @@ void climb()
     739c:	30 e0       	ldi	r19, 0x00	; 0
     739e:	12 16       	cp	r1, r18
     73a0:	13 06       	cpc	r1, r19
-    73a2:	4c f5       	brge	.+82     	; 0x73f6 <_Z16USART_SendPacketch+0x72>
+    73a2:	4c f5       	brge	.+82     	; 0x73f6 <_Z17USART_send_packetch+0x72>
     73a4:	e2 e4       	ldi	r30, 0x42	; 66
     73a6:	ff e1       	ldi	r31, 0x1F	; 31
     73a8:	03 e0       	ldi	r16, 0x03	; 3
@@ -12669,7 +13165,7 @@ void climb()
     73b6:	49 2f       	mov	r20, r25
     73b8:	4d 57       	subi	r20, 0x7D	; 125
     73ba:	42 30       	cpi	r20, 0x02	; 2
-    73bc:	80 f4       	brcc	.+32     	; 0x73de <_Z16USART_SendPacketch+0x5a>
+    73bc:	80 f4       	brcc	.+32     	; 0x73de <_Z17USART_send_packetch+0x5a>
     73be:	d8 01       	movw	r26, r16
     73c0:	a3 5c       	subi	r26, 0xC3	; 195
     73c2:	b2 4e       	sbci	r27, 0xE2	; 226
@@ -12685,7 +13181,7 @@ void climb()
     73d6:	bd 1f       	adc	r27, r29
     73d8:	95 27       	eor	r25, r21
     73da:	9c 93       	st	X, r25
-    73dc:	06 c0       	rjmp	.+12     	; 0x73ea <_Z16USART_SendPacketch+0x66>
+    73dc:	06 c0       	rjmp	.+12     	; 0x73ea <_Z17USART_send_packetch+0x66>
     73de:	d8 01       	movw	r26, r16
     73e0:	a3 5c       	subi	r26, 0xC3	; 195
     73e2:	b2 4e       	sbci	r27, 0xE2	; 226
@@ -12696,8 +13192,8 @@ void climb()
     73ec:	31 96       	adiw	r30, 0x01	; 1
     73ee:	c2 17       	cp	r28, r18
     73f0:	d3 07       	cpc	r29, r19
-    73f2:	01 f7       	brne	.-64     	; 0x73b4 <_Z16USART_SendPacketch+0x30>
-    73f4:	04 c0       	rjmp	.+8      	; 0x73fe <_Z16USART_SendPacketch+0x7a>
+    73f2:	01 f7       	brne	.-64     	; 0x73b4 <_Z17USART_send_packetch+0x30>
+    73f4:	04 c0       	rjmp	.+8      	; 0x73fe <_Z17USART_send_packetch+0x7a>
     73f6:	03 e0       	ldi	r16, 0x03	; 3
     73f8:	10 e0       	ldi	r17, 0x00	; 0
     73fa:	c0 e0       	ldi	r28, 0x00	; 0
@@ -12722,23 +13218,23 @@ void climb()
     7420:	01 96       	adiw	r24, 0x01	; 1
     7422:	18 16       	cp	r1, r24
     7424:	19 06       	cpc	r1, r25
-    7426:	4c f4       	brge	.+18     	; 0x743a <_Z16USART_SendPacketch+0xb6>
+    7426:	4c f4       	brge	.+18     	; 0x743a <_Z17USART_send_packetch+0xb6>
     7428:	cd e3       	ldi	r28, 0x3D	; 61
     742a:	dd e1       	ldi	r29, 0x1D	; 29
     742c:	02 5c       	subi	r16, 0xC2	; 194
     742e:	12 4e       	sbci	r17, 0xE2	; 226
     7430:	89 91       	ld	r24, Y+
-    7432:	46 df       	rcall	.-372    	; 0x72c0 <_Z15USART_WriteByteh>
+    7432:	46 df       	rcall	.-372    	; 0x72c0 <_Z16USART_write_byteh>
     7434:	c0 17       	cp	r28, r16
     7436:	d1 07       	cpc	r29, r17
-    7438:	d9 f7       	brne	.-10     	; 0x7430 <_Z16USART_SendPacketch+0xac>
+    7438:	d9 f7       	brne	.-10     	; 0x7430 <_Z17USART_send_packetch+0xac>
     743a:	df 91       	pop	r29
     743c:	cf 91       	pop	r28
     743e:	1f 91       	pop	r17
     7440:	0f 91       	pop	r16
     7442:	08 95       	ret
 
-00007444 <_Z17USART_SendMessagePc>:
+00007444 <_Z18USART_send_messagePc>:
     7444:	cf 93       	push	r28
     7446:	df 93       	push	r29
     7448:	c8 2f       	mov	r28, r24
@@ -12747,7 +13243,7 @@ void climb()
     744e:	5f e1       	ldi	r21, 0x1F	; 31
     7450:	20 e0       	ldi	r18, 0x00	; 0
     7452:	30 e0       	ldi	r19, 0x00	; 0
-    7454:	06 c0       	rjmp	.+12     	; 0x7462 <_Z17USART_SendMessagePc+0x1e>
+    7454:	06 c0       	rjmp	.+12     	; 0x7462 <_Z18USART_send_messagePc+0x1e>
     7456:	69 91       	ld	r22, Y+
     7458:	fa 01       	movw	r30, r20
     745a:	61 93       	st	Z+, r22
@@ -12759,21 +13255,21 @@ void climb()
     7466:	df 01       	movw	r26, r30
     7468:	0d 90       	ld	r0, X+
     746a:	00 20       	and	r0, r0
-    746c:	e9 f7       	brne	.-6      	; 0x7468 <_Z17USART_SendMessagePc+0x24>
+    746c:	e9 f7       	brne	.-6      	; 0x7468 <_Z18USART_send_messagePc+0x24>
     746e:	11 97       	sbiw	r26, 0x01	; 1
     7470:	bd 01       	movw	r22, r26
     7472:	6e 1b       	sub	r22, r30
     7474:	7f 0b       	sbc	r23, r31
     7476:	26 17       	cp	r18, r22
     7478:	37 07       	cpc	r19, r23
-    747a:	68 f3       	brcs	.-38     	; 0x7456 <_Z17USART_SendMessagePc+0x12>
+    747a:	68 f3       	brcs	.-38     	; 0x7456 <_Z18USART_send_messagePc+0x12>
     747c:	8d e4       	ldi	r24, 0x4D	; 77
-    747e:	82 df       	rcall	.-252    	; 0x7384 <_Z16USART_SendPacketch>
+    747e:	82 df       	rcall	.-252    	; 0x7384 <_Z17USART_send_packetch>
     7480:	df 91       	pop	r29
     7482:	cf 91       	pop	r28
     7484:	08 95       	ret
 
-00007486 <_Z14USART_SendGyrov>:
+00007486 <_Z15USART_send_gyrov>:
     7486:	dc da       	rcall	.-2632   	; 0x6a40 <_Z9MPU_get_pv>
     7488:	60 93 42 1f 	sts	0x1F42, r22
     748c:	70 93 43 1f 	sts	0x1F43, r23
@@ -12791,9 +13287,9 @@ void climb()
     74b8:	90 93 4d 1f 	sts	0x1F4D, r25
     74bc:	6c e0       	ldi	r22, 0x0C	; 12
     74be:	87 e4       	ldi	r24, 0x47	; 71
-    74c0:	61 cf       	rjmp	.-318    	; 0x7384 <_Z16USART_SendPacketch>
+    74c0:	61 cf       	rjmp	.-318    	; 0x7384 <_Z17USART_send_packetch>
 
-000074c2 <_Z25USART_DecodeMessageRxFIFOv>:
+000074c2 <_Z28USART_decode_message_rx_fifov>:
     74c2:	0f 93       	push	r16
     74c4:	1f 93       	push	r17
     74c6:	cf 93       	push	r28
@@ -12804,12 +13300,12 @@ void climb()
     74d2:	90 91 44 05 	lds	r25, 0x0544
     74d6:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     74da:	81 11       	cpse	r24, r1
-    74dc:	17 c0       	rjmp	.+46     	; 0x750c <_Z25USART_DecodeMessageRxFIFOv+0x4a>
+    74dc:	17 c0       	rjmp	.+46     	; 0x750c <_Z28USART_decode_message_rx_fifov+0x4a>
     74de:	00 91 00 00 	lds	r16, 0x0000
     74e2:	10 e0       	ldi	r17, 0x00	; 0
     74e4:	10 16       	cp	r1, r16
     74e6:	11 06       	cpc	r1, r17
-    74e8:	9c f4       	brge	.+38     	; 0x7510 <_Z25USART_DecodeMessageRxFIFOv+0x4e>
+    74e8:	9c f4       	brge	.+38     	; 0x7510 <_Z28USART_decode_message_rx_fifov+0x4e>
     74ea:	c0 e0       	ldi	r28, 0x00	; 0
     74ec:	d0 e0       	ldi	r29, 0x00	; 0
     74ee:	60 e0       	ldi	r22, 0x00	; 0
@@ -12818,16 +13314,16 @@ void climb()
     74f6:	90 91 44 05 	lds	r25, 0x0544
     74fa:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     74fe:	81 11       	cpse	r24, r1
-    7500:	09 c0       	rjmp	.+18     	; 0x7514 <_Z25USART_DecodeMessageRxFIFOv+0x52>
+    7500:	09 c0       	rjmp	.+18     	; 0x7514 <_Z28USART_decode_message_rx_fifov+0x52>
     7502:	21 96       	adiw	r28, 0x01	; 1
     7504:	c0 17       	cp	r28, r16
     7506:	d1 07       	cpc	r29, r17
-    7508:	94 f3       	brlt	.-28     	; 0x74ee <_Z25USART_DecodeMessageRxFIFOv+0x2c>
-    750a:	05 c0       	rjmp	.+10     	; 0x7516 <_Z25USART_DecodeMessageRxFIFOv+0x54>
+    7508:	94 f3       	brlt	.-28     	; 0x74ee <_Z28USART_decode_message_rx_fifov+0x2c>
+    750a:	05 c0       	rjmp	.+10     	; 0x7516 <_Z28USART_decode_message_rx_fifov+0x54>
     750c:	81 e0       	ldi	r24, 0x01	; 1
-    750e:	03 c0       	rjmp	.+6      	; 0x7516 <_Z25USART_DecodeMessageRxFIFOv+0x54>
+    750e:	03 c0       	rjmp	.+6      	; 0x7516 <_Z28USART_decode_message_rx_fifov+0x54>
     7510:	80 e0       	ldi	r24, 0x00	; 0
-    7512:	01 c0       	rjmp	.+2      	; 0x7516 <_Z25USART_DecodeMessageRxFIFOv+0x54>
+    7512:	01 c0       	rjmp	.+2      	; 0x7516 <_Z28USART_decode_message_rx_fifov+0x54>
     7514:	81 e0       	ldi	r24, 0x01	; 1
     7516:	df 91       	pop	r29
     7518:	cf 91       	pop	r28
@@ -12835,7 +13331,7 @@ void climb()
     751c:	0f 91       	pop	r16
     751e:	08 95       	ret
 
-00007520 <_Z25USART_DecodeCommandRxFIFOv>:
+00007520 <_Z28USART_decode_command_rx_fifov>:
     7520:	cf 93       	push	r28
     7522:	df 93       	push	r29
     7524:	60 e0       	ldi	r22, 0x00	; 0
@@ -12844,17 +13340,17 @@ void climb()
     752c:	90 91 44 05 	lds	r25, 0x0544
     7530:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7534:	81 11       	cpse	r24, r1
-    7536:	34 c0       	rjmp	.+104    	; 0x75a0 <_Z25USART_DecodeCommandRxFIFOv+0x80>
+    7536:	34 c0       	rjmp	.+104    	; 0x75a0 <_Z28USART_decode_command_rx_fifov+0x80>
     7538:	80 91 00 00 	lds	r24, 0x0000
     753c:	83 30       	cpi	r24, 0x03	; 3
-    753e:	91 f5       	brne	.+100    	; 0x75a4 <_Z25USART_DecodeCommandRxFIFOv+0x84>
+    753e:	91 f5       	brne	.+100    	; 0x75a4 <_Z28USART_decode_command_rx_fifov+0x84>
     7540:	60 e0       	ldi	r22, 0x00	; 0
     7542:	70 e0       	ldi	r23, 0x00	; 0
     7544:	80 91 43 05 	lds	r24, 0x0543
     7548:	90 91 44 05 	lds	r25, 0x0544
     754c:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7550:	81 11       	cpse	r24, r1
-    7552:	2a c0       	rjmp	.+84     	; 0x75a8 <_Z25USART_DecodeCommandRxFIFOv+0x88>
+    7552:	2a c0       	rjmp	.+84     	; 0x75a8 <_Z28USART_decode_command_rx_fifov+0x88>
     7554:	c0 91 00 00 	lds	r28, 0x0000
     7558:	60 e0       	ldi	r22, 0x00	; 0
     755a:	70 e0       	ldi	r23, 0x00	; 0
@@ -12862,7 +13358,7 @@ void climb()
     7560:	90 91 44 05 	lds	r25, 0x0544
     7564:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7568:	81 11       	cpse	r24, r1
-    756a:	20 c0       	rjmp	.+64     	; 0x75ac <_Z25USART_DecodeCommandRxFIFOv+0x8c>
+    756a:	20 c0       	rjmp	.+64     	; 0x75ac <_Z28USART_decode_command_rx_fifov+0x8c>
     756c:	d0 91 00 00 	lds	r29, 0x0000
     7570:	60 e0       	ldi	r22, 0x00	; 0
     7572:	70 e0       	ldi	r23, 0x00	; 0
@@ -12870,31 +13366,31 @@ void climb()
     7578:	90 91 44 05 	lds	r25, 0x0544
     757c:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7580:	81 11       	cpse	r24, r1
-    7582:	16 c0       	rjmp	.+44     	; 0x75b0 <_Z25USART_DecodeCommandRxFIFOv+0x90>
+    7582:	16 c0       	rjmp	.+44     	; 0x75b0 <_Z28USART_decode_command_rx_fifov+0x90>
     7584:	80 91 00 00 	lds	r24, 0x0000
     7588:	80 93 33 1b 	sts	0x1B33, r24
     758c:	c0 93 32 1b 	sts	0x1B32, r28
     7590:	d0 93 50 15 	sts	0x1550, r29
-    7594:	9b b1       	in	r25, 0x0b	; 11
-    7596:	80 e2       	ldi	r24, 0x20	; 32
+    7594:	98 b1       	in	r25, 0x08	; 8
+    7596:	80 e4       	ldi	r24, 0x40	; 64
     7598:	89 27       	eor	r24, r25
-    759a:	8b b9       	out	0x0b, r24	; 11
+    759a:	88 b9       	out	0x08, r24	; 8
     759c:	80 e0       	ldi	r24, 0x00	; 0
-    759e:	09 c0       	rjmp	.+18     	; 0x75b2 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    759e:	09 c0       	rjmp	.+18     	; 0x75b2 <_Z28USART_decode_command_rx_fifov+0x92>
     75a0:	81 e0       	ldi	r24, 0x01	; 1
-    75a2:	07 c0       	rjmp	.+14     	; 0x75b2 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    75a2:	07 c0       	rjmp	.+14     	; 0x75b2 <_Z28USART_decode_command_rx_fifov+0x92>
     75a4:	81 e0       	ldi	r24, 0x01	; 1
-    75a6:	05 c0       	rjmp	.+10     	; 0x75b2 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    75a6:	05 c0       	rjmp	.+10     	; 0x75b2 <_Z28USART_decode_command_rx_fifov+0x92>
     75a8:	81 e0       	ldi	r24, 0x01	; 1
-    75aa:	03 c0       	rjmp	.+6      	; 0x75b2 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    75aa:	03 c0       	rjmp	.+6      	; 0x75b2 <_Z28USART_decode_command_rx_fifov+0x92>
     75ac:	81 e0       	ldi	r24, 0x01	; 1
-    75ae:	01 c0       	rjmp	.+2      	; 0x75b2 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    75ae:	01 c0       	rjmp	.+2      	; 0x75b2 <_Z28USART_decode_command_rx_fifov+0x92>
     75b0:	81 e0       	ldi	r24, 0x01	; 1
     75b2:	df 91       	pop	r29
     75b4:	cf 91       	pop	r28
     75b6:	08 95       	ret
 
-000075b8 <_Z27USART_DecodeElevationRxFIFOv>:
+000075b8 <_Z30USART_decode_elevation_rx_fifov>:
     75b8:	cf 92       	push	r12
     75ba:	df 92       	push	r13
     75bc:	ef 92       	push	r14
@@ -12905,21 +13401,21 @@ void climb()
     75c8:	90 91 44 05 	lds	r25, 0x0544
     75cc:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     75d0:	81 11       	cpse	r24, r1
-    75d2:	60 c0       	rjmp	.+192    	; 0x7694 <_Z27USART_DecodeElevationRxFIFOv+0xdc>
+    75d2:	60 c0       	rjmp	.+192    	; 0x7694 <_Z30USART_decode_elevation_rx_fifov+0xdc>
     75d4:	80 91 00 00 	lds	r24, 0x0000
     75d8:	81 30       	cpi	r24, 0x01	; 1
-    75da:	09 f0       	breq	.+2      	; 0x75de <_Z27USART_DecodeElevationRxFIFOv+0x26>
-    75dc:	5d c0       	rjmp	.+186    	; 0x7698 <_Z27USART_DecodeElevationRxFIFOv+0xe0>
+    75da:	09 f0       	breq	.+2      	; 0x75de <_Z30USART_decode_elevation_rx_fifov+0x26>
+    75dc:	5d c0       	rjmp	.+186    	; 0x7698 <_Z30USART_decode_elevation_rx_fifov+0xe0>
     75de:	60 e0       	ldi	r22, 0x00	; 0
     75e0:	70 e0       	ldi	r23, 0x00	; 0
     75e2:	80 91 43 05 	lds	r24, 0x0543
     75e6:	90 91 44 05 	lds	r25, 0x0544
     75ea:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     75ee:	81 11       	cpse	r24, r1
-    75f0:	55 c0       	rjmp	.+170    	; 0x769c <_Z27USART_DecodeElevationRxFIFOv+0xe4>
+    75f0:	55 c0       	rjmp	.+170    	; 0x769c <_Z30USART_decode_elevation_rx_fifov+0xe4>
     75f2:	80 91 00 00 	lds	r24, 0x0000
     75f6:	81 30       	cpi	r24, 0x01	; 1
-    75f8:	31 f5       	brne	.+76     	; 0x7646 <_Z27USART_DecodeElevationRxFIFOv+0x8e>
+    75f8:	31 f5       	brne	.+76     	; 0x7646 <_Z30USART_decode_elevation_rx_fifov+0x8e>
     75fa:	c0 90 4b 15 	lds	r12, 0x154B
     75fe:	d0 90 4c 15 	lds	r13, 0x154C
     7602:	e0 90 4d 15 	lds	r14, 0x154D
@@ -12932,8 +13428,8 @@ void climb()
     7614:	b6 01       	movw	r22, r12
     7616:	53 d4       	rcall	.+2214   	; 0x7ebe <__gesf2>
     7618:	18 16       	cp	r1, r24
-    761a:	0c f0       	brlt	.+2      	; 0x761e <_Z27USART_DecodeElevationRxFIFOv+0x66>
-    761c:	41 c0       	rjmp	.+130    	; 0x76a0 <_Z27USART_DecodeElevationRxFIFOv+0xe8>
+    761a:	0c f0       	brlt	.+2      	; 0x761e <_Z30USART_decode_elevation_rx_fifov+0x66>
+    761c:	41 c0       	rjmp	.+130    	; 0x76a0 <_Z30USART_decode_elevation_rx_fifov+0xe8>
     761e:	20 e0       	ldi	r18, 0x00	; 0
     7620:	30 e0       	ldi	r19, 0x00	; 0
     7622:	40 ea       	ldi	r20, 0xA0	; 160
@@ -12948,9 +13444,9 @@ void climb()
     763c:	81 e0       	ldi	r24, 0x01	; 1
     763e:	80 93 2e 1b 	sts	0x1B2E, r24
     7642:	80 e0       	ldi	r24, 0x00	; 0
-    7644:	32 c0       	rjmp	.+100    	; 0x76aa <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7644:	32 c0       	rjmp	.+100    	; 0x76aa <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7646:	81 11       	cpse	r24, r1
-    7648:	2d c0       	rjmp	.+90     	; 0x76a4 <_Z27USART_DecodeElevationRxFIFOv+0xec>
+    7648:	2d c0       	rjmp	.+90     	; 0x76a4 <_Z30USART_decode_elevation_rx_fifov+0xec>
     764a:	c0 90 4b 15 	lds	r12, 0x154B
     764e:	d0 90 4c 15 	lds	r13, 0x154C
     7652:	e0 90 4d 15 	lds	r14, 0x154D
@@ -12963,7 +13459,7 @@ void climb()
     7664:	b6 01       	movw	r22, r12
     7666:	22 d2       	rcall	.+1092   	; 0x7aac <__cmpsf2>
     7668:	88 23       	and	r24, r24
-    766a:	f4 f4       	brge	.+60     	; 0x76a8 <_Z27USART_DecodeElevationRxFIFOv+0xf0>
+    766a:	f4 f4       	brge	.+60     	; 0x76a8 <_Z30USART_decode_elevation_rx_fifov+0xf0>
     766c:	20 e0       	ldi	r18, 0x00	; 0
     766e:	30 e0       	ldi	r19, 0x00	; 0
     7670:	40 ea       	ldi	r20, 0xA0	; 160
@@ -12978,17 +13474,17 @@ void climb()
     768a:	81 e0       	ldi	r24, 0x01	; 1
     768c:	80 93 2e 1b 	sts	0x1B2E, r24
     7690:	80 e0       	ldi	r24, 0x00	; 0
-    7692:	0b c0       	rjmp	.+22     	; 0x76aa <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7692:	0b c0       	rjmp	.+22     	; 0x76aa <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7694:	81 e0       	ldi	r24, 0x01	; 1
-    7696:	09 c0       	rjmp	.+18     	; 0x76aa <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7696:	09 c0       	rjmp	.+18     	; 0x76aa <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7698:	81 e0       	ldi	r24, 0x01	; 1
-    769a:	07 c0       	rjmp	.+14     	; 0x76aa <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    769a:	07 c0       	rjmp	.+14     	; 0x76aa <_Z30USART_decode_elevation_rx_fifov+0xf2>
     769c:	81 e0       	ldi	r24, 0x01	; 1
-    769e:	05 c0       	rjmp	.+10     	; 0x76aa <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    769e:	05 c0       	rjmp	.+10     	; 0x76aa <_Z30USART_decode_elevation_rx_fifov+0xf2>
     76a0:	80 e0       	ldi	r24, 0x00	; 0
-    76a2:	03 c0       	rjmp	.+6      	; 0x76aa <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    76a2:	03 c0       	rjmp	.+6      	; 0x76aa <_Z30USART_decode_elevation_rx_fifov+0xf2>
     76a4:	80 e0       	ldi	r24, 0x00	; 0
-    76a6:	01 c0       	rjmp	.+2      	; 0x76aa <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    76a6:	01 c0       	rjmp	.+2      	; 0x76aa <_Z30USART_decode_elevation_rx_fifov+0xf2>
     76a8:	80 e0       	ldi	r24, 0x00	; 0
     76aa:	ff 90       	pop	r15
     76ac:	ef 90       	pop	r14
@@ -12996,7 +13492,7 @@ void climb()
     76b0:	cf 90       	pop	r12
     76b2:	08 95       	ret
 
-000076b4 <_Z22USART_DecodeTurnRxFIFOv>:
+000076b4 <_Z25USART_decode_turn_rx_fifov>:
     76b4:	cf 93       	push	r28
     76b6:	df 93       	push	r29
     76b8:	60 e0       	ldi	r22, 0x00	; 0
@@ -13005,17 +13501,17 @@ void climb()
     76c0:	90 91 44 05 	lds	r25, 0x0544
     76c4:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     76c8:	81 11       	cpse	r24, r1
-    76ca:	3d c0       	rjmp	.+122    	; 0x7746 <_Z22USART_DecodeTurnRxFIFOv+0x92>
+    76ca:	3d c0       	rjmp	.+122    	; 0x7746 <_Z25USART_decode_turn_rx_fifov+0x92>
     76cc:	80 91 00 00 	lds	r24, 0x0000
     76d0:	83 30       	cpi	r24, 0x03	; 3
-    76d2:	d9 f5       	brne	.+118    	; 0x774a <_Z22USART_DecodeTurnRxFIFOv+0x96>
+    76d2:	d9 f5       	brne	.+118    	; 0x774a <_Z25USART_decode_turn_rx_fifov+0x96>
     76d4:	60 e0       	ldi	r22, 0x00	; 0
     76d6:	70 e0       	ldi	r23, 0x00	; 0
     76d8:	80 91 43 05 	lds	r24, 0x0543
     76dc:	90 91 44 05 	lds	r25, 0x0544
     76e0:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     76e4:	81 11       	cpse	r24, r1
-    76e6:	33 c0       	rjmp	.+102    	; 0x774e <_Z22USART_DecodeTurnRxFIFOv+0x9a>
+    76e6:	33 c0       	rjmp	.+102    	; 0x774e <_Z25USART_decode_turn_rx_fifov+0x9a>
     76e8:	c0 91 00 00 	lds	r28, 0x0000
     76ec:	60 e0       	ldi	r22, 0x00	; 0
     76ee:	70 e0       	ldi	r23, 0x00	; 0
@@ -13023,7 +13519,7 @@ void climb()
     76f4:	90 91 44 05 	lds	r25, 0x0544
     76f8:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     76fc:	81 11       	cpse	r24, r1
-    76fe:	29 c0       	rjmp	.+82     	; 0x7752 <_Z22USART_DecodeTurnRxFIFOv+0x9e>
+    76fe:	29 c0       	rjmp	.+82     	; 0x7752 <_Z25USART_decode_turn_rx_fifov+0x9e>
     7700:	d0 91 00 00 	lds	r29, 0x0000
     7704:	60 e0       	ldi	r22, 0x00	; 0
     7706:	70 e0       	ldi	r23, 0x00	; 0
@@ -13031,7 +13527,7 @@ void climb()
     770c:	90 91 44 05 	lds	r25, 0x0544
     7710:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7714:	81 11       	cpse	r24, r1
-    7716:	1f c0       	rjmp	.+62     	; 0x7756 <_Z22USART_DecodeTurnRxFIFOv+0xa2>
+    7716:	1f c0       	rjmp	.+62     	; 0x7756 <_Z25USART_decode_turn_rx_fifov+0xa2>
     7718:	20 91 00 00 	lds	r18, 0x0000
     771c:	9c 2f       	mov	r25, r28
     771e:	80 e0       	ldi	r24, 0x00	; 0
@@ -13039,69 +13535,69 @@ void climb()
     7722:	90 93 31 1b 	sts	0x1B31, r25
     7726:	80 93 30 1b 	sts	0x1B30, r24
     772a:	21 11       	cpse	r18, r1
-    772c:	04 c0       	rjmp	.+8      	; 0x7736 <_Z22USART_DecodeTurnRxFIFOv+0x82>
+    772c:	04 c0       	rjmp	.+8      	; 0x7736 <_Z25USART_decode_turn_rx_fifov+0x82>
     772e:	8f ef       	ldi	r24, 0xFF	; 255
     7730:	80 93 4f 15 	sts	0x154F, r24
-    7734:	03 c0       	rjmp	.+6      	; 0x773c <_Z22USART_DecodeTurnRxFIFOv+0x88>
+    7734:	03 c0       	rjmp	.+6      	; 0x773c <_Z25USART_decode_turn_rx_fifov+0x88>
     7736:	81 e0       	ldi	r24, 0x01	; 1
     7738:	80 93 4f 15 	sts	0x154F, r24
     773c:	81 e0       	ldi	r24, 0x01	; 1
     773e:	80 93 2f 1b 	sts	0x1B2F, r24
     7742:	80 e0       	ldi	r24, 0x00	; 0
-    7744:	09 c0       	rjmp	.+18     	; 0x7758 <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    7744:	09 c0       	rjmp	.+18     	; 0x7758 <_Z25USART_decode_turn_rx_fifov+0xa4>
     7746:	81 e0       	ldi	r24, 0x01	; 1
-    7748:	07 c0       	rjmp	.+14     	; 0x7758 <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    7748:	07 c0       	rjmp	.+14     	; 0x7758 <_Z25USART_decode_turn_rx_fifov+0xa4>
     774a:	81 e0       	ldi	r24, 0x01	; 1
-    774c:	05 c0       	rjmp	.+10     	; 0x7758 <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    774c:	05 c0       	rjmp	.+10     	; 0x7758 <_Z25USART_decode_turn_rx_fifov+0xa4>
     774e:	81 e0       	ldi	r24, 0x01	; 1
-    7750:	03 c0       	rjmp	.+6      	; 0x7758 <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    7750:	03 c0       	rjmp	.+6      	; 0x7758 <_Z25USART_decode_turn_rx_fifov+0xa4>
     7752:	81 e0       	ldi	r24, 0x01	; 1
-    7754:	01 c0       	rjmp	.+2      	; 0x7758 <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    7754:	01 c0       	rjmp	.+2      	; 0x7758 <_Z25USART_decode_turn_rx_fifov+0xa4>
     7756:	81 e0       	ldi	r24, 0x01	; 1
     7758:	df 91       	pop	r29
     775a:	cf 91       	pop	r28
     775c:	08 95       	ret
 
-0000775e <_Z18USART_DecodeRxFIFOv>:
-    775e:	20 c0       	rjmp	.+64     	; 0x77a0 <_Z18USART_DecodeRxFIFOv+0x42>
+0000775e <_Z20USART_decode_rx_fifov>:
+    775e:	20 c0       	rjmp	.+64     	; 0x77a0 <_Z20USART_decode_rx_fifov+0x42>
     7760:	80 91 00 00 	lds	r24, 0x0000
     7764:	87 34       	cpi	r24, 0x47	; 71
-    7766:	b9 f0       	breq	.+46     	; 0x7796 <_Z18USART_DecodeRxFIFOv+0x38>
-    7768:	28 f4       	brcc	.+10     	; 0x7774 <_Z18USART_DecodeRxFIFOv+0x16>
+    7766:	b9 f0       	breq	.+46     	; 0x7796 <_Z20USART_decode_rx_fifov+0x38>
+    7768:	28 f4       	brcc	.+10     	; 0x7774 <_Z20USART_decode_rx_fifov+0x16>
     776a:	83 34       	cpi	r24, 0x43	; 67
-    776c:	61 f0       	breq	.+24     	; 0x7786 <_Z18USART_DecodeRxFIFOv+0x28>
+    776c:	61 f0       	breq	.+24     	; 0x7786 <_Z20USART_decode_rx_fifov+0x28>
     776e:	85 34       	cpi	r24, 0x45	; 69
-    7770:	b9 f4       	brne	.+46     	; 0x77a0 <_Z18USART_DecodeRxFIFOv+0x42>
-    7772:	0d c0       	rjmp	.+26     	; 0x778e <_Z18USART_DecodeRxFIFOv+0x30>
+    7770:	b9 f4       	brne	.+46     	; 0x77a0 <_Z20USART_decode_rx_fifov+0x42>
+    7772:	0d c0       	rjmp	.+26     	; 0x778e <_Z20USART_decode_rx_fifov+0x30>
     7774:	8d 34       	cpi	r24, 0x4D	; 77
-    7776:	19 f0       	breq	.+6      	; 0x777e <_Z18USART_DecodeRxFIFOv+0x20>
+    7776:	19 f0       	breq	.+6      	; 0x777e <_Z20USART_decode_rx_fifov+0x20>
     7778:	84 35       	cpi	r24, 0x54	; 84
-    777a:	91 f4       	brne	.+36     	; 0x77a0 <_Z18USART_DecodeRxFIFOv+0x42>
-    777c:	0e c0       	rjmp	.+28     	; 0x779a <_Z18USART_DecodeRxFIFOv+0x3c>
-    777e:	a1 de       	rcall	.-702    	; 0x74c2 <_Z25USART_DecodeMessageRxFIFOv>
+    777a:	91 f4       	brne	.+36     	; 0x77a0 <_Z20USART_decode_rx_fifov+0x42>
+    777c:	0e c0       	rjmp	.+28     	; 0x779a <_Z20USART_decode_rx_fifov+0x3c>
+    777e:	a1 de       	rcall	.-702    	; 0x74c2 <_Z28USART_decode_message_rx_fifov>
     7780:	88 23       	and	r24, r24
-    7782:	71 f0       	breq	.+28     	; 0x77a0 <_Z18USART_DecodeRxFIFOv+0x42>
+    7782:	71 f0       	breq	.+28     	; 0x77a0 <_Z20USART_decode_rx_fifov+0x42>
     7784:	08 95       	ret
-    7786:	cc de       	rcall	.-616    	; 0x7520 <_Z25USART_DecodeCommandRxFIFOv>
+    7786:	cc de       	rcall	.-616    	; 0x7520 <_Z28USART_decode_command_rx_fifov>
     7788:	88 23       	and	r24, r24
-    778a:	51 f0       	breq	.+20     	; 0x77a0 <_Z18USART_DecodeRxFIFOv+0x42>
+    778a:	51 f0       	breq	.+20     	; 0x77a0 <_Z20USART_decode_rx_fifov+0x42>
     778c:	08 95       	ret
-    778e:	14 df       	rcall	.-472    	; 0x75b8 <_Z27USART_DecodeElevationRxFIFOv>
+    778e:	14 df       	rcall	.-472    	; 0x75b8 <_Z30USART_decode_elevation_rx_fifov>
     7790:	88 23       	and	r24, r24
-    7792:	31 f0       	breq	.+12     	; 0x77a0 <_Z18USART_DecodeRxFIFOv+0x42>
+    7792:	31 f0       	breq	.+12     	; 0x77a0 <_Z20USART_decode_rx_fifov+0x42>
     7794:	08 95       	ret
-    7796:	77 de       	rcall	.-786    	; 0x7486 <_Z14USART_SendGyrov>
-    7798:	03 c0       	rjmp	.+6      	; 0x77a0 <_Z18USART_DecodeRxFIFOv+0x42>
-    779a:	8c df       	rcall	.-232    	; 0x76b4 <_Z22USART_DecodeTurnRxFIFOv>
+    7796:	77 de       	rcall	.-786    	; 0x7486 <_Z15USART_send_gyrov>
+    7798:	03 c0       	rjmp	.+6      	; 0x77a0 <_Z20USART_decode_rx_fifov+0x42>
+    779a:	8c df       	rcall	.-232    	; 0x76b4 <_Z25USART_decode_turn_rx_fifov>
     779c:	81 11       	cpse	r24, r1
-    779e:	0a c0       	rjmp	.+20     	; 0x77b4 <_Z18USART_DecodeRxFIFOv+0x56>
+    779e:	0a c0       	rjmp	.+20     	; 0x77b4 <_Z20USART_decode_rx_fifov+0x56>
     77a0:	60 e0       	ldi	r22, 0x00	; 0
     77a2:	70 e0       	ldi	r23, 0x00	; 0
     77a4:	80 91 43 05 	lds	r24, 0x0543
     77a8:	90 91 44 05 	lds	r25, 0x0544
     77ac:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     77b0:	88 23       	and	r24, r24
-    77b2:	b1 f2       	breq	.-84     	; 0x7760 <_Z18USART_DecodeRxFIFOv+0x2>
+    77b2:	b1 f2       	breq	.-84     	; 0x7760 <_Z20USART_decode_rx_fifov+0x2>
     77b4:	08 95       	ret
 
 000077b6 <_Z20USART_elevation_flagv>:
@@ -13115,6 +13611,11 @@ void climb()
     77c8:	08 95       	ret
 
 000077ca <__vector_20>:
+}
+
+
+ISR (USART0_RX_vect)
+{
     77ca:	1f 92       	push	r1
     77cc:	0f 92       	push	r0
     77ce:	0f b6       	in	r0, 0x3f	; 63
@@ -13140,9 +13641,17 @@ void climb()
     77f6:	df 93       	push	r29
     77f8:	ef 93       	push	r30
     77fa:	ff 93       	push	r31
+	uint8_t data;
+	data = UDR0; // read data from buffer TODO: add check for overflow
     77fc:	20 91 c6 00 	lds	r18, 0x00C6
+	
+	
+	
+	if(data == 0x7e)
     7800:	2e 37       	cpi	r18, 0x7E	; 126
     7802:	c9 f5       	brne	.+114    	; 0x7876 <__vector_20+0xac>
+	{
+		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
     7804:	80 91 36 1b 	lds	r24, 0x1B36
     7808:	90 91 37 1b 	lds	r25, 0x1B37
     780c:	84 30       	cpi	r24, 0x04	; 4
@@ -13155,14 +13664,24 @@ void climb()
     781c:	82 17       	cp	r24, r18
     781e:	93 07       	cpc	r25, r19
     7820:	29 f5       	brne	.+74     	; 0x786c <__vector_20+0xa2>
+		{
+			if(gInvertNextFlag)
     7822:	80 91 34 1b 	lds	r24, 0x1B34
     7826:	90 91 35 1b 	lds	r25, 0x1B35
     782a:	89 2b       	or	r24, r25
     782c:	21 f0       	breq	.+8      	; 0x7836 <__vector_20+0x6c>
+			{
+				data = (1<<5)^data;
+				gInvertNextFlag = 0;
     782e:	10 92 35 1b 	sts	0x1B35, r1
     7832:	10 92 34 1b 	sts	0x1B34, r1
     7836:	08 e3       	ldi	r16, 0x38	; 56
     7838:	1b e1       	ldi	r17, 0x1B	; 27
+			}
+			
+			
+			// Add packet (no crc) to fifo-buffer to cue it for decoding
+			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     783a:	c0 e0       	ldi	r28, 0x00	; 0
     783c:	d0 e0       	ldi	r29, 0x00	; 0
     783e:	0f 2e       	mov	r0, r31
@@ -13171,12 +13690,20 @@ void climb()
     7844:	fb e1       	ldi	r31, 0x1B	; 27
     7846:	ff 2e       	mov	r15, r31
     7848:	f0 2d       	mov	r31, r0
+			{
+				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
     784a:	f8 01       	movw	r30, r16
     784c:	61 91       	ld	r22, Z+
     784e:	8f 01       	movw	r16, r30
     7850:	80 91 43 05 	lds	r24, 0x0543
     7854:	90 91 44 05 	lds	r25, 0x0544
     7858:	0e 94 70 05 	call	0xae0	; 0xae0 <_Z9FifoWriteP4fifoh>
+				gInvertNextFlag = 0;
+			}
+			
+			
+			// Add packet (no crc) to fifo-buffer to cue it for decoding
+			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     785c:	21 96       	adiw	r28, 0x01	; 1
     785e:	f7 01       	movw	r30, r14
     7860:	80 81       	ld	r24, Z
@@ -13185,25 +13712,43 @@ void climb()
     7866:	c8 17       	cp	r28, r24
     7868:	d9 07       	cpc	r29, r25
     786a:	7c f3       	brlt	.-34     	; 0x784a <__vector_20+0x80>
+					//send_string(S_ADRESS,"U_FIFO-full");
+				}
+			}
+		}
+		
+		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read
     786c:	10 92 37 1b 	sts	0x1B37, r1
     7870:	10 92 36 1b 	sts	0x1B36, r1
     7874:	16 c0       	rjmp	.+44     	; 0x78a2 <__vector_20+0xd8>
+		
+	}else if(data == 0x7d)
     7876:	2d 37       	cpi	r18, 0x7D	; 125
     7878:	39 f4       	brne	.+14     	; 0x7888 <__vector_20+0xbe>
+	{
+		gInvertNextFlag = 1;
     787a:	81 e0       	ldi	r24, 0x01	; 1
     787c:	90 e0       	ldi	r25, 0x00	; 0
     787e:	90 93 35 1b 	sts	0x1B35, r25
     7882:	80 93 34 1b 	sts	0x1B34, r24
     7886:	0d c0       	rjmp	.+26     	; 0x78a2 <__vector_20+0xd8>
+	}else
+	{
+		gRxBuffer[gRxBufferIndex] = data;
     7888:	80 91 36 1b 	lds	r24, 0x1B36
     788c:	90 91 37 1b 	lds	r25, 0x1B37
     7890:	fc 01       	movw	r30, r24
     7892:	e8 5c       	subi	r30, 0xC8	; 200
     7894:	f4 4e       	sbci	r31, 0xE4	; 228
     7896:	20 83       	st	Z, r18
+		++gRxBufferIndex;
     7898:	01 96       	adiw	r24, 0x01	; 1
     789a:	90 93 37 1b 	sts	0x1B37, r25
     789e:	80 93 36 1b 	sts	0x1B36, r24
+	}
+	
+	
+}
     78a2:	ff 91       	pop	r31
     78a4:	ef 91       	pop	r30
     78a6:	df 91       	pop	r29

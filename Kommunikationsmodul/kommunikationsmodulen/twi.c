@@ -862,7 +862,7 @@ uint8_t decode_message_TwiFIFO()
 		msg[i] = *character;
 	}
 	
-	USART_SendMessage(msg);
+	USART_send_message(msg);
 	
 	return 0;
 }
@@ -963,7 +963,7 @@ ISR(TWI_vect)
 					}
 					case(I_FLOAT):
 					{
-						USART_SendValue(floatMessage);
+						USART_send_value(floatMessage);
 						break;
 					}
 				}

@@ -100,13 +100,13 @@ Discarded input sections
                 0x00000000       0x14 twi.o
  .text          0x00000000        0x0 usart.o
  .bss           0x00000000        0x0 usart.o
- .text.USART_CheckRxComplete
+ .text.USART_check_rx_complete
                 0x00000000        0x8 usart.o
- .text.USART_ReadByte
+ .text.USART_read_byte
                 0x00000000        0x6 usart.o
  .text.USART_send_autonom
                 0x00000000        0xe usart.o
- .text.USART_Bounce
+ .text.USART_bounce
                 0x00000000       0x30 usart.o
  .text          0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(fixunssfsi.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(fixunssfsi.o)
@@ -471,45 +471,45 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .text.USART_init
                 0x00000b1c       0x18 usart.o
                 0x00000b1c                USART_init
- .text.USART_CheckTxReady
+ .text.USART_check_tx_ready
                 0x00000b34        0x8 usart.o
-                0x00000b34                USART_CheckTxReady
- .text.USART_WriteByte
+                0x00000b34                USART_check_tx_ready
+ .text.USART_write_byte
                 0x00000b3c       0x12 usart.o
-                0x00000b3c                USART_WriteByte
+                0x00000b3c                USART_write_byte
  .text.USART_crc16
                 0x00000b4e       0xb2 usart.o
                 0x00000b4e                USART_crc16
- .text.USART_SendPacket
+ .text.USART_send_packet
                 0x00000c00       0xc0 usart.o
-                0x00000c00                USART_SendPacket
- .text.USART_SendMessage
+                0x00000c00                USART_send_packet
+ .text.USART_send_message
                 0x00000cc0       0x42 usart.o
-                0x00000cc0                USART_SendMessage
- .text.USART_SendValue
+                0x00000cc0                USART_send_message
+ .text.USART_send_value
                 0x00000d02       0x1c usart.o
-                0x00000d02                USART_SendValue
- .text.USART_SendSensors
+                0x00000d02                USART_send_value
+ .text.USART_send_sensors
                 0x00000d1e       0x38 usart.o
-                0x00000d1e                USART_SendSensors
- .text.USART_DecodeMessageRxFIFO
+                0x00000d1e                USART_send_sensors
+ .text.USART_decode_message_rx_fifo
                 0x00000d56       0xe4 usart.o
-                0x00000d56                USART_DecodeMessageRxFIFO
- .text.USART_DecodeCommandRxFIFO
+                0x00000d56                USART_decode_message_rx_fifo
+ .text.USART_decode_command_rx_fifo
                 0x00000e3a       0xaa usart.o
-                0x00000e3a                USART_DecodeCommandRxFIFO
- .text.USART_DecodeParametersRxFIFO
+                0x00000e3a                USART_decode_command_rx_fifo
+ .text.USART_decode_parameters_rx_fifo
                 0x00000ee4       0xa2 usart.o
-                0x00000ee4                USART_DecodeParametersRxFIFO
- .text.USART_DecodeAutonomRxFIFO
+                0x00000ee4                USART_decode_parameters_rx_fifo
+ .text.USART_decode_autonom_rx_fifo
                 0x00000f86       0x5e usart.o
-                0x00000f86                USART_DecodeAutonomRxFIFO
+                0x00000f86                USART_decode_autonom_rx_fifo
  .text.USART_DecodeElevationRxFIFO
                 0x00000fe4       0x4a usart.o
                 0x00000fe4                USART_DecodeElevationRxFIFO
- .text.USART_DecodeRxFIFO
+ .text.USART_decode_rx_fifo
                 0x0000102e       0x5a usart.o
-                0x0000102e                USART_DecodeRxFIFO
+                0x0000102e                USART_decode_rx_fifo
  .text.__vector_20
                 0x00001088      0x114 usart.o
                 0x00001088                __vector_20
@@ -816,18 +816,18 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x00000118      0x454 twi.o
  .debug_frame   0x0000056c      0x264 usart.o
 
-.debug_str      0x00000000      0x87a
+.debug_str      0x00000000      0x882
  *(.debug_str)
- .debug_str     0x00000000       0xea counter.o
-                                0x11e (size before relaxing)
- .debug_str     0x000000ea       0x45 fifo.o
-                                0x12e (size before relaxing)
- .debug_str     0x0000012f       0xed kommunikationsmodulen.o
-                                0x1ed (size before relaxing)
- .debug_str     0x0000021c      0x4c5 twi.o
-                                0x650 (size before relaxing)
- .debug_str     0x000006e1      0x199 usart.o
-                                0x3ee (size before relaxing)
+ .debug_str     0x00000000       0xee counter.o
+                                0x122 (size before relaxing)
+ .debug_str     0x000000ee       0x40 fifo.o
+                                0x132 (size before relaxing)
+ .debug_str     0x0000012e       0xf0 kommunikationsmodulen.o
+                                0x1f4 (size before relaxing)
+ .debug_str     0x0000021e      0x4b8 twi.o
+                                0x656 (size before relaxing)
+ .debug_str     0x000006d6      0x1ac usart.o
+                                0x40a (size before relaxing)
 
 .debug_loc      0x00000000     0x1936
  *(.debug_loc)
