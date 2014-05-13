@@ -39,6 +39,7 @@ struct LegData
 	int loadLimitAlpha;
 	int loadLimitBeta;
 	int climbing;
+	int on_obstacle;
 	uint16_t currPosAlpha;
 	uint16_t currPosBeta;
 	uint16_t currPosGamma;
@@ -204,5 +205,7 @@ void leg_check_down(struct LegData* leg);
 void leg_move_down(struct LegData* leg);
 
 void turn_degrees(uint16_t degrees, int8_t dir);
+
+void MPU_get_mean();
 
 #endif /* HIGHLEVELWALKING_H_ */

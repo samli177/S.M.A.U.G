@@ -28,8 +28,14 @@ float z_in_use;
 float climb_start_control;
 float climb_start_slope_r;
 float climb_start_slope_p;
+float climb_check_down_r;
+float climb_check_down_p;
 int servo_speed = 300;
 uint8_t rotation_flag = 0;
+float MPUPMean;
+float MPURMean;
+uint8_t climb_counter;
+uint8_t climb_rotation_counter;
 
 
 
@@ -123,6 +129,13 @@ void initvar()
 	leg4.side = -1;
 	leg5.side = -1;
 	leg6.side = -1;
+	
+	leg1.on_obstacle = 0;
+	leg2.on_obstacle = 0;
+	leg3.on_obstacle = 0;
+	leg4.on_obstacle = 0;
+	leg5.on_obstacle = 0;
+	leg6.on_obstacle = 0;
 	
 	leg1.servoAlpha = 10;
 	leg1.servoBeta = 12;
@@ -417,7 +430,7 @@ void move_leg(struct LegData* leg, float n)
 	{
 		if (leg->climbing == 2)
 		{
-			tempz = obstacle_height + 30;
+			tempz = obstacle_height + 50;
 		}
 		else
 		{
@@ -459,14 +472,29 @@ void move_leg(struct LegData* leg, float n)
 	leg->goalAngleAlpha = leg->side *(leg->temp2AngleAlpha + femurAngleAddition);
 	leg->goalAngleBeta = leg->side*(-leg->temp2AngleBeta + tibiaAngleAddition);
 	leg->goalAngleGamma = leg->temp2AngleGamma;
-	SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,servo_speed);
-	SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,servo_speed);
-	SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,servo_speed);
+	
+	if(leg->climbing == 4)
+	{
+		SERVO_goto(leg->servoAlpha, leg->goalAngleAlpha,servo_speed);
+		SERVO_goto(leg->servoBeta, leg->goalAngleBeta,servo_speed);
+		SERVO_goto(leg->servoGamma, leg->goalAngleGamma,servo_speed);
+		leg->climbing = 0;
+		wait(500);
+	}
+	else
+	{
+		SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,servo_speed);
+		SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,servo_speed);
+		SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,servo_speed);
+	}
 }
 
 void leg_motion()
 {
 	leg_motion_init();
+	MPU_update();
+// 	climb_check_down_r = MPU_get_r();
+// 	climb_check_down_p = MPU_get_p();
 	for(int i = 0; i <= (int)iterations+1; ++i)
 	{
 		if(leg1.climbing == 1 /*&& obstacle_height == z_in_use*/)
@@ -544,7 +572,15 @@ void leg_motion()
 		}
 
 		SERVO_action();
-		wait(25);
+		if(i == 0 || i == iterations + 1)
+		{
+			wait(100);
+		}
+		else
+		{
+			wait(25);
+		}
+		
 		
 		
 		if(USART_elevation_flag())
@@ -556,9 +592,9 @@ void leg_motion()
 	if(climbing_flag)
 	{
 		wait(300);
-		MPU_update();
-		//climb_start_slope_r = MPU_get_r();
-		//climb_start_slope_p = MPU_get_p();
+		//MPU_update();
+		//climb_check_down_r = MPU_get_r();
+		//climb_check_down_p = MPU_get_p();
 		PORTC ^= (1<<PORTC6);
 	
 		
@@ -628,7 +664,7 @@ void leg_motion()
 		{
 			climb_step = 3;
 			climb_step2 = 1;
-			rotation_flag = 1;
+			
 			/*
 			leg1.climbing = 0;
 			leg2.climbing = 0;
@@ -637,27 +673,46 @@ void leg_motion()
 			leg5.climbing = 0;
 			leg6.climbing = 0;*/
 			
-			MPU_update();
-			//climb_start_slope_r = MPU_get_r();
-			//climb_start_slope_p = MPU_get_p();
+			
+			climb_counter = 0;
+			move_robot(0,50,100);
+			wait(100);
+			move_robot(0,50,100);
+			wait(100);
+			while(fabs(MPU_get_y() - climb_start_control) > 0.10)
+			{
+				MPU_update();
+				if (MPU_get_y() - climb_start_control > 0)
+				{
+					move_robot(0, 40, 0);
+				}
+				else
+				{
+					move_robot(0, 60, 0);
+				}
+			}
+			
+			wait(100);
+			climb_start_slope_r = MPU_get_r();
+			climb_start_slope_p = MPU_get_p();
 		}
 		else if (leg2.newPosz > z_in_use && leg5.newPosz > z_in_use && climb_step < 3)
 		{
 			climb_step = 2;
-			rotation_flag = 1;
 		}
 		else if (leg1.newPosz > z_in_use && leg6.newPosz > z_in_use && climb_step < 3)
 		{
 			climb_step = 1;
-			rotation_flag = 1;
 		}
+		
+		
+		
 		
 		if (leg1.newPosz < z_in_use + 20 && 
 			leg6.newPosz < z_in_use + 20 && 
 			climb_step2 == 1)
 		{
 			climb_step2 = 2;
-			rotation_flag = 1;
 			
 			MPU_update();
 			//climb_start_slope_r = MPU_get_r();
@@ -668,8 +723,7 @@ void leg_motion()
 			climb_step2 == 2)
 		{
 			climb_step2 = 3;
-			rotation_flag = 1;
-			
+			climb_counter = 0;
 			MPU_update();
 			//climb_start_slope_r = MPU_get_r();
 			//climb_start_slope_p = MPU_get_p();
@@ -682,6 +736,11 @@ void leg_motion()
 			climb_step2 = 0;
 			climbing_flag = 0;
 			servo_speed = 200;
+		}
+		
+		if(fmod(leg1.on_obstacle + leg2.on_obstacle + leg3.on_obstacle + 
+			leg4.on_obstacle + leg5.on_obstacle + leg6.on_obstacle, 2) == 0)
+		{
 			rotation_flag = 1;
 		}
 	}
@@ -692,7 +751,8 @@ void leg_move_down(struct LegData* leg)
 	leg->newPosz -=10;
 	tempz = leg->newPosz;
 	// To count new x and y positions: sign*(120 + 0.5 *(new_z - z0))/divider + term
-	leg->newPosx -= 5;
+	//leg->newPosx -= 5;
+	//leg->newPosy += leg->side*5;
 	tempx = leg->newPosx;
 	tempy = leg->newPosy;
 	
@@ -710,25 +770,27 @@ void leg_move_down(struct LegData* leg)
 
 void leg_check_down(struct LegData* leg)
 {
-	update_leg_info(leg);
-	MPU_update();
-	//wait(300);
-	if(fabs(MPU_get_r() - climb_start_slope_r) > 0.02 || fabs(MPU_get_p() - climb_start_slope_p) > 0.02 || leg->newPosz < z_in_use - 10)
+	//update_leg_info(leg);
+	wait(100);
+	MPU_get_mean();
+	if(fabsf(MPURMean - climb_start_slope_r) > 0.03 || fabsf(MPUPMean - climb_start_slope_p) > 0.03 || leg->newPosz < z_in_use - 10)
 	{
 		//leg->newPosz += 20;
 		//leg->newPosx -= 10;
-		if (leg->newPosz >= z_in_use - 10)
+		if (leg->newPosz >= z_in_use-10)
 		{
-			obstacle_height = z_in_use + 60;
+			obstacle_height = z_in_use + 60; 
 			tempz = obstacle_height;
 			leg->climbing = 0;
 			leg->newPosz = obstacle_height;
+			leg->on_obstacle = 1;
 		}
 		else
 		{
 			tempz = z_in_use;
 			leg->newPosz = tempz;
 			leg->climbing = 0;
+			leg->on_obstacle = 0;
 		}
 		tempx = leg->newPosx;
 		tempy = leg->newPosy;
@@ -789,6 +851,7 @@ void climb()
 	height = 70;
 	climb_step = 0;
 	climb_step2 = 0;
+	climb_counter = 0;
 	
 	z_in_use = -150;
 	obstacle_height = z_in_use;
@@ -808,28 +871,30 @@ void climb()
 		{
 			leg6.climbing = 1;
 			leg6.newPosz = z_in_use + height;
+			height_change_leg6(obstacle_height);
 		}
 		else if(leg6.lift != 1 && climb_step == 0) // If leg1 has found the obstacle.
 		{
 			height_change_leg6(obstacle_height);
-			leg6.climbing = 0;
+			leg6.climbing = 4;
 			leg6.newPosz = obstacle_height;
 		}
 		else if (leg1.lift != 1 && climb_step == 0 && obstacle_height == z_in_use)
 		{
 			leg1.climbing = 1;
 			leg1.newPosz = z_in_use + height;
+			height_change_leg1(obstacle_height);
 		}
 		else if (leg1.lift != 1 && climb_step == 0) // If leg6 has found the obstacle.
 		{
 			height_change_leg1(obstacle_height);
-			leg1.climbing = 0;
+			leg1.climbing = 4;
 			leg1.newPosz = obstacle_height;
 		}
 		else if (leg2.lift != 1 && climb_step == 1 && leg5.newPosz == obstacle_height)
 		{
 			height_change_leg2(obstacle_height);
-			leg2.climbing = 0;
+			leg2.climbing = 4;
 			leg2.newPosz = obstacle_height;
 		}
 		else if (leg2.lift != 1 && climb_step == 1) // Leg5 has not found the obstacle.
@@ -840,7 +905,7 @@ void climb()
 		else if (leg5.lift != 1 && climb_step == 1 && leg2.newPosz ==obstacle_height)
 		{
 			height_change_leg5(obstacle_height);
-			leg5.climbing = 0;
+			leg5.climbing = 4;
 			leg5.newPosz = obstacle_height;
 		}
 		else if (leg5.lift != 1 && climb_step == 1)
@@ -848,7 +913,7 @@ void climb()
 			leg5.climbing = 1;
 			leg5.newPosz = obstacle_height;
 		}
-		else if(leg4.newPosz > z_in_use + 20 && leg3.newPosz > z_in_use + 20)
+		else if(leg4.newPosz > z_in_use + 40 && leg3.newPosz > z_in_use + 40)
 		{
 			climb_step = 3;
 			
@@ -863,7 +928,7 @@ void climb()
 		else if (leg4.lift != 1 && climb_step == 2 && leg3.newPosz == obstacle_height)
 		{
 			height_change_leg4(obstacle_height);
-			leg4.climbing = 0;
+			leg4.climbing = 4;
 			leg4.newPosz = obstacle_height;
 		}
 		else if (leg4.lift != 1 && climb_step == 2)
@@ -875,7 +940,7 @@ void climb()
 		else if (leg3.lift != 1 && climb_step == 2 && leg4.newPosz == obstacle_height)
 		{
 			height_change_leg3(obstacle_height);
-			leg3.climbing = 0;
+			leg3.climbing = 4;
 			leg3.newPosz = obstacle_height;
 		}
 		else if (leg3.lift != 1 && climb_step == 2)
@@ -953,10 +1018,61 @@ void climb()
 			leg3.newPosz = obstacle_height;
 		}
 		
-		move_robot(0,50,100);
-		wait(2000);
-		MPU_update();
+		//For safety when climbing down, if we fall.
+		MPU_get_mean();
+		if(MPURMean - climb_start_slope_r > 0.10 && climb_step2 == 1)
+		{
+			leg1.newPosz = z_in_use;
+			height_change_leg1(z_in_use);
+			leg1.climbing = 0;
+			leg6.newPosz = z_in_use;
+			height_change_leg6(z_in_use);
+			leg6.climbing = 0;
+		}
+		else if(climb_step2 == 2 || climb_step == 2)
+		{
+			climb_counter += 1;
+			if(climb_counter > 6)
+			{
+				leg2.newPosz = z_in_use;
+				height_change_leg2(z_in_use);
+				leg2.climbing = 0;
+				leg5.newPosz = z_in_use;
+				height_change_leg5(z_in_use);
+				leg5.climbing = 0;
+				
+				climb_counter = 0;
+			}
+		}
+		else if(MPURMean - climb_start_slope_r < -0.10 && climb_step2 == 3)
+		{
+			leg3.newPosz = z_in_use;
+			height_change_leg3(z_in_use);
+			leg3.climbing = 0;
+			leg4.newPosz = z_in_use;
+			height_change_leg4(z_in_use);
+			leg4.climbing = 0;
+		}
+		else if(climb_step2 == 3)
+		{
+			climb_counter += 1;
+			if(climb_counter > 4)
+			{
+				leg3.newPosz = z_in_use;
+				height_change_leg3(z_in_use);
+				leg3.climbing = 0;
+				leg4.newPosz = z_in_use;
+				height_change_leg4(z_in_use);
+				leg4.climbing = 0;
+				
+				climb_counter = 0;
+			}
+		}
 		
+		move_robot(0,50,100);
+		wait(200);
+		
+		climb_rotation_counter = 0;
 		while(fabs(MPU_get_y() - climb_start_control) > 0.10 && rotation_flag)
 		{
 			MPU_update();
@@ -968,10 +1084,25 @@ void climb()
 			{
 				move_robot(0, 60, 0);
 			}
+			climb_rotation_counter += 1;
+			if(climb_rotation_counter > 8 && (leg3.newPosz > z_in_use || leg4.newPosz > z_in_use))
+			{
+				leg2.newPosz = z_in_use;
+				height_change_leg2(z_in_use);
+				leg2.climbing = 0;
+				leg5.newPosz = z_in_use;
+				height_change_leg5(z_in_use);
+				leg5.climbing = 0;
+				leg3.climbing = 0;
+				leg4.climbing = 0;
+				
+				rotation_flag = 0;
+			}
 		}
 		rotation_flag = 0;
 	}
-	
+	//take another step for good measure
+	move_robot(0,50,100);
 }
 
 void move_climb(struct LegData* leg, float n)
@@ -1635,3 +1766,21 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 	
 	USART_send_turn_done();
 }
+
+
+void MPU_get_mean()
+{
+	MPU_update();
+	float xp = MPU_get_p();
+	float xr = MPU_get_r();
+	wait(10);
+	MPU_update();
+	float yp = MPU_get_p();
+	float yr = MPU_get_r();
+	wait(10);
+	MPU_update();
+	MPUPMean = (xp+yp+ MPU_get_p())/3;	
+	MPURMean = (xr+yr+ MPU_get_r())/3;
+}
+
+

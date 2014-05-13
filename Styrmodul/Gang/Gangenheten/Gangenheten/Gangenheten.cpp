@@ -57,7 +57,7 @@ int main(void)
     while(1)
     {
 		MPU_update();
-		
+		/*
 		if(USART_get_turn_flag())
 		{
 			turn_degrees(USART_get_turn_angle(), USART_get_turn_dir());
@@ -84,7 +84,7 @@ int main(void)
 			sei();
 		}
 		
-		
+		*/
 		
 		if(move_to_std_flag == 1)
 		{
@@ -92,11 +92,13 @@ int main(void)
 			move_to_std();
 		}
 		
-		//climb();
+		climb();
 		
-		/*
+		
 		change_z(-130);
 		move_to_std();
+		turn_degrees(180,1);
+		/*
 		wait(100);
 		for(int i = 0; i < 10; ++i)
 		{
@@ -112,7 +114,7 @@ int main(void)
 		//change_z(-120);
 		//move_to_std();
 
-		//wait(5000);
+		//wait(4000);
 		
 		
 
