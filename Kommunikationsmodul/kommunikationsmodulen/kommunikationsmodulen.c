@@ -21,6 +21,7 @@
 #include "fifo.h"
 #include "usart.h"
 #include "counter.h"
+#include "LED.h"
 
 // -- Declarations --
 void init();
@@ -48,7 +49,7 @@ int main(void)
 		
 		// TODO: put this on timer
 		//if(TWI_send_status(ST_ADRESS))
-			//PORTA ^= (1<<PORTA1);
+			//LED1_TOGGLE;
 		//TWI_send_string(S_ADDRESS, "Hejsan lulzi!");
 	}
 }
@@ -58,8 +59,7 @@ int main(void)
 
 void init()
 {
-	DDRA |= (1<<PORTA0|1<<PORTA1); //set status diodes to outputs
-	DDRC |= (1<<PORTC6|1<<PORTC7); //set status diodes to outputs
+	LED_INIT;
 	USART_init();
 	TWI_init(C_ADDRESS);
 	init_counters();

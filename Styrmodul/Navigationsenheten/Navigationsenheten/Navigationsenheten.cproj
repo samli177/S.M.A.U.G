@@ -141,6 +141,9 @@
     <Compile Include="autonomouswalk.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="LED.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Navigation.c">
       <SubType>compile</SubType>
     </Compile>

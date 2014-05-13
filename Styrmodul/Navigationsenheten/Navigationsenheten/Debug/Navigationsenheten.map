@@ -1138,15 +1138,15 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x3d93
+.debug_info     0x00000000     0x3d92
  *(.debug_info)
  .debug_info    0x00000000      0x822 autonomouswalk.o
  .debug_info    0x00000822      0x119 counter.o
  .debug_info    0x0000093b      0x1b1 fifo.o
- .debug_info    0x00000aec      0xc2a Navigation.o
- .debug_info    0x00001716      0x4cc Navigationsenheten.o
- .debug_info    0x00001be2     0x12b7 twi.o
- .debug_info    0x00002e99      0xefa usart.o
+ .debug_info    0x00000aec      0xc29 Navigation.o
+ .debug_info    0x00001715      0x4cc Navigationsenheten.o
+ .debug_info    0x00001be1     0x12b7 twi.o
+ .debug_info    0x00002e98      0xefa usart.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev   0x00000000      0xfe3
@@ -1159,15 +1159,15 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_abbrev  0x00000900      0x331 twi.o
  .debug_abbrev  0x00000c31      0x3b2 usart.o
 
-.debug_line     0x00000000     0x264d
+.debug_line     0x00000000     0x2647
  *(.debug_line)
  .debug_line    0x00000000      0x48d autonomouswalk.o
  .debug_line    0x0000048d      0x13c counter.o
  .debug_line    0x000005c9      0x14f fifo.o
  .debug_line    0x00000718      0x588 Navigation.o
- .debug_line    0x00000ca0      0x337 Navigationsenheten.o
- .debug_line    0x00000fd7      0xe0e twi.o
- .debug_line    0x00001de5      0x868 usart.o
+ .debug_line    0x00000ca0      0x331 Navigationsenheten.o
+ .debug_line    0x00000fd1      0xe0e twi.o
+ .debug_line    0x00001ddf      0x868 usart.o
 
 .debug_frame    0x00000000      0xc8c
  *(.debug_frame)
@@ -1179,21 +1179,21 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x000004d4      0x454 twi.o
  .debug_frame   0x00000928      0x364 usart.o
 
-.debug_str      0x00000000      0xd2b
+.debug_str      0x00000000      0xd83
  *(.debug_str)
- .debug_str     0x00000000      0x3b2 autonomouswalk.o
-                                0x3fe (size before relaxing)
- .debug_str     0x000003b2       0x42 counter.o
-                                0x115 (size before relaxing)
- .debug_str     0x000003f4       0x3e fifo.o
+ .debug_str     0x00000000      0x3c1 autonomouswalk.o
+                                0x40d (size before relaxing)
+ .debug_str     0x000003c1       0x42 counter.o
+                                0x124 (size before relaxing)
+ .debug_str     0x00000403       0x87 fifo.o
                                 0x125 (size before relaxing)
- .debug_str     0x00000432      0x16f Navigation.o
-                                0x3f4 (size before relaxing)
- .debug_str     0x000005a1      0x153 Navigationsenheten.o
-                                0x335 (size before relaxing)
- .debug_str     0x000006f4      0x3e2 twi.o
-                                0x639 (size before relaxing)
- .debug_str     0x00000ad6      0x255 usart.o
+ .debug_str     0x0000048a      0x16f Navigation.o
+                                0x403 (size before relaxing)
+ .debug_str     0x000005f9      0x153 Navigationsenheten.o
+                                0x344 (size before relaxing)
+ .debug_str     0x0000074c      0x3e2 twi.o
+                                0x648 (size before relaxing)
+ .debug_str     0x00000b2e      0x255 usart.o
                                 0x50d (size before relaxing)
 
 .debug_loc      0x00000000     0x262a

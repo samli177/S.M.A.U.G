@@ -10,14 +10,7 @@
 #include "usart.h"
 #include "counter.h"
 #include "MpuInit.h"
-
-#define LED1_ON PORTC |= (1<<PORTC6)
-#define LED1_OFF PORTC &= ~(1<<PORTC6)
-#define LED1_TOGGLE PORTC ^= (1<<PORTC6)
-
-#define LED2_ON PORTC |= (1<<PORTC7)
-#define LED2_OFF PORTC &= ~(1<<PORTC7)
-#define LED2_TOGGLE PORTC ^= (1<<PORTC7)
+#include "LED.h"
 
 uint8_t std_pos_flag = 1;
 uint8_t move_to_std_flag = 0;
@@ -26,7 +19,7 @@ void wait_until_gyro_stable();
 
 int main(void)
 {
-	DDRC |= (1<<PORTC6 | 1<<PORTC7); //init LED
+	LED_INIT;
 	//servoTx;
 	sei();
 	USART_init();
@@ -78,7 +71,6 @@ int main(void)
 		if(r == 50 && s == 0 && d == 0)
 		{
 			wait(50);
-			PORTD ^= (1<<PORTD5);
 			cli();
 			USART_send_ready();
 			sei();

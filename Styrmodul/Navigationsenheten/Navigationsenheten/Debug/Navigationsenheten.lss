@@ -17,19 +17,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   6 .debug_aranges 00000418  00000000  00000000  00007297  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00003d93  00000000  00000000  000076af  2**0
+  7 .debug_info   00003d92  00000000  00000000  000076af  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00000fe3  00000000  00000000  0000b442  2**0
+  8 .debug_abbrev 00000fe3  00000000  00000000  0000b441  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   0000264d  00000000  00000000  0000c425  2**0
+  9 .debug_line   00002647  00000000  00000000  0000c424  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  00000c8c  00000000  00000000  0000ea74  2**2
+ 10 .debug_frame  00000c8c  00000000  00000000  0000ea6c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000d2b  00000000  00000000  0000f700  2**0
+ 11 .debug_str    00000d83  00000000  00000000  0000f6f8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000262a  00000000  00000000  0001042b  2**0
+ 12 .debug_loc    0000262a  00000000  00000000  0001047b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000470  00000000  00000000  00012a55  2**0
+ 13 .debug_ranges 00000470  00000000  00000000  00012aa5  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -823,34 +823,21 @@ void init_counters()
      444:	08 95       	ret
 
 00000446 <FifoDataLength>:
-
-#include <avr/io.h>
-#include "fifo.h"
-
-uint8_t FifoDataLength (struct fifo *fifo)
-{
      446:	fc 01       	movw	r30, r24
-	return (fifo->write - fifo->read) & (fifo->size -1);
      448:	90 81       	ld	r25, Z
      44a:	91 50       	subi	r25, 0x01	; 1
      44c:	84 81       	ldd	r24, Z+4	; 0x04
      44e:	22 81       	ldd	r18, Z+2	; 0x02
      450:	82 1b       	sub	r24, r18
-};
      452:	89 23       	and	r24, r25
      454:	08 95       	ret
 
 00000456 <FifoWrite>:
-
-uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
-{
      456:	1f 93       	push	r17
      458:	cf 93       	push	r28
      45a:	df 93       	push	r29
      45c:	ec 01       	movw	r28, r24
      45e:	16 2f       	mov	r17, r22
-	// fifo full : error
-	if (FifoDataLength(fifo) == (fifo->size - 1))
      460:	f2 df       	rcall	.-28     	; 0x446 <FifoDataLength>
      462:	28 81       	ld	r18, Y
      464:	39 81       	ldd	r19, Y+1	; 0x01
@@ -860,65 +847,35 @@ uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
      46c:	82 17       	cp	r24, r18
      46e:	93 07       	cpc	r25, r19
      470:	69 f0       	breq	.+26     	; 0x48c <FifoWrite+0x36>
-	{
-		return 1;
-	}
-	// write data & increment write pointer
-	fifo->buffer[fifo->write] = data;
      472:	8c 81       	ldd	r24, Y+4	; 0x04
      474:	9d 81       	ldd	r25, Y+5	; 0x05
      476:	fe 01       	movw	r30, r28
      478:	e8 0f       	add	r30, r24
      47a:	f9 1f       	adc	r31, r25
      47c:	16 83       	std	Z+6, r17	; 0x06
-	fifo->write = (fifo->write + 1) & (fifo->size - 1);
      47e:	01 96       	adiw	r24, 0x01	; 1
      480:	28 23       	and	r18, r24
      482:	39 23       	and	r19, r25
      484:	3d 83       	std	Y+5, r19	; 0x05
      486:	2c 83       	std	Y+4, r18	; 0x04
-	return 0;
      488:	80 e0       	ldi	r24, 0x00	; 0
      48a:	01 c0       	rjmp	.+2      	; 0x48e <FifoWrite+0x38>
-uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
-{
-	// fifo full : error
-	if (FifoDataLength(fifo) == (fifo->size - 1))
-	{
-		return 1;
      48c:	81 e0       	ldi	r24, 0x01	; 1
-	}
-	// write data & increment write pointer
-	fifo->buffer[fifo->write] = data;
-	fifo->write = (fifo->write + 1) & (fifo->size - 1);
-	return 0;
-};
      48e:	df 91       	pop	r29
      490:	cf 91       	pop	r28
      492:	1f 91       	pop	r17
      494:	08 95       	ret
 
 00000496 <FifoRead>:
-
-
-uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
-{
      496:	0f 93       	push	r16
      498:	1f 93       	push	r17
      49a:	cf 93       	push	r28
      49c:	df 93       	push	r29
      49e:	ec 01       	movw	r28, r24
      4a0:	8b 01       	movw	r16, r22
-	// fifo empty : error
-	if (FifoDataLength(fifo) == 0)
      4a2:	d1 df       	rcall	.-94     	; 0x446 <FifoDataLength>
      4a4:	88 23       	and	r24, r24
      4a6:	a1 f0       	breq	.+40     	; 0x4d0 <FifoRead+0x3a>
-	{
-		return 1;
-	}
-	// read data & increment read pointer
-	*data = fifo->buffer[fifo->read];
      4a8:	ea 81       	ldd	r30, Y+2	; 0x02
      4aa:	fb 81       	ldd	r31, Y+3	; 0x03
      4ac:	ec 0f       	add	r30, r28
@@ -926,7 +883,6 @@ uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
      4b0:	86 81       	ldd	r24, Z+6	; 0x06
      4b2:	f8 01       	movw	r30, r16
      4b4:	80 83       	st	Z, r24
-	fifo->read = (fifo->read + 1) & (fifo->size - 1);
      4b6:	28 81       	ld	r18, Y
      4b8:	39 81       	ldd	r19, Y+1	; 0x01
      4ba:	21 50       	subi	r18, 0x01	; 1
@@ -938,21 +894,9 @@ uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
      4c6:	93 23       	and	r25, r19
      4c8:	9b 83       	std	Y+3, r25	; 0x03
      4ca:	8a 83       	std	Y+2, r24	; 0x02
-	return 0;
      4cc:	80 e0       	ldi	r24, 0x00	; 0
      4ce:	01 c0       	rjmp	.+2      	; 0x4d2 <FifoRead+0x3c>
-uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
-{
-	// fifo empty : error
-	if (FifoDataLength(fifo) == 0)
-	{
-		return 1;
      4d0:	81 e0       	ldi	r24, 0x01	; 1
-	}
-	// read data & increment read pointer
-	*data = fifo->buffer[fifo->read];
-	fifo->read = (fifo->read + 1) & (fifo->size - 1);
-	return 0;
      4d2:	df 91       	pop	r29
      4d4:	cf 91       	pop	r28
      4d6:	1f 91       	pop	r17
@@ -2119,12 +2063,10 @@ int main(void)
 	init_counters();
      ca6:	ac db       	rcall	.-2216   	; 0x400 <init_counters>
 	
-	//LED
-	DDRA |= (1<<PORTA0 | 1<<PORTA1);
+	LED_INIT;
      ca8:	81 b1       	in	r24, 0x01	; 1
      caa:	83 60       	ori	r24, 0x03	; 3
      cac:	81 b9       	out	0x01, r24	; 1
-	DDRC |= (1<<PORTC6 | 1<<PORTC7);
      cae:	87 b1       	in	r24, 0x07	; 7
      cb0:	80 6c       	ori	r24, 0xC0	; 192
      cb2:	87 b9       	out	0x07, r24	; 7
@@ -2171,16 +2113,16 @@ int main(void)
 			
 			if(TWI_elevation_flag())
 			{
-				PORTA ^= (1<<PORTA0);
+				LED0_TOGGLE;
      cea:	d1 e0       	ldi	r29, 0x01	; 1
 		}
 		else
 		{
 			if(TWI_command_flag())
 			{
-				PORTA ^= (1<<PORTA1);
+				LED1_TOGGLE;
      cec:	c2 e0       	ldi	r28, 0x02	; 2
-			PORTA ^= (1<<PORTA1);
+			LED1_TOGGLE;
 			navigation_fill_buffer();
 		}*/
 		
@@ -2226,7 +2168,7 @@ int main(void)
      d1c:	88 23       	and	r24, r24
      d1e:	21 f0       	breq	.+8      	; 0xd28 <main+0x90>
 			{
-				PORTA ^= (1<<PORTA1);
+				LED1_TOGGLE;
      d20:	82 b1       	in	r24, 0x02	; 2
      d22:	8c 27       	eor	r24, r28
      d24:	82 b9       	out	0x02, r24	; 2
@@ -2239,7 +2181,7 @@ int main(void)
      d2a:	88 23       	and	r24, r24
      d2c:	21 f0       	breq	.+8      	; 0xd36 <main+0x9e>
 			{
-				PORTA ^= (1<<PORTA0);
+				LED0_TOGGLE;
      d2e:	82 b1       	in	r24, 0x02	; 2
      d30:	8d 27       	eor	r24, r29
      d32:	82 b9       	out	0x02, r24	; 2
@@ -2395,7 +2337,7 @@ ISR(PCINT0_vect)
      e02:	81 e0       	ldi	r24, 0x01	; 1
      e04:	7d db       	rcall	.-2310   	; 0x500 <navigation_set_algorithm>
 		//test
-		PORTC ^= (1<<PORTC6);
+		LED2_TOGGLE;
      e06:	98 b1       	in	r25, 0x08	; 8
      e08:	80 e4       	ldi	r24, 0x40	; 64
      e0a:	89 27       	eor	r24, r25
@@ -2413,7 +2355,7 @@ ISR(PCINT0_vect)
      e18:	80 e0       	ldi	r24, 0x00	; 0
      e1a:	72 db       	rcall	.-2332   	; 0x500 <navigation_set_algorithm>
 		//test
-		PORTC ^= (1<<PORTC7);
+		LED3_TOGGLE;
      e1c:	88 b1       	in	r24, 0x08	; 8
      e1e:	80 58       	subi	r24, 0x80	; 128
      e20:	88 b9       	out	0x08, r24	; 8
@@ -3653,12 +3595,6 @@ void get_elevation_from_bus()
     1654:	18 95       	reti
 
 00001656 <USART_init>:
-{
-	for(int i = 0; i < gRxBuffer[1]; i++)
-	{
-		gTxPayload[i] = gRxBuffer[i+2];
-	}
-	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
     1656:	10 92 c5 00 	sts	0x00C5, r1
     165a:	87 e0       	ldi	r24, 0x07	; 7
     165c:	80 93 c4 00 	sts	0x00C4, r24
@@ -4424,11 +4360,6 @@ void get_elevation_from_bus()
     1cc4:	08 95       	ret
 
 00001cc6 <__vector_20>:
-}
-
-
-ISR (USART0_RX_vect)
-{
     1cc6:	1f 92       	push	r1
     1cc8:	0f 92       	push	r0
     1cca:	0f b6       	in	r0, 0x3f	; 63
@@ -4454,16 +4385,10 @@ ISR (USART0_RX_vect)
     1cf2:	df 93       	push	r29
     1cf4:	ef 93       	push	r30
     1cf6:	ff 93       	push	r31
-	uint8_t data;
-	data = UDR0; // read data from buffer TODO: add check for overflow
     1cf8:	20 91 c6 00 	lds	r18, 0x00C6
-	
-	if(data == 0x7e)
     1cfc:	2e 37       	cpi	r18, 0x7E	; 126
     1cfe:	09 f0       	breq	.+2      	; 0x1d02 <__vector_20+0x3c>
     1d00:	3f c0       	rjmp	.+126    	; 0x1d80 <__vector_20+0xba>
-	{
-		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
     1d02:	80 91 b0 13 	lds	r24, 0x13B0
     1d06:	90 91 b1 13 	lds	r25, 0x13B1
     1d0a:	84 30       	cpi	r24, 0x04	; 4
@@ -4476,24 +4401,14 @@ ISR (USART0_RX_vect)
     1d1a:	82 17       	cp	r24, r18
     1d1c:	93 07       	cpc	r25, r19
     1d1e:	59 f5       	brne	.+86     	; 0x1d76 <__vector_20+0xb0>
-		{
-			if(gInvertNextFlag)
     1d20:	80 91 ae 13 	lds	r24, 0x13AE
     1d24:	90 91 af 13 	lds	r25, 0x13AF
     1d28:	89 2b       	or	r24, r25
     1d2a:	21 f0       	breq	.+8      	; 0x1d34 <__vector_20+0x6e>
-			{
-				data = (1<<5)^data;
-				gInvertNextFlag = 0;
     1d2c:	10 92 af 13 	sts	0x13AF, r1
     1d30:	10 92 ae 13 	sts	0x13AE, r1
     1d34:	00 e1       	ldi	r16, 0x10	; 16
     1d36:	15 e1       	ldi	r17, 0x15	; 21
-			}
-			
-			
-			// Add packet (no crc) to fifo-buffer to cue it for decoding
-			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     1d38:	c0 e0       	ldi	r28, 0x00	; 0
     1d3a:	d0 e0       	ldi	r29, 0x00	; 0
     1d3c:	0f 2e       	mov	r0, r31
@@ -4502,8 +4417,6 @@ ISR (USART0_RX_vect)
     1d42:	f5 e1       	ldi	r31, 0x15	; 21
     1d44:	ff 2e       	mov	r15, r31
     1d46:	f0 2d       	mov	r31, r0
-			{
-				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
     1d48:	f8 01       	movw	r30, r16
     1d4a:	61 91       	ld	r22, Z+
     1d4c:	8f 01       	movw	r16, r30
@@ -4512,18 +4425,10 @@ ISR (USART0_RX_vect)
     1d56:	0e 94 2b 02 	call	0x456	; 0x456 <FifoWrite>
     1d5a:	88 23       	and	r24, r24
     1d5c:	21 f0       	breq	.+8      	; 0x1d66 <__vector_20+0xa0>
-				{
-					TWI_send_string(S_ADDRESS,"U_FIFO-full");
     1d5e:	6a e8       	ldi	r22, 0x8A	; 138
     1d60:	73 e1       	ldi	r23, 0x13	; 19
     1d62:	80 e4       	ldi	r24, 0x40	; 64
     1d64:	ac d9       	rcall	.-3240   	; 0x10be <TWI_send_string>
-				gInvertNextFlag = 0;
-			}
-			
-			
-			// Add packet (no crc) to fifo-buffer to cue it for decoding
-			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     1d66:	21 96       	adiw	r28, 0x01	; 1
     1d68:	f7 01       	movw	r30, r14
     1d6a:	80 81       	ld	r24, Z
@@ -4532,43 +4437,25 @@ ISR (USART0_RX_vect)
     1d70:	c8 17       	cp	r28, r24
     1d72:	d9 07       	cpc	r29, r25
     1d74:	4c f3       	brlt	.-46     	; 0x1d48 <__vector_20+0x82>
-					TWI_send_string(S_ADDRESS,"U_FIFO-full");
-				}
-			}
-		}
-		
-		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read
     1d76:	10 92 b1 13 	sts	0x13B1, r1
     1d7a:	10 92 b0 13 	sts	0x13B0, r1
     1d7e:	16 c0       	rjmp	.+44     	; 0x1dac <__vector_20+0xe6>
-		
-	}else if(data == 0x7d)
     1d80:	2d 37       	cpi	r18, 0x7D	; 125
     1d82:	39 f4       	brne	.+14     	; 0x1d92 <__vector_20+0xcc>
-	{
-		gInvertNextFlag = 1;
     1d84:	81 e0       	ldi	r24, 0x01	; 1
     1d86:	90 e0       	ldi	r25, 0x00	; 0
     1d88:	90 93 af 13 	sts	0x13AF, r25
     1d8c:	80 93 ae 13 	sts	0x13AE, r24
     1d90:	0d c0       	rjmp	.+26     	; 0x1dac <__vector_20+0xe6>
-	}else
-	{
-		gRxBuffer[gRxBufferIndex] = data;
     1d92:	80 91 b0 13 	lds	r24, 0x13B0
     1d96:	90 91 b1 13 	lds	r25, 0x13B1
     1d9a:	fc 01       	movw	r30, r24
     1d9c:	e0 5f       	subi	r30, 0xF0	; 240
     1d9e:	fa 4e       	sbci	r31, 0xEA	; 234
     1da0:	20 83       	st	Z, r18
-		++gRxBufferIndex;
     1da2:	01 96       	adiw	r24, 0x01	; 1
     1da4:	90 93 b1 13 	sts	0x13B1, r25
     1da8:	80 93 b0 13 	sts	0x13B0, r24
-	}
-	
-	
-}
     1dac:	ff 91       	pop	r31
     1dae:	ef 91       	pop	r30
     1db0:	df 91       	pop	r29
@@ -4596,18 +4483,9 @@ ISR (USART0_RX_vect)
     1ddc:	18 95       	reti
 
 00001dde <USART_send_command_parameters>:
-
-void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed)
-{
-	gTxPayload[0] = direction;
     1dde:	80 93 15 17 	sts	0x1715, r24
-	gTxPayload[1] = rotation;
     1de2:	60 93 16 17 	sts	0x1716, r22
-	gTxPayload[2] = speed;
     1de6:	40 93 17 17 	sts	0x1717, r20
-	
-	
-	USART_SendPacket('C', 3);
     1dea:	63 e0       	ldi	r22, 0x03	; 3
     1dec:	83 e4       	ldi	r24, 0x43	; 67
     1dee:	aa cc       	rjmp	.-1708   	; 0x1744 <USART_SendPacket>

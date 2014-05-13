@@ -17,6 +17,7 @@
 #include "usart.h"
 #include "counter.h"
 #include "MpuInit.h"
+#include "LED.h"
 
 int speed;
 float iterations;
@@ -557,7 +558,6 @@ void leg_motion()
 	{
 		wait(300);
 		MPU_update();
-		
 		legsNotDown = 1;
 		while(legsNotDown)
 		{
@@ -1655,10 +1655,10 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 		{
 			realDiff = fabs(diff);
 		} else if(diff < 0) {
-			PORTC ^= (1<<PORTC6);
+			LED0_TOGGLE;
 			realDiff = M_PI + fmod(diff, M_PI);
 		} else {
-			PORTC ^= (1<<PORTC7);
+			LED1_TOGGLE;
 			realDiff = M_PI - fmod(diff, M_PI);
 		}
 		angleLeft = radians - realDiff;

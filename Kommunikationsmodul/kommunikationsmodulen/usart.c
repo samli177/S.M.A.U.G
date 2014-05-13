@@ -14,6 +14,7 @@
 #include "fifo.h"
 #include "usart.h"
 #include "twi.h"
+#include "LED.h"
 
 
 // -- USART Stuff --
@@ -278,7 +279,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 			}
 			
 			speed = *data;
-		PORTA ^= (1<<PORTA0);
+		LED0_TOGGLE;
 		TWI_send_command(direction, rotation, speed);
 
 	}else
@@ -364,7 +365,7 @@ uint8_t USART_DecodeAutonomRxFIFO()
 			return 1; // error
 		}
 		sett = *data;
-		PORTA ^= (1<<PORTA1);
+		LED2_TOGGLE;
 		TWI_send_autonom_settings(ST_ADDRESS,sett);
 
 	}else
@@ -405,7 +406,7 @@ uint8_t USART_DecodeElevationRxFIFO()
 	direction = *data;
 	
 
-	PORTA ^= (1 << PORTA1);
+	LED1_TOGGLE;
 
 	TWI_send_elevation(direction);
 
