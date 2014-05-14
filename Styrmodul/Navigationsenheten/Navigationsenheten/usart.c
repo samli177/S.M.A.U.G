@@ -44,7 +44,7 @@ DEFINE_FIFO(gRxFIFO, 4096);
 // --------- TODOs -----------
 
 // decide what to do with error messages
-// figure out if is is possible to stop "package inception", flag maybe?
+// figure out if is is possible to stop "packet inception", flag maybe?
 
 // ---------------------------
 
@@ -74,24 +74,24 @@ void USART_set_twi_message_destination(uint16_t address)
 	gMessageDesitnation = address;
 }
 
-uint8_t USART_CheckRxComplete()
+uint8_t USART_check_rx_complete()
 {
 	return (UCSR0A & (1<<RXC0)); // zero if no data is available to read
 }
 
-uint8_t USART_CheckTxReady()
+uint8_t USART_check_tx_ready()
 {
 	return (UCSR0A & (1<<UDRE0)); // zero if transmit register is not ready to receive new data
 }
 
-void USART_WriteByte(uint8_t DataByteOut)
+void USART_write_byte(uint8_t DataByteOut)
 {
-	while(USART_CheckTxReady() == 0)
+	while(USART_check_tx_ready() == 0)
 	{;;} // wait until ready to transmit NOTE: Can probably be optimized using interrupts
 	UDR0 = DataByteOut;
 }
 
-uint8_t USART_ReadByte()
+uint8_t USART_read_byte()
 {
 	// NOTE: check if data is available before calling this function. Should probably be implemented w. interrupt.
 	return UDR0;
@@ -146,7 +146,7 @@ uint16_t USART_crc16(uint8_t tag, uint8_t length)
 	return (crc);
 }
 
-void USART_SendPacket(char tag, uint8_t length)
+void USART_send_packet(char tag, uint8_t length)
 {
 	int count, offset, buffersize;
 	uint16_t crc;
@@ -187,21 +187,21 @@ void USART_SendPacket(char tag, uint8_t length)
 	
 	for(count = 0; count < buffersize + 1; ++count)
 	{
-		USART_WriteByte(gTxBuffer[count]);
+		USART_write_byte(gTxBuffer[count]);
 	}
 }
 
-void USART_SendMessage(char msg[])
+void USART_send_message(char msg[])
 {
 	for(int i = 0; i < strlen(msg); ++i )
 	{
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('M', strlen(msg));
+	USART_send_packet('M', strlen(msg));
 }
 
-void USART_SendSensors()
+void USART_send_sensors()
 {
 	for(int i = 0; i < 8; i++)
 	{
@@ -210,49 +210,51 @@ void USART_SendSensors()
 
 	gTxPayload[8] = TWI_get_servo();
 	
-	USART_SendPacket('S', 9);
+	USART_send_packet('S', 9);
 }
 
-void USART_SendCommand()
+void USART_send_command()
 {
 	for(int i = 0; i < 3; i++)
 	{
 		gTxPayload[i] = TWI_get_command(i);
 	}
 	
-	USART_SendPacket('C', 3);
+	USART_send_packet('C', 3);
 	// clear flag
 	
 }
 
-void USART_SendElevation()
+void USART_send_elevation()
 {
 	int temp = TWI_get_elevation();
 	gTxPayload[0] = temp;
-	USART_SendPacket('E', 1);
+	USART_send_packet('E', 1);
 }
 
-void USART_SendTurn(uint16_t angle, uint8_t dir)
+void USART_send_turn(uint16_t angle, uint8_t dir)
 {
 	uint8_t b1 = (uint8_t) ((angle >> 8) & 0x00FF);
 	uint8_t b2 = (uint8_t) (angle & 0x00FF);
 	gTxPayload[0] = b1;
 	gTxPayload[1] = b2;
 	gTxPayload[2] = dir;
-	USART_SendPacket('T', 3);
+	USART_send_packet('T', 3);
 }
 
-void USART_SendClimb()
+
+void USART_send_climb()
 {
-	USART_SendPacket('H', 0);
+	USART_send_packet('H', 0);
 }
 
-void USART_RequestGyro()
+
+void USART_request_gyro()
 {
-	USART_SendPacket('G', 0);
+	USART_send_packet('G', 0);
 }
 
-uint8_t USART_DecodeMessageRxFIFO()
+uint8_t USART_decode_message_rx_fifo()
 {
 	
 	uint8_t *len = 0;
@@ -264,7 +266,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 		return 1; // error
 	}
 	
-	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
+	int length = *len; // don't know why I can't use *len directly
 	
 	//NOTE: there has to be a better way of doing this...
 	int ifzero = 0;
@@ -289,7 +291,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	return 0;
 }
 
-uint8_t USART_DecodeGyroFIFO()
+uint8_t USART_decode_gyro_rx_fifo()
 {
 	gGyroFlag = 1;
 	
@@ -343,7 +345,7 @@ uint8_t USART_DecodeGyroFIFO()
 	return 0;
 }
 
-uint8_t USART_DecodeCommandRxFIFO()
+uint8_t USART_decode_command_rx_fifo()
 {
 	uint8_t *len = 0;
 	uint8_t *data = 0;
@@ -450,7 +452,7 @@ uint8_t USART_DecodeReadyFIFO()
 	return 1;
 }
 
-uint8_t USART_DecodeTurnDoneRxFIFO()
+uint8_t USART_decode_turn_done_rx_fifo()
 {
 	uint8_t *len = 0;
 	
@@ -471,7 +473,7 @@ uint8_t USART_DecodeTurnDoneRxFIFO()
 	return 1;
 }
 
-uint8_t USART_DecodeClimbDoneRxFIFO()
+uint8_t USART_decode_climb_done_rx_fifo()
 {
 	uint8_t *len = 0;
 	
@@ -547,7 +549,9 @@ uint8_t USART_climb_done()
 	return 0;
 }
 
-void USART_DecodeRxFIFO()
+
+void USART_decode_rx_fifo()
+
 {
 	uint8_t *tag = 0;
 	
@@ -557,7 +561,7 @@ void USART_DecodeRxFIFO()
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{
-				if(USART_DecodeMessageRxFIFO()) // if decoding failed
+				if(USART_decode_message_rx_fifo()) // if decoding failed
 				{
 					// TODO: flush buffer?
 					return;
@@ -567,7 +571,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('C'): // 
 			{
-				if(USART_DecodeCommandRxFIFO())
+				if(USART_decode_command_rx_fifo())
 				{
 					// TODO: flush buffer?
 					return;
@@ -594,7 +598,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('G'):
 			{
-				if(USART_DecodeGyroFIFO())
+				if(USART_decode_gyro_rx_fifo())
 				{
 					return;
 				}
@@ -602,7 +606,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('T'):
 			{
-				if(USART_DecodeTurnDoneRxFIFO())
+				if(USART_decode_turn_done_rx_fifo())
 				{
 					return;
 				}
@@ -610,7 +614,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('H'):
 			{
-				if(USART_DecodeClimbDoneRxFIFO())
+				if(USART_decode_climb_done_rx_fifo())
 				{
 					return;
 				}
@@ -620,13 +624,13 @@ void USART_DecodeRxFIFO()
 	}
 }
 
-void USART_Bounce()
+void USART_bounce()
 {
 	for(int i = 0; i < gRxBuffer[1]; i++)
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
 	}
-	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
+	USART_send_packet(gRxBuffer[0], gRxBuffer[1]);
 }
 
 
@@ -677,7 +681,7 @@ void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t 
 	gTxPayload[2] = speed;
 	
 	
-	USART_SendPacket('C', 3);
+	USART_send_packet('C', 3);
 	// clear flag
 	
 }

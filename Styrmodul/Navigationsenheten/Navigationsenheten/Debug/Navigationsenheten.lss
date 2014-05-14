@@ -17,19 +17,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   6 .debug_aranges 00000438  00000000  00000000  00007377  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00003fac  00000000  00000000  000077af  2**0
+  7 .debug_info   00003fad  00000000  00000000  000077af  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00000fc5  00000000  00000000  0000b75b  2**0
+  8 .debug_abbrev 00000fab  00000000  00000000  0000b75c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00002745  00000000  00000000  0000c720  2**0
+  9 .debug_line   00002745  00000000  00000000  0000c707  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  00000ccc  00000000  00000000  0000ee68  2**2
+ 10 .debug_frame  00000ccc  00000000  00000000  0000ee4c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000dd7  00000000  00000000  0000fb34  2**0
+ 11 .debug_str    00000de0  00000000  00000000  0000fb18  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00002718  00000000  00000000  0001090b  2**0
+ 12 .debug_loc    00002718  00000000  00000000  000108f8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000490  00000000  00000000  00013023  2**0
+ 13 .debug_ranges 00000490  00000000  00000000  00013010  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -205,16 +205,16 @@ void turn_around()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}*/
-	USART_SendTurn(180, 0);
+	USART_send_turn(180, 0);
      126:	60 e0       	ldi	r22, 0x00	; 0
      128:	84 eb       	ldi	r24, 0xB4	; 180
      12a:	90 e0       	ldi	r25, 0x00	; 0
-     12c:	0e 94 48 0c 	call	0x1890	; 0x1890 <USART_SendTurn>
+     12c:	0e 94 48 0c 	call	0x1890	; 0x1890 <USART_send_turn>
 	while(USART_turn_done() == 0)
      130:	08 c0       	rjmp	.+16     	; 0x142 <turn_around+0x2c>
 	{
-		USART_DecodeRxFIFO();
-     132:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_DecodeRxFIFO>
+		USART_decode_rx_fifo();
+     132:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_decode_rx_fifo>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
@@ -231,13 +231,13 @@ void turn_around()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}*/
-	USART_SendTurn(180, 0);
+	USART_send_turn(180, 0);
 	while(USART_turn_done() == 0)
      142:	0e 94 71 0e 	call	0x1ce2	; 0x1ce2 <USART_turn_done>
      146:	88 23       	and	r24, r24
      148:	a1 f3       	breq	.-24     	; 0x132 <turn_around+0x1c>
 	{
-		USART_DecodeRxFIFO();
+		USART_decode_rx_fifo();
 		_delay_ms(10);
 	}
 	
@@ -391,16 +391,16 @@ void turn_right()
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}*/
-	USART_SendTurn(90, 1);
+	USART_send_turn(90, 1);
      220:	61 e0       	ldi	r22, 0x01	; 1
      222:	8a e5       	ldi	r24, 0x5A	; 90
      224:	90 e0       	ldi	r25, 0x00	; 0
-     226:	0e 94 48 0c 	call	0x1890	; 0x1890 <USART_SendTurn>
+     226:	0e 94 48 0c 	call	0x1890	; 0x1890 <USART_send_turn>
 	while(USART_turn_done() == 0)
      22a:	08 c0       	rjmp	.+16     	; 0x23c <turn_right+0x30>
 	{
-		USART_DecodeRxFIFO();
-     22c:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_DecodeRxFIFO>
+		USART_decode_rx_fifo();
+     22c:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_decode_rx_fifo>
      230:	8f e3       	ldi	r24, 0x3F	; 63
      232:	9c e9       	ldi	r25, 0x9C	; 156
      234:	01 97       	sbiw	r24, 0x01	; 1
@@ -411,7 +411,7 @@ void turn_right()
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}*/
-	USART_SendTurn(90, 1);
+	USART_send_turn(90, 1);
 	while(USART_turn_done() == 0)
      23c:	0e 94 71 0e 	call	0x1ce2	; 0x1ce2 <USART_turn_done>
      240:	88 23       	and	r24, r24
@@ -428,7 +428,7 @@ void turn_right()
      24a:	88 df       	rcall	.-240    	; 0x15c <walk_forward>
      24c:	21 97       	sbiw	r28, 0x01	; 1
 	{
-		USART_DecodeRxFIFO();
+		USART_decode_rx_fifo();
 		_delay_ms(10);
 	}
 	
@@ -480,16 +480,16 @@ void turn_left()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}*/
-	USART_SendTurn(90, 0);
+	USART_send_turn(90, 0);
      280:	60 e0       	ldi	r22, 0x00	; 0
      282:	8a e5       	ldi	r24, 0x5A	; 90
      284:	90 e0       	ldi	r25, 0x00	; 0
-     286:	0e 94 48 0c 	call	0x1890	; 0x1890 <USART_SendTurn>
+     286:	0e 94 48 0c 	call	0x1890	; 0x1890 <USART_send_turn>
 	while(USART_turn_done() == 0)
      28a:	08 c0       	rjmp	.+16     	; 0x29c <turn_left+0x30>
 	{
-		USART_DecodeRxFIFO();
-     28c:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_DecodeRxFIFO>
+		USART_decode_rx_fifo();
+     28c:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_decode_rx_fifo>
      290:	8f e3       	ldi	r24, 0x3F	; 63
      292:	9c e9       	ldi	r25, 0x9C	; 156
      294:	01 97       	sbiw	r24, 0x01	; 1
@@ -500,7 +500,7 @@ void turn_left()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}*/
-	USART_SendTurn(90, 0);
+	USART_send_turn(90, 0);
 	while(USART_turn_done() == 0)
      29c:	0e 94 71 0e 	call	0x1ce2	; 0x1ce2 <USART_turn_done>
      2a0:	88 23       	and	r24, r24
@@ -517,7 +517,7 @@ void turn_left()
      2aa:	58 df       	rcall	.-336    	; 0x15c <walk_forward>
      2ac:	21 97       	sbiw	r28, 0x01	; 1
 	{
-		USART_DecodeRxFIFO();
+		USART_decode_rx_fifo();
 		_delay_ms(10);
 	}
 	
@@ -551,8 +551,8 @@ void turn_left()
 
 void climb()
 {
-	USART_SendClimb();	
-     2cc:	0c 94 51 0c 	jmp	0x18a2	; 0x18a2 <USART_SendClimb>
+	USART_send_climb();	
+     2cc:	0c 94 51 0c 	jmp	0x18a2	; 0x18a2 <USART_send_climb>
      2d0:	08 95       	ret
 
 000002d2 <autonomouswalk_walk>:
@@ -606,8 +606,8 @@ void autonomouswalk_walk()
 				while(USART_climb_done() == 0)
      308:	08 c0       	rjmp	.+16     	; 0x31a <autonomouswalk_walk+0x48>
 				{
-					USART_DecodeRxFIFO();
-     30a:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_DecodeRxFIFO>
+					USART_decode_rx_fifo();
+     30a:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_decode_rx_fifo>
      30e:	8f e3       	ldi	r24, 0x3F	; 63
      310:	9c e9       	ldi	r25, 0x9C	; 156
      312:	01 97       	sbiw	r24, 0x01	; 1
@@ -730,8 +730,8 @@ void autonomouswalk_walk()
 				while(USART_climb_done() == 0)
      3a4:	08 c0       	rjmp	.+16     	; 0x3b6 <autonomouswalk_walk+0xe4>
 				{
-					USART_DecodeRxFIFO();
-     3a6:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_DecodeRxFIFO>
+					USART_decode_rx_fifo();
+     3a6:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_decode_rx_fifo>
      3aa:	8f e3       	ldi	r24, 0x3F	; 63
      3ac:	9c e9       	ldi	r25, 0x9C	; 156
      3ae:	01 97       	sbiw	r24, 0x01	; 1
@@ -907,21 +907,34 @@ void init_counters()
      4a0:	08 95       	ret
 
 000004a2 <FifoDataLength>:
+
+#include <avr/io.h>
+#include "fifo.h"
+
+uint8_t FifoDataLength (struct fifo *fifo)
+{
      4a2:	fc 01       	movw	r30, r24
+	return (fifo->write - fifo->read) & (fifo->size -1);
      4a4:	90 81       	ld	r25, Z
      4a6:	91 50       	subi	r25, 0x01	; 1
      4a8:	84 81       	ldd	r24, Z+4	; 0x04
      4aa:	22 81       	ldd	r18, Z+2	; 0x02
      4ac:	82 1b       	sub	r24, r18
+};
      4ae:	89 23       	and	r24, r25
      4b0:	08 95       	ret
 
 000004b2 <FifoWrite>:
+
+uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
+{
      4b2:	1f 93       	push	r17
      4b4:	cf 93       	push	r28
      4b6:	df 93       	push	r29
      4b8:	ec 01       	movw	r28, r24
      4ba:	16 2f       	mov	r17, r22
+	// fifo full : error
+	if (FifoDataLength(fifo) == (fifo->size - 1))
      4bc:	f2 df       	rcall	.-28     	; 0x4a2 <FifoDataLength>
      4be:	28 81       	ld	r18, Y
      4c0:	39 81       	ldd	r19, Y+1	; 0x01
@@ -931,35 +944,65 @@ void init_counters()
      4c8:	82 17       	cp	r24, r18
      4ca:	93 07       	cpc	r25, r19
      4cc:	69 f0       	breq	.+26     	; 0x4e8 <FifoWrite+0x36>
+	{
+		return 1;
+	}
+	// write data & increment write pointer
+	fifo->buffer[fifo->write] = data;
      4ce:	8c 81       	ldd	r24, Y+4	; 0x04
      4d0:	9d 81       	ldd	r25, Y+5	; 0x05
      4d2:	fe 01       	movw	r30, r28
      4d4:	e8 0f       	add	r30, r24
      4d6:	f9 1f       	adc	r31, r25
      4d8:	16 83       	std	Z+6, r17	; 0x06
+	fifo->write = (fifo->write + 1) & (fifo->size - 1);
      4da:	01 96       	adiw	r24, 0x01	; 1
      4dc:	28 23       	and	r18, r24
      4de:	39 23       	and	r19, r25
      4e0:	3d 83       	std	Y+5, r19	; 0x05
      4e2:	2c 83       	std	Y+4, r18	; 0x04
+	return 0;
      4e4:	80 e0       	ldi	r24, 0x00	; 0
      4e6:	01 c0       	rjmp	.+2      	; 0x4ea <FifoWrite+0x38>
+uint8_t FifoWrite (struct fifo *fifo, unsigned char data)
+{
+	// fifo full : error
+	if (FifoDataLength(fifo) == (fifo->size - 1))
+	{
+		return 1;
      4e8:	81 e0       	ldi	r24, 0x01	; 1
+	}
+	// write data & increment write pointer
+	fifo->buffer[fifo->write] = data;
+	fifo->write = (fifo->write + 1) & (fifo->size - 1);
+	return 0;
+};
      4ea:	df 91       	pop	r29
      4ec:	cf 91       	pop	r28
      4ee:	1f 91       	pop	r17
      4f0:	08 95       	ret
 
 000004f2 <FifoRead>:
+
+
+uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
+{
      4f2:	0f 93       	push	r16
      4f4:	1f 93       	push	r17
      4f6:	cf 93       	push	r28
      4f8:	df 93       	push	r29
      4fa:	ec 01       	movw	r28, r24
      4fc:	8b 01       	movw	r16, r22
+	// fifo empty : error
+	if (FifoDataLength(fifo) == 0)
      4fe:	d1 df       	rcall	.-94     	; 0x4a2 <FifoDataLength>
      500:	88 23       	and	r24, r24
      502:	a1 f0       	breq	.+40     	; 0x52c <FifoRead+0x3a>
+	{
+		return 1;
+	}
+	// read data & increment read pointer
+	*data = fifo->buffer[fifo->read];
      504:	ea 81       	ldd	r30, Y+2	; 0x02
      506:	fb 81       	ldd	r31, Y+3	; 0x03
      508:	ec 0f       	add	r30, r28
@@ -967,6 +1010,7 @@ void init_counters()
      50c:	86 81       	ldd	r24, Z+6	; 0x06
      50e:	f8 01       	movw	r30, r16
      510:	80 83       	st	Z, r24
+	fifo->read = (fifo->read + 1) & (fifo->size - 1);
      512:	28 81       	ld	r18, Y
      514:	39 81       	ldd	r19, Y+1	; 0x01
      516:	21 50       	subi	r18, 0x01	; 1
@@ -978,9 +1022,21 @@ void init_counters()
      522:	93 23       	and	r25, r19
      524:	9b 83       	std	Y+3, r25	; 0x03
      526:	8a 83       	std	Y+2, r24	; 0x02
+	return 0;
      528:	80 e0       	ldi	r24, 0x00	; 0
      52a:	01 c0       	rjmp	.+2      	; 0x52e <FifoRead+0x3c>
+uint8_t FifoRead (struct fifo *fifo, unsigned char *data)
+{
+	// fifo empty : error
+	if (FifoDataLength(fifo) == 0)
+	{
+		return 1;
      52c:	81 e0       	ldi	r24, 0x01	; 1
+	}
+	// read data & increment read pointer
+	*data = fifo->buffer[fifo->read];
+	fifo->read = (fifo->read + 1) & (fifo->size - 1);
+	return 0;
      52e:	df 91       	pop	r29
      530:	cf 91       	pop	r28
      532:	1f 91       	pop	r17
@@ -1025,7 +1081,7 @@ void init_counters()
      56e:	cf 93       	push	r28
      570:	c2 e0       	ldi	r28, 0x02	; 2
      572:	0e c0       	rjmp	.+28     	; 0x590 <navigation_stepping_delay+0x22>
-     574:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_DecodeRxFIFO>
+     574:	0e 94 85 0e 	call	0x1d0a	; 0x1d0a <USART_decode_rx_fifo>
      578:	2f ef       	ldi	r18, 0xFF	; 255
      57a:	89 ef       	ldi	r24, 0xF9	; 249
      57c:	90 e0       	ldi	r25, 0x00	; 0
@@ -2192,7 +2248,7 @@ int main(void)
      d40:	88 ec       	ldi	r24, 0xC8	; 200
      d42:	90 e0       	ldi	r25, 0x00	; 0
      d44:	79 db       	rcall	.-2318   	; 0x438 <set_counter_2>
-				USART_SendCommand();
+				USART_send_command();
 			}
 			
 			if(TWI_elevation_flag())
@@ -2256,8 +2312,8 @@ int main(void)
      d7c:	82 b1       	in	r24, 0x02	; 2
      d7e:	8c 27       	eor	r24, r28
      d80:	82 b9       	out	0x02, r24	; 2
-				USART_SendCommand();
-     d82:	6e d5       	rcall	.+2780   	; 0x1860 <USART_SendCommand>
+				USART_send_command();
+     d82:	6e d5       	rcall	.+2780   	; 0x1860 <USART_send_command>
 			}
 			
 			if(TWI_elevation_flag())
@@ -2269,11 +2325,11 @@ int main(void)
      d8a:	82 b1       	in	r24, 0x02	; 2
      d8c:	8d 27       	eor	r24, r29
      d8e:	82 b9       	out	0x02, r24	; 2
-				USART_SendElevation();
-     d90:	79 d5       	rcall	.+2802   	; 0x1884 <USART_SendElevation>
+				USART_send_elevation();
+     d90:	79 d5       	rcall	.+2802   	; 0x1884 <USART_send_elevation>
 			}
-		USART_DecodeRxFIFO();
-     d92:	bb d7       	rcall	.+3958   	; 0x1d0a <USART_DecodeRxFIFO>
+		USART_decode_rx_fifo();
+     d92:	bb d7       	rcall	.+3958   	; 0x1d0a <USART_decode_rx_fifo>
      d94:	da cf       	rjmp	.-76     	; 0xd4a <main+0x56>
 
 00000d96 <__vector_13>:
@@ -2469,12 +2525,6 @@ ISR(PCINT0_vect)
      ea8:	18 95       	reti
 
 00000eaa <set_twi_reciever_enable>:
-	
-	//Do something with the message here... Send to display for now
-	TWI_send_string_fixed_length(S_ADDRESS, msg, length);
-	
-	return 0;
-}
      eaa:	85 e4       	ldi	r24, 0x45	; 69
      eac:	80 93 bc 00 	sts	0x00BC, r24
      eb0:	08 95       	ret
@@ -3035,28 +3085,18 @@ ISR(PCINT0_vect)
     132a:	08 95       	ret
 
 0000132c <write_to_TwiFIFO>:
-
-uint8_t write_to_TwiFIFO(char msg[])
-{
     132c:	0f 93       	push	r16
     132e:	1f 93       	push	r17
     1330:	cf 93       	push	r28
     1332:	df 93       	push	r29
     1334:	d8 2f       	mov	r29, r24
     1336:	c9 2f       	mov	r28, r25
-	if(FifoWrite(gTwiFIFO, (unsigned char)messageLength))
     1338:	60 91 20 15 	lds	r22, 0x1520
     133c:	80 91 09 01 	lds	r24, 0x0109
     1340:	90 91 0a 01 	lds	r25, 0x010A
     1344:	b6 d8       	rcall	.-3732   	; 0x4b2 <FifoWrite>
     1346:	81 11       	cpse	r24, r1
     1348:	1f c0       	rjmp	.+62     	; 0x1388 <write_to_TwiFIFO+0x5c>
-	{
-		//Can't add length!?
-		return 1;
-	}
-	
-	for(int i = 0; i < messageLength; ++i)
     134a:	20 91 20 15 	lds	r18, 0x1520
     134e:	30 91 21 15 	lds	r19, 0x1521
     1352:	12 16       	cp	r1, r18
@@ -3066,8 +3106,6 @@ uint8_t write_to_TwiFIFO(char msg[])
     135a:	1c 2f       	mov	r17, r28
     135c:	c0 e0       	ldi	r28, 0x00	; 0
     135e:	d0 e0       	ldi	r29, 0x00	; 0
-	{
-		if(FifoWrite(gTwiFIFO, msg[i]))
     1360:	f8 01       	movw	r30, r16
     1362:	61 91       	ld	r22, Z+
     1364:	8f 01       	movw	r16, r30
@@ -3076,54 +3114,19 @@ uint8_t write_to_TwiFIFO(char msg[])
     136e:	a1 d8       	rcall	.-3774   	; 0x4b2 <FifoWrite>
     1370:	81 11       	cpse	r24, r1
     1372:	0e c0       	rjmp	.+28     	; 0x1390 <write_to_TwiFIFO+0x64>
-	{
-		//Can't add length!?
-		return 1;
-	}
-	
-	for(int i = 0; i < messageLength; ++i)
     1374:	21 96       	adiw	r28, 0x01	; 1
     1376:	80 91 20 15 	lds	r24, 0x1520
     137a:	90 91 21 15 	lds	r25, 0x1521
     137e:	c8 17       	cp	r28, r24
     1380:	d9 07       	cpc	r29, r25
     1382:	74 f3       	brlt	.-36     	; 0x1360 <write_to_TwiFIFO+0x34>
-			//Can't add chars!?
-			return 1;
-		}
-	}
-	
-	return 0;
     1384:	80 e0       	ldi	r24, 0x00	; 0
     1386:	05 c0       	rjmp	.+10     	; 0x1392 <write_to_TwiFIFO+0x66>
-uint8_t write_to_TwiFIFO(char msg[])
-{
-	if(FifoWrite(gTwiFIFO, (unsigned char)messageLength))
-	{
-		//Can't add length!?
-		return 1;
     1388:	81 e0       	ldi	r24, 0x01	; 1
     138a:	03 c0       	rjmp	.+6      	; 0x1392 <write_to_TwiFIFO+0x66>
-			//Can't add chars!?
-			return 1;
-		}
-	}
-	
-	return 0;
     138c:	80 e0       	ldi	r24, 0x00	; 0
     138e:	01 c0       	rjmp	.+2      	; 0x1392 <write_to_TwiFIFO+0x66>
-	for(int i = 0; i < messageLength; ++i)
-	{
-		if(FifoWrite(gTwiFIFO, msg[i]))
-		{
-			//Can't add chars!?
-			return 1;
     1390:	81 e0       	ldi	r24, 0x01	; 1
-		}
-	}
-	
-	return 0;
-}
     1392:	df 91       	pop	r29
     1394:	cf 91       	pop	r28
     1396:	1f 91       	pop	r17
@@ -3131,11 +3134,6 @@ uint8_t write_to_TwiFIFO(char msg[])
     139a:	08 95       	ret
 
 0000139c <__vector_26>:
-
-//TWI Interrupt vector MUHAHAHAHA
-// ----------------------------------------------------------------------------- Communications
-ISR(TWI_vect)
-{
     139c:	1f 92       	push	r1
     139e:	0f 92       	push	r0
     13a0:	0f b6       	in	r0, 0x3f	; 63
@@ -3157,7 +3155,6 @@ ISR(TWI_vect)
     13c0:	df 93       	push	r29
     13c2:	ef 93       	push	r30
     13c4:	ff 93       	push	r31
-	switch(myAdress)
     13c6:	80 91 17 15 	lds	r24, 0x1517
     13ca:	80 34       	cpi	r24, 0x40	; 64
     13cc:	09 f4       	brne	.+2      	; 0x13d0 <__vector_26+0x34>
@@ -3168,10 +3165,6 @@ ISR(TWI_vect)
     13d6:	09 f0       	breq	.+2      	; 0x13da <__vector_26+0x3e>
     13d8:	57 c1       	rjmp	.+686    	; 0x1688 <__vector_26+0x2ec>
     13da:	c9 c0       	rjmp	.+402    	; 0x156e <__vector_26+0x1d2>
-	{
-		case(C_ADDRESS):
-		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
     13dc:	80 91 b9 00 	lds	r24, 0x00B9
     13e0:	88 7f       	andi	r24, 0xF8	; 248
     13e2:	80 36       	cpi	r24, 0x60	; 96
@@ -3180,13 +3173,9 @@ ISR(TWI_vect)
     13ea:	88 7f       	andi	r24, 0xF8	; 248
     13ec:	88 36       	cpi	r24, 0x68	; 104
     13ee:	21 f4       	brne	.+8      	; 0x13f8 <__vector_26+0x5c>
-			{
-				instruction = 1;
     13f0:	81 e0       	ldi	r24, 0x01	; 1
     13f2:	80 93 1a 15 	sts	0x151A, r24
     13f6:	71 c0       	rjmp	.+226    	; 0x14da <__vector_26+0x13e>
-			}
-			else if(CONTROL == GENERAL || CONTROL == ARBIT_GENERAL)
     13f8:	80 91 b9 00 	lds	r24, 0x00B9
     13fc:	88 7f       	andi	r24, 0xF8	; 248
     13fe:	80 37       	cpi	r24, 0x70	; 112
@@ -3195,36 +3184,23 @@ ISR(TWI_vect)
     1406:	88 7f       	andi	r24, 0xF8	; 248
     1408:	88 37       	cpi	r24, 0x78	; 120
     140a:	39 f4       	brne	.+14     	; 0x141a <__vector_26+0x7e>
-			{
-				currentInstruction = 255;
     140c:	8f ef       	ldi	r24, 0xFF	; 255
     140e:	90 e0       	ldi	r25, 0x00	; 0
     1410:	90 93 24 15 	sts	0x1524, r25
     1414:	80 93 23 15 	sts	0x1523, r24
     1418:	60 c0       	rjmp	.+192    	; 0x14da <__vector_26+0x13e>
-			}
-			else if(CONTROL == DATA_SLAW)
     141a:	80 91 b9 00 	lds	r24, 0x00B9
     141e:	88 7f       	andi	r24, 0xF8	; 248
     1420:	80 38       	cpi	r24, 0x80	; 128
     1422:	b9 f5       	brne	.+110    	; 0x1492 <__vector_26+0xf6>
-			{
-				if(instruction)
     1424:	80 91 1a 15 	lds	r24, 0x151A
     1428:	88 23       	and	r24, r24
     142a:	41 f0       	breq	.+16     	; 0x143c <__vector_26+0xa0>
-				{
-					currentInstruction = get_data();
     142c:	55 dd       	rcall	.-1366   	; 0xed8 <get_data>
     142e:	80 93 23 15 	sts	0x1523, r24
     1432:	10 92 24 15 	sts	0x1524, r1
-					instruction = 0;
     1436:	10 92 1a 15 	sts	0x151A, r1
     143a:	4f c0       	rjmp	.+158    	; 0x14da <__vector_26+0x13e>
-				}
-				else
-				{
-					switch(currentInstruction)
     143c:	80 91 23 15 	lds	r24, 0x1523
     1440:	90 91 24 15 	lds	r25, 0x1524
     1444:	85 30       	cpi	r24, 0x05	; 5
@@ -3242,70 +3218,35 @@ ISR(TWI_vect)
     145c:	09 f0       	breq	.+2      	; 0x1460 <__vector_26+0xc4>
     145e:	3d c0       	rjmp	.+122    	; 0x14da <__vector_26+0x13e>
     1460:	04 c0       	rjmp	.+8      	; 0x146a <__vector_26+0xce>
-					{
-						case(I_SETTINGS):
-						{
-							get_control_settings_from_bus();
     1462:	64 dd       	rcall	.-1336   	; 0xf2c <get_control_settings_from_bus>
-							break;
     1464:	3a c0       	rjmp	.+116    	; 0x14da <__vector_26+0x13e>
-						}
-						case(I_AUTONOM):
-						{
-							get_autonom_settings_from_bus();
     1466:	73 dd       	rcall	.-1306   	; 0xf4e <get_autonom_settings_from_bus>
-							break;
     1468:	38 c0       	rjmp	.+112    	; 0x14da <__vector_26+0x13e>
-						}
-						case(I_STRING):
-						{
-							get_char_from_bus();
     146a:	75 dd       	rcall	.-1302   	; 0xf56 <get_char_from_bus>
-							break;
     146c:	36 c0       	rjmp	.+108    	; 0x14da <__vector_26+0x13e>
-	currentCommand += 1;
-}
-
-void get_float_from_bus()
-{
-	floatMessage[floatCounter] = get_data();
     146e:	c0 91 18 15 	lds	r28, 0x1518
     1472:	d0 91 19 15 	lds	r29, 0x1519
     1476:	30 dd       	rcall	.-1440   	; 0xed8 <get_data>
     1478:	c7 5f       	subi	r28, 0xF7	; 247
     147a:	db 4e       	sbci	r29, 0xEB	; 235
     147c:	88 83       	st	Y, r24
-	floatCounter += 1;
     147e:	80 91 18 15 	lds	r24, 0x1518
     1482:	90 91 19 15 	lds	r25, 0x1519
     1486:	01 96       	adiw	r24, 0x01	; 1
     1488:	90 93 19 15 	sts	0x1519, r25
     148c:	80 93 18 15 	sts	0x1518, r24
     1490:	24 c0       	rjmp	.+72     	; 0x14da <__vector_26+0x13e>
-							break;
-						}
-					}
-				}
-			}
-			else if (CONTROL == DATA_GENERAL)
     1492:	80 91 b9 00 	lds	r24, 0x00B9
     1496:	88 7f       	andi	r24, 0xF8	; 248
     1498:	80 39       	cpi	r24, 0x90	; 144
     149a:	11 f4       	brne	.+4      	; 0x14a0 <__vector_26+0x104>
-			{
-				get_sensor_from_bus();
     149c:	76 dd       	rcall	.-1300   	; 0xf8a <get_sensor_from_bus>
     149e:	1d c0       	rjmp	.+58     	; 0x14da <__vector_26+0x13e>
-			}
-			else if (CONTROL == STOP)
     14a0:	80 91 b9 00 	lds	r24, 0x00B9
     14a4:	88 7f       	andi	r24, 0xF8	; 248
     14a6:	80 3a       	cpi	r24, 0xA0	; 160
     14a8:	c1 f4       	brne	.+48     	; 0x14da <__vector_26+0x13e>
-			{
-				stop_twi();
     14aa:	25 dd       	rcall	.-1462   	; 0xef6 <stop_twi>
-				switch(currentInstruction)
     14ac:	80 91 23 15 	lds	r24, 0x1523
     14b0:	90 91 24 15 	lds	r25, 0x1524
     14b4:	85 30       	cpi	r24, 0x05	; 5
@@ -3316,43 +3257,17 @@ void get_float_from_bus()
     14be:	51 f0       	breq	.+20     	; 0x14d4 <__vector_26+0x138>
     14c0:	01 97       	sbiw	r24, 0x01	; 1
     14c2:	59 f4       	brne	.+22     	; 0x14da <__vector_26+0x13e>
-				{
-					case(I_SETTINGS):
-					{
-						controlSettingsFlag_ = 1;
     14c4:	81 e0       	ldi	r24, 0x01	; 1
     14c6:	80 93 c2 13 	sts	0x13C2, r24
-						break;
     14ca:	07 c0       	rjmp	.+14     	; 0x14da <__vector_26+0x13e>
-					}
-					case(I_AUTONOM):
-					{
-						autonomSettingsFlag_ = 1;
     14cc:	81 e0       	ldi	r24, 0x01	; 1
     14ce:	80 93 c1 13 	sts	0x13C1, r24
-						break;
     14d2:	03 c0       	rjmp	.+6      	; 0x14da <__vector_26+0x13e>
-					}
-					case(I_STRING):
-					{
-						write_to_TwiFIFO(message);
     14d4:	81 e1       	ldi	r24, 0x11	; 17
     14d6:	94 e1       	ldi	r25, 0x14	; 20
     14d8:	29 df       	rcall	.-430    	; 0x132c <write_to_TwiFIFO>
-						//USART_SendValue(floatMessage);
-						break;
-					}
-				}
-			}
-			reset_TWI();
     14da:	22 dd       	rcall	.-1468   	; 0xf20 <reset_TWI>
-			break;
     14dc:	d5 c0       	rjmp	.+426    	; 0x1688 <__vector_26+0x2ec>
-		}
-		// ----------------------------------------------------------------------------- Sensors
-		case(S_ADDRESS):
-		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
     14de:	80 91 b9 00 	lds	r24, 0x00B9
     14e2:	88 7f       	andi	r24, 0xF8	; 248
     14e4:	80 36       	cpi	r24, 0x60	; 96
@@ -3361,34 +3276,21 @@ void get_float_from_bus()
     14ec:	88 7f       	andi	r24, 0xF8	; 248
     14ee:	88 36       	cpi	r24, 0x68	; 104
     14f0:	21 f4       	brne	.+8      	; 0x14fa <__vector_26+0x15e>
-			{
-				instruction = 1;
     14f2:	81 e0       	ldi	r24, 0x01	; 1
     14f4:	80 93 1a 15 	sts	0x151A, r24
     14f8:	38 c0       	rjmp	.+112    	; 0x156a <__vector_26+0x1ce>
-			}
-			else if(CONTROL == DATA_SLAW)
     14fa:	80 91 b9 00 	lds	r24, 0x00B9
     14fe:	88 7f       	andi	r24, 0xF8	; 248
     1500:	80 38       	cpi	r24, 0x80	; 128
     1502:	e1 f4       	brne	.+56     	; 0x153c <__vector_26+0x1a0>
-			{
-				if(instruction)
     1504:	80 91 1a 15 	lds	r24, 0x151A
     1508:	88 23       	and	r24, r24
     150a:	41 f0       	breq	.+16     	; 0x151c <__vector_26+0x180>
-				{
-					currentInstruction = get_data();
     150c:	e5 dc       	rcall	.-1590   	; 0xed8 <get_data>
     150e:	80 93 23 15 	sts	0x1523, r24
     1512:	10 92 24 15 	sts	0x1524, r1
-					instruction = 0;
     1516:	10 92 1a 15 	sts	0x151A, r1
     151a:	27 c0       	rjmp	.+78     	; 0x156a <__vector_26+0x1ce>
-				}
-				else
-				{
-					switch(currentInstruction)
     151c:	80 91 23 15 	lds	r24, 0x1523
     1520:	90 91 24 15 	lds	r25, 0x1524
     1524:	82 30       	cpi	r24, 0x02	; 2
@@ -3397,37 +3299,16 @@ void get_float_from_bus()
     152a:	49 97       	sbiw	r24, 0x19	; 25
     152c:	f1 f4       	brne	.+60     	; 0x156a <__vector_26+0x1ce>
     152e:	04 c0       	rjmp	.+8      	; 0x1538 <__vector_26+0x19c>
-	}
-}
-
-void get_sweep_from_bus()
-{
-	sweep = get_data();
     1530:	d3 dc       	rcall	.-1626   	; 0xed8 <get_data>
     1532:	80 93 22 15 	sts	0x1522, r24
     1536:	19 c0       	rjmp	.+50     	; 0x156a <__vector_26+0x1ce>
-							get_sweep_from_bus();
-							break;
-						}
-						case(I_STRING):
-						{
-							get_char_from_bus();
     1538:	0e dd       	rcall	.-1508   	; 0xf56 <get_char_from_bus>
-							break;
     153a:	17 c0       	rjmp	.+46     	; 0x156a <__vector_26+0x1ce>
-						}
-					}
-				}
-			}
-			else if (CONTROL == STOP)
     153c:	80 91 b9 00 	lds	r24, 0x00B9
     1540:	88 7f       	andi	r24, 0xF8	; 248
     1542:	80 3a       	cpi	r24, 0xA0	; 160
     1544:	91 f4       	brne	.+36     	; 0x156a <__vector_26+0x1ce>
-			{
-				stop_twi();
     1546:	d7 dc       	rcall	.-1618   	; 0xef6 <stop_twi>
-				switch(currentInstruction)
     1548:	80 91 23 15 	lds	r24, 0x1523
     154c:	90 91 24 15 	lds	r25, 0x1524
     1550:	82 30       	cpi	r24, 0x02	; 2
@@ -3436,34 +3317,14 @@ void get_sweep_from_bus()
     1556:	49 97       	sbiw	r24, 0x19	; 25
     1558:	41 f4       	brne	.+16     	; 0x156a <__vector_26+0x1ce>
     155a:	04 c0       	rjmp	.+8      	; 0x1564 <__vector_26+0x1c8>
-				{
-					case(I_SWEEP):
-					{
-						sweepFlag_ = 1;
     155c:	81 e0       	ldi	r24, 0x01	; 1
     155e:	80 93 bf 13 	sts	0x13BF, r24
-						break;
     1562:	03 c0       	rjmp	.+6      	; 0x156a <__vector_26+0x1ce>
-					}
-					case(I_STRING):
-					{
-						write_to_TwiFIFO(message);
     1564:	81 e1       	ldi	r24, 0x11	; 17
     1566:	94 e1       	ldi	r25, 0x14	; 20
     1568:	e1 de       	rcall	.-574    	; 0x132c <write_to_TwiFIFO>
-						break;
-					}
-				}
-			}
-			reset_TWI();
     156a:	da dc       	rcall	.-1612   	; 0xf20 <reset_TWI>
-			break;
     156c:	8d c0       	rjmp	.+282    	; 0x1688 <__vector_26+0x2ec>
-		}
-		// ----------------------------------------------------------------------------- Steer
-		case(ST_ADDRESS):
-		{
-			if(CONTROL == SLAW || CONTROL == ARBIT_SLAW)
     156e:	80 91 b9 00 	lds	r24, 0x00B9
     1572:	88 7f       	andi	r24, 0xF8	; 248
     1574:	80 36       	cpi	r24, 0x60	; 96
@@ -3472,13 +3333,9 @@ void get_sweep_from_bus()
     157c:	88 7f       	andi	r24, 0xF8	; 248
     157e:	88 36       	cpi	r24, 0x68	; 104
     1580:	21 f4       	brne	.+8      	; 0x158a <__vector_26+0x1ee>
-			{
-				instruction = 1;
     1582:	81 e0       	ldi	r24, 0x01	; 1
     1584:	80 93 1a 15 	sts	0x151A, r24
     1588:	7e c0       	rjmp	.+252    	; 0x1686 <__vector_26+0x2ea>
-			}
-			else if(CONTROL == GENERAL || CONTROL == ARBIT_GENERAL)
     158a:	80 91 b9 00 	lds	r24, 0x00B9
     158e:	88 7f       	andi	r24, 0xF8	; 248
     1590:	80 37       	cpi	r24, 0x70	; 112
@@ -3487,37 +3344,24 @@ void get_sweep_from_bus()
     1598:	88 7f       	andi	r24, 0xF8	; 248
     159a:	88 37       	cpi	r24, 0x78	; 120
     159c:	39 f4       	brne	.+14     	; 0x15ac <__vector_26+0x210>
-			{
-				currentInstruction = 255;
     159e:	8f ef       	ldi	r24, 0xFF	; 255
     15a0:	90 e0       	ldi	r25, 0x00	; 0
     15a2:	90 93 24 15 	sts	0x1524, r25
     15a6:	80 93 23 15 	sts	0x1523, r24
     15aa:	6d c0       	rjmp	.+218    	; 0x1686 <__vector_26+0x2ea>
-			}
-			else if(CONTROL == DATA_SLAW)
     15ac:	80 91 b9 00 	lds	r24, 0x00B9
     15b0:	88 7f       	andi	r24, 0xF8	; 248
     15b2:	80 38       	cpi	r24, 0x80	; 128
     15b4:	09 f0       	breq	.+2      	; 0x15b8 <__vector_26+0x21c>
     15b6:	3a c0       	rjmp	.+116    	; 0x162c <__vector_26+0x290>
-			{
-				if(instruction)
     15b8:	80 91 1a 15 	lds	r24, 0x151A
     15bc:	88 23       	and	r24, r24
     15be:	41 f0       	breq	.+16     	; 0x15d0 <__vector_26+0x234>
-				{
-					currentInstruction = get_data();
     15c0:	8b dc       	rcall	.-1770   	; 0xed8 <get_data>
     15c2:	80 93 23 15 	sts	0x1523, r24
     15c6:	10 92 24 15 	sts	0x1524, r1
-					instruction = 0;
     15ca:	10 92 1a 15 	sts	0x151A, r1
     15ce:	5b c0       	rjmp	.+182    	; 0x1686 <__vector_26+0x2ea>
-				}
-				else
-				{
-					switch(currentInstruction)
     15d0:	80 91 23 15 	lds	r24, 0x1523
     15d4:	90 91 24 15 	lds	r25, 0x1524
     15d8:	81 30       	cpi	r24, 0x01	; 1
@@ -3534,74 +3378,37 @@ void get_sweep_from_bus()
     15ee:	09 f0       	breq	.+2      	; 0x15f2 <__vector_26+0x256>
     15f0:	4a c0       	rjmp	.+148    	; 0x1686 <__vector_26+0x2ea>
     15f2:	1a c0       	rjmp	.+52     	; 0x1628 <__vector_26+0x28c>
-	messageLength = messageCounter;
-}
-
-void get_command_from_bus()
-{
-	command[currentCommand] = get_data();
     15f4:	c0 91 1b 15 	lds	r28, 0x151B
     15f8:	d0 91 1c 15 	lds	r29, 0x151C
     15fc:	6d dc       	rcall	.-1830   	; 0xed8 <get_data>
     15fe:	c3 5f       	subi	r28, 0xF3	; 243
     1600:	db 4e       	sbci	r29, 0xEB	; 235
     1602:	88 83       	st	Y, r24
-	currentCommand += 1;
     1604:	80 91 1b 15 	lds	r24, 0x151B
     1608:	90 91 1c 15 	lds	r25, 0x151C
     160c:	01 96       	adiw	r24, 0x01	; 1
     160e:	90 93 1c 15 	sts	0x151C, r25
     1612:	80 93 1b 15 	sts	0x151B, r24
     1616:	37 c0       	rjmp	.+110    	; 0x1686 <__vector_26+0x2ea>
-	floatCounter += 1;
-}
-
-void get_elevation_from_bus()
-{
-	elevation = get_data();
     1618:	5f dc       	rcall	.-1858   	; 0xed8 <get_data>
     161a:	80 93 1d 15 	sts	0x151D, r24
     161e:	10 92 1e 15 	sts	0x151E, r1
     1622:	31 c0       	rjmp	.+98     	; 0x1686 <__vector_26+0x2ea>
-							get_elevation_from_bus();
-							break;
-						}
-						case(I_SETTINGS):
-						{
-							get_control_settings_from_bus();
     1624:	83 dc       	rcall	.-1786   	; 0xf2c <get_control_settings_from_bus>
-							break;
     1626:	2f c0       	rjmp	.+94     	; 0x1686 <__vector_26+0x2ea>
-						}
-						case(I_AUTONOM):
-						{
-							get_autonom_settings_from_bus();
     1628:	92 dc       	rcall	.-1756   	; 0xf4e <get_autonom_settings_from_bus>
-							break;
     162a:	2d c0       	rjmp	.+90     	; 0x1686 <__vector_26+0x2ea>
-						}
-					}
-				}
-			}
-			else if (CONTROL == DATA_GENERAL)
     162c:	80 91 b9 00 	lds	r24, 0x00B9
     1630:	88 7f       	andi	r24, 0xF8	; 248
     1632:	80 39       	cpi	r24, 0x90	; 144
     1634:	11 f4       	brne	.+4      	; 0x163a <__vector_26+0x29e>
-			{
-				get_sensor_from_bus();
     1636:	a9 dc       	rcall	.-1710   	; 0xf8a <get_sensor_from_bus>
     1638:	26 c0       	rjmp	.+76     	; 0x1686 <__vector_26+0x2ea>
-			}
-			else if (CONTROL == STOP)
     163a:	80 91 b9 00 	lds	r24, 0x00B9
     163e:	88 7f       	andi	r24, 0xF8	; 248
     1640:	80 3a       	cpi	r24, 0xA0	; 160
     1642:	09 f5       	brne	.+66     	; 0x1686 <__vector_26+0x2ea>
-			{
-				stop_twi();
     1644:	58 dc       	rcall	.-1872   	; 0xef6 <stop_twi>
-				switch(currentInstruction)
     1646:	80 91 23 15 	lds	r24, 0x1523
     164a:	90 91 24 15 	lds	r25, 0x1524
     164e:	81 30       	cpi	r24, 0x01	; 1
@@ -3617,45 +3424,18 @@ void get_elevation_from_bus()
     1662:	05 97       	sbiw	r24, 0x05	; 5
     1664:	81 f4       	brne	.+32     	; 0x1686 <__vector_26+0x2ea>
     1666:	0c c0       	rjmp	.+24     	; 0x1680 <__vector_26+0x2e4>
-				{
-					case(I_COMMAND):
-					{
-						commandFlag_ = 1;
     1668:	81 e0       	ldi	r24, 0x01	; 1
     166a:	80 93 c3 13 	sts	0x13C3, r24
-						break;
     166e:	0b c0       	rjmp	.+22     	; 0x1686 <__vector_26+0x2ea>
-					}
-					case(I_ELEVATION):
-					{
-						elevationFlag_ = 1;
     1670:	81 e0       	ldi	r24, 0x01	; 1
     1672:	80 93 c0 13 	sts	0x13C0, r24
-						break;
     1676:	07 c0       	rjmp	.+14     	; 0x1686 <__vector_26+0x2ea>
-					}
-					case(I_SETTINGS):
-					{
-						controlSettingsFlag_ = 1;
     1678:	81 e0       	ldi	r24, 0x01	; 1
     167a:	80 93 c2 13 	sts	0x13C2, r24
-						break;
     167e:	03 c0       	rjmp	.+6      	; 0x1686 <__vector_26+0x2ea>
-					}
-					case(I_AUTONOM):
-					{
-						autonomSettingsFlag_ = 1;
     1680:	81 e0       	ldi	r24, 0x01	; 1
     1682:	80 93 c1 13 	sts	0x13C1, r24
-						break;
-					}
-				}
-			}
-			reset_TWI();
     1686:	4c dc       	rcall	.-1896   	; 0xf20 <reset_TWI>
-			break;
-		}
-	}
     1688:	ff 91       	pop	r31
     168a:	ef 91       	pop	r30
     168c:	df 91       	pop	r29
@@ -3684,7 +3464,7 @@ void get_elevation_from_bus()
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
 	}
-	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
+	USART_send_packet(gRxBuffer[0], gRxBuffer[1]);
     16b2:	10 92 c5 00 	sts	0x00C5, r1
     16b6:	87 e0       	ldi	r24, 0x07	; 7
     16b8:	80 93 c4 00 	sts	0x00C4, r24
@@ -3699,17 +3479,17 @@ void get_elevation_from_bus()
     16ce:	80 93 1a 11 	sts	0x111A, r24
     16d2:	08 95       	ret
 
-000016d4 <USART_CheckTxReady>:
+000016d4 <USART_check_tx_ready>:
     16d4:	80 91 c0 00 	lds	r24, 0x00C0
     16d8:	80 72       	andi	r24, 0x20	; 32
     16da:	08 95       	ret
 
-000016dc <USART_WriteByte>:
+000016dc <USART_write_byte>:
     16dc:	cf 93       	push	r28
     16de:	c8 2f       	mov	r28, r24
-    16e0:	f9 df       	rcall	.-14     	; 0x16d4 <USART_CheckTxReady>
+    16e0:	f9 df       	rcall	.-14     	; 0x16d4 <USART_check_tx_ready>
     16e2:	88 23       	and	r24, r24
-    16e4:	e9 f3       	breq	.-6      	; 0x16e0 <USART_WriteByte+0x4>
+    16e4:	e9 f3       	breq	.-6      	; 0x16e0 <USART_write_byte+0x4>
     16e6:	c0 93 c6 00 	sts	0x00C6, r28
     16ea:	cf 91       	pop	r28
     16ec:	08 95       	ret
@@ -3805,7 +3585,7 @@ void get_elevation_from_bus()
     179c:	cf 90       	pop	r12
     179e:	08 95       	ret
 
-000017a0 <USART_SendPacket>:
+000017a0 <USART_send_packet>:
     17a0:	0f 93       	push	r16
     17a2:	1f 93       	push	r17
     17a4:	cf 93       	push	r28
@@ -3818,7 +3598,7 @@ void get_elevation_from_bus()
     17b8:	30 e0       	ldi	r19, 0x00	; 0
     17ba:	12 16       	cp	r1, r18
     17bc:	13 06       	cpc	r1, r19
-    17be:	4c f5       	brge	.+82     	; 0x1812 <USART_SendPacket+0x72>
+    17be:	4c f5       	brge	.+82     	; 0x1812 <USART_send_packet+0x72>
     17c0:	ec e3       	ldi	r30, 0x3C	; 60
     17c2:	f7 e1       	ldi	r31, 0x17	; 23
     17c4:	03 e0       	ldi	r16, 0x03	; 3
@@ -3831,7 +3611,7 @@ void get_elevation_from_bus()
     17d2:	49 2f       	mov	r20, r25
     17d4:	4d 57       	subi	r20, 0x7D	; 125
     17d6:	42 30       	cpi	r20, 0x02	; 2
-    17d8:	80 f4       	brcc	.+32     	; 0x17fa <USART_SendPacket+0x5a>
+    17d8:	80 f4       	brcc	.+32     	; 0x17fa <USART_send_packet+0x5a>
     17da:	d8 01       	movw	r26, r16
     17dc:	a5 5c       	subi	r26, 0xC5	; 197
     17de:	b7 4e       	sbci	r27, 0xE7	; 231
@@ -3847,7 +3627,7 @@ void get_elevation_from_bus()
     17f2:	bd 1f       	adc	r27, r29
     17f4:	95 27       	eor	r25, r21
     17f6:	9c 93       	st	X, r25
-    17f8:	06 c0       	rjmp	.+12     	; 0x1806 <USART_SendPacket+0x66>
+    17f8:	06 c0       	rjmp	.+12     	; 0x1806 <USART_send_packet+0x66>
     17fa:	d8 01       	movw	r26, r16
     17fc:	a5 5c       	subi	r26, 0xC5	; 197
     17fe:	b7 4e       	sbci	r27, 0xE7	; 231
@@ -3858,8 +3638,8 @@ void get_elevation_from_bus()
     1808:	31 96       	adiw	r30, 0x01	; 1
     180a:	c2 17       	cp	r28, r18
     180c:	d3 07       	cpc	r29, r19
-    180e:	01 f7       	brne	.-64     	; 0x17d0 <USART_SendPacket+0x30>
-    1810:	04 c0       	rjmp	.+8      	; 0x181a <USART_SendPacket+0x7a>
+    180e:	01 f7       	brne	.-64     	; 0x17d0 <USART_send_packet+0x30>
+    1810:	04 c0       	rjmp	.+8      	; 0x181a <USART_send_packet+0x7a>
     1812:	03 e0       	ldi	r16, 0x03	; 3
     1814:	10 e0       	ldi	r17, 0x00	; 0
     1816:	c0 e0       	ldi	r28, 0x00	; 0
@@ -3884,23 +3664,23 @@ void get_elevation_from_bus()
     183c:	01 96       	adiw	r24, 0x01	; 1
     183e:	18 16       	cp	r1, r24
     1840:	19 06       	cpc	r1, r25
-    1842:	4c f4       	brge	.+18     	; 0x1856 <USART_SendPacket+0xb6>
+    1842:	4c f4       	brge	.+18     	; 0x1856 <USART_send_packet+0xb6>
     1844:	cb e3       	ldi	r28, 0x3B	; 59
     1846:	d8 e1       	ldi	r29, 0x18	; 24
     1848:	04 5c       	subi	r16, 0xC4	; 196
     184a:	17 4e       	sbci	r17, 0xE7	; 231
     184c:	89 91       	ld	r24, Y+
-    184e:	46 df       	rcall	.-372    	; 0x16dc <USART_WriteByte>
+    184e:	46 df       	rcall	.-372    	; 0x16dc <USART_write_byte>
     1850:	c0 17       	cp	r28, r16
     1852:	d1 07       	cpc	r29, r17
-    1854:	d9 f7       	brne	.-10     	; 0x184c <USART_SendPacket+0xac>
+    1854:	d9 f7       	brne	.-10     	; 0x184c <USART_send_packet+0xac>
     1856:	df 91       	pop	r29
     1858:	cf 91       	pop	r28
     185a:	1f 91       	pop	r17
     185c:	0f 91       	pop	r16
     185e:	08 95       	ret
 
-00001860 <USART_SendCommand>:
+00001860 <USART_send_command>:
     1860:	80 e0       	ldi	r24, 0x00	; 0
     1862:	90 e0       	ldi	r25, 0x00	; 0
     1864:	26 dd       	rcall	.-1460   	; 0x12b2 <TWI_get_command>
@@ -3915,29 +3695,29 @@ void get_elevation_from_bus()
     187a:	80 93 3e 17 	sts	0x173E, r24
     187e:	63 e0       	ldi	r22, 0x03	; 3
     1880:	83 e4       	ldi	r24, 0x43	; 67
-    1882:	8e cf       	rjmp	.-228    	; 0x17a0 <USART_SendPacket>
+    1882:	8e cf       	rjmp	.-228    	; 0x17a0 <USART_send_packet>
 
-00001884 <USART_SendElevation>:
+00001884 <USART_send_elevation>:
     1884:	28 dd       	rcall	.-1456   	; 0x12d6 <TWI_get_elevation>
     1886:	80 93 3c 17 	sts	0x173C, r24
     188a:	61 e0       	ldi	r22, 0x01	; 1
     188c:	85 e4       	ldi	r24, 0x45	; 69
-    188e:	88 cf       	rjmp	.-240    	; 0x17a0 <USART_SendPacket>
+    188e:	88 cf       	rjmp	.-240    	; 0x17a0 <USART_send_packet>
 
-00001890 <USART_SendTurn>:
+00001890 <USART_send_turn>:
     1890:	90 93 3c 17 	sts	0x173C, r25
     1894:	80 93 3d 17 	sts	0x173D, r24
     1898:	60 93 3e 17 	sts	0x173E, r22
     189c:	63 e0       	ldi	r22, 0x03	; 3
     189e:	84 e5       	ldi	r24, 0x54	; 84
-    18a0:	7f cf       	rjmp	.-258    	; 0x17a0 <USART_SendPacket>
+    18a0:	7f cf       	rjmp	.-258    	; 0x17a0 <USART_send_packet>
 
-000018a2 <USART_SendClimb>:
+000018a2 <USART_send_climb>:
     18a2:	60 e0       	ldi	r22, 0x00	; 0
     18a4:	88 e4       	ldi	r24, 0x48	; 72
-    18a6:	7c cf       	rjmp	.-264    	; 0x17a0 <USART_SendPacket>
+    18a6:	7c cf       	rjmp	.-264    	; 0x17a0 <USART_send_packet>
 
-000018a8 <USART_DecodeMessageRxFIFO>:
+000018a8 <USART_decode_message_rx_fifo>:
     18a8:	8f 92       	push	r8
     18aa:	9f 92       	push	r9
     18ac:	af 92       	push	r10
@@ -3960,13 +3740,13 @@ void get_elevation_from_bus()
     18d0:	90 91 13 01 	lds	r25, 0x0113
     18d4:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     18d8:	88 23       	and	r24, r24
-    18da:	31 f0       	breq	.+12     	; 0x18e8 <USART_DecodeMessageRxFIFO+0x40>
+    18da:	31 f0       	breq	.+12     	; 0x18e8 <USART_decode_message_rx_fifo+0x40>
     18dc:	66 e0       	ldi	r22, 0x06	; 6
     18de:	72 e1       	ldi	r23, 0x12	; 18
     18e0:	80 e4       	ldi	r24, 0x40	; 64
     18e2:	1b dc       	rcall	.-1994   	; 0x111a <TWI_send_string>
     18e4:	81 e0       	ldi	r24, 0x01	; 1
-    18e6:	45 c0       	rjmp	.+138    	; 0x1972 <USART_DecodeMessageRxFIFO+0xca>
+    18e6:	45 c0       	rjmp	.+138    	; 0x1972 <USART_decode_message_rx_fifo+0xca>
     18e8:	c0 90 00 00 	lds	r12, 0x0000
     18ec:	d1 2c       	mov	r13, r1
     18ee:	96 01       	movw	r18, r12
@@ -3976,7 +3756,7 @@ void get_elevation_from_bus()
     18f6:	90 e0       	ldi	r25, 0x00	; 0
     18f8:	c1 14       	cp	r12, r1
     18fa:	d1 04       	cpc	r13, r1
-    18fc:	11 f0       	breq	.+4      	; 0x1902 <USART_DecodeMessageRxFIFO+0x5a>
+    18fc:	11 f0       	breq	.+4      	; 0x1902 <USART_decode_message_rx_fifo+0x5a>
     18fe:	80 e0       	ldi	r24, 0x00	; 0
     1900:	90 e0       	ldi	r25, 0x00	; 0
     1902:	82 0f       	add	r24, r18
@@ -3997,7 +3777,7 @@ void get_elevation_from_bus()
     1920:	99 2e       	mov	r9, r25
     1922:	1c 14       	cp	r1, r12
     1924:	1d 04       	cpc	r1, r13
-    1926:	f4 f4       	brge	.+60     	; 0x1964 <USART_DecodeMessageRxFIFO+0xbc>
+    1926:	f4 f4       	brge	.+60     	; 0x1964 <USART_decode_message_rx_fifo+0xbc>
     1928:	e8 2e       	mov	r14, r24
     192a:	f9 2e       	mov	r15, r25
     192c:	00 e0       	ldi	r16, 0x00	; 0
@@ -4008,13 +3788,13 @@ void get_elevation_from_bus()
     1938:	90 91 13 01 	lds	r25, 0x0113
     193c:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     1940:	88 23       	and	r24, r24
-    1942:	31 f0       	breq	.+12     	; 0x1950 <USART_DecodeMessageRxFIFO+0xa8>
+    1942:	31 f0       	breq	.+12     	; 0x1950 <USART_decode_message_rx_fifo+0xa8>
     1944:	68 e2       	ldi	r22, 0x28	; 40
     1946:	72 e1       	ldi	r23, 0x12	; 18
     1948:	80 e4       	ldi	r24, 0x40	; 64
     194a:	e7 db       	rcall	.-2098   	; 0x111a <TWI_send_string>
     194c:	81 e0       	ldi	r24, 0x01	; 1
-    194e:	11 c0       	rjmp	.+34     	; 0x1972 <USART_DecodeMessageRxFIFO+0xca>
+    194e:	11 c0       	rjmp	.+34     	; 0x1972 <USART_decode_message_rx_fifo+0xca>
     1950:	80 91 00 00 	lds	r24, 0x0000
     1954:	f7 01       	movw	r30, r14
     1956:	81 93       	st	Z+, r24
@@ -4023,7 +3803,7 @@ void get_elevation_from_bus()
     195c:	1f 4f       	sbci	r17, 0xFF	; 255
     195e:	0c 15       	cp	r16, r12
     1960:	1d 05       	cpc	r17, r13
-    1962:	34 f3       	brlt	.-52     	; 0x1930 <USART_DecodeMessageRxFIFO+0x88>
+    1962:	34 f3       	brlt	.-52     	; 0x1930 <USART_decode_message_rx_fifo+0x88>
     1964:	a6 01       	movw	r20, r12
     1966:	68 2d       	mov	r22, r8
     1968:	79 2d       	mov	r23, r9
@@ -4049,7 +3829,7 @@ void get_elevation_from_bus()
     1992:	8f 90       	pop	r8
     1994:	08 95       	ret
 
-00001996 <USART_DecodeGyroFIFO>:
+00001996 <USART_decode_gyro_rx_fifo>:
     1996:	af 92       	push	r10
     1998:	bf 92       	push	r11
     199a:	cf 92       	push	r12
@@ -4060,8 +3840,8 @@ void get_elevation_from_bus()
     19a4:	1f 93       	push	r17
     19a6:	cf 93       	push	r28
     19a8:	df 93       	push	r29
-    19aa:	00 d0       	rcall	.+0      	; 0x19ac <USART_DecodeGyroFIFO+0x16>
-    19ac:	00 d0       	rcall	.+0      	; 0x19ae <USART_DecodeGyroFIFO+0x18>
+    19aa:	00 d0       	rcall	.+0      	; 0x19ac <USART_decode_gyro_rx_fifo+0x16>
+    19ac:	00 d0       	rcall	.+0      	; 0x19ae <USART_decode_gyro_rx_fifo+0x18>
     19ae:	cd b7       	in	r28, 0x3d	; 61
     19b0:	de b7       	in	r29, 0x3e	; 62
     19b2:	81 e0       	ldi	r24, 0x01	; 1
@@ -4072,49 +3852,49 @@ void get_elevation_from_bus()
     19c0:	90 91 13 01 	lds	r25, 0x0113
     19c4:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     19c8:	88 23       	and	r24, r24
-    19ca:	31 f0       	breq	.+12     	; 0x19d8 <USART_DecodeGyroFIFO+0x42>
+    19ca:	31 f0       	breq	.+12     	; 0x19d8 <USART_decode_gyro_rx_fifo+0x42>
     19cc:	6b e4       	ldi	r22, 0x4B	; 75
     19ce:	72 e1       	ldi	r23, 0x12	; 18
     19d0:	80 e4       	ldi	r24, 0x40	; 64
     19d2:	a3 db       	rcall	.-2234   	; 0x111a <TWI_send_string>
     19d4:	81 e0       	ldi	r24, 0x01	; 1
-    19d6:	73 c0       	rjmp	.+230    	; 0x1abe <USART_DecodeGyroFIFO+0x128>
+    19d6:	73 c0       	rjmp	.+230    	; 0x1abe <USART_decode_gyro_rx_fifo+0x128>
     19d8:	80 91 00 00 	lds	r24, 0x0000
     19dc:	8c 30       	cpi	r24, 0x0C	; 12
-    19de:	09 f4       	brne	.+2      	; 0x19e2 <USART_DecodeGyroFIFO+0x4c>
-    19e0:	53 c0       	rjmp	.+166    	; 0x1a88 <USART_DecodeGyroFIFO+0xf2>
+    19de:	09 f4       	brne	.+2      	; 0x19e2 <USART_decode_gyro_rx_fifo+0x4c>
+    19e0:	53 c0       	rjmp	.+166    	; 0x1a88 <USART_decode_gyro_rx_fifo+0xf2>
     19e2:	81 e0       	ldi	r24, 0x01	; 1
-    19e4:	6c c0       	rjmp	.+216    	; 0x1abe <USART_DecodeGyroFIFO+0x128>
+    19e4:	6c c0       	rjmp	.+216    	; 0x1abe <USART_decode_gyro_rx_fifo+0x128>
     19e6:	60 e0       	ldi	r22, 0x00	; 0
     19e8:	70 e0       	ldi	r23, 0x00	; 0
     19ea:	80 91 12 01 	lds	r24, 0x0112
     19ee:	90 91 13 01 	lds	r25, 0x0113
     19f2:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     19f6:	88 23       	and	r24, r24
-    19f8:	31 f0       	breq	.+12     	; 0x1a06 <USART_DecodeGyroFIFO+0x70>
+    19f8:	31 f0       	breq	.+12     	; 0x1a06 <USART_decode_gyro_rx_fifo+0x70>
     19fa:	6a e6       	ldi	r22, 0x6A	; 106
     19fc:	72 e1       	ldi	r23, 0x12	; 18
     19fe:	80 e4       	ldi	r24, 0x40	; 64
     1a00:	8c db       	rcall	.-2280   	; 0x111a <TWI_send_string>
     1a02:	81 e0       	ldi	r24, 0x01	; 1
-    1a04:	5c c0       	rjmp	.+184    	; 0x1abe <USART_DecodeGyroFIFO+0x128>
+    1a04:	5c c0       	rjmp	.+184    	; 0x1abe <USART_decode_gyro_rx_fifo+0x128>
     1a06:	80 91 00 00 	lds	r24, 0x0000
     1a0a:	f6 01       	movw	r30, r12
     1a0c:	81 93       	st	Z+, r24
     1a0e:	6f 01       	movw	r12, r30
     1a10:	e0 17       	cp	r30, r16
     1a12:	f1 07       	cpc	r31, r17
-    1a14:	41 f7       	brne	.-48     	; 0x19e6 <USART_DecodeGyroFIFO+0x50>
+    1a14:	41 f7       	brne	.-48     	; 0x19e6 <USART_decode_gyro_rx_fifo+0x50>
     1a16:	f1 e0       	ldi	r31, 0x01	; 1
     1a18:	af 16       	cp	r10, r31
     1a1a:	b1 04       	cpc	r11, r1
-    1a1c:	99 f0       	breq	.+38     	; 0x1a44 <USART_DecodeGyroFIFO+0xae>
+    1a1c:	99 f0       	breq	.+38     	; 0x1a44 <USART_decode_gyro_rx_fifo+0xae>
     1a1e:	82 e0       	ldi	r24, 0x02	; 2
     1a20:	a8 16       	cp	r10, r24
     1a22:	b1 04       	cpc	r11, r1
-    1a24:	e1 f0       	breq	.+56     	; 0x1a5e <USART_DecodeGyroFIFO+0xc8>
+    1a24:	e1 f0       	breq	.+56     	; 0x1a5e <USART_decode_gyro_rx_fifo+0xc8>
     1a26:	ab 28       	or	r10, r11
-    1a28:	39 f5       	brne	.+78     	; 0x1a78 <USART_DecodeGyroFIFO+0xe2>
+    1a28:	39 f5       	brne	.+78     	; 0x1a78 <USART_decode_gyro_rx_fifo+0xe2>
     1a2a:	89 81       	ldd	r24, Y+1	; 0x01
     1a2c:	9a 81       	ldd	r25, Y+2	; 0x02
     1a2e:	ab 81       	ldd	r26, Y+3	; 0x03
@@ -4123,7 +3903,7 @@ void get_elevation_from_bus()
     1a36:	90 93 ce 13 	sts	0x13CE, r25
     1a3a:	a0 93 cf 13 	sts	0x13CF, r26
     1a3e:	b0 93 d0 13 	sts	0x13D0, r27
-    1a42:	1e c0       	rjmp	.+60     	; 0x1a80 <USART_DecodeGyroFIFO+0xea>
+    1a42:	1e c0       	rjmp	.+60     	; 0x1a80 <USART_decode_gyro_rx_fifo+0xea>
     1a44:	89 81       	ldd	r24, Y+1	; 0x01
     1a46:	9a 81       	ldd	r25, Y+2	; 0x02
     1a48:	ab 81       	ldd	r26, Y+3	; 0x03
@@ -4132,7 +3912,7 @@ void get_elevation_from_bus()
     1a50:	90 93 ca 13 	sts	0x13CA, r25
     1a54:	a0 93 cb 13 	sts	0x13CB, r26
     1a58:	b0 93 cc 13 	sts	0x13CC, r27
-    1a5c:	11 c0       	rjmp	.+34     	; 0x1a80 <USART_DecodeGyroFIFO+0xea>
+    1a5c:	11 c0       	rjmp	.+34     	; 0x1a80 <USART_decode_gyro_rx_fifo+0xea>
     1a5e:	89 81       	ldd	r24, Y+1	; 0x01
     1a60:	9a 81       	ldd	r25, Y+2	; 0x02
     1a62:	ab 81       	ldd	r26, Y+3	; 0x03
@@ -4141,15 +3921,15 @@ void get_elevation_from_bus()
     1a6a:	90 93 c6 13 	sts	0x13C6, r25
     1a6e:	a0 93 c7 13 	sts	0x13C7, r26
     1a72:	b0 93 c8 13 	sts	0x13C8, r27
-    1a76:	18 c0       	rjmp	.+48     	; 0x1aa8 <USART_DecodeGyroFIFO+0x112>
+    1a76:	18 c0       	rjmp	.+48     	; 0x1aa8 <USART_decode_gyro_rx_fifo+0x112>
     1a78:	e3 e0       	ldi	r30, 0x03	; 3
     1a7a:	ee 16       	cp	r14, r30
     1a7c:	f1 04       	cpc	r15, r1
-    1a7e:	a4 f4       	brge	.+40     	; 0x1aa8 <USART_DecodeGyroFIFO+0x112>
+    1a7e:	a4 f4       	brge	.+40     	; 0x1aa8 <USART_decode_gyro_rx_fifo+0x112>
     1a80:	ff ef       	ldi	r31, 0xFF	; 255
     1a82:	ef 1a       	sub	r14, r31
     1a84:	ff 0a       	sbc	r15, r31
-    1a86:	06 c0       	rjmp	.+12     	; 0x1a94 <USART_DecodeGyroFIFO+0xfe>
+    1a86:	06 c0       	rjmp	.+12     	; 0x1a94 <USART_decode_gyro_rx_fifo+0xfe>
     1a88:	ee 24       	eor	r14, r14
     1a8a:	e3 94       	inc	r14
     1a8c:	f1 2c       	mov	r15, r1
@@ -4165,7 +3945,7 @@ void get_elevation_from_bus()
     1aa0:	d1 2c       	mov	r13, r1
     1aa2:	cc 0e       	add	r12, r28
     1aa4:	dd 1e       	adc	r13, r29
-    1aa6:	9f cf       	rjmp	.-194    	; 0x19e6 <USART_DecodeGyroFIFO+0x50>
+    1aa6:	9f cf       	rjmp	.-194    	; 0x19e6 <USART_decode_gyro_rx_fifo+0x50>
     1aa8:	40 91 c5 13 	lds	r20, 0x13C5
     1aac:	50 91 c6 13 	lds	r21, 0x13C6
     1ab0:	60 91 c7 13 	lds	r22, 0x13C7
@@ -4189,7 +3969,7 @@ void get_elevation_from_bus()
     1ad8:	af 90       	pop	r10
     1ada:	08 95       	ret
 
-00001adc <USART_DecodeCommandRxFIFO>:
+00001adc <USART_decode_command_rx_fifo>:
     1adc:	cf 93       	push	r28
     1ade:	df 93       	push	r29
     1ae0:	60 e0       	ldi	r22, 0x00	; 0
@@ -4198,30 +3978,30 @@ void get_elevation_from_bus()
     1ae8:	90 91 13 01 	lds	r25, 0x0113
     1aec:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     1af0:	88 23       	and	r24, r24
-    1af2:	31 f0       	breq	.+12     	; 0x1b00 <USART_DecodeCommandRxFIFO+0x24>
+    1af2:	31 f0       	breq	.+12     	; 0x1b00 <USART_decode_command_rx_fifo+0x24>
     1af4:	6a e8       	ldi	r22, 0x8A	; 138
     1af6:	72 e1       	ldi	r23, 0x12	; 18
     1af8:	80 e4       	ldi	r24, 0x40	; 64
     1afa:	0f db       	rcall	.-2530   	; 0x111a <TWI_send_string>
     1afc:	81 e0       	ldi	r24, 0x01	; 1
-    1afe:	45 c0       	rjmp	.+138    	; 0x1b8a <USART_DecodeCommandRxFIFO+0xae>
+    1afe:	45 c0       	rjmp	.+138    	; 0x1b8a <USART_decode_command_rx_fifo+0xae>
     1b00:	80 91 00 00 	lds	r24, 0x0000
     1b04:	83 30       	cpi	r24, 0x03	; 3
-    1b06:	09 f0       	breq	.+2      	; 0x1b0a <USART_DecodeCommandRxFIFO+0x2e>
-    1b08:	3b c0       	rjmp	.+118    	; 0x1b80 <USART_DecodeCommandRxFIFO+0xa4>
+    1b06:	09 f0       	breq	.+2      	; 0x1b0a <USART_decode_command_rx_fifo+0x2e>
+    1b08:	3b c0       	rjmp	.+118    	; 0x1b80 <USART_decode_command_rx_fifo+0xa4>
     1b0a:	60 e0       	ldi	r22, 0x00	; 0
     1b0c:	70 e0       	ldi	r23, 0x00	; 0
     1b0e:	80 91 12 01 	lds	r24, 0x0112
     1b12:	90 91 13 01 	lds	r25, 0x0113
     1b16:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     1b1a:	88 23       	and	r24, r24
-    1b1c:	31 f0       	breq	.+12     	; 0x1b2a <USART_DecodeCommandRxFIFO+0x4e>
+    1b1c:	31 f0       	breq	.+12     	; 0x1b2a <USART_decode_command_rx_fifo+0x4e>
     1b1e:	6c ea       	ldi	r22, 0xAC	; 172
     1b20:	72 e1       	ldi	r23, 0x12	; 18
     1b22:	80 e4       	ldi	r24, 0x40	; 64
     1b24:	fa da       	rcall	.-2572   	; 0x111a <TWI_send_string>
     1b26:	81 e0       	ldi	r24, 0x01	; 1
-    1b28:	30 c0       	rjmp	.+96     	; 0x1b8a <USART_DecodeCommandRxFIFO+0xae>
+    1b28:	30 c0       	rjmp	.+96     	; 0x1b8a <USART_decode_command_rx_fifo+0xae>
     1b2a:	c0 91 00 00 	lds	r28, 0x0000
     1b2e:	60 e0       	ldi	r22, 0x00	; 0
     1b30:	70 e0       	ldi	r23, 0x00	; 0
@@ -4229,13 +4009,13 @@ void get_elevation_from_bus()
     1b36:	90 91 13 01 	lds	r25, 0x0113
     1b3a:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     1b3e:	88 23       	and	r24, r24
-    1b40:	31 f0       	breq	.+12     	; 0x1b4e <USART_DecodeCommandRxFIFO+0x72>
+    1b40:	31 f0       	breq	.+12     	; 0x1b4e <USART_decode_command_rx_fifo+0x72>
     1b42:	64 ed       	ldi	r22, 0xD4	; 212
     1b44:	72 e1       	ldi	r23, 0x12	; 18
     1b46:	80 e4       	ldi	r24, 0x40	; 64
     1b48:	e8 da       	rcall	.-2608   	; 0x111a <TWI_send_string>
     1b4a:	81 e0       	ldi	r24, 0x01	; 1
-    1b4c:	1e c0       	rjmp	.+60     	; 0x1b8a <USART_DecodeCommandRxFIFO+0xae>
+    1b4c:	1e c0       	rjmp	.+60     	; 0x1b8a <USART_decode_command_rx_fifo+0xae>
     1b4e:	d0 91 00 00 	lds	r29, 0x0000
     1b52:	60 e0       	ldi	r22, 0x00	; 0
     1b54:	70 e0       	ldi	r23, 0x00	; 0
@@ -4243,19 +4023,19 @@ void get_elevation_from_bus()
     1b5a:	90 91 13 01 	lds	r25, 0x0113
     1b5e:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     1b62:	88 23       	and	r24, r24
-    1b64:	31 f0       	breq	.+12     	; 0x1b72 <USART_DecodeCommandRxFIFO+0x96>
+    1b64:	31 f0       	breq	.+12     	; 0x1b72 <USART_decode_command_rx_fifo+0x96>
     1b66:	6b ef       	ldi	r22, 0xFB	; 251
     1b68:	72 e1       	ldi	r23, 0x12	; 18
     1b6a:	80 e4       	ldi	r24, 0x40	; 64
     1b6c:	d6 da       	rcall	.-2644   	; 0x111a <TWI_send_string>
     1b6e:	81 e0       	ldi	r24, 0x01	; 1
-    1b70:	0c c0       	rjmp	.+24     	; 0x1b8a <USART_DecodeCommandRxFIFO+0xae>
+    1b70:	0c c0       	rjmp	.+24     	; 0x1b8a <USART_decode_command_rx_fifo+0xae>
     1b72:	40 91 00 00 	lds	r20, 0x0000
     1b76:	6d 2f       	mov	r22, r29
     1b78:	8c 2f       	mov	r24, r28
     1b7a:	87 da       	rcall	.-2802   	; 0x108a <TWI_send_command>
     1b7c:	80 e0       	ldi	r24, 0x00	; 0
-    1b7e:	05 c0       	rjmp	.+10     	; 0x1b8a <USART_DecodeCommandRxFIFO+0xae>
+    1b7e:	05 c0       	rjmp	.+10     	; 0x1b8a <USART_decode_command_rx_fifo+0xae>
     1b80:	6f e1       	ldi	r22, 0x1F	; 31
     1b82:	73 e1       	ldi	r23, 0x13	; 19
     1b84:	80 e4       	ldi	r24, 0x40	; 64
@@ -4360,14 +4140,14 @@ void get_elevation_from_bus()
     1c5e:	81 e0       	ldi	r24, 0x01	; 1
     1c60:	08 95       	ret
 
-00001c62 <USART_DecodeTurnDoneRxFIFO>:
+00001c62 <USART_decode_turn_done_rx_fifo>:
     1c62:	60 e0       	ldi	r22, 0x00	; 0
     1c64:	70 e0       	ldi	r23, 0x00	; 0
     1c66:	80 91 12 01 	lds	r24, 0x0112
     1c6a:	90 91 13 01 	lds	r25, 0x0113
     1c6e:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     1c72:	88 23       	and	r24, r24
-    1c74:	31 f0       	breq	.+12     	; 0x1c82 <USART_DecodeTurnDoneRxFIFO+0x20>
+    1c74:	31 f0       	breq	.+12     	; 0x1c82 <USART_decode_turn_done_rx_fifo+0x20>
     1c76:	66 e6       	ldi	r22, 0x66	; 102
     1c78:	73 e1       	ldi	r23, 0x13	; 19
     1c7a:	80 e4       	ldi	r24, 0x40	; 64
@@ -4376,7 +4156,7 @@ void get_elevation_from_bus()
     1c80:	08 95       	ret
     1c82:	80 91 00 00 	lds	r24, 0x0000
     1c86:	81 11       	cpse	r24, r1
-    1c88:	05 c0       	rjmp	.+10     	; 0x1c94 <USART_DecodeTurnDoneRxFIFO+0x32>
+    1c88:	05 c0       	rjmp	.+10     	; 0x1c94 <USART_decode_turn_done_rx_fifo+0x32>
     1c8a:	81 e0       	ldi	r24, 0x01	; 1
     1c8c:	80 93 d3 13 	sts	0x13D3, r24
     1c90:	80 e0       	ldi	r24, 0x00	; 0
@@ -4384,14 +4164,14 @@ void get_elevation_from_bus()
     1c94:	81 e0       	ldi	r24, 0x01	; 1
     1c96:	08 95       	ret
 
-00001c98 <USART_DecodeClimbDoneRxFIFO>:
+00001c98 <USART_decode_climb_done_rx_fifo>:
     1c98:	60 e0       	ldi	r22, 0x00	; 0
     1c9a:	70 e0       	ldi	r23, 0x00	; 0
     1c9c:	80 91 12 01 	lds	r24, 0x0112
     1ca0:	90 91 13 01 	lds	r25, 0x0113
     1ca4:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     1ca8:	88 23       	and	r24, r24
-    1caa:	31 f0       	breq	.+12     	; 0x1cb8 <USART_DecodeClimbDoneRxFIFO+0x20>
+    1caa:	31 f0       	breq	.+12     	; 0x1cb8 <USART_decode_climb_done_rx_fifo+0x20>
     1cac:	6a e8       	ldi	r22, 0x8A	; 138
     1cae:	73 e1       	ldi	r23, 0x13	; 19
     1cb0:	80 e4       	ldi	r24, 0x40	; 64
@@ -4400,7 +4180,7 @@ void get_elevation_from_bus()
     1cb6:	08 95       	ret
     1cb8:	80 91 00 00 	lds	r24, 0x0000
     1cbc:	81 11       	cpse	r24, r1
-    1cbe:	05 c0       	rjmp	.+10     	; 0x1cca <USART_DecodeClimbDoneRxFIFO+0x32>
+    1cbe:	05 c0       	rjmp	.+10     	; 0x1cca <USART_decode_climb_done_rx_fifo+0x32>
     1cc0:	81 e0       	ldi	r24, 0x01	; 1
     1cc2:	80 93 d2 13 	sts	0x13D2, r24
     1cc6:	80 e0       	ldi	r24, 0x00	; 0
@@ -4438,60 +4218,60 @@ void get_elevation_from_bus()
     1d06:	80 e0       	ldi	r24, 0x00	; 0
     1d08:	08 95       	ret
 
-00001d0a <USART_DecodeRxFIFO>:
-    1d0a:	2e c0       	rjmp	.+92     	; 0x1d68 <USART_DecodeRxFIFO+0x5e>
+00001d0a <USART_decode_rx_fifo>:
+    1d0a:	2e c0       	rjmp	.+92     	; 0x1d68 <USART_decode_rx_fifo+0x5e>
     1d0c:	80 91 00 00 	lds	r24, 0x0000
     1d10:	8d 34       	cpi	r24, 0x4D	; 77
-    1d12:	79 f0       	breq	.+30     	; 0x1d32 <USART_DecodeRxFIFO+0x28>
-    1d14:	38 f4       	brcc	.+14     	; 0x1d24 <USART_DecodeRxFIFO+0x1a>
+    1d12:	79 f0       	breq	.+30     	; 0x1d32 <USART_decode_rx_fifo+0x28>
+    1d14:	38 f4       	brcc	.+14     	; 0x1d24 <USART_decode_rx_fifo+0x1a>
     1d16:	87 34       	cpi	r24, 0x47	; 71
-    1d18:	e1 f0       	breq	.+56     	; 0x1d52 <USART_DecodeRxFIFO+0x48>
+    1d18:	e1 f0       	breq	.+56     	; 0x1d52 <USART_decode_rx_fifo+0x48>
     1d1a:	88 34       	cpi	r24, 0x48	; 72
-    1d1c:	11 f1       	breq	.+68     	; 0x1d62 <USART_DecodeRxFIFO+0x58>
+    1d1c:	11 f1       	breq	.+68     	; 0x1d62 <USART_decode_rx_fifo+0x58>
     1d1e:	83 34       	cpi	r24, 0x43	; 67
-    1d20:	19 f5       	brne	.+70     	; 0x1d68 <USART_DecodeRxFIFO+0x5e>
-    1d22:	0b c0       	rjmp	.+22     	; 0x1d3a <USART_DecodeRxFIFO+0x30>
+    1d20:	19 f5       	brne	.+70     	; 0x1d68 <USART_decode_rx_fifo+0x5e>
+    1d22:	0b c0       	rjmp	.+22     	; 0x1d3a <USART_decode_rx_fifo+0x30>
     1d24:	84 35       	cpi	r24, 0x54	; 84
-    1d26:	c9 f0       	breq	.+50     	; 0x1d5a <USART_DecodeRxFIFO+0x50>
+    1d26:	c9 f0       	breq	.+50     	; 0x1d5a <USART_decode_rx_fifo+0x50>
     1d28:	86 35       	cpi	r24, 0x56	; 86
-    1d2a:	59 f0       	breq	.+22     	; 0x1d42 <USART_DecodeRxFIFO+0x38>
+    1d2a:	59 f0       	breq	.+22     	; 0x1d42 <USART_decode_rx_fifo+0x38>
     1d2c:	82 35       	cpi	r24, 0x52	; 82
-    1d2e:	e1 f4       	brne	.+56     	; 0x1d68 <USART_DecodeRxFIFO+0x5e>
-    1d30:	0c c0       	rjmp	.+24     	; 0x1d4a <USART_DecodeRxFIFO+0x40>
-    1d32:	ba dd       	rcall	.-1164   	; 0x18a8 <USART_DecodeMessageRxFIFO>
+    1d2e:	e1 f4       	brne	.+56     	; 0x1d68 <USART_decode_rx_fifo+0x5e>
+    1d30:	0c c0       	rjmp	.+24     	; 0x1d4a <USART_decode_rx_fifo+0x40>
+    1d32:	ba dd       	rcall	.-1164   	; 0x18a8 <USART_decode_message_rx_fifo>
     1d34:	88 23       	and	r24, r24
-    1d36:	c1 f0       	breq	.+48     	; 0x1d68 <USART_DecodeRxFIFO+0x5e>
+    1d36:	c1 f0       	breq	.+48     	; 0x1d68 <USART_decode_rx_fifo+0x5e>
     1d38:	08 95       	ret
-    1d3a:	d0 de       	rcall	.-608    	; 0x1adc <USART_DecodeCommandRxFIFO>
+    1d3a:	d0 de       	rcall	.-608    	; 0x1adc <USART_decode_command_rx_fifo>
     1d3c:	88 23       	and	r24, r24
-    1d3e:	a1 f0       	breq	.+40     	; 0x1d68 <USART_DecodeRxFIFO+0x5e>
+    1d3e:	a1 f0       	breq	.+40     	; 0x1d68 <USART_decode_rx_fifo+0x5e>
     1d40:	08 95       	ret
     1d42:	26 df       	rcall	.-436    	; 0x1b90 <USART_DecodeValueFIFO>
     1d44:	88 23       	and	r24, r24
-    1d46:	81 f0       	breq	.+32     	; 0x1d68 <USART_DecodeRxFIFO+0x5e>
+    1d46:	81 f0       	breq	.+32     	; 0x1d68 <USART_decode_rx_fifo+0x5e>
     1d48:	08 95       	ret
     1d4a:	70 df       	rcall	.-288    	; 0x1c2c <USART_DecodeReadyFIFO>
     1d4c:	88 23       	and	r24, r24
-    1d4e:	61 f0       	breq	.+24     	; 0x1d68 <USART_DecodeRxFIFO+0x5e>
+    1d4e:	61 f0       	breq	.+24     	; 0x1d68 <USART_decode_rx_fifo+0x5e>
     1d50:	08 95       	ret
-    1d52:	21 de       	rcall	.-958    	; 0x1996 <USART_DecodeGyroFIFO>
+    1d52:	21 de       	rcall	.-958    	; 0x1996 <USART_decode_gyro_rx_fifo>
     1d54:	88 23       	and	r24, r24
-    1d56:	41 f0       	breq	.+16     	; 0x1d68 <USART_DecodeRxFIFO+0x5e>
+    1d56:	41 f0       	breq	.+16     	; 0x1d68 <USART_decode_rx_fifo+0x5e>
     1d58:	08 95       	ret
-    1d5a:	83 df       	rcall	.-250    	; 0x1c62 <USART_DecodeTurnDoneRxFIFO>
+    1d5a:	83 df       	rcall	.-250    	; 0x1c62 <USART_decode_turn_done_rx_fifo>
     1d5c:	88 23       	and	r24, r24
-    1d5e:	21 f0       	breq	.+8      	; 0x1d68 <USART_DecodeRxFIFO+0x5e>
+    1d5e:	21 f0       	breq	.+8      	; 0x1d68 <USART_decode_rx_fifo+0x5e>
     1d60:	08 95       	ret
-    1d62:	9a df       	rcall	.-204    	; 0x1c98 <USART_DecodeClimbDoneRxFIFO>
+    1d62:	9a df       	rcall	.-204    	; 0x1c98 <USART_decode_climb_done_rx_fifo>
     1d64:	81 11       	cpse	r24, r1
-    1d66:	0a c0       	rjmp	.+20     	; 0x1d7c <USART_DecodeRxFIFO+0x72>
+    1d66:	0a c0       	rjmp	.+20     	; 0x1d7c <USART_decode_rx_fifo+0x72>
     1d68:	60 e0       	ldi	r22, 0x00	; 0
     1d6a:	70 e0       	ldi	r23, 0x00	; 0
     1d6c:	80 91 12 01 	lds	r24, 0x0112
     1d70:	90 91 13 01 	lds	r25, 0x0113
     1d74:	0e 94 79 02 	call	0x4f2	; 0x4f2 <FifoRead>
     1d78:	88 23       	and	r24, r24
-    1d7a:	41 f2       	breq	.-112    	; 0x1d0c <USART_DecodeRxFIFO+0x2>
+    1d7a:	41 f2       	breq	.-112    	; 0x1d0c <USART_decode_rx_fifo+0x2>
     1d7c:	08 95       	ret
 
 00001d7e <__vector_20>:
@@ -4678,10 +4458,10 @@ void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t 
     1e9e:	40 93 3e 17 	sts	0x173E, r20
 	
 	
-	USART_SendPacket('C', 3);
+	USART_send_packet('C', 3);
     1ea2:	63 e0       	ldi	r22, 0x03	; 3
     1ea4:	83 e4       	ldi	r24, 0x43	; 67
-    1ea6:	7c cc       	rjmp	.-1800   	; 0x17a0 <USART_SendPacket>
+    1ea6:	7c cc       	rjmp	.-1800   	; 0x17a0 <USART_send_packet>
 
 00001ea8 <__subsf3>:
     1ea8:	50 58       	subi	r21, 0x80	; 128

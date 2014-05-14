@@ -40,7 +40,7 @@ int main(void)
 	wait(10);
 	move_to_std();
 	wait_until_gyro_stable();
-	USART_SendMessage("Gyro Stable");
+	USART_send_message("Gyro Stable");
 	
 	// ------ TESTCODE FOR READING SERVO -------
 	
@@ -111,7 +111,8 @@ int main(void)
 		}
 		*/
 		
-		USART_DecodeRxFIFO();
+	USART_decode_rx_fifo();
+
 	}
 }
 

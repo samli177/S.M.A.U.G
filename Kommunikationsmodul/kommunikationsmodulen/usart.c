@@ -27,7 +27,6 @@ uint16_t gRxBufferIndex = 0;
 uint16_t gInvertNextFlag = 0;
 
 
-
 // define FIFO for received packets (USART)
 MK_FIFO(4096); // use 4 kB
 DEFINE_FIFO(gRxFIFO, 4096);
@@ -48,24 +47,24 @@ void USART_init()
 
 }
 
-uint8_t USART_CheckRxComplete()
+uint8_t USART_check_rx_complete()
 {
 	return (UCSR0A & (1<<RXC0)); // zero if no data is available to read
 }
 
-uint8_t USART_CheckTxReady()
+uint8_t USART_check_tx_ready()
 {
 	return (UCSR0A & (1<<UDRE0)); // zero if transmit register is not ready to receive new data
 }
 
-void USART_WriteByte(uint8_t DataByteOut)
+void USART_write_byte(uint8_t DataByteOut)
 {
-	while(USART_CheckTxReady() == 0)
-	{;;} // wait until ready to transmit NOTE: Can probably be optimized using interrupts
+	while(USART_check_tx_ready() == 0)
+	{;;} // wait until ready to transmit, NOTE: Can probably be optimized using interrupts
 	UDR0 = DataByteOut;
 }
 
-uint8_t USART_ReadByte()
+uint8_t USART_read_byte()
 {
 	// NOTE: check if data is available before calling this function. Should probably be implemented w. interrupt.
 	return UDR0;
@@ -120,7 +119,7 @@ uint16_t USART_crc16(uint8_t tag, uint8_t length)
 	return (crc);
 }
 
-void USART_SendPacket(char tag, uint8_t length)
+void USART_send_packet(char tag, uint8_t length)
 {
 	int count, offset, buffersize;
 	uint16_t crc;
@@ -161,31 +160,31 @@ void USART_SendPacket(char tag, uint8_t length)
 	
 	for(count = 0; count < buffersize + 1; ++count)
 	{
-		USART_WriteByte(gTxBuffer[count]);
+		USART_write_byte(gTxBuffer[count]);
 	}
 }
 
-void USART_SendMessage(char msg[])
+void USART_send_message(char msg[])
 {
 	for(int i = 0; i < strlen(msg); ++i )
 	{
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('M', strlen(msg));
+	USART_send_packet('M', strlen(msg));
 }
 
-void USART_SendValue(uint8_t msg[])
+void USART_send_value(uint8_t msg[])
 {
 	for(int i = 0; i < 4; ++i )
 	{
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('V', 4);
+	USART_send_packet('V', 4);
 }
 
-void USART_SendSensors()
+void USART_send_sensors()
 {
 	for(int i = 0; i < 8; i++)
 	{
@@ -194,16 +193,16 @@ void USART_SendSensors()
 	
 	gTxPayload[8] = TWI_get_servo();
 	
-	USART_SendPacket('S', 9);
+	USART_send_packet('S', 9);
 }
 
 void USART_send_autonom(uint8_t settings)
 {
 	gTxPayload[0] = settings;
-	USART_SendPacket('A', 1);
+	USART_send_packet('A', 1);
 }
 
-uint8_t USART_DecodeMessageRxFIFO()
+uint8_t USART_decode_message_rx_fifo()
 {
 	
 	uint8_t *len = 0;
@@ -211,11 +210,11 @@ uint8_t USART_DecodeMessageRxFIFO()
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		USART_SendMessage( "RxFIFO MESSAGE ERROR: LEN MISSING");
+		USART_send_message( "RxFIFO MESSAGE ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
-	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
+	int length = *len; // don't know why I can't use *len directly
 	
 	//NOTE: there has to be a better way of doing this...
 	int ifzero = 0;
@@ -226,7 +225,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	{
 		if(FifoRead(gRxFIFO, character))
 		{
-			USART_SendMessage( "RxFIFO MESSAGE ERROR: DATA MISSING");
+			USART_send_message( "RxFIFO MESSAGE ERROR: DATA MISSING");
 			return 1; // error
 		}
 
@@ -240,14 +239,14 @@ uint8_t USART_DecodeMessageRxFIFO()
 	return 0;
 }
 
-uint8_t USART_DecodeCommandRxFIFO()
+uint8_t USART_decode_command_rx_fifo()
 {
 	uint8_t *len = 0;
 	uint8_t *data = 0;
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		USART_SendMessage( "RxFIFO COMMAND ERROR: LEN MISSING");
+		USART_send_message( "RxFIFO COMMAND ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -259,14 +258,14 @@ uint8_t USART_DecodeCommandRxFIFO()
 		
 			if(FifoRead(gRxFIFO, data))
 			{
-				USART_SendMessage( "RxFIFO COMMAND ERROR: DIRECTION MISSING");
+				USART_send_message( "RxFIFO COMMAND ERROR: DIRECTION MISSING");
 				return 1; // error
 			}
 			direction = *data;
 			
 			if(FifoRead(gRxFIFO, data))
 			{
-				USART_SendMessage( "RxFIFO COMMAND ERROR: ROTATION MISSING");
+				USART_send_message( "RxFIFO COMMAND ERROR: ROTATION MISSING");
 				return 1; // error
 			}
 			
@@ -274,7 +273,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 			
 			if(FifoRead(gRxFIFO, data))
 			{
-				USART_SendMessage( "RxFIFO COMMAND ERROR: SPEED MISSING");
+				USART_send_message( "RxFIFO COMMAND ERROR: SPEED MISSING");
 				return 1; // error
 			}
 			
@@ -284,7 +283,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 
 	}else
 	{
-		USART_SendMessage( "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
+		USART_send_message( "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
 		return 1;
 	}
 
@@ -292,14 +291,14 @@ uint8_t USART_DecodeCommandRxFIFO()
 	
 }
 
-uint8_t USART_DecodeParametersRxFIFO()
+uint8_t USART_decode_parameters_rx_fifo()
 {
 	uint8_t *len = 0;
 	uint8_t *data = 0;
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		USART_SendMessage( "RxFIFO Parameters ERROR: LEN MISSING");
+		USART_send_message( "RxFIFO Parameters ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -311,21 +310,21 @@ uint8_t USART_DecodeParametersRxFIFO()
 		
 		if(FifoRead(gRxFIFO, data))
 		{
-			USART_SendMessage("RxFIFO Parameters ERROR!");
+			USART_send_message("RxFIFO Parameters ERROR!");
 			return 1; // error
 		}
 		Kp = *data;
 		
 		if(FifoRead(gRxFIFO, data))
 		{
-			USART_SendMessage("RxFIFO Parameters ERROR!");
+			USART_send_message("RxFIFO Parameters ERROR!");
 			return 1; // error
 		}
 		Ki = *data;
 		
 		if(FifoRead(gRxFIFO, data))
 		{
-			USART_SendMessage("RxFIFO Parameters ERROR!");
+			USART_send_message("RxFIFO Parameters ERROR!");
 			return 1; // error
 		}
 		Kd = *data;
@@ -334,7 +333,7 @@ uint8_t USART_DecodeParametersRxFIFO()
 
 	}else
 	{
-		USART_SendMessage( "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
+		USART_send_message( "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
 		return 1;
 	}
 
@@ -342,14 +341,14 @@ uint8_t USART_DecodeParametersRxFIFO()
 	
 }
 
-uint8_t USART_DecodeAutonomRxFIFO()
+uint8_t USART_decode_autonom_rx_fifo()
 {
 	uint8_t *len = 0;
 	uint8_t *data = 0;
 	
 	if(FifoRead(gRxFIFO, len))
 	{
-		USART_SendMessage( "RxFIFO Autonom ERROR: LEN MISSING");
+		USART_send_message( "RxFIFO Autonom ERROR: LEN MISSING");
 		return 1; // error
 	}
 	
@@ -361,7 +360,7 @@ uint8_t USART_DecodeAutonomRxFIFO()
 		
 		if(FifoRead(gRxFIFO, data))
 		{
-			USART_SendMessage( "RxFIFO Autonom ERROR!");
+			USART_send_message( "RxFIFO Autonom ERROR!");
 			return 1; // error
 		}
 		sett = *data;
@@ -370,7 +369,7 @@ uint8_t USART_DecodeAutonomRxFIFO()
 
 	}else
 	{
-		USART_SendMessage( "RxFIFO Autonom ERROR: INCORRECT LENGTH");
+		USART_send_message( "RxFIFO Autonom ERROR: INCORRECT LENGTH");
 		return 1;
 	}
 
@@ -415,7 +414,7 @@ uint8_t USART_DecodeElevationRxFIFO()
 }
 
 
-void USART_DecodeRxFIFO()
+void USART_decode_rx_fifo()
 {
 	uint8_t *tag = 0;
 	
@@ -424,7 +423,7 @@ void USART_DecodeRxFIFO()
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{
-				if(USART_DecodeMessageRxFIFO()) // if decoding failed
+				if(USART_decode_message_rx_fifo()) // if decoding failed
 				{
 					// TODO: flush buffer?
 					return;
@@ -434,7 +433,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('C'): // 
 			{
-				if(USART_DecodeCommandRxFIFO())
+				if(USART_decode_command_rx_fifo())
 				{
 					// TODO: flush buffet?
 					return;
@@ -444,7 +443,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('P'): //
 			{
-				if(USART_DecodeParametersRxFIFO())
+				if(USART_decode_parameters_rx_fifo())
 				{
 					// TODO: flush buffet?
 					return;
@@ -454,7 +453,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('A'): //
 			{
-				if(USART_DecodeAutonomRxFIFO())
+				if(USART_decode_autonom_rx_fifo())
 				{
 					// TODO: flush buffet?
 					return;
@@ -477,13 +476,13 @@ void USART_DecodeRxFIFO()
 
 
 
-void USART_Bounce()
+void USART_bounce()
 {
 	for(int i = 0; i < gRxBuffer[1]; i++)
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
 	}
-	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
+	USART_send_packet(gRxBuffer[0], gRxBuffer[1]);
 }
 
 
@@ -511,7 +510,7 @@ ISR (USART0_RX_vect)
 			{
 				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
 				{
-					USART_SendMessage("U_FIFO-full");
+					USART_send_message("U_FIFO-full");
 				}
 			}
 		}

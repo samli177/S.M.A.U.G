@@ -113,24 +113,24 @@ void USART_init()
 
 }
 
-uint8_t USART_CheckRxComplete()
+uint8_t USART_check_rx_complete()
 {
 	return (UCSR0A & (1<<RXC0)); // zero if no data is available to read
 }
 
-uint8_t USART_CheckTxReady()
+uint8_t USART_check_tx_ready()
 {
 	return (UCSR0A & (1<<UDRE0)); // zero if transmit register is not ready to receive new data
 }
 
-void USART_WriteByte(uint8_t DataByteOut)
+void USART_write_byte(uint8_t DataByteOut)
 {
-	while(USART_CheckTxReady() == 0)
+	while(USART_check_tx_ready() == 0)
 	{;;} // wait until ready to transmit NOTE: Can probably be optimized using interrupts
 	UDR0 = DataByteOut;
 }
 
-uint8_t USART_ReadByte()
+uint8_t USART_read_byte()
 {
 	// NOTE: check if data is available before calling this function. Should probably be implemented w. interrupt.
 	return UDR0;
@@ -185,7 +185,7 @@ uint16_t USART_crc16(uint8_t tag, uint8_t length)
 	return (crc);
 }
 
-void USART_SendPacket(char tag, uint8_t length)
+void USART_send_packet(char tag, uint8_t length)
 {
 	int count, offset, buffersize;
 	uint16_t crc;
@@ -226,34 +226,20 @@ void USART_SendPacket(char tag, uint8_t length)
 	
 	for(count = 0; count < buffersize + 1; ++count)
 	{
-		USART_WriteByte(gTxBuffer[count]);
+		USART_write_byte(gTxBuffer[count]);
 	}
 }
 
-void USART_SendMessage(char msg[])
+void USART_send_message(char msg[])
 {
 	for(int i = 0; i < strlen(msg); ++i )
 	{
 		gTxPayload[i] = msg[i];
 	}
 	
-	USART_SendPacket('M', strlen(msg));
+	USART_send_packet('M', strlen(msg));
 }
 
-void USART_SendSensors()
-{
-	for(int i = 0; i < 7; i++)
-	{
-		//gTxPayload[i] = get_sensor(i);
-	}
-	
-	//UL sensor
-	
-	gTxPayload[7] = 254;
-	//gTxPayload[8] = get_servo();
-	
-	USART_SendPacket('S', 9);
-}
 
 union Union_floatcast
 {
@@ -261,7 +247,7 @@ union Union_floatcast
 	char s[sizeof(float)];
 };
 
-void USART_SendValue(float flo)
+void USART_send_value(float flo)
 {
 	union Union_floatcast foo;
 	foo.f = flo;
@@ -271,11 +257,11 @@ void USART_SendValue(float flo)
 		gTxPayload[i] = foo.s[i]; 
 	}
 	
-	USART_SendPacket('V', 4);
+	USART_send_packet('V', 4);
 	
 }
 
-void USART_SendGyro()
+void USART_send_gyro()
 {
 	union Union_floatcast foo;
 	
@@ -297,26 +283,27 @@ void USART_SendGyro()
 		gTxPayload[i + 8] = foo.s[i];
 	}
 	
-	USART_SendPacket('G', 12);	
+	USART_send_packet('G', 12);	
 }
 
 
 void USART_send_ready()
 {
-	USART_SendPacket('R', 0);
+	USART_send_packet('R', 0);
 }
 
 void USART_send_turn_done()
 {
-	USART_SendPacket('T', 0);
+	USART_send_packet('T', 0);
 }
 
 void USART_send_climb_done()
 {
-	USART_SendPacket('H', 0);
+	USART_send_packet('H', 0);
 }
 
-uint8_t USART_DecodeMessageRxFIFO()
+
+uint8_t USART_decode_message_rx_fifo()
 {
 	uint8_t *len = 0;
 	uint8_t *character = 0;
@@ -327,7 +314,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 		return 1; // error
 	}
 	
-	int length = *len; // I don't know why I can't use *len directly... but it took me 4h to figure out that you can't do it....
+	int length = *len; // don't know why I can't use *len directly
 	
 	//NOTE: there has to be a better way of doing this...
 	//int ifzero = 0;
@@ -353,7 +340,7 @@ uint8_t USART_DecodeMessageRxFIFO()
 	return 0;
 }
 
-uint8_t USART_DecodeCommandRxFIFO()
+uint8_t USART_decode_command_rx_fifo()
 {
 	
 	uint8_t *len = 0;
@@ -411,7 +398,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 	
 }
 
-uint8_t USART_DecodeElevationRxFIFO()
+uint8_t USART_decode_elevation_rx_fifo()
 {
 	uint8_t *len = 0;
 	uint8_t *data = 0;
@@ -459,7 +446,7 @@ uint8_t USART_DecodeElevationRxFIFO()
 	
 }
 
-uint8_t USART_DecodeTurnRxFIFO()
+uint8_t USART_decode_turn_rx_fifo()
 {
 	uint8_t *len = 0;
 	uint8_t *data = 0;
@@ -510,7 +497,7 @@ uint8_t USART_DecodeTurnRxFIFO()
 	return 0;
 }
 
-uint8_t USART_DecodeClimbRxFIFO()
+uint8_t USART_decode_climb_rx_fifo()
 {
 	uint8_t *len = 0;
 	
@@ -530,7 +517,9 @@ uint8_t USART_DecodeClimbRxFIFO()
 	return 1;
 }
 
-void USART_DecodeRxFIFO()
+
+void USART_decode_rx_fifo()
+
 {
 	uint8_t *tag = 0;
 	
@@ -539,7 +528,7 @@ void USART_DecodeRxFIFO()
 		switch(*tag){
 			case('M'): // if 'tag' is 'M'
 			{
-				if(USART_DecodeMessageRxFIFO()) // if decoding failed
+				if(USART_decode_message_rx_fifo()) // if decoding failed
 				{
 					// TODO: flush buffer?
 					return;
@@ -549,7 +538,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('C'): // 
 			{
-				if(USART_DecodeCommandRxFIFO())
+				if(USART_decode_command_rx_fifo())
 				{
 					// TODO: flush buffer?
 					return;
@@ -558,7 +547,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('E'):
 			{
-				if(USART_DecodeElevationRxFIFO())
+				if(USART_decode_elevation_rx_fifo())
 				{
 					// TODO: flush buffer?
 					return;
@@ -568,12 +557,12 @@ void USART_DecodeRxFIFO()
 			case('G'):
 			{
 				// Maybe must do check like the others?
-				USART_SendGyro();
+				USART_send_gyro();
 				break;
 			}
 			case('T'):
 			{
-				if(USART_DecodeTurnRxFIFO())
+				if(USART_decode_turn_rx_fifo())
 				{
 					// TODO: flush buffer?
 					return;
@@ -582,7 +571,7 @@ void USART_DecodeRxFIFO()
 			}
 			case('H'):
 			{
-				if(USART_DecodeClimbRxFIFO())
+				if(USART_decode_climb_rx_fifo())
 				{
 					return;
 				}
@@ -603,13 +592,13 @@ uint8_t USART_elevation_flag()
 }
 
 
-void USART_Bounce()
+void USART_bounce()
 {
 	for(int i = 0; i < gRxBuffer[1]; i++)
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
 	}
-	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
+	USART_send_packet(gRxBuffer[0], gRxBuffer[1]);
 }
 
 

@@ -15,21 +15,21 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   5 .comment      0000002f  00000000  00000000  0000f556  2**0
                   CONTENTS, READONLY
-  6 .debug_aranges 00000e90  00000000  00000000  0000f585  2**0
+  6 .debug_aranges 00000e88  00000000  00000000  0000f585  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00013c60  00000000  00000000  00010415  2**0
+  7 .debug_info   00013c26  00000000  00000000  0001040d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00001a73  00000000  00000000  00024075  2**0
+  8 .debug_abbrev 00001a71  00000000  00000000  00024033  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00006a13  00000000  00000000  00025ae8  2**0
+  9 .debug_line   000069f6  00000000  00000000  00025aa4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  0000395c  00000000  00000000  0002c4fc  2**2
+ 10 .debug_frame  0000394c  00000000  00000000  0002c49c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00006d73  00000000  00000000  0002fe58  2**0
+ 11 .debug_str    00006d7a  00000000  00000000  0002fde8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00010d1e  00000000  00000000  00036bcb  2**0
+ 12 .debug_loc    00010d1e  00000000  00000000  00036b62  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000e80  00000000  00000000  000478e9  2**0
+ 13 .debug_ranges 00000e78  00000000  00000000  00047880  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -621,7 +621,7 @@ ISR(TIMER3_COMPA_vect)
      b64:	08 95       	ret
 
 00000b66 <__vector_13>:
-		USART_DecodeRxFIFO();
+
 	}
 }
 
@@ -719,10 +719,10 @@ int main(void)
      bda:	0e 94 af 17 	call	0x2f5e	; 0x2f5e <_Z11move_to_stdv>
 	wait_until_gyro_stable();
      bde:	dc df       	rcall	.-72     	; 0xb98 <_Z22wait_until_gyro_stablev>
-	USART_SendMessage("Gyro Stable");
+	USART_send_message("Gyro Stable");
      be0:	81 e5       	ldi	r24, 0x51	; 81
      be2:	95 e1       	ldi	r25, 0x15	; 21
-     be4:	0e 94 17 3e 	call	0x7c2e	; 0x7c2e <_Z17USART_SendMessagePc>
+     be4:	0e 94 17 3e 	call	0x7c2e	; 0x7c2e <_Z18USART_send_messagePc>
 	
 	// ------ TESTCODE FOR READING SERVO -------
 	
@@ -812,8 +812,8 @@ int main(void)
 		}
 		*/
 		
-		USART_DecodeRxFIFO();
-     c56:	0e 94 cf 3f 	call	0x7f9e	; 0x7f9e <_Z18USART_DecodeRxFIFOv>
+	USART_decode_rx_fifo();
+     c56:	0e 94 cf 3f 	call	0x7f9e	; 0x7f9e <_Z20USART_decode_rx_fifov>
 	//----------------------------
 	
 	reset_counter_1();
@@ -6585,7 +6585,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
     3da2:	99 83       	std	Y+1, r25	; 0x01
 	float newAngle;
 	float angleLeft, move;
-	USART_SendValue(startAngle*180/M_PI);
+	USART_send_value(startAngle*180/M_PI);
     3da4:	20 e0       	ldi	r18, 0x00	; 0
     3da6:	30 e0       	ldi	r19, 0x00	; 0
     3da8:	44 e3       	ldi	r20, 0x34	; 52
@@ -6596,7 +6596,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
     3db4:	49 e4       	ldi	r20, 0x49	; 73
     3db6:	50 e4       	ldi	r21, 0x40	; 64
     3db8:	0e 94 83 41 	call	0x8306	; 0x8306 <__divsf3>
-    3dbc:	0e 94 38 3e 	call	0x7c70	; 0x7c70 <_Z15USART_SendValuef>
+    3dbc:	0e 94 38 3e 	call	0x7c70	; 0x7c70 <_Z16USART_send_valuef>
 	float diff, realDiff;
 	
 	do
@@ -6883,12 +6883,12 @@ void turn_degrees(uint16_t degrees, int8_t dir)
     3fb2:	a8 2e       	mov	r10, r24
     3fb4:	b9 2e       	mov	r11, r25
 		}
-		USART_SendValue(move);
+		USART_send_value(move);
     3fb6:	68 2d       	mov	r22, r8
     3fb8:	79 2d       	mov	r23, r9
     3fba:	8a 2d       	mov	r24, r10
     3fbc:	9b 2d       	mov	r25, r11
-    3fbe:	0e 94 38 3e 	call	0x7c70	; 0x7c70 <_Z15USART_SendValuef>
+    3fbe:	0e 94 38 3e 	call	0x7c70	; 0x7c70 <_Z16USART_send_valuef>
 		move_robot(0, move, 0);
     3fc2:	68 2d       	mov	r22, r8
     3fc4:	79 2d       	mov	r23, r9
@@ -6907,7 +6907,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
     3fdc:	9f 77       	andi	r25, 0x7F	; 127
 	float newAngle;
 	float angleLeft, move;
-	USART_SendValue(startAngle*180/M_PI);
+	USART_send_value(startAngle*180/M_PI);
 	float diff, realDiff;
 	
 	do
@@ -6919,7 +6919,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
     3fea:	18 16       	cp	r1, r24
     3fec:	0c f4       	brge	.+2      	; 0x3ff0 <_Z12turn_degreesja+0x2c8>
     3fee:	e8 ce       	rjmp	.-560    	; 0x3dc0 <_Z12turn_degreesja+0x98>
-		USART_SendValue(move);
+		USART_send_value(move);
 		move_robot(0, move, 0);
 	} 
 	while(fabs(angleLeft) > tolerance);
@@ -14001,10 +14001,10 @@ ISR (USART1_RX_vect)
     79da:	88 23       	and	r24, r24
     79dc:	19 f0       	breq	.+6      	; 0x79e4 <__vector_28+0x40>
 	{
-		USART_SendMessage("ServoError: 1");
+		USART_send_message("ServoError: 1");
     79de:	89 e7       	ldi	r24, 0x79	; 121
     79e0:	95 e1       	ldi	r25, 0x15	; 21
-    79e2:	25 d1       	rcall	.+586    	; 0x7c2e <_Z17USART_SendMessagePc>
+    79e2:	25 d1       	rcall	.+586    	; 0x7c2e <_Z18USART_send_messagePc>
 	}
 }
     79e4:	ff 91       	pop	r31
@@ -14033,7 +14033,7 @@ ISR (USART1_RX_vect)
 	{
 		gTxPayload[i] = gRxBuffer[i+2];
 	}
-	USART_SendPacket(gRxBuffer[0], gRxBuffer[1]);
+	USART_send_packet(gRxBuffer[0], gRxBuffer[1]);
     7a0a:	80 91 50 15 	lds	r24, 0x1550
     7a0e:	92 e3       	ldi	r25, 0x32	; 50
     7a10:	90 93 50 15 	sts	0x1550, r25
@@ -14103,17 +14103,17 @@ ISR (USART1_RX_vect)
     7a9c:	10 92 29 1b 	sts	0x1B29, r1
     7aa0:	08 95       	ret
 
-00007aa2 <_Z18USART_CheckTxReadyv>:
+00007aa2 <_Z20USART_check_tx_readyv>:
     7aa2:	80 91 c0 00 	lds	r24, 0x00C0
     7aa6:	80 72       	andi	r24, 0x20	; 32
     7aa8:	08 95       	ret
 
-00007aaa <_Z15USART_WriteByteh>:
+00007aaa <_Z16USART_write_byteh>:
     7aaa:	cf 93       	push	r28
     7aac:	c8 2f       	mov	r28, r24
-    7aae:	f9 df       	rcall	.-14     	; 0x7aa2 <_Z18USART_CheckTxReadyv>
+    7aae:	f9 df       	rcall	.-14     	; 0x7aa2 <_Z20USART_check_tx_readyv>
     7ab0:	88 23       	and	r24, r24
-    7ab2:	e9 f3       	breq	.-6      	; 0x7aae <_Z15USART_WriteByteh+0x4>
+    7ab2:	e9 f3       	breq	.-6      	; 0x7aae <_Z16USART_write_byteh+0x4>
     7ab4:	c0 93 c6 00 	sts	0x00C6, r28
     7ab8:	cf 91       	pop	r28
     7aba:	08 95       	ret
@@ -14209,7 +14209,7 @@ ISR (USART1_RX_vect)
     7b6a:	cf 90       	pop	r12
     7b6c:	08 95       	ret
 
-00007b6e <_Z16USART_SendPacketch>:
+00007b6e <_Z17USART_send_packetch>:
     7b6e:	0f 93       	push	r16
     7b70:	1f 93       	push	r17
     7b72:	cf 93       	push	r28
@@ -14222,7 +14222,7 @@ ISR (USART1_RX_vect)
     7b86:	30 e0       	ldi	r19, 0x00	; 0
     7b88:	12 16       	cp	r1, r18
     7b8a:	13 06       	cpc	r1, r19
-    7b8c:	4c f5       	brge	.+82     	; 0x7be0 <_Z16USART_SendPacketch+0x72>
+    7b8c:	4c f5       	brge	.+82     	; 0x7be0 <_Z17USART_send_packetch+0x72>
     7b8e:	e9 e3       	ldi	r30, 0x39	; 57
     7b90:	ff e1       	ldi	r31, 0x1F	; 31
     7b92:	03 e0       	ldi	r16, 0x03	; 3
@@ -14235,7 +14235,7 @@ ISR (USART1_RX_vect)
     7ba0:	49 2f       	mov	r20, r25
     7ba2:	4d 57       	subi	r20, 0x7D	; 125
     7ba4:	42 30       	cpi	r20, 0x02	; 2
-    7ba6:	80 f4       	brcc	.+32     	; 0x7bc8 <_Z16USART_SendPacketch+0x5a>
+    7ba6:	80 f4       	brcc	.+32     	; 0x7bc8 <_Z17USART_send_packetch+0x5a>
     7ba8:	d8 01       	movw	r26, r16
     7baa:	ac 5c       	subi	r26, 0xCC	; 204
     7bac:	b2 4e       	sbci	r27, 0xE2	; 226
@@ -14251,7 +14251,7 @@ ISR (USART1_RX_vect)
     7bc0:	bd 1f       	adc	r27, r29
     7bc2:	95 27       	eor	r25, r21
     7bc4:	9c 93       	st	X, r25
-    7bc6:	06 c0       	rjmp	.+12     	; 0x7bd4 <_Z16USART_SendPacketch+0x66>
+    7bc6:	06 c0       	rjmp	.+12     	; 0x7bd4 <_Z17USART_send_packetch+0x66>
     7bc8:	d8 01       	movw	r26, r16
     7bca:	ac 5c       	subi	r26, 0xCC	; 204
     7bcc:	b2 4e       	sbci	r27, 0xE2	; 226
@@ -14262,8 +14262,8 @@ ISR (USART1_RX_vect)
     7bd6:	31 96       	adiw	r30, 0x01	; 1
     7bd8:	c2 17       	cp	r28, r18
     7bda:	d3 07       	cpc	r29, r19
-    7bdc:	01 f7       	brne	.-64     	; 0x7b9e <_Z16USART_SendPacketch+0x30>
-    7bde:	04 c0       	rjmp	.+8      	; 0x7be8 <_Z16USART_SendPacketch+0x7a>
+    7bdc:	01 f7       	brne	.-64     	; 0x7b9e <_Z17USART_send_packetch+0x30>
+    7bde:	04 c0       	rjmp	.+8      	; 0x7be8 <_Z17USART_send_packetch+0x7a>
     7be0:	03 e0       	ldi	r16, 0x03	; 3
     7be2:	10 e0       	ldi	r17, 0x00	; 0
     7be4:	c0 e0       	ldi	r28, 0x00	; 0
@@ -14288,23 +14288,23 @@ ISR (USART1_RX_vect)
     7c0a:	01 96       	adiw	r24, 0x01	; 1
     7c0c:	18 16       	cp	r1, r24
     7c0e:	19 06       	cpc	r1, r25
-    7c10:	4c f4       	brge	.+18     	; 0x7c24 <_Z16USART_SendPacketch+0xb6>
+    7c10:	4c f4       	brge	.+18     	; 0x7c24 <_Z17USART_send_packetch+0xb6>
     7c12:	c4 e3       	ldi	r28, 0x34	; 52
     7c14:	dd e1       	ldi	r29, 0x1D	; 29
     7c16:	0b 5c       	subi	r16, 0xCB	; 203
     7c18:	12 4e       	sbci	r17, 0xE2	; 226
     7c1a:	89 91       	ld	r24, Y+
-    7c1c:	46 df       	rcall	.-372    	; 0x7aaa <_Z15USART_WriteByteh>
+    7c1c:	46 df       	rcall	.-372    	; 0x7aaa <_Z16USART_write_byteh>
     7c1e:	c0 17       	cp	r28, r16
     7c20:	d1 07       	cpc	r29, r17
-    7c22:	d9 f7       	brne	.-10     	; 0x7c1a <_Z16USART_SendPacketch+0xac>
+    7c22:	d9 f7       	brne	.-10     	; 0x7c1a <_Z17USART_send_packetch+0xac>
     7c24:	df 91       	pop	r29
     7c26:	cf 91       	pop	r28
     7c28:	1f 91       	pop	r17
     7c2a:	0f 91       	pop	r16
     7c2c:	08 95       	ret
 
-00007c2e <_Z17USART_SendMessagePc>:
+00007c2e <_Z18USART_send_messagePc>:
     7c2e:	cf 93       	push	r28
     7c30:	df 93       	push	r29
     7c32:	c8 2f       	mov	r28, r24
@@ -14313,7 +14313,7 @@ ISR (USART1_RX_vect)
     7c38:	5f e1       	ldi	r21, 0x1F	; 31
     7c3a:	20 e0       	ldi	r18, 0x00	; 0
     7c3c:	30 e0       	ldi	r19, 0x00	; 0
-    7c3e:	06 c0       	rjmp	.+12     	; 0x7c4c <_Z17USART_SendMessagePc+0x1e>
+    7c3e:	06 c0       	rjmp	.+12     	; 0x7c4c <_Z18USART_send_messagePc+0x1e>
     7c40:	69 91       	ld	r22, Y+
     7c42:	fa 01       	movw	r30, r20
     7c44:	61 93       	st	Z+, r22
@@ -14325,30 +14325,30 @@ ISR (USART1_RX_vect)
     7c50:	df 01       	movw	r26, r30
     7c52:	0d 90       	ld	r0, X+
     7c54:	00 20       	and	r0, r0
-    7c56:	e9 f7       	brne	.-6      	; 0x7c52 <_Z17USART_SendMessagePc+0x24>
+    7c56:	e9 f7       	brne	.-6      	; 0x7c52 <_Z18USART_send_messagePc+0x24>
     7c58:	11 97       	sbiw	r26, 0x01	; 1
     7c5a:	bd 01       	movw	r22, r26
     7c5c:	6e 1b       	sub	r22, r30
     7c5e:	7f 0b       	sbc	r23, r31
     7c60:	26 17       	cp	r18, r22
     7c62:	37 07       	cpc	r19, r23
-    7c64:	68 f3       	brcs	.-38     	; 0x7c40 <_Z17USART_SendMessagePc+0x12>
+    7c64:	68 f3       	brcs	.-38     	; 0x7c40 <_Z18USART_send_messagePc+0x12>
     7c66:	8d e4       	ldi	r24, 0x4D	; 77
-    7c68:	82 df       	rcall	.-252    	; 0x7b6e <_Z16USART_SendPacketch>
+    7c68:	82 df       	rcall	.-252    	; 0x7b6e <_Z17USART_send_packetch>
     7c6a:	df 91       	pop	r29
     7c6c:	cf 91       	pop	r28
     7c6e:	08 95       	ret
 
-00007c70 <_Z15USART_SendValuef>:
+00007c70 <_Z16USART_send_valuef>:
     7c70:	60 93 39 1f 	sts	0x1F39, r22
     7c74:	70 93 3a 1f 	sts	0x1F3A, r23
     7c78:	80 93 3b 1f 	sts	0x1F3B, r24
     7c7c:	90 93 3c 1f 	sts	0x1F3C, r25
     7c80:	64 e0       	ldi	r22, 0x04	; 4
     7c82:	86 e5       	ldi	r24, 0x56	; 86
-    7c84:	74 cf       	rjmp	.-280    	; 0x7b6e <_Z16USART_SendPacketch>
+    7c84:	74 cf       	rjmp	.-280    	; 0x7b6e <_Z17USART_send_packetch>
 
-00007c86 <_Z14USART_SendGyrov>:
+00007c86 <_Z15USART_send_gyrov>:
     7c86:	cc db       	rcall	.-2152   	; 0x7420 <_Z9MPU_get_pv>
     7c88:	60 93 39 1f 	sts	0x1F39, r22
     7c8c:	70 93 3a 1f 	sts	0x1F3A, r23
@@ -14366,24 +14366,24 @@ ISR (USART1_RX_vect)
     7cb8:	90 93 44 1f 	sts	0x1F44, r25
     7cbc:	6c e0       	ldi	r22, 0x0C	; 12
     7cbe:	87 e4       	ldi	r24, 0x47	; 71
-    7cc0:	56 cf       	rjmp	.-340    	; 0x7b6e <_Z16USART_SendPacketch>
+    7cc0:	56 cf       	rjmp	.-340    	; 0x7b6e <_Z17USART_send_packetch>
 
 00007cc2 <_Z16USART_send_readyv>:
     7cc2:	60 e0       	ldi	r22, 0x00	; 0
     7cc4:	82 e5       	ldi	r24, 0x52	; 82
-    7cc6:	53 cf       	rjmp	.-346    	; 0x7b6e <_Z16USART_SendPacketch>
+    7cc6:	53 cf       	rjmp	.-346    	; 0x7b6e <_Z17USART_send_packetch>
 
 00007cc8 <_Z20USART_send_turn_donev>:
     7cc8:	60 e0       	ldi	r22, 0x00	; 0
     7cca:	84 e5       	ldi	r24, 0x54	; 84
-    7ccc:	50 cf       	rjmp	.-352    	; 0x7b6e <_Z16USART_SendPacketch>
+    7ccc:	50 cf       	rjmp	.-352    	; 0x7b6e <_Z17USART_send_packetch>
 
 00007cce <_Z21USART_send_climb_donev>:
     7cce:	60 e0       	ldi	r22, 0x00	; 0
     7cd0:	88 e4       	ldi	r24, 0x48	; 72
-    7cd2:	4d cf       	rjmp	.-358    	; 0x7b6e <_Z16USART_SendPacketch>
+    7cd2:	4d cf       	rjmp	.-358    	; 0x7b6e <_Z17USART_send_packetch>
 
-00007cd4 <_Z25USART_DecodeMessageRxFIFOv>:
+00007cd4 <_Z28USART_decode_message_rx_fifov>:
     7cd4:	0f 93       	push	r16
     7cd6:	1f 93       	push	r17
     7cd8:	cf 93       	push	r28
@@ -14394,12 +14394,12 @@ ISR (USART1_RX_vect)
     7ce4:	90 91 44 05 	lds	r25, 0x0544
     7ce8:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7cec:	81 11       	cpse	r24, r1
-    7cee:	17 c0       	rjmp	.+46     	; 0x7d1e <_Z25USART_DecodeMessageRxFIFOv+0x4a>
+    7cee:	17 c0       	rjmp	.+46     	; 0x7d1e <_Z28USART_decode_message_rx_fifov+0x4a>
     7cf0:	00 91 00 00 	lds	r16, 0x0000
     7cf4:	10 e0       	ldi	r17, 0x00	; 0
     7cf6:	10 16       	cp	r1, r16
     7cf8:	11 06       	cpc	r1, r17
-    7cfa:	9c f4       	brge	.+38     	; 0x7d22 <_Z25USART_DecodeMessageRxFIFOv+0x4e>
+    7cfa:	9c f4       	brge	.+38     	; 0x7d22 <_Z28USART_decode_message_rx_fifov+0x4e>
     7cfc:	c0 e0       	ldi	r28, 0x00	; 0
     7cfe:	d0 e0       	ldi	r29, 0x00	; 0
     7d00:	60 e0       	ldi	r22, 0x00	; 0
@@ -14408,16 +14408,16 @@ ISR (USART1_RX_vect)
     7d08:	90 91 44 05 	lds	r25, 0x0544
     7d0c:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7d10:	81 11       	cpse	r24, r1
-    7d12:	09 c0       	rjmp	.+18     	; 0x7d26 <_Z25USART_DecodeMessageRxFIFOv+0x52>
+    7d12:	09 c0       	rjmp	.+18     	; 0x7d26 <_Z28USART_decode_message_rx_fifov+0x52>
     7d14:	21 96       	adiw	r28, 0x01	; 1
     7d16:	c0 17       	cp	r28, r16
     7d18:	d1 07       	cpc	r29, r17
-    7d1a:	94 f3       	brlt	.-28     	; 0x7d00 <_Z25USART_DecodeMessageRxFIFOv+0x2c>
-    7d1c:	05 c0       	rjmp	.+10     	; 0x7d28 <_Z25USART_DecodeMessageRxFIFOv+0x54>
+    7d1a:	94 f3       	brlt	.-28     	; 0x7d00 <_Z28USART_decode_message_rx_fifov+0x2c>
+    7d1c:	05 c0       	rjmp	.+10     	; 0x7d28 <_Z28USART_decode_message_rx_fifov+0x54>
     7d1e:	81 e0       	ldi	r24, 0x01	; 1
-    7d20:	03 c0       	rjmp	.+6      	; 0x7d28 <_Z25USART_DecodeMessageRxFIFOv+0x54>
+    7d20:	03 c0       	rjmp	.+6      	; 0x7d28 <_Z28USART_decode_message_rx_fifov+0x54>
     7d22:	80 e0       	ldi	r24, 0x00	; 0
-    7d24:	01 c0       	rjmp	.+2      	; 0x7d28 <_Z25USART_DecodeMessageRxFIFOv+0x54>
+    7d24:	01 c0       	rjmp	.+2      	; 0x7d28 <_Z28USART_decode_message_rx_fifov+0x54>
     7d26:	81 e0       	ldi	r24, 0x01	; 1
     7d28:	df 91       	pop	r29
     7d2a:	cf 91       	pop	r28
@@ -14425,7 +14425,7 @@ ISR (USART1_RX_vect)
     7d2e:	0f 91       	pop	r16
     7d30:	08 95       	ret
 
-00007d32 <_Z25USART_DecodeCommandRxFIFOv>:
+00007d32 <_Z28USART_decode_command_rx_fifov>:
     7d32:	cf 93       	push	r28
     7d34:	df 93       	push	r29
     7d36:	60 e0       	ldi	r22, 0x00	; 0
@@ -14434,17 +14434,17 @@ ISR (USART1_RX_vect)
     7d3e:	90 91 44 05 	lds	r25, 0x0544
     7d42:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7d46:	81 11       	cpse	r24, r1
-    7d48:	34 c0       	rjmp	.+104    	; 0x7db2 <_Z25USART_DecodeCommandRxFIFOv+0x80>
+    7d48:	34 c0       	rjmp	.+104    	; 0x7db2 <_Z28USART_decode_command_rx_fifov+0x80>
     7d4a:	80 91 00 00 	lds	r24, 0x0000
     7d4e:	83 30       	cpi	r24, 0x03	; 3
-    7d50:	91 f5       	brne	.+100    	; 0x7db6 <_Z25USART_DecodeCommandRxFIFOv+0x84>
+    7d50:	91 f5       	brne	.+100    	; 0x7db6 <_Z28USART_decode_command_rx_fifov+0x84>
     7d52:	60 e0       	ldi	r22, 0x00	; 0
     7d54:	70 e0       	ldi	r23, 0x00	; 0
     7d56:	80 91 43 05 	lds	r24, 0x0543
     7d5a:	90 91 44 05 	lds	r25, 0x0544
     7d5e:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7d62:	81 11       	cpse	r24, r1
-    7d64:	2a c0       	rjmp	.+84     	; 0x7dba <_Z25USART_DecodeCommandRxFIFOv+0x88>
+    7d64:	2a c0       	rjmp	.+84     	; 0x7dba <_Z28USART_decode_command_rx_fifov+0x88>
     7d66:	c0 91 00 00 	lds	r28, 0x0000
     7d6a:	60 e0       	ldi	r22, 0x00	; 0
     7d6c:	70 e0       	ldi	r23, 0x00	; 0
@@ -14452,7 +14452,7 @@ ISR (USART1_RX_vect)
     7d72:	90 91 44 05 	lds	r25, 0x0544
     7d76:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7d7a:	81 11       	cpse	r24, r1
-    7d7c:	20 c0       	rjmp	.+64     	; 0x7dbe <_Z25USART_DecodeCommandRxFIFOv+0x8c>
+    7d7c:	20 c0       	rjmp	.+64     	; 0x7dbe <_Z28USART_decode_command_rx_fifov+0x8c>
     7d7e:	d0 91 00 00 	lds	r29, 0x0000
     7d82:	60 e0       	ldi	r22, 0x00	; 0
     7d84:	70 e0       	ldi	r23, 0x00	; 0
@@ -14460,7 +14460,7 @@ ISR (USART1_RX_vect)
     7d8a:	90 91 44 05 	lds	r25, 0x0544
     7d8e:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7d92:	81 11       	cpse	r24, r1
-    7d94:	16 c0       	rjmp	.+44     	; 0x7dc2 <_Z25USART_DecodeCommandRxFIFOv+0x90>
+    7d94:	16 c0       	rjmp	.+44     	; 0x7dc2 <_Z28USART_decode_command_rx_fifov+0x90>
     7d96:	80 91 00 00 	lds	r24, 0x0000
     7d9a:	80 93 2a 1b 	sts	0x1B2A, r24
     7d9e:	c0 93 29 1b 	sts	0x1B29, r28
@@ -14470,21 +14470,21 @@ ISR (USART1_RX_vect)
     7daa:	89 27       	eor	r24, r25
     7dac:	88 b9       	out	0x08, r24	; 8
     7dae:	80 e0       	ldi	r24, 0x00	; 0
-    7db0:	09 c0       	rjmp	.+18     	; 0x7dc4 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    7db0:	09 c0       	rjmp	.+18     	; 0x7dc4 <_Z28USART_decode_command_rx_fifov+0x92>
     7db2:	81 e0       	ldi	r24, 0x01	; 1
-    7db4:	07 c0       	rjmp	.+14     	; 0x7dc4 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    7db4:	07 c0       	rjmp	.+14     	; 0x7dc4 <_Z28USART_decode_command_rx_fifov+0x92>
     7db6:	81 e0       	ldi	r24, 0x01	; 1
-    7db8:	05 c0       	rjmp	.+10     	; 0x7dc4 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    7db8:	05 c0       	rjmp	.+10     	; 0x7dc4 <_Z28USART_decode_command_rx_fifov+0x92>
     7dba:	81 e0       	ldi	r24, 0x01	; 1
-    7dbc:	03 c0       	rjmp	.+6      	; 0x7dc4 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    7dbc:	03 c0       	rjmp	.+6      	; 0x7dc4 <_Z28USART_decode_command_rx_fifov+0x92>
     7dbe:	81 e0       	ldi	r24, 0x01	; 1
-    7dc0:	01 c0       	rjmp	.+2      	; 0x7dc4 <_Z25USART_DecodeCommandRxFIFOv+0x92>
+    7dc0:	01 c0       	rjmp	.+2      	; 0x7dc4 <_Z28USART_decode_command_rx_fifov+0x92>
     7dc2:	81 e0       	ldi	r24, 0x01	; 1
     7dc4:	df 91       	pop	r29
     7dc6:	cf 91       	pop	r28
     7dc8:	08 95       	ret
 
-00007dca <_Z27USART_DecodeElevationRxFIFOv>:
+00007dca <_Z30USART_decode_elevation_rx_fifov>:
     7dca:	cf 92       	push	r12
     7dcc:	df 92       	push	r13
     7dce:	ef 92       	push	r14
@@ -14495,21 +14495,21 @@ ISR (USART1_RX_vect)
     7dda:	90 91 44 05 	lds	r25, 0x0544
     7dde:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7de2:	81 11       	cpse	r24, r1
-    7de4:	60 c0       	rjmp	.+192    	; 0x7ea6 <_Z27USART_DecodeElevationRxFIFOv+0xdc>
+    7de4:	60 c0       	rjmp	.+192    	; 0x7ea6 <_Z30USART_decode_elevation_rx_fifov+0xdc>
     7de6:	80 91 00 00 	lds	r24, 0x0000
     7dea:	81 30       	cpi	r24, 0x01	; 1
-    7dec:	09 f0       	breq	.+2      	; 0x7df0 <_Z27USART_DecodeElevationRxFIFOv+0x26>
-    7dee:	5d c0       	rjmp	.+186    	; 0x7eaa <_Z27USART_DecodeElevationRxFIFOv+0xe0>
+    7dec:	09 f0       	breq	.+2      	; 0x7df0 <_Z30USART_decode_elevation_rx_fifov+0x26>
+    7dee:	5d c0       	rjmp	.+186    	; 0x7eaa <_Z30USART_decode_elevation_rx_fifov+0xe0>
     7df0:	60 e0       	ldi	r22, 0x00	; 0
     7df2:	70 e0       	ldi	r23, 0x00	; 0
     7df4:	80 91 43 05 	lds	r24, 0x0543
     7df8:	90 91 44 05 	lds	r25, 0x0544
     7dfc:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7e00:	81 11       	cpse	r24, r1
-    7e02:	55 c0       	rjmp	.+170    	; 0x7eae <_Z27USART_DecodeElevationRxFIFOv+0xe4>
+    7e02:	55 c0       	rjmp	.+170    	; 0x7eae <_Z30USART_decode_elevation_rx_fifov+0xe4>
     7e04:	80 91 00 00 	lds	r24, 0x0000
     7e08:	81 30       	cpi	r24, 0x01	; 1
-    7e0a:	31 f5       	brne	.+76     	; 0x7e58 <_Z27USART_DecodeElevationRxFIFOv+0x8e>
+    7e0a:	31 f5       	brne	.+76     	; 0x7e58 <_Z30USART_decode_elevation_rx_fifov+0x8e>
     7e0c:	c0 90 4b 15 	lds	r12, 0x154B
     7e10:	d0 90 4c 15 	lds	r13, 0x154C
     7e14:	e0 90 4d 15 	lds	r14, 0x154D
@@ -14522,8 +14522,8 @@ ISR (USART1_RX_vect)
     7e26:	b6 01       	movw	r22, r12
     7e28:	be d4       	rcall	.+2428   	; 0x87a6 <__gesf2>
     7e2a:	18 16       	cp	r1, r24
-    7e2c:	0c f0       	brlt	.+2      	; 0x7e30 <_Z27USART_DecodeElevationRxFIFOv+0x66>
-    7e2e:	41 c0       	rjmp	.+130    	; 0x7eb2 <_Z27USART_DecodeElevationRxFIFOv+0xe8>
+    7e2c:	0c f0       	brlt	.+2      	; 0x7e30 <_Z30USART_decode_elevation_rx_fifov+0x66>
+    7e2e:	41 c0       	rjmp	.+130    	; 0x7eb2 <_Z30USART_decode_elevation_rx_fifov+0xe8>
     7e30:	20 e0       	ldi	r18, 0x00	; 0
     7e32:	30 e0       	ldi	r19, 0x00	; 0
     7e34:	40 ea       	ldi	r20, 0xA0	; 160
@@ -14538,9 +14538,9 @@ ISR (USART1_RX_vect)
     7e4e:	81 e0       	ldi	r24, 0x01	; 1
     7e50:	80 93 24 1b 	sts	0x1B24, r24
     7e54:	80 e0       	ldi	r24, 0x00	; 0
-    7e56:	32 c0       	rjmp	.+100    	; 0x7ebc <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7e56:	32 c0       	rjmp	.+100    	; 0x7ebc <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7e58:	81 11       	cpse	r24, r1
-    7e5a:	2d c0       	rjmp	.+90     	; 0x7eb6 <_Z27USART_DecodeElevationRxFIFOv+0xec>
+    7e5a:	2d c0       	rjmp	.+90     	; 0x7eb6 <_Z30USART_decode_elevation_rx_fifov+0xec>
     7e5c:	c0 90 4b 15 	lds	r12, 0x154B
     7e60:	d0 90 4c 15 	lds	r13, 0x154C
     7e64:	e0 90 4d 15 	lds	r14, 0x154D
@@ -14553,7 +14553,7 @@ ISR (USART1_RX_vect)
     7e76:	b6 01       	movw	r22, r12
     7e78:	3f d2       	rcall	.+1150   	; 0x82f8 <__cmpsf2>
     7e7a:	88 23       	and	r24, r24
-    7e7c:	f4 f4       	brge	.+60     	; 0x7eba <_Z27USART_DecodeElevationRxFIFOv+0xf0>
+    7e7c:	f4 f4       	brge	.+60     	; 0x7eba <_Z30USART_decode_elevation_rx_fifov+0xf0>
     7e7e:	20 e0       	ldi	r18, 0x00	; 0
     7e80:	30 e0       	ldi	r19, 0x00	; 0
     7e82:	40 ea       	ldi	r20, 0xA0	; 160
@@ -14568,17 +14568,17 @@ ISR (USART1_RX_vect)
     7e9c:	81 e0       	ldi	r24, 0x01	; 1
     7e9e:	80 93 24 1b 	sts	0x1B24, r24
     7ea2:	80 e0       	ldi	r24, 0x00	; 0
-    7ea4:	0b c0       	rjmp	.+22     	; 0x7ebc <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7ea4:	0b c0       	rjmp	.+22     	; 0x7ebc <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7ea6:	81 e0       	ldi	r24, 0x01	; 1
-    7ea8:	09 c0       	rjmp	.+18     	; 0x7ebc <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7ea8:	09 c0       	rjmp	.+18     	; 0x7ebc <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7eaa:	81 e0       	ldi	r24, 0x01	; 1
-    7eac:	07 c0       	rjmp	.+14     	; 0x7ebc <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7eac:	07 c0       	rjmp	.+14     	; 0x7ebc <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7eae:	81 e0       	ldi	r24, 0x01	; 1
-    7eb0:	05 c0       	rjmp	.+10     	; 0x7ebc <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7eb0:	05 c0       	rjmp	.+10     	; 0x7ebc <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7eb2:	80 e0       	ldi	r24, 0x00	; 0
-    7eb4:	03 c0       	rjmp	.+6      	; 0x7ebc <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7eb4:	03 c0       	rjmp	.+6      	; 0x7ebc <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7eb6:	80 e0       	ldi	r24, 0x00	; 0
-    7eb8:	01 c0       	rjmp	.+2      	; 0x7ebc <_Z27USART_DecodeElevationRxFIFOv+0xf2>
+    7eb8:	01 c0       	rjmp	.+2      	; 0x7ebc <_Z30USART_decode_elevation_rx_fifov+0xf2>
     7eba:	80 e0       	ldi	r24, 0x00	; 0
     7ebc:	ff 90       	pop	r15
     7ebe:	ef 90       	pop	r14
@@ -14586,7 +14586,7 @@ ISR (USART1_RX_vect)
     7ec2:	cf 90       	pop	r12
     7ec4:	08 95       	ret
 
-00007ec6 <_Z22USART_DecodeTurnRxFIFOv>:
+00007ec6 <_Z25USART_decode_turn_rx_fifov>:
     7ec6:	cf 93       	push	r28
     7ec8:	df 93       	push	r29
     7eca:	60 e0       	ldi	r22, 0x00	; 0
@@ -14595,17 +14595,17 @@ ISR (USART1_RX_vect)
     7ed2:	90 91 44 05 	lds	r25, 0x0544
     7ed6:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7eda:	81 11       	cpse	r24, r1
-    7edc:	3d c0       	rjmp	.+122    	; 0x7f58 <_Z22USART_DecodeTurnRxFIFOv+0x92>
+    7edc:	3d c0       	rjmp	.+122    	; 0x7f58 <_Z25USART_decode_turn_rx_fifov+0x92>
     7ede:	80 91 00 00 	lds	r24, 0x0000
     7ee2:	83 30       	cpi	r24, 0x03	; 3
-    7ee4:	d9 f5       	brne	.+118    	; 0x7f5c <_Z22USART_DecodeTurnRxFIFOv+0x96>
+    7ee4:	d9 f5       	brne	.+118    	; 0x7f5c <_Z25USART_decode_turn_rx_fifov+0x96>
     7ee6:	60 e0       	ldi	r22, 0x00	; 0
     7ee8:	70 e0       	ldi	r23, 0x00	; 0
     7eea:	80 91 43 05 	lds	r24, 0x0543
     7eee:	90 91 44 05 	lds	r25, 0x0544
     7ef2:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7ef6:	81 11       	cpse	r24, r1
-    7ef8:	33 c0       	rjmp	.+102    	; 0x7f60 <_Z22USART_DecodeTurnRxFIFOv+0x9a>
+    7ef8:	33 c0       	rjmp	.+102    	; 0x7f60 <_Z25USART_decode_turn_rx_fifov+0x9a>
     7efa:	c0 91 00 00 	lds	r28, 0x0000
     7efe:	60 e0       	ldi	r22, 0x00	; 0
     7f00:	70 e0       	ldi	r23, 0x00	; 0
@@ -14613,7 +14613,7 @@ ISR (USART1_RX_vect)
     7f06:	90 91 44 05 	lds	r25, 0x0544
     7f0a:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7f0e:	81 11       	cpse	r24, r1
-    7f10:	29 c0       	rjmp	.+82     	; 0x7f64 <_Z22USART_DecodeTurnRxFIFOv+0x9e>
+    7f10:	29 c0       	rjmp	.+82     	; 0x7f64 <_Z25USART_decode_turn_rx_fifov+0x9e>
     7f12:	d0 91 00 00 	lds	r29, 0x0000
     7f16:	60 e0       	ldi	r22, 0x00	; 0
     7f18:	70 e0       	ldi	r23, 0x00	; 0
@@ -14621,7 +14621,7 @@ ISR (USART1_RX_vect)
     7f1e:	90 91 44 05 	lds	r25, 0x0544
     7f22:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7f26:	81 11       	cpse	r24, r1
-    7f28:	1f c0       	rjmp	.+62     	; 0x7f68 <_Z22USART_DecodeTurnRxFIFOv+0xa2>
+    7f28:	1f c0       	rjmp	.+62     	; 0x7f68 <_Z25USART_decode_turn_rx_fifov+0xa2>
     7f2a:	20 91 00 00 	lds	r18, 0x0000
     7f2e:	9c 2f       	mov	r25, r28
     7f30:	80 e0       	ldi	r24, 0x00	; 0
@@ -14629,40 +14629,40 @@ ISR (USART1_RX_vect)
     7f34:	90 93 28 1b 	sts	0x1B28, r25
     7f38:	80 93 27 1b 	sts	0x1B27, r24
     7f3c:	21 11       	cpse	r18, r1
-    7f3e:	04 c0       	rjmp	.+8      	; 0x7f48 <_Z22USART_DecodeTurnRxFIFOv+0x82>
+    7f3e:	04 c0       	rjmp	.+8      	; 0x7f48 <_Z25USART_decode_turn_rx_fifov+0x82>
     7f40:	8f ef       	ldi	r24, 0xFF	; 255
     7f42:	80 93 4f 15 	sts	0x154F, r24
-    7f46:	03 c0       	rjmp	.+6      	; 0x7f4e <_Z22USART_DecodeTurnRxFIFOv+0x88>
+    7f46:	03 c0       	rjmp	.+6      	; 0x7f4e <_Z25USART_decode_turn_rx_fifov+0x88>
     7f48:	81 e0       	ldi	r24, 0x01	; 1
     7f4a:	80 93 4f 15 	sts	0x154F, r24
     7f4e:	81 e0       	ldi	r24, 0x01	; 1
     7f50:	80 93 26 1b 	sts	0x1B26, r24
     7f54:	80 e0       	ldi	r24, 0x00	; 0
-    7f56:	09 c0       	rjmp	.+18     	; 0x7f6a <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    7f56:	09 c0       	rjmp	.+18     	; 0x7f6a <_Z25USART_decode_turn_rx_fifov+0xa4>
     7f58:	81 e0       	ldi	r24, 0x01	; 1
-    7f5a:	07 c0       	rjmp	.+14     	; 0x7f6a <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    7f5a:	07 c0       	rjmp	.+14     	; 0x7f6a <_Z25USART_decode_turn_rx_fifov+0xa4>
     7f5c:	81 e0       	ldi	r24, 0x01	; 1
-    7f5e:	05 c0       	rjmp	.+10     	; 0x7f6a <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    7f5e:	05 c0       	rjmp	.+10     	; 0x7f6a <_Z25USART_decode_turn_rx_fifov+0xa4>
     7f60:	81 e0       	ldi	r24, 0x01	; 1
-    7f62:	03 c0       	rjmp	.+6      	; 0x7f6a <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    7f62:	03 c0       	rjmp	.+6      	; 0x7f6a <_Z25USART_decode_turn_rx_fifov+0xa4>
     7f64:	81 e0       	ldi	r24, 0x01	; 1
-    7f66:	01 c0       	rjmp	.+2      	; 0x7f6a <_Z22USART_DecodeTurnRxFIFOv+0xa4>
+    7f66:	01 c0       	rjmp	.+2      	; 0x7f6a <_Z25USART_decode_turn_rx_fifov+0xa4>
     7f68:	81 e0       	ldi	r24, 0x01	; 1
     7f6a:	df 91       	pop	r29
     7f6c:	cf 91       	pop	r28
     7f6e:	08 95       	ret
 
-00007f70 <_Z23USART_DecodeClimbRxFIFOv>:
+00007f70 <_Z26USART_decode_climb_rx_fifov>:
     7f70:	60 e0       	ldi	r22, 0x00	; 0
     7f72:	70 e0       	ldi	r23, 0x00	; 0
     7f74:	80 91 43 05 	lds	r24, 0x0543
     7f78:	90 91 44 05 	lds	r25, 0x0544
     7f7c:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7f80:	81 11       	cpse	r24, r1
-    7f82:	09 c0       	rjmp	.+18     	; 0x7f96 <_Z23USART_DecodeClimbRxFIFOv+0x26>
+    7f82:	09 c0       	rjmp	.+18     	; 0x7f96 <_Z26USART_decode_climb_rx_fifov+0x26>
     7f84:	80 91 00 00 	lds	r24, 0x0000
     7f88:	81 11       	cpse	r24, r1
-    7f8a:	07 c0       	rjmp	.+14     	; 0x7f9a <_Z23USART_DecodeClimbRxFIFOv+0x2a>
+    7f8a:	07 c0       	rjmp	.+14     	; 0x7f9a <_Z26USART_decode_climb_rx_fifov+0x2a>
     7f8c:	81 e0       	ldi	r24, 0x01	; 1
     7f8e:	80 93 25 1b 	sts	0x1B25, r24
     7f92:	80 e0       	ldi	r24, 0x00	; 0
@@ -14672,52 +14672,52 @@ ISR (USART1_RX_vect)
     7f9a:	81 e0       	ldi	r24, 0x01	; 1
     7f9c:	08 95       	ret
 
-00007f9e <_Z18USART_DecodeRxFIFOv>:
-    7f9e:	26 c0       	rjmp	.+76     	; 0x7fec <_Z18USART_DecodeRxFIFOv+0x4e>
+00007f9e <_Z20USART_decode_rx_fifov>:
+    7f9e:	26 c0       	rjmp	.+76     	; 0x7fec <_Z20USART_decode_rx_fifov+0x4e>
     7fa0:	80 91 00 00 	lds	r24, 0x0000
     7fa4:	87 34       	cpi	r24, 0x47	; 71
-    7fa6:	c9 f0       	breq	.+50     	; 0x7fda <_Z18USART_DecodeRxFIFOv+0x3c>
-    7fa8:	28 f4       	brcc	.+10     	; 0x7fb4 <_Z18USART_DecodeRxFIFOv+0x16>
+    7fa6:	c9 f0       	breq	.+50     	; 0x7fda <_Z20USART_decode_rx_fifov+0x3c>
+    7fa8:	28 f4       	brcc	.+10     	; 0x7fb4 <_Z20USART_decode_rx_fifov+0x16>
     7faa:	83 34       	cpi	r24, 0x43	; 67
-    7fac:	71 f0       	breq	.+28     	; 0x7fca <_Z18USART_DecodeRxFIFOv+0x2c>
+    7fac:	71 f0       	breq	.+28     	; 0x7fca <_Z20USART_decode_rx_fifov+0x2c>
     7fae:	85 34       	cpi	r24, 0x45	; 69
-    7fb0:	e9 f4       	brne	.+58     	; 0x7fec <_Z18USART_DecodeRxFIFOv+0x4e>
-    7fb2:	0f c0       	rjmp	.+30     	; 0x7fd2 <_Z18USART_DecodeRxFIFOv+0x34>
+    7fb0:	e9 f4       	brne	.+58     	; 0x7fec <_Z20USART_decode_rx_fifov+0x4e>
+    7fb2:	0f c0       	rjmp	.+30     	; 0x7fd2 <_Z20USART_decode_rx_fifov+0x34>
     7fb4:	8d 34       	cpi	r24, 0x4D	; 77
-    7fb6:	29 f0       	breq	.+10     	; 0x7fc2 <_Z18USART_DecodeRxFIFOv+0x24>
+    7fb6:	29 f0       	breq	.+10     	; 0x7fc2 <_Z20USART_decode_rx_fifov+0x24>
     7fb8:	84 35       	cpi	r24, 0x54	; 84
-    7fba:	89 f0       	breq	.+34     	; 0x7fde <_Z18USART_DecodeRxFIFOv+0x40>
+    7fba:	89 f0       	breq	.+34     	; 0x7fde <_Z20USART_decode_rx_fifov+0x40>
     7fbc:	88 34       	cpi	r24, 0x48	; 72
-    7fbe:	b1 f4       	brne	.+44     	; 0x7fec <_Z18USART_DecodeRxFIFOv+0x4e>
-    7fc0:	12 c0       	rjmp	.+36     	; 0x7fe6 <_Z18USART_DecodeRxFIFOv+0x48>
-    7fc2:	88 de       	rcall	.-752    	; 0x7cd4 <_Z25USART_DecodeMessageRxFIFOv>
+    7fbe:	b1 f4       	brne	.+44     	; 0x7fec <_Z20USART_decode_rx_fifov+0x4e>
+    7fc0:	12 c0       	rjmp	.+36     	; 0x7fe6 <_Z20USART_decode_rx_fifov+0x48>
+    7fc2:	88 de       	rcall	.-752    	; 0x7cd4 <_Z28USART_decode_message_rx_fifov>
     7fc4:	88 23       	and	r24, r24
-    7fc6:	91 f0       	breq	.+36     	; 0x7fec <_Z18USART_DecodeRxFIFOv+0x4e>
+    7fc6:	91 f0       	breq	.+36     	; 0x7fec <_Z20USART_decode_rx_fifov+0x4e>
     7fc8:	08 95       	ret
-    7fca:	b3 de       	rcall	.-666    	; 0x7d32 <_Z25USART_DecodeCommandRxFIFOv>
+    7fca:	b3 de       	rcall	.-666    	; 0x7d32 <_Z28USART_decode_command_rx_fifov>
     7fcc:	88 23       	and	r24, r24
-    7fce:	71 f0       	breq	.+28     	; 0x7fec <_Z18USART_DecodeRxFIFOv+0x4e>
+    7fce:	71 f0       	breq	.+28     	; 0x7fec <_Z20USART_decode_rx_fifov+0x4e>
     7fd0:	08 95       	ret
-    7fd2:	fb de       	rcall	.-522    	; 0x7dca <_Z27USART_DecodeElevationRxFIFOv>
+    7fd2:	fb de       	rcall	.-522    	; 0x7dca <_Z30USART_decode_elevation_rx_fifov>
     7fd4:	88 23       	and	r24, r24
-    7fd6:	51 f0       	breq	.+20     	; 0x7fec <_Z18USART_DecodeRxFIFOv+0x4e>
+    7fd6:	51 f0       	breq	.+20     	; 0x7fec <_Z20USART_decode_rx_fifov+0x4e>
     7fd8:	08 95       	ret
-    7fda:	55 de       	rcall	.-854    	; 0x7c86 <_Z14USART_SendGyrov>
-    7fdc:	07 c0       	rjmp	.+14     	; 0x7fec <_Z18USART_DecodeRxFIFOv+0x4e>
-    7fde:	73 df       	rcall	.-282    	; 0x7ec6 <_Z22USART_DecodeTurnRxFIFOv>
+    7fda:	55 de       	rcall	.-854    	; 0x7c86 <_Z15USART_send_gyrov>
+    7fdc:	07 c0       	rjmp	.+14     	; 0x7fec <_Z20USART_decode_rx_fifov+0x4e>
+    7fde:	73 df       	rcall	.-282    	; 0x7ec6 <_Z25USART_decode_turn_rx_fifov>
     7fe0:	88 23       	and	r24, r24
-    7fe2:	21 f0       	breq	.+8      	; 0x7fec <_Z18USART_DecodeRxFIFOv+0x4e>
+    7fe2:	21 f0       	breq	.+8      	; 0x7fec <_Z20USART_decode_rx_fifov+0x4e>
     7fe4:	08 95       	ret
-    7fe6:	c4 df       	rcall	.-120    	; 0x7f70 <_Z23USART_DecodeClimbRxFIFOv>
+    7fe6:	c4 df       	rcall	.-120    	; 0x7f70 <_Z26USART_decode_climb_rx_fifov>
     7fe8:	81 11       	cpse	r24, r1
-    7fea:	0a c0       	rjmp	.+20     	; 0x8000 <_Z18USART_DecodeRxFIFOv+0x62>
+    7fea:	0a c0       	rjmp	.+20     	; 0x8000 <_Z20USART_decode_rx_fifov+0x62>
     7fec:	60 e0       	ldi	r22, 0x00	; 0
     7fee:	70 e0       	ldi	r23, 0x00	; 0
     7ff0:	80 91 43 05 	lds	r24, 0x0543
     7ff4:	90 91 44 05 	lds	r25, 0x0544
     7ff8:	0e 94 90 05 	call	0xb20	; 0xb20 <_Z8FifoReadP4fifoPh>
     7ffc:	88 23       	and	r24, r24
-    7ffe:	81 f2       	breq	.-96     	; 0x7fa0 <_Z18USART_DecodeRxFIFOv+0x2>
+    7ffe:	81 f2       	breq	.-96     	; 0x7fa0 <_Z20USART_decode_rx_fifov+0x2>
     8000:	08 95       	ret
 
 00008002 <_Z20USART_elevation_flagv>:

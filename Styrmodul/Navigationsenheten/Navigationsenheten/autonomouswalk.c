@@ -66,10 +66,10 @@ void turn_left()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}*/
-	USART_SendTurn(90, 0);
+	USART_send_turn(90, 0);
 	while(USART_turn_done() == 0)
 	{
-		USART_DecodeRxFIFO();
+		USART_decode_rx_fifo();
 		_delay_ms(10);
 	}
 	
@@ -98,10 +98,10 @@ void turn_right()
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}*/
-	USART_SendTurn(90, 1);
+	USART_send_turn(90, 1);
 	while(USART_turn_done() == 0)
 	{
-		USART_DecodeRxFIFO();
+		USART_decode_rx_fifo();
 		_delay_ms(10);
 	}
 	
@@ -130,10 +130,10 @@ void turn_around()
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
 	}*/
-	USART_SendTurn(180, 0);
+	USART_send_turn(180, 0);
 	while(USART_turn_done() == 0)
 	{
-		USART_DecodeRxFIFO();
+		USART_decode_rx_fifo();
 		_delay_ms(10);
 	}
 	
@@ -177,7 +177,7 @@ void walk_forward()
 
 void climb()
 {
-	USART_SendClimb();	
+	USART_send_climb();	
 }
 
 void autonomouswalk_walk()
@@ -201,7 +201,7 @@ void autonomouswalk_walk()
 				climb();
 				while(USART_climb_done() == 0)
 				{
-					USART_DecodeRxFIFO();
+					USART_decode_rx_fifo();
 					_delay_ms(10);
 				}
 			}
@@ -251,7 +251,7 @@ void autonomouswalk_walk()
 				climb();
 				while(USART_climb_done() == 0)
 				{
-					USART_DecodeRxFIFO();
+					USART_decode_rx_fifo();
 					_delay_ms(10);
 				}
 			}

@@ -303,7 +303,7 @@ void SERVO_update_data(uint8_t ID)
 				
 				if(!(*data == ID))
 				{
-					USART_SendMessage("ServoError: 2");
+					USART_send_message("ServoError: 2");
 					while(!(FifoRead(gServoRxFIFO, data))); //flush buffer
 				}
 				
@@ -365,7 +365,7 @@ void SERVO_update_data(uint8_t ID)
 	// if there is stuff left in buffer
 	if(!(FifoRead(gServoRxFIFO, data)))
 	{
-		USART_SendMessage("ServoError: 3");
+		USART_send_message("ServoError: 3");
 		while(!(FifoRead(gServoRxFIFO, data))); //flush buffer
 	}
 	
@@ -433,7 +433,7 @@ ISR (USART1_RX_vect)
 	data = UDR1;
 	if(FifoWrite(gServoRxFIFO, data))
 	{
-		USART_SendMessage("ServoError: 1");
+		USART_send_message("ServoError: 1");
 	}
 }
 
