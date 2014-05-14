@@ -878,6 +878,7 @@ void climb()
 			height_change_leg6(obstacle_height);
 			leg6.climbing = 4;
 			leg6.newPosz = obstacle_height;
+			leg6.on_obstacle = 1;
 		}
 		else if (leg1.lift != 1 && climb_step == 0 && obstacle_height == z_in_use)
 		{
@@ -890,12 +891,14 @@ void climb()
 			height_change_leg1(obstacle_height);
 			leg1.climbing = 4;
 			leg1.newPosz = obstacle_height;
+			leg1.on_obstacle = 1;
 		}
 		else if (leg2.lift != 1 && climb_step == 1 && leg5.newPosz == obstacle_height)
 		{
 			height_change_leg2(obstacle_height);
 			leg2.climbing = 4;
 			leg2.newPosz = obstacle_height;
+			leg2.on_obstacle = 1;
 		}
 		else if (leg2.lift != 1 && climb_step == 1) // Leg5 has not found the obstacle.
 		{
@@ -907,6 +910,7 @@ void climb()
 			height_change_leg5(obstacle_height);
 			leg5.climbing = 4;
 			leg5.newPosz = obstacle_height;
+			leg5.on_obstacle = 1;
 		}
 		else if (leg5.lift != 1 && climb_step == 1)
 		{
@@ -930,6 +934,7 @@ void climb()
 			height_change_leg4(obstacle_height);
 			leg4.climbing = 4;
 			leg4.newPosz = obstacle_height;
+			leg4.on_obstacle = 1;
 		}
 		else if (leg4.lift != 1 && climb_step == 2)
 		{
@@ -942,6 +947,7 @@ void climb()
 			height_change_leg3(obstacle_height);
 			leg3.climbing = 4;
 			leg3.newPosz = obstacle_height;
+			leg3.on_obstacle = 1;
 		}
 		else if (leg3.lift != 1 && climb_step == 2)
 		{
@@ -956,6 +962,7 @@ void climb()
 			leg1.climbing = 2;
 			leg1.newPosz = z_in_use;
 			height_change_leg1(z_in_use);
+			leg1.on_obstacle = 0;
 		}
 		else if (leg1.lift != 1 && climb_step2 == 1)
 		{
@@ -967,6 +974,7 @@ void climb()
 			leg6.climbing = 2;
 			leg6.newPosz = z_in_use;
 			height_change_leg6(z_in_use);
+			leg6.on_obstacle = 0;
 		}
 		else if (leg6.lift != 1 && climb_step2 == 1)
 		{
@@ -978,6 +986,7 @@ void climb()
 			leg2.climbing = 2;
 			leg2.newPosz = z_in_use;
 			height_change_leg2(z_in_use);
+			leg2.on_obstacle = 0;
 		}
 		else if (leg2.lift != 1 && climb_step2 == 2)
 		{
@@ -989,6 +998,7 @@ void climb()
 			leg5.climbing = 2;
 			leg5.newPosz = z_in_use;
 			height_change_leg5(z_in_use);
+			leg5.on_obstacle = 0;
 		}
 		else if (leg5.lift != 1 && climb_step2 == 2)
 		{
@@ -1000,6 +1010,7 @@ void climb()
 			leg4.climbing = 2;
 			leg4.newPosz = z_in_use;
 			height_change_leg4(z_in_use);
+			leg4.on_obstacle = 0;
 		}
 		else if (leg4.lift != 1 && climb_step2 == 3)
 		{
@@ -1011,6 +1022,7 @@ void climb()
 			leg3.climbing = 2;
 			leg3.newPosz = z_in_use;
 			height_change_leg3(z_in_use);
+			leg3.on_obstacle = 0;
 		}
 		else if (leg3.lift != 1 && climb_step2 == 3)
 		{
@@ -1102,6 +1114,8 @@ void climb()
 		rotation_flag = 0;
 	}
 	//take another step for good measure
+	move_robot(0,50,100);
+	wait(30);
 	move_robot(0,50,100);
 }
 

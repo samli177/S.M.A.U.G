@@ -299,6 +299,11 @@ void USART_send_turn_done()
 	USART_SendPacket('T', 0);
 }
 
+void USART_send_climb_done()
+{
+	USART_SendPacket('H', 0);
+}
+
 uint8_t USART_DecodeMessageRxFIFO()
 {
 	uint8_t *len = 0;
