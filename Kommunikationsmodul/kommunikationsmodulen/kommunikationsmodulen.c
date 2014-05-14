@@ -45,6 +45,10 @@ int main(void)
 		{
 			USART_send_sensors();
 		}
+		if(TWI_autonom_settings_flag())
+		{
+			USART_send_autonom(TWI_get_autonom_settings());
+		}
 		decode_message_TwiFIFO();
 		
 		// TODO: put this on timer

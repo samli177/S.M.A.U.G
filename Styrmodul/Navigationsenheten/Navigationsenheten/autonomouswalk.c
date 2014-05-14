@@ -18,10 +18,11 @@
 #define MAX_ROTATION_COUNTER_CLOCKWISE 30
 #define MAX_ROTATION_RADIANS 0.52
 #define STEPPING_TIME 400
-#define TURN_EXIT_ITTERATIONS 12
-#define TURN_ENTRY_ITTERATIONS 4
+#define TURN_EXIT_ITTERATIONS 6
+#define TURN_ENTRY_ITTERATIONS_RIGHT 2
+#define TURN_ENTRY_ITTERATIONS_LEFT 2
 //Variable for the speed parameter in movement commands. 
-uint8_t gSpeed = 50;
+uint8_t gSpeed = 90;
 
 //Variable to decide if status messages are to be
 //sent back to the PC.
@@ -187,7 +188,7 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_left_turn() == 2)
 		{
-			for(int i = 0;i < 4; ++i)
+			for(int i = 0;i < TURN_ENTRY_ITTERATIONS_LEFT; ++i)
 			{
 				walk_forward();
 			}
@@ -237,7 +238,7 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			for(int i = 0;i < 4; ++i)
+			for(int i = 0;i < TURN_ENTRY_ITTERATIONS_RIGHT; ++i)
 			{
 				walk_forward();
 			}

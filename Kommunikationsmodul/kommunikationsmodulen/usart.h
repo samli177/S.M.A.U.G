@@ -100,6 +100,15 @@ void USART_send_value(uint8_t msg[]);
  */
 void USART_send_sensors();
 
+
+/**
+ * \brief 
+ *  Transmits the autonom settings of the robot.
+ * \param settings
+ *  The settings to be transmitted
+ * \return void
+ */
+void USART_send_autonom(uint8_t settings);
 /**
  * \brief 
  * Decodes received packets from USART fifo-ring-buffer

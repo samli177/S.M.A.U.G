@@ -21,6 +21,8 @@
 #include "LED.h"
 
 #define sensorBufferSize 5
+#define RIGHT_SIDE_OFFSET 5
+#define LEFT_SIDE_OFFSET 5
 
 // 0 means use a right side algorithm.
 // 1 means use a left side algorithm.
@@ -217,22 +219,22 @@ float navigation_direction_regulation(float angleOffset)
 	{
 		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
 		{
-			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
+			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE - LEFT_SIDE_OFFSET) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
 		}
 		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
 		{
-			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
+			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE - RIGHT_SIDE_OFFSET) * cosf(angleOffset);
 		}
 	}
 	else 
 	{
 		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
 		{
-			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset);
+			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE - RIGHT_SIDE_OFFSET) * cosf(angleOffset);
 		}
 		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
 		{
-			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
+			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE - LEFT_SIDE_OFFSET) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
 		}
 	}
 	
