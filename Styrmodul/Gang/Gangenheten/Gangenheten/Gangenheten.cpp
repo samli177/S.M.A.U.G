@@ -15,6 +15,12 @@
 uint8_t std_pos_flag = 1;
 uint8_t move_to_std_flag = 0;
 
+/**
+ * \brief 
+ * Waits 20 s, until the gyro is stable.
+ * 
+ * \return void
+ */
 void wait_until_gyro_stable();
 
 int main(void)
@@ -24,7 +30,7 @@ int main(void)
 	sei();
 	USART_init();
 	MPU_init();
-	SERVO_init(); //Init servos
+	SERVO_init();
 	init_counters();
 	
 	initvar();
@@ -37,15 +43,13 @@ int main(void)
 	USART_SendMessage("Gyro Stable");
 	
 	// ------ TESTCODE FOR READING SERVO -------
-		
+	
 	//servoGoto(1, 3.14/3, 0x200);
 	SERVO_update_EEPROM(BROADCASTING_ID); // NOTE: needs to run once for SERVO_get position to work	
 	//----------------------------
 	
 	reset_counter_1();
 	set_counter_1(3000);
-	
-	//climb();
 	
     while(1)
     {
@@ -92,30 +96,21 @@ int main(void)
 		climb();
 		
 		
-		change_z(-130);
+		change_z(-120);
 		move_to_std();
 		turn_degrees(180,1);
 		*/
 		/*
+		// Takes a predecided number of steps forward
+		// This is good when testing different things.
 		wait(100);
 		for(int i = 0; i < 10; ++i)
 		{
 			move_robot(0,50,100);
 			wait(2000);
 		}
-		//The plan right now is to just let the robot "walk" 
-		//off the edge and pray it stays upright.
-		//it would be great if someone(hint hint Tobias) could make it take
-		//taller steps during this bit though.
 		*/
 		
-		//change_z(-120);
-		//move_to_std();
-
-		//wait(4000);
-		
-		
-
 		USART_DecodeRxFIFO();
 	}
 }

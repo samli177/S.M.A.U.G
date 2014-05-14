@@ -131,48 +131,36 @@ void initvar()
 	leg5.side = -1;
 	leg6.side = -1;
 	
-	leg1.on_obstacle = 0;
-	leg2.on_obstacle = 0;
-	leg3.on_obstacle = 0;
-	leg4.on_obstacle = 0;
-	leg5.on_obstacle = 0;
-	leg6.on_obstacle = 0;
+	leg1.onObstacle = 0;
+	leg2.onObstacle = 0;
+	leg3.onObstacle = 0;
+	leg4.onObstacle = 0;
+	leg5.onObstacle = 0;
+	leg6.onObstacle = 0;
 	
 	leg1.servoAlpha = 10;
 	leg1.servoBeta = 12;
 	leg1.servoGamma = 8; 
-	leg1.loadLimitAlpha = 475;
-	leg1.loadLimitBeta = 400;
 		
 	leg2.servoAlpha = 16;
 	leg2.servoBeta = 18;
 	leg2.servoGamma = 14;
-	leg2.loadLimitAlpha = 250;
-	leg2.loadLimitBeta = 225;
 	
 	leg3.servoAlpha = 4;
 	leg3.servoBeta = 6;
 	leg3.servoGamma = 2;
-	leg3.loadLimitAlpha = 200;
-	leg3.loadLimitBeta = 200;
 	
 	leg4.servoAlpha = 3;
 	leg4.servoBeta = 5;
 	leg4.servoGamma = 1;
-	leg4.loadLimitAlpha = 300;
-	leg4.loadLimitBeta = 300;
 	
 	leg5.servoAlpha = 15;
 	leg5.servoBeta = 17;
 	leg5.servoGamma = 13;
-	leg5.loadLimitAlpha = 250;
-	leg5.loadLimitBeta = 250;
 	
 	leg6.servoAlpha = 9;
 	leg6.servoBeta = 11;
 	leg6.servoGamma = 7;
-	leg6.loadLimitAlpha = 500;
-	leg6.loadLimitBeta = 425;
 }
 
 void update_leg_info(struct LegData* leg)
@@ -197,7 +185,6 @@ void update_leg_info(struct LegData* leg)
 	leg->currSpeedGamma = SERVO_get_speed();
 	leg->currTempGamma = SERVO_get_temperature();
 	leg->currVoltGamma = SERVO_get_voltage();
-	
 }
 
 uint8_t close_enough(struct LegData* leg, uint8_t tolerance)
@@ -206,24 +193,19 @@ uint8_t close_enough(struct LegData* leg, uint8_t tolerance)
 	tempGamma = fabsf(angle_to_servo_pos(leg->goalAngleGamma) - leg->currPosGamma);
 	tempBeta = fabsf(angle_to_servo_pos(leg->goalAngleBeta) - leg->currPosBeta);
 	tempAlpha = fabsf(angle_to_servo_pos(leg->goalAngleAlpha) - leg->currPosAlpha);
-	/*
-	USART_SendValue(tempAlpha);
-	USART_SendValue(tempBeta);
-	USART_SendValue(tempGamma);
-	*/
 	
 	if(tempGamma >= tolerance)
 	{
 		return 0;
-	} else if(tempBeta >= tolerance)
+	} 
+	else if(tempBeta >= tolerance)
 	{
 		//return 0;
-	} else if(tempAlpha >= tolerance)
+	} 
+	else if(tempAlpha >= tolerance)
 	{
 		return 0;
 	}
-	
-	
 	
 	return 1;
 }
@@ -236,7 +218,8 @@ uint16_t angle_to_servo_pos(float angle)
 	if (angle > 300)
 	{
 		angle = 300;
-	} else if (angle < 0)
+	} 
+	else if (angle < 0)
 	{
 		angle = 0;
 	}
@@ -279,122 +262,119 @@ void move_robot(int dir, int rot, int spd)
 		dir = 0;
 	}
 	direction = (float)dir;
-	if(rot < 0){
+	if(rot < 0)
+	{
 		rot = 0;
-	} else if(rot > 100){
+	} 
+	else if(rot > 100)
+	{
 		rot = 100;
 	}
 	rotation = (float)rot / 50 -1;
-	if(spd < 0){
+	if(spd < 0)
+	{
 		spd = 0;
-	} else if(spd > 100){
+	} 
+	else if(spd > 100)
+	{
 		spd = 100;
 	}
 	speedf = (float)spd;
 	
 	if (speedf != 0 || rotation != 0)
 	{
-	step_start(&leg1);
-	step_start(&leg2);
-	step_start(&leg3);
-	step_start(&leg4);
-	step_start(&leg5);
-	step_start(&leg6);
-	
-	leg1.lift = -leg1.lift;
-	leg2.lift = -leg2.lift;
-	leg3.lift = -leg3.lift;
-	leg4.lift = -leg4.lift;
-	leg5.lift = -leg5.lift;
-	leg6.lift = -leg6.lift;
-
-	//x och y riktning för förflyttning, skalad med hastigheten
-	xDirection = -sinf(direction * pi / 45) * speedf / 100;
-	yDirection = cosf(direction * pi / 45) * speedf / 100;
-
-	
-
-	//x och y riktning för rotation, skalad med rotationshastighet
-	
-	
-	
-	leg1.xRot = rotation * get_y0_1()/ stdLength;
-	leg1.yRot = rotation * get_x0_1() / stdLength;
-
-	leg2.xRot = 0;
-	leg2.yRot = rotation;
-
-	leg3.xRot = rotation * (- get_y0_1() / stdLength);
-	leg3.yRot = rotation * get_x0_1() / stdLength;
-
-	leg4.xRot = rotation * (- get_y0_1() / stdLength);
-	leg4.yRot = rotation * (- get_x0_1() / stdLength);
-
-	leg5.xRot = 0;
-	leg5.yRot = -rotation;
-
-	leg6.xRot = rotation  * get_y0_1() / stdLength;
-	leg6.yRot = rotation  * (- get_x0_1() / stdLength);
-
-
-	//Addera förflyttningarna och sätter Step_max till längsta stegets längd
-	stepMax = powf((xDirection + leg1.xRot),2) + powf((yDirection + leg1.yRot),2);
-	stepTest = powf((xDirection + leg2.xRot),2) + powf((yDirection + leg2.yRot),2);
-	stepMax = fmaxf(stepMax, stepTest);
-
-	stepTest = powf((xDirection + leg3.xRot),2) + powf((yDirection + leg3.yRot),2);
-	stepMax = fmaxf(stepMax, stepTest);
-
-	stepTest = powf((xDirection + leg4.xRot),2) + powf((yDirection + leg4.yRot),2);
-	stepMax = fmaxf(stepMax, stepTest);
-
-	stepTest = powf((xDirection + leg5.xRot),2) + powf((yDirection + leg5.yRot),2);
-	stepMax = fmaxf(stepMax, stepTest);
-
-	stepTest = powf((xDirection + leg6.xRot),2) + powf((yDirection + leg6.yRot),2);
-	stepMax = fmaxf(stepMax, stepTest);
-	
-	stepMax =sqrtf(stepMax);
-
-
-	//Stegskalning för att inte alltid ta max längd på steg;
-	stepScaling = fmaxf(speedf/100, fabsf(rotation));
-
-
-	//Uppdatera vinklar för nya steget
-
-
-	step_part1_calculator(&leg1);
-	leg1.newPosx = basis_change_leg1x(newPosxWB,newPosyWB);
-	leg1.newPosy = basis_change_leg1y(newPosxWB,newPosyWB);
-	step_part2_calculator(&leg1);
-	
-	step_part1_calculator(&leg2);
-	leg2.newPosx = basis_change_leg2x(newPosxWB);
-	leg2.newPosy = basis_change_leg2y(newPosyWB);
-	step_part2_calculator(&leg2);
+		step_start(&leg1);
+		step_start(&leg2);
+		step_start(&leg3);
+		step_start(&leg4);
+		step_start(&leg5);
+		step_start(&leg6);
 		
-	step_part1_calculator(&leg3);
-	leg3.newPosx = basis_change_leg3x(newPosxWB,newPosyWB);
-	leg3.newPosy = basis_change_leg3y(newPosxWB,newPosyWB);
-	step_part2_calculator(&leg3);
-			
-	step_part1_calculator(&leg4);
-	leg4.newPosx = basis_change_leg4x(newPosxWB,newPosyWB);
-	leg4.newPosy = basis_change_leg4y(newPosxWB,newPosyWB);
-	step_part2_calculator(&leg4);
-				
-	step_part1_calculator(&leg5);
-	leg5.newPosx = basis_change_leg5x(newPosxWB);
-	leg5.newPosy = basis_change_leg5y(newPosyWB);
-	step_part2_calculator(&leg5);
-					
-	step_part1_calculator(&leg6);
-	leg6.newPosx = basis_change_leg6x(newPosxWB,newPosyWB);
-	leg6.newPosy = basis_change_leg6y(newPosxWB,newPosyWB);
-	step_part2_calculator(&leg6);
+		leg1.lift = -leg1.lift;
+		leg2.lift = -leg2.lift;
+		leg3.lift = -leg3.lift;
+		leg4.lift = -leg4.lift;
+		leg5.lift = -leg5.lift;
+		leg6.lift = -leg6.lift;
 
-	leg_motion();
+		//x och y riktning för förflyttning, skalad med hastigheten
+		xDirection = -sinf(direction * pi / 45) * speedf / 100;
+		yDirection = cosf(direction * pi / 45) * speedf / 100;
+	
+		//x och y riktning för rotation, skalad med rotationshastighet
+		leg1.xRot = rotation * get_y0_1()/ stdLength;
+		leg1.yRot = rotation * get_x0_1() / stdLength;
+
+		leg2.xRot = 0;
+		leg2.yRot = rotation;
+
+		leg3.xRot = rotation * (- get_y0_1() / stdLength);
+		leg3.yRot = rotation * get_x0_1() / stdLength;
+
+		leg4.xRot = rotation * (- get_y0_1() / stdLength);
+		leg4.yRot = rotation * (- get_x0_1() / stdLength);
+	
+		leg5.xRot = 0;
+		leg5.yRot = -rotation;
+
+		leg6.xRot = rotation  * get_y0_1() / stdLength;
+		leg6.yRot = rotation  * (- get_x0_1() / stdLength);
+
+		//Addera förflyttningarna och sätter Step_max till längsta stegets längd
+		stepMax = powf((xDirection + leg1.xRot),2) + powf((yDirection + leg1.yRot),2);
+		stepTest = powf((xDirection + leg2.xRot),2) + powf((yDirection + leg2.yRot),2);
+		stepMax = fmaxf(stepMax, stepTest);
+
+		stepTest = powf((xDirection + leg3.xRot),2) + powf((yDirection + leg3.yRot),2);
+		stepMax = fmaxf(stepMax, stepTest);
+
+		stepTest = powf((xDirection + leg4.xRot),2) + powf((yDirection + leg4.yRot),2);
+		stepMax = fmaxf(stepMax, stepTest);
+	
+		stepTest = powf((xDirection + leg5.xRot),2) + powf((yDirection + leg5.yRot),2);
+		stepMax = fmaxf(stepMax, stepTest);
+
+		stepTest = powf((xDirection + leg6.xRot),2) + powf((yDirection + leg6.yRot),2);
+		stepMax = fmaxf(stepMax, stepTest);
+	
+		stepMax =sqrtf(stepMax);
+
+		//Stegskalning för att inte alltid ta max längd på steg;
+		stepScaling = fmaxf(speedf/100, fabsf(rotation));
+
+		//Uppdatera vinklar för nya steget
+		step_part1_calculator(&leg1);
+		leg1.newPosx = basis_change_leg1x(newPosxWB,newPosyWB);
+		leg1.newPosy = basis_change_leg1y(newPosxWB,newPosyWB);
+		step_part2_calculator(&leg1);
+	
+		step_part1_calculator(&leg2);
+		leg2.newPosx = basis_change_leg2x(newPosxWB);
+		leg2.newPosy = basis_change_leg2y(newPosyWB);
+		step_part2_calculator(&leg2);
+		
+		step_part1_calculator(&leg3);
+		leg3.newPosx = basis_change_leg3x(newPosxWB,newPosyWB);
+		leg3.newPosy = basis_change_leg3y(newPosxWB,newPosyWB);
+		step_part2_calculator(&leg3);
+				
+		step_part1_calculator(&leg4);
+		leg4.newPosx = basis_change_leg4x(newPosxWB,newPosyWB);
+		leg4.newPosy = basis_change_leg4y(newPosxWB,newPosyWB);
+		step_part2_calculator(&leg4);
+					
+		step_part1_calculator(&leg5);
+		leg5.newPosx = basis_change_leg5x(newPosxWB);
+		leg5.newPosy = basis_change_leg5y(newPosyWB);
+		step_part2_calculator(&leg5);
+						
+		step_part1_calculator(&leg6);
+		leg6.newPosx = basis_change_leg6x(newPosxWB,newPosyWB);
+		leg6.newPosy = basis_change_leg6y(newPosxWB,newPosyWB);
+		step_part2_calculator(&leg6);
+
+		// Preforming the step.
+		leg_motion();
 	}
 }
 
@@ -443,6 +423,7 @@ void move_leg(struct LegData* leg, float n)
 	{
 		tempz = leg->newPosz;
 	}
+	
 	if(n != 0 && n != iterations+1)
 	{
 		leg->temp1AngleGamma = leg->temp2AngleGamma;
@@ -463,6 +444,7 @@ void move_leg(struct LegData* leg, float n)
 		tempx = leg->prevPosx;
 		tempy = leg->prevPosy;
 	}
+	
 	calc_d(tempx, tempy, tempz);
 	leg->temp2AngleGamma = get_gamma(tempx, tempy);
 	leg->temp2AngleBeta = get_beta();
@@ -498,26 +480,19 @@ void leg_motion()
 // 	climb_check_down_p = MPU_get_p();
 	for(int i = 0; i <= (int)iterations+1; ++i)
 	{
-		if(leg1.climbing == 1 /*&& obstacle_height == z_in_use*/)
+		if(leg1.climbing == 1)
 		{
 			move_climb(&leg1, i);
 		}
-		/*else if(leg1.climbing == 1 && obstacle_height != -150)
-		{
-			leg_climb_down(&leg1);
-		}*/
 		else
 		{
 			move_leg(&leg1,i);
 		}
+		
 		if(leg2.climbing == 1)
 		{
 			move_climb(&leg2, i);
-		}/*
-		else if(leg2.climbing == 2)
-		{
-			leg_climb_down(&leg2);
-		}*/
+		}
 		else
 		{
 			move_leg(&leg2,i);
@@ -526,47 +501,34 @@ void leg_motion()
 		if(leg3.climbing == 1)
 		{
 			move_climb(&leg3, i);
-		}/*
-		else if(leg3.climbing == 2)
-		{
-			leg_climb_down(&leg3);
-		}*/
+		}
 		else
 		{
 			move_leg(&leg3,i);
 		}
+		
 		if(leg4.climbing == 1)
 		{
 			move_climb(&leg4, i);
-		}/*
-		else if(leg4.climbing == 2)
-		{
-			leg_climb_down(&leg4);
-		}*/
+		}
 		else
 		{
 			move_leg(&leg4,i);
 		}
+		
 		if(leg5.climbing == 1)
 		{
 			move_climb(&leg5, i);
-		}/*
-		else if(leg5.climbing == 2)
-		{
-			leg_climb_down(&leg5);
-		}*/
+		}
 		else
 		{
 			move_leg(&leg5,i);
 		}
-		if(leg6.climbing == 1 /*&& obstacle_height == z_in_use*/)
+		
+		if(leg6.climbing == 1)
 		{
 			move_climb(&leg6, i);
-		}/*
-		else if(leg6.climbing == 2)
-		{
-			leg_climb_down(&leg6);
-		}*/
+		}
 		else
 		{
 			move_leg(&leg6,i);
@@ -581,8 +543,6 @@ void leg_motion()
 		{
 			wait(25);
 		}
-		
-		
 		
 		if(USART_elevation_flag())
 		{
@@ -656,19 +616,12 @@ void leg_motion()
 			//wait(100);
 		}
 		
+		// Updating which step in the climbing process it is and taking some
+		// steps on the obstacle:
 		if (leg3.newPosz > z_in_use && leg4.newPosz > z_in_use && climb_step < 3)
 		{
 			climb_step = 3;
 			climb_step2 = 1;
-			
-			/*
-			leg1.climbing = 0;
-			leg2.climbing = 0;
-			leg3.climbing = 0;
-			leg4.climbing = 0;
-			leg5.climbing = 0;
-			leg6.climbing = 0;*/
-			
 			
 			climb_counter = 0;
 			move_robot(0,50,100);
@@ -702,8 +655,6 @@ void leg_motion()
 		}
 		
 		
-		
-		
 		if (leg1.newPosz < z_in_use + 20 && 
 			leg6.newPosz < z_in_use + 20 && 
 			climb_step2 == 1)
@@ -711,8 +662,6 @@ void leg_motion()
 			climb_step2 = 2;
 			
 			MPU_update();
-			//climb_start_slope_r = MPU_get_r();
-			//climb_start_slope_p = MPU_get_p();
 		}
 		else if (leg2.newPosz < z_in_use + 20 && 
 			leg5.newPosz < z_in_use + 20 && 
@@ -721,8 +670,6 @@ void leg_motion()
 			climb_step2 = 3;
 			climb_counter = 0;
 			MPU_update();
-			//climb_start_slope_r = MPU_get_r();
-			//climb_start_slope_p = MPU_get_p();
 		}
 		else if (leg3.newPosz < z_in_use + 20 &&
 			leg4.newPosz < z_in_use + 20 &&
@@ -734,8 +681,8 @@ void leg_motion()
 			servo_speed = 200;
 		}
 		
-		if(fmod(leg1.on_obstacle + leg2.on_obstacle + leg3.on_obstacle + 
-			leg4.on_obstacle + leg5.on_obstacle + leg6.on_obstacle, 2) == 0)
+		if(fmod(leg1.onObstacle + leg2.onObstacle + leg3.onObstacle + 
+			leg4.onObstacle + leg5.onObstacle + leg6.onObstacle, 2) == 0)
 		{
 			rotation_flag = 1;
 		}
@@ -769,25 +716,30 @@ void leg_check_down(struct LegData* leg)
 	//update_leg_info(leg);
 	wait(100);
 	MPU_get_mean();
-	if(fabsf(MPURMean - climb_start_slope_r) > 0.03 || fabsf(MPUPMean - climb_start_slope_p) > 0.03 || leg->newPosz < z_in_use - 10)
+	if(fabsf(MPURMean - climb_start_slope_r) > 0.03 || 
+		fabsf(MPUPMean - climb_start_slope_p) > 0.03 || 
+		leg->newPosz < z_in_use - 10)
 	{
 		//leg->newPosz += 20;
 		//leg->newPosx -= 10;
-		if (leg->newPosz >= z_in_use-10)
+		
+		// The leg is at the obstacle:
+		if (leg->newPosz >= z_in_use - 10)
 		{
 			obstacle_height = z_in_use + 60; 
 			tempz = obstacle_height;
 			leg->climbing = 0;
 			leg->newPosz = obstacle_height;
-			leg->on_obstacle = 1;
+			leg->onObstacle = 1;
 		}
-		else
+		else // The leg has found the ground:
 		{
 			tempz = z_in_use;
 			leg->newPosz = tempz;
 			leg->climbing = 0;
-			leg->on_obstacle = 0;
+			leg->onObstacle = 0;
 		}
+		
 		tempx = leg->newPosx;
 		tempy = leg->newPosy;
 		
@@ -842,7 +794,6 @@ void leg_check_down(struct LegData* leg)
 
 void climb()
 {
-	
 	climbing_flag = 1;
 	height = 70;
 	climb_step = 0;
@@ -874,7 +825,7 @@ void climb()
 			height_change_leg6(obstacle_height);
 			leg6.climbing = 4;
 			leg6.newPosz = obstacle_height;
-			leg6.on_obstacle = 1;
+			leg6.onObstacle = 1;
 		}
 		else if (leg1.lift != 1 && climb_step == 0 && obstacle_height == z_in_use)
 		{
@@ -887,14 +838,14 @@ void climb()
 			height_change_leg1(obstacle_height);
 			leg1.climbing = 4;
 			leg1.newPosz = obstacle_height;
-			leg1.on_obstacle = 1;
+			leg1.onObstacle = 1;
 		}
 		else if (leg2.lift != 1 && climb_step == 1 && leg5.newPosz == obstacle_height)
 		{
 			height_change_leg2(obstacle_height);
 			leg2.climbing = 4;
 			leg2.newPosz = obstacle_height;
-			leg2.on_obstacle = 1;
+			leg2.onObstacle = 1;
 		}
 		else if (leg2.lift != 1 && climb_step == 1) // Leg5 has not found the obstacle.
 		{
@@ -906,7 +857,7 @@ void climb()
 			height_change_leg5(obstacle_height);
 			leg5.climbing = 4;
 			leg5.newPosz = obstacle_height;
-			leg5.on_obstacle = 1;
+			leg5.onObstacle = 1;
 		}
 		else if (leg5.lift != 1 && climb_step == 1)
 		{
@@ -930,7 +881,7 @@ void climb()
 			height_change_leg4(obstacle_height);
 			leg4.climbing = 4;
 			leg4.newPosz = obstacle_height;
-			leg4.on_obstacle = 1;
+			leg4.onObstacle = 1;
 		}
 		else if (leg4.lift != 1 && climb_step == 2)
 		{
@@ -943,7 +894,7 @@ void climb()
 			height_change_leg3(obstacle_height);
 			leg3.climbing = 4;
 			leg3.newPosz = obstacle_height;
-			leg3.on_obstacle = 1;
+			leg3.onObstacle = 1;
 		}
 		else if (leg3.lift != 1 && climb_step == 2)
 		{
@@ -958,7 +909,7 @@ void climb()
 			leg1.climbing = 2;
 			leg1.newPosz = z_in_use;
 			height_change_leg1(z_in_use);
-			leg1.on_obstacle = 0;
+			leg1.onObstacle = 0;
 		}
 		else if (leg1.lift != 1 && climb_step2 == 1)
 		{
@@ -970,7 +921,7 @@ void climb()
 			leg6.climbing = 2;
 			leg6.newPosz = z_in_use;
 			height_change_leg6(z_in_use);
-			leg6.on_obstacle = 0;
+			leg6.onObstacle = 0;
 		}
 		else if (leg6.lift != 1 && climb_step2 == 1)
 		{
@@ -982,7 +933,7 @@ void climb()
 			leg2.climbing = 2;
 			leg2.newPosz = z_in_use;
 			height_change_leg2(z_in_use);
-			leg2.on_obstacle = 0;
+			leg2.onObstacle = 0;
 		}
 		else if (leg2.lift != 1 && climb_step2 == 2)
 		{
@@ -994,7 +945,7 @@ void climb()
 			leg5.climbing = 2;
 			leg5.newPosz = z_in_use;
 			height_change_leg5(z_in_use);
-			leg5.on_obstacle = 0;
+			leg5.onObstacle = 0;
 		}
 		else if (leg5.lift != 1 && climb_step2 == 2)
 		{
@@ -1006,7 +957,7 @@ void climb()
 			leg4.climbing = 2;
 			leg4.newPosz = z_in_use;
 			height_change_leg4(z_in_use);
-			leg4.on_obstacle = 0;
+			leg4.onObstacle = 0;
 		}
 		else if (leg4.lift != 1 && climb_step2 == 3)
 		{
@@ -1018,7 +969,7 @@ void climb()
 			leg3.climbing = 2;
 			leg3.newPosz = z_in_use;
 			height_change_leg3(z_in_use);
-			leg3.on_obstacle = 0;
+			leg3.onObstacle = 0;
 		}
 		else if (leg3.lift != 1 && climb_step2 == 3)
 		{
@@ -1040,7 +991,7 @@ void climb()
 		else if(climb_step2 == 2 || climb_step == 2)
 		{
 			climb_counter += 1;
-			if(climb_counter > 6)
+			if(climb_counter > 7)
 			{
 				leg2.newPosz = z_in_use;
 				height_change_leg2(z_in_use);
@@ -1109,60 +1060,13 @@ void climb()
 		}
 		rotation_flag = 0;
 	}
-	//take another step for good measure
+	//take another two steps for good measure and change height to the normal one.
 	move_robot(0,50,100);
 	wait(30);
+	z_in_use = -120;
+	change_z(z_in_use);
 	move_robot(0,50,100);
 	USART_send_climb_done();
-}
-
-void leaning_robot()
-{
-	MPU_update();
-	
-	if (MPU_get_r() - climb_start_slope_r > 0)
-	{
-		leg1.newPosz -= 10;
-		leg6.newPosz -= 10;
-				
-		leg3.newPosz += 10;
-		leg4.newPosz += 10;
-	}
-	else if (MPU_get_r() - climb_start_slope_r < 0)
-	{
-		leg1.newPosz += 10;
-		leg6.newPosz += 10;
-
-		leg3.newPosz -= 10;
-		leg4.newPosz -= 10;
-	}
-	else if (MPU_get_p() - climb_start_slope_p > 0)
-	{
-		leg1.newPosz -= 10;
-		leg2.newPosz -= 10;
-		leg3.newPosz -= 10;
-		
-		leg4.newPosz += 10;
-		leg5.newPosz += 10;
-		leg6.newPosz += 10;
-	}
-	else if (MPU_get_p() - climb_start_slope_p < 0)
-	{
-		leg1.newPosz += 10;
-		leg2.newPosz += 10;
-		leg3.newPosz += 10;
-		
-		leg4.newPosz -= 10;
-		leg5.newPosz -= 10;
-		leg6.newPosz -= 10;
-	}
-	
-	height_change_leg1(leg1.newPosz);
-	height_change_leg2(leg2.newPosz);
-	height_change_leg3(leg3.newPosz);
-	height_change_leg4(leg4.newPosz);
-	height_change_leg5(leg5.newPosz);
-	height_change_leg6(leg6.newPosz);
 }
 
 void move_climb(struct LegData* leg, float n)
@@ -1286,490 +1190,7 @@ void move_to_std()
 	step_part2_calculator(&leg5);
 
 	leg_motion();
-	
-	
 }
-/*
-void climb()
-{
-	
-	z = -150;
-	change_z(z);
-	
-	move_to_std();
-	
-	leg1.lift = -1;
-	leg2.lift = 1;
-	leg3.lift = -1;
-	leg4.lift = 1;
-	leg5.lift = -1;
-	leg6.lift = 1;
-	
-	height_flag = 0;
-	height = 60;
-	
-	height_change_leg1(-70);
-	
-	leg1.climbing = 1;
-	move_robot(0,50,100);
-	leg1.climbing = 0;
-	leg6.climbing = 1;
-	move_robot(0,50,100);
-	leg6.climbing = 0;
-	leg5.climbing = 1;
-	move_robot(0,50,100);
-	leg5.climbing = 0;
-	leg2.climbing = 1;
-	move_robot(0,50,100);
-	leg2.climbing = 0;
-	leg3.climbing = 1;
-	move_robot(0,50,100);
-	leg3.climbing = 0;
-	leg4.climbing = 1;
-	move_robot(0,50,100);
-	leg4.climbing = 0;
-	
-	wait(5000);
-}
-
-void leg_climb(struct LegData* leg)
-{
-	
-	tempz = z + height + 30;
-	
-	tempx = leg->newPosx;
-	tempy = leg->newPosy;
-
-	calc_d(tempx, tempy, tempz);
-	leg->temp2AngleGamma = get_gamma(tempx, tempy);
-	leg->temp2AngleBeta = get_beta();
-	leg->temp2AngleAlpha = get_alpha(tempz);
-	leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-	leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
-	leg->goalAngleGamma = leg->temp2AngleGamma;
-	
-	SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-	SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
-	
-	wait(400);
-	
-	SERVO_goto(leg->servoGamma, leg->goalAngleGamma, 100);
-	
-	 wait(400);
-	 if(height_flag)
-	 {
-		 tempz = height+z;
-		 /*
-		 tempz = height - 120;
-		 calc_d(tempx, tempy, tempz);
-		 leg->temp2AngleBeta = get_beta();
-		 leg->temp2AngleAlpha = get_alpha(tempz);
-		 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-		 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
-		 
-		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
-		 */
-		 /*
-		 switch(leg->servoGamma)
-		 {
-			 case 1:
-			 height_change_leg1(tempz);
-			 break;
-			 
-			 case 2:
-			 height_change_leg4(tempz);
-			 break;
-			 
-			 case 7:
-			 height_change_leg5(tempz);
-			 break;
-			 
-			 case 8:
-			 height_change_leg6(tempz);
-			 break;
-			 
-			 case 13:
-			 height_change_leg2(tempz);
-			 break;
-			 
-			 case 14:
-			 height_change_leg3(tempz);
-			 break;
-			 
-			 default:
-			 break;
-		 }
-		// wait(1000);
-	 }
-	 else
-	 {
-		 tempz = z + height + 30;
-		 
-		 switch(leg->servoGamma)
-		 {
-			 case 1:
-			 height_change_leg1(tempz);
-			 break;
-			 
-			 case 2:
-			 height_change_leg4(tempz);
-			 break;
-			 
-			 case 7:
-			 height_change_leg5(tempz);
-			 break;
-			 
-			 case 8:
-			 height_change_leg6(tempz);
-			 break;
-			 
-			 case 13:
-			 height_change_leg2(tempz);
-			 break;
-			 
-			 case 14:
-			 height_change_leg3(tempz);
-			 break;
-			 
-			 default:
-			 break;
-		 }
-		 
-		 tempx = leg->newPosx;
-		 tempy = leg->newPosy;
-		 
-		 
-		 calc_d(tempx, tempy, tempz);
-		 leg->temp2AngleBeta = get_beta();
-		 leg->temp2AngleAlpha = get_alpha(tempz);
-		 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-		 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
-		 
-		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
-		 
-		 wait(400);
-	 
-	 do 
-	 {
-		 
-		 
-		 tempz -= 10;
-		 
-		 
-		 
-		 calc_d(tempx, tempy, tempz);
-		 leg->temp2AngleBeta = get_beta();
-		 leg->temp2AngleAlpha = get_alpha(tempz);
-		 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-		 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);	
-		 
-		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100); 
-		 wait(100);
-		 update_leg_info(leg);
-		 
-	 } while (!(leg->currLoadAlpha > 235));
-	 
-	 tempz += 20;
-	 
-	 calc_d(tempx, tempy, tempz);
-	 leg->temp2AngleBeta = get_beta();
-	 leg->temp2AngleAlpha = get_alpha(tempz);
-	 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-	 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
-	 
-	 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-	 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
-	 wait(400);
-	 
-	 height_flag = 1;
-	 height = tempz - z;
-	 
-	 }
-	 
-	 leg->climbing = 2;
-	 step_start(leg);
-	 leg->newPosz = tempz;
-	 
-	 /*
-	 switch(leg->servoGamma)
-	 {
-		 case 1:
-		 height_change_leg4(tempz);
-		 break;
-		 
-		 case 2:
-		 height_change_leg3(tempz);
-		 break;
-		 
-		 case 7:
-		 height_change_leg6(tempz);
-		 break;
-		 
-		 case 8:
-		 height_change_leg1(tempz);
-		 break;
-		 
-		 case 13:
-		 height_change_leg5(tempz);
-		 break;
-		 
-		 case 14:
-		 height_change_leg2(tempz);
-		 break;
-		 
-		 default:
-		 break;
-	 }
-	*/
-/*
-}
-
-
-
-
-
-
-/*
-
-void climb_down()
-{
-	z = -90;
-	change_z(z);
-	
-	move_to_std();
-	
-	leg1.lift = -1;
-	leg2.lift = 1;
-	leg3.lift = -1;
-	leg4.lift = 1;
-	leg5.lift = -1;
-	leg6.lift = 1;
-	
-	height_flag = 0;
-	height = 60;
-	
-	height_change_leg1(-140);
-	
-	leg1.climbing = 2;
-	move_robot(0,50,100);
-	leg1.climbing = 0;
-	leg6.climbing = 2;
-	move_robot(0,50,100);
-	leg6.climbing = 0;
-	leg5.climbing = 2;
-	move_robot(0,50,100);
-	leg5.climbing = 0;
-	leg2.climbing = 2;
-	move_robot(0,50,100);
-	leg2.climbing = 0;
-	leg3.climbing = 2;
-	move_robot(0,50,100);
-	leg3.climbing = 0;
-	leg4.climbing = 2;
-	move_robot(0,50,100);
-	leg4.climbing = 0;
-	
-	wait(5000);
-}
-
-void leg_climb_down(struct LegData* leg) // To descend from the high pass obstacle
-{
-	
-	tempz = z - height + 30;
-	
-	tempx = leg->newPosx;
-	tempy = leg->newPosy;
-
-	calc_d(tempx, tempy, tempz);
-	leg->temp2AngleGamma = get_gamma(tempx, tempy);
-	leg->temp2AngleBeta = get_beta();
-	leg->temp2AngleAlpha = get_alpha(tempz);
-	leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-	leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
-	leg->goalAngleGamma = leg->temp2AngleGamma;
-	
-	SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-	SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
-	
-	wait(400);
-	
-	SERVO_goto(leg->servoGamma, leg->goalAngleGamma, 100);
-	
-	 wait(400);
-	 if(height_flag)
-	 {
-		 tempz = -height + z;
-		 */
-		 /* Detta ska vara botrkommenterat...
-		 tempz = height - 120;
-		 calc_d(tempx, tempy, tempz);
-		 leg->temp2AngleBeta = get_beta();
-		 leg->temp2AngleAlpha = get_alpha(tempz);
-		 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-		 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
-		 
-		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
-		 */
-		 /*
-		 switch(leg->servoGamma)
-		 {
-			 case 1:
-			 height_change_leg1(tempz);
-			 break;
-			 
-			 case 2:
-			 height_change_leg4(tempz);
-			 break;
-			 
-			 case 7:
-			 height_change_leg5(tempz);
-			 break;
-			 
-			 case 8:
-			 height_change_leg6(tempz);
-			 break;
-			 
-			 case 13:
-			 height_change_leg2(tempz);
-			 break;
-			 
-			 case 14:
-			 height_change_leg3(tempz);
-			 break;
-			 
-			 default:
-			 break;
-		 }
-		// wait(1000);
-	 }
-	 else
-	 {
-		 tempz = z - height + 30;
-		 
-		 switch(leg->servoGamma)
-		 {
-			 case 1:
-			 height_change_leg1(tempz);
-			 break;
-			 
-			 case 2:
-			 height_change_leg4(tempz);
-			 break;
-			 
-			 case 7:
-			 height_change_leg5(tempz);
-			 break;
-			 
-			 case 8:
-			 height_change_leg6(tempz);
-			 break;
-			 
-			 case 13:
-			 height_change_leg2(tempz);
-			 break;
-			 
-			 case 14:
-			 height_change_leg3(tempz);
-			 break;
-			 
-			 default:
-			 break;
-		 }
-		 
-		 tempx = leg->newPosx;
-		 tempy = leg->newPosy;
-		 
-		 
-		 calc_d(tempx, tempy, tempz);
-		 leg->temp2AngleBeta = get_beta();
-		 leg->temp2AngleAlpha = get_alpha(tempz);
-		 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-		 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
-		 
-		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
-		 
-		 wait(400);
-	 
-	 do 
-	 {
-		 
-		 
-		 tempz -= 10;
-		 
-		 
-		 
-		 calc_d(tempx, tempy, tempz);
-		 leg->temp2AngleBeta = get_beta();
-		 leg->temp2AngleAlpha = get_alpha(tempz);
-		 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-		 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);	
-		 
-		 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-		 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100); 
-		 wait(100);
-		 update_leg_info(leg);
-		 
-	 } while (!(leg->currLoadAlpha > 235));
-	 
-	 tempz += 20;
-	 
-	 calc_d(tempx, tempy, tempz);
-	 leg->temp2AngleBeta = get_beta();
-	 leg->temp2AngleAlpha = get_alpha(tempz);
-	 leg->goalAngleAlpha = leg->side * (leg->temp2AngleAlpha + femurAngleAddition);
-	 leg->goalAngleBeta = leg->side * (-leg->temp2AngleBeta + tibiaAngleAddition);
-	 
-	 SERVO_goto(leg->servoAlpha,leg->goalAngleAlpha,100);
-	 SERVO_goto(leg->servoBeta, leg->goalAngleBeta,100);
-	 wait(400);
-	 
-	 height_flag = 1;
-	 height = tempz - z;
-	 
-	 }
-	 
-	 leg->climbing = 2;
-	 step_start(leg);
-	 leg->newPosz = tempz;
-	 */
-	 /* Detta ska vara bortkommenterat...
-	 switch(leg->servoGamma)
-	 {
-		 case 1:
-		 height_change_leg4(tempz);
-		 break;
-		 
-		 case 2:
-		 height_change_leg3(tempz);
-		 break;
-		 
-		 case 7:
-		 height_change_leg6(tempz);
-		 break;
-		 
-		 case 8:
-		 height_change_leg1(tempz);
-		 break;
-		 
-		 case 13:
-		 height_change_leg5(tempz);
-		 break;
-		 
-		 case 14:
-		 height_change_leg2(tempz);
-		 break;
-		 
-		 default:
-		 break;
-	 }
-	*/
-/*
-}*/
 
 void turn_degrees(uint16_t degrees, int8_t dir)
 {
@@ -1793,10 +1214,14 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 		if(fabs(diff) <= M_PI)
 		{
 			realDiff = fabs(diff);
-		} else if(diff < 0) {
+		} 
+		else if(diff < 0)
+		{
 			LED0_TOGGLE;
 			realDiff = M_PI + fmod(diff, M_PI);
-		} else {
+		} 
+		else 
+		{
 			LED1_TOGGLE;
 			realDiff = M_PI - fmod(diff, M_PI);
 		}
@@ -1822,7 +1247,8 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 		}
 		USART_SendValue(move);
 		move_robot(0, move, 0);
-	} while(fabs(angleLeft) > tolerance);
+	} 
+	while(fabs(angleLeft) > tolerance);
 	
 	USART_send_turn_done();
 }
