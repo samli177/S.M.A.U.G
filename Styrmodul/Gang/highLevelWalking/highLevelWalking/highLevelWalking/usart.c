@@ -325,7 +325,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 		gDirection = direction;
 		gRotation = rotation;
 		
-		PORTD ^= (1<<PORTD5);
+		PORTC ^= (1<<PORTC7);
 
 	}else
 	{
@@ -367,18 +367,20 @@ uint8_t USART_DecodeElevationRxFIFO()
 	
 	if(direction == 1)
 	{
-		if(gZ > -150)
+		if(gZ > -180)
 		{
 			gZ -= 5;
 		}
 		
 	}else if(direction == 0)
 	{
-		if(gZ < -80)
+		if(gZ < -50)
 		{
 			gZ += 5;
 		}
 	}
+	
+	PORTC ^= (1<<PORTC6);
 	
 	return 0;
 	

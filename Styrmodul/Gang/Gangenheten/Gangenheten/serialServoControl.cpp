@@ -55,7 +55,7 @@ void SERVO_init()
 	servoDDR |= (1<<servoDirPin); //set pin for controlling direction of serial communication w. servo.
 	
 	// Set torque limit
-	SERVO_set_torque_limit(BROADCASTING_ID, 0x200); // 50% of max
+	SERVO_set_torque_limit(BROADCASTING_ID, 0x3ff); // 100% of max
 }
 
 void SERVO_update_EEPROM(uint8_t ID)
@@ -271,7 +271,10 @@ void SERVO_update_data(uint8_t ID)
 	
 	servoTx;
 	servoReadMode = 'W';
-	
+	for(int i = 0; i>10; i++)
+	{
+		parameters[i] = 0;
+	}
 	while(!(FifoRead(gServoRxFIFO, data)) && !exitFlag)
 	{
 		dataint = *data;
@@ -379,9 +382,11 @@ void SERVO_update_data(uint8_t ID)
 		gServoSpeed = gServoSpeed + temp;
 		
 		temp = (uint16_t)parameters[5];
-		gServoLoad = (temp << 8);
+		gServoLoad = ((temp & 0x01) << 8);
 		temp = (uint16_t)parameters[4];
 		gServoLoad = gServoLoad + temp;
+		//TODO: direction i parameter[5] bit 2
+		
 		
 		gServoVoltage = parameters[6];
 		

@@ -11,6 +11,8 @@
 #include <stdbool.h>
 #include "fifo.h"
 #include "usart.h"
+#include "MpuInit.h"
+#include "LED.h"
 
 
 // -- USART Stuff --
@@ -23,6 +25,10 @@ uint16_t gRxBufferIndex = 0;
 uint16_t gInvertNextFlag = 0;
 
 uint8_t gRotation=50, gSpeed=0, gDirection=0;
+uint16_t gTurnAngle = 0;
+int8_t gTurnDirection = 1;
+uint8_t gTurnFlag = 0;
+uint8_t gElevationFlag = 0;
 
 float gZ = -120;
 
@@ -50,6 +56,26 @@ uint8_t USART_getDirection()
 	uint8_t direction = gDirection;
 	gDirection = 0;
 	return direction;
+}
+
+uint8_t USART_get_turn_dir()
+{
+	return gTurnDirection;
+}
+
+uint8_t USART_get_turn_flag()
+{
+	if(gTurnFlag)
+	{
+		gTurnFlag = 0;
+		return 1;
+	}
+	return 0;
+}
+
+uint16_t USART_get_turn_angle()
+{
+	return gTurnAngle;
 }
 
 float USART_get_z()
@@ -238,9 +264,45 @@ void USART_SendValue(float flo)
 	
 }
 
+void USART_SendGyro()
+{
+	union Union_floatcast foo;
+	
+	foo.f = MPU_get_p();
+	for(int i = 0; i < 4; ++i)
+	{
+		gTxPayload[i] = foo.s[i];
+	}
+	
+	foo.f = MPU_get_r();
+	for(int i = 0; i < 4; ++i)
+	{
+		gTxPayload[i + 4] = foo.s[i];
+	}
+	
+	foo.f = MPU_get_y();
+	for(int i = 0; i < 4; ++i)
+	{
+		gTxPayload[i + 8] = foo.s[i];
+	}
+	
+	USART_SendPacket('G', 12);	
+}
+
+
 void USART_send_ready()
 {
 	USART_SendPacket('R', 0);
+}
+
+void USART_send_turn_done()
+{
+	USART_SendPacket('T', 0);
+}
+
+void USART_send_climb_done()
+{
+	USART_SendPacket('H', 0);
 }
 
 uint8_t USART_DecodeMessageRxFIFO()
@@ -325,7 +387,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 		gDirection = direction;
 		gRotation = rotation;
 		
-		PORTD ^= (1<<PORTD5);
+		LED0_TOGGLE;
 
 	}else
 	{
@@ -370,6 +432,7 @@ uint8_t USART_DecodeElevationRxFIFO()
 		if(gZ > -150)
 		{
 			gZ -= 5;
+			gElevationFlag = 1;
 		}
 		
 	}else if(direction == 0)
@@ -377,6 +440,7 @@ uint8_t USART_DecodeElevationRxFIFO()
 		if(gZ < -80)
 		{
 			gZ += 5;
+			gElevationFlag = 1;
 		}
 	}
 	
@@ -384,6 +448,77 @@ uint8_t USART_DecodeElevationRxFIFO()
 	
 }
 
+uint8_t USART_DecodeTurnRxFIFO()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	
+	int length = 0;
+	uint16_t angle;
+	uint8_t dir;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		return 1; // error
+	}
+	
+	length = *len;
+	
+	if(length != 3)
+	{
+		return 1;
+	}
+	
+	if(FifoRead(gRxFIFO, data))
+	{
+		return 1;
+	}
+	angle = 0x0000 | *data;
+	
+	if(FifoRead(gRxFIFO, data))
+	{
+		return 1;
+	}
+	angle = (angle << 8) | *data;
+	
+	if(FifoRead(gRxFIFO, data))
+	{
+		return 1;
+	}
+	dir = *data;
+	
+	gTurnAngle = angle;
+	if(dir == 0)
+	{
+		gTurnDirection = -1;
+	} else {
+		gTurnDirection = 1;
+	}
+	gTurnFlag = 1;
+	
+	return 0;
+}
+
+uint8_t USART_DecodeClimbRxFIFO()
+{
+	uint8_t *len = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO CLIMB-DONE ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 0)
+	{
+		climb();
+		return 0;
+	}
+	
+	return 1;
+}
 
 void USART_DecodeRxFIFO()
 {
@@ -420,10 +555,42 @@ void USART_DecodeRxFIFO()
 				}
 				break;
 			}
+			case('G'):
+			{
+				// Maybe must do check like the others?
+				USART_SendGyro();
+				break;
+			}
+			case('T'):
+			{
+				if(USART_DecodeTurnRxFIFO())
+				{
+					// TODO: flush buffer?
+					return;
+				}
+				break;
+			}
+			case('H'):
+			{
+				if(USART_DecodeClimbRxFIFO())
+				{
+					return;
+				}
+				break;
+			}
 		}
 	}
 }
 
+uint8_t USART_elevation_flag()
+{
+	if(gElevationFlag)
+	{
+		gElevationFlag = 0;
+		return 1;
+	}
+	return 0;
+}
 
 
 void USART_Bounce()

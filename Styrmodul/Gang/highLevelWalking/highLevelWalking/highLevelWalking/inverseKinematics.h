@@ -22,21 +22,6 @@
 #define pi (float) 3.14159265
 #define sqrt2 (float) 1.41421356
 
-#define x0_1 (float) (-100/sqrt2-61.85) //standard x pos for leg 1
-#define y0_1 (float) (100/sqrt2+120) //standard y pos for leg 1
-#define x0_2 (float) (-100-100) //standard x pos for leg 2
-#define y0_2 (float) 0 //standard y pos for leg 2
-#define x0_3 (float) (-100/sqrt2-61.85) //standard x pos for leg 3
-#define y0_3 (float) (-100/sqrt2-120) //standard y pos for leg 3
-#define x0_4 (float) (100/sqrt2+61.85) //standard x pos for leg 4
-#define y0_4 (float) (-100/sqrt2-120) //standard y pos for leg 4
-#define x0_5 (float) (100+100) //standard x pos for leg 5
-#define y0_5 (float) 0 //standard y pos for leg 5
-#define x0_6 (float) (100/sqrt2+61.85) //standard x pos for leg 6
-#define y0_6 (float) (100/sqrt2+120) //standard y pos for leg 6
-#define x0 (float) 100
-#define y0 (float) 0
-#define z0 (float) -120
 
 
 #define Gamma0 (float) 0
@@ -264,4 +249,34 @@ float basis_change_leg6x(float x, float y);
  * Returns calculated value of y.
  */
 float basis_change_leg6y(float x, float y); 
+
+void height_change_leg1(float new_z);
+void height_change_leg2(float new_z);
+void height_change_leg3(float new_z);
+void height_change_leg4(float new_z);
+void height_change_leg5(float new_z);
+void height_change_leg6(float new_z);
+void height_change_all(float new_z);
+
+float get_x0_1();
+float get_y0_1();
+
+float get_x0_2();
+float get_y0_2();
+
+float get_x0_3();
+float get_y0_3();
+
+float get_x0_4();
+float get_y0_4();
+
+float get_x0_5();
+float get_y0_5();
+
+float get_x0_6();
+float get_y0_6();
+
+float get_x0();
+float get_y0();
+float get_z0();
 #endif /* INVERSEKINEMATICS_H_ */

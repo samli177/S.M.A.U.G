@@ -27,12 +27,25 @@ void USART_SendMessage(char msg[]);
 void USART_SendSensors();
 void USART_SendCommand();
 void USART_SendElevation();
+void USART_SendTurn(uint16_t angle, uint8_t dir);
+void USART_SendClimb();
+void USART_RequestGyro();
 uint8_t USART_DecodeMessageRxFIFO();
+uint8_t USART_DecodeCommandRxFIFO();
+uint8_t USART_DecodeGyroRxFIFO();
+uint8_t USART_DecodeTurnDoneRxFIFO();
+uint8_t USART_DecodeClimbDoneRxFIFO();
 void USART_DecodeRxFIFO();
 void USART_Bounce();
 void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed);
 
 uint8_t USART_ready();
+uint8_t USART_turn_done();
+uint8_t USART_climb_done();
+uint8_t USART_GyroFlag();
+float USART_gyro_get_P();
+float USART_gyro_get_R();
+float USART_gyro_get_Y();
 
 
 

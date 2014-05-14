@@ -10,7 +10,13 @@ Gangenheten.cpp
 
 highLevelWalking.cpp
 
+I2Cdev.cpp
+
 inverseKinematics.cpp
+
+MPU6050.cpp
+
+MpuInit.cpp
 
 serialServoControl.cpp
 

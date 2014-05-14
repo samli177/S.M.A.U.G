@@ -20,6 +20,150 @@ float beta;
 float gamma;
 float d;
 
+float x0_1 = -100/sqrt2-61.85; //standard x pos for leg 1
+float y0_1 = 100/sqrt2+120; //standard y pos for leg 1
+float x0_2 = -100-100; //standard x pos for leg 2
+float y0_2 = 0; //standard y pos for leg 2
+float x0_3 = (-100/sqrt2-61.85); //standard x pos for leg 3
+float y0_3 = (-100/sqrt2-120); //standard y pos for leg 3
+float x0_4 = (100/sqrt2+61.85); //standard x pos for leg 4
+float y0_4 = (-100/sqrt2-120); //standard y pos for leg 4
+float x0_5 = (100+100); //standard x pos for leg 5
+float y0_5 = 0; //standard y pos for leg 5
+float x0_6 = (100/sqrt2+61.85); //standard x pos for leg 6
+float y0_6 = (100/sqrt2+120); //standard y pos for leg 6
+
+float x0 = 100;
+float y0 = 0;
+float z0 = -120;
+
+void height_change_x0(float new_z)
+{
+	x0 = 100 + 0.5*(new_z - z0);
+}
+
+void height_change_leg1(float new_z)
+{
+	x0_1 = -(120 +  0.5*(new_z - z0))/sqrt2-61.85; 
+	y0_1 = (120 +  0.5*(new_z - z0))/sqrt2+120;
+}
+
+void height_change_leg2(float new_z)
+{
+	x0_2 = -(120 +  0.5*(new_z - z0))-100;
+}
+
+void height_change_leg3(float new_z)
+{
+	x0_3 = -(120 +  0.5*(new_z - z0))/sqrt2-61.85;
+	y0_3 = -(120 +  0.5*(new_z - z0))/sqrt2-120; 
+}
+
+void height_change_leg4(float new_z)
+{
+	x0_4 = (120 +  0.5*(new_z - z0))/sqrt2+61.85;
+	y0_4 = -(120 +  0.5*(new_z - z0))/sqrt2-120; 
+}
+
+void height_change_leg5(float new_z)
+{
+	x0_5 = (120 +  0.5*(new_z - z0))+100;
+}
+
+void height_change_leg6(float new_z)
+{
+	x0_6 = (120 +  0.5*(new_z - z0))/sqrt2+61.85;
+	y0_6 = (120 +  0.5*(new_z - z0))/sqrt2+120;
+}
+
+void height_change_all(float new_z)
+{
+	height_change_x0(new_z);
+	height_change_leg1(new_z);
+	height_change_leg2(new_z);
+	height_change_leg3(new_z);
+	height_change_leg4(new_z);
+	height_change_leg5(new_z);
+	height_change_leg6(new_z);
+	
+}
+
+float get_x0_1()
+{
+	return x0_1;
+}
+
+float get_y0_1()
+{
+	return y0_1;
+}
+
+float get_x0_2()
+{
+	return x0_2;
+}
+
+float get_y0_2()
+{
+	return y0_2;
+}
+
+float get_x0_3()
+{
+	return x0_3;
+}
+
+float get_y0_3()
+{
+	return y0_3;
+}
+
+float get_x0_4()
+{
+	return x0_4;
+}
+
+float get_y0_4()
+{
+	return y0_4;
+}
+
+float get_x0_5()
+{
+	return x0_5;
+}
+
+float get_y0_5()
+{
+	return y0_5;
+}
+
+float get_x0_6()
+{
+	return x0_6;
+}
+
+float get_y0_6()
+{
+	return y0_6;
+}
+
+
+float get_x0()
+{
+	return x0;
+}
+
+float get_y0()
+{
+	return y0;
+}
+
+float get_z0()
+{
+	return z0;
+}
+
 void calc_d(float x,float y,float z)
 {
 	d = sqrtf(powf(sqrtf(x*x + y*y)-coxa, 2) + z*z);

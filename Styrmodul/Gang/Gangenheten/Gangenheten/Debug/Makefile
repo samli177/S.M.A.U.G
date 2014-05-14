@@ -40,7 +40,10 @@ C_SRCS +=  \
 ../fifo.cpp \
 ../Gangenheten.cpp \
 ../highLevelWalking.cpp \
+../I2Cdev.cpp \
 ../inverseKinematics.cpp \
+../MPU6050.cpp \
+../MpuInit.cpp \
 ../serialServoControl.cpp \
 ../usart.cpp
 
@@ -56,7 +59,10 @@ counter.o \
 fifo.o \
 Gangenheten.o \
 highLevelWalking.o \
+I2Cdev.o \
 inverseKinematics.o \
+MPU6050.o \
+MpuInit.o \
 serialServoControl.o \
 usart.o
 
@@ -65,7 +71,10 @@ counter.o \
 fifo.o \
 Gangenheten.o \
 highLevelWalking.o \
+I2Cdev.o \
 inverseKinematics.o \
+MPU6050.o \
+MpuInit.o \
 serialServoControl.o \
 usart.o
 
@@ -74,7 +83,10 @@ counter.d \
 fifo.d \
 Gangenheten.d \
 highLevelWalking.d \
+I2Cdev.d \
 inverseKinematics.d \
+MPU6050.d \
+MpuInit.d \
 serialServoControl.d \
 usart.d
 
@@ -83,7 +95,10 @@ counter.d \
 fifo.d \
 Gangenheten.d \
 highLevelWalking.d \
+I2Cdev.d \
 inverseKinematics.d \
+MPU6050.d \
+MpuInit.d \
 serialServoControl.d \
 usart.d
 
@@ -98,6 +113,12 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
+
+
+
+
 
 
 

@@ -18,6 +18,8 @@
 #define MAX_ROTATION_COUNTER_CLOCKWISE 30
 #define MAX_ROTATION_RADIANS 0.52
 #define STEPPING_TIME 400
+#define TURN_EXIT_ITTERATIONS 12
+#define TURN_ENTRY_ITTERATIONS 3
 //Variable for the speed parameter in movement commands. 
 uint8_t gSpeed = 50;
 
@@ -55,7 +57,7 @@ void turn_left()
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning left.");
 	}
-	for(int i = 0; (i < 20 && TWI_get_autonom_settings() != 0); ++i)
+	/*for(int i = 0; (i < 20 && navigation_autonomous_walk() != 0); ++i)
 	{
 		if(gStatus)
 		{
@@ -63,8 +65,15 @@ void turn_left()
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
+	}*/
+	USART_SendTurn(90, 0);
+	while(USART_turn_done() == 0)
+	{
+		USART_DecodeRxFIFO();
+		_delay_ms(10);
 	}
-	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
+	
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -80,7 +89,7 @@ void turn_right()
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning right.");
 	}
-	for(int i = 0; (i < 20 && TWI_get_autonom_settings() != 0); ++i)
+	/*for(int i = 0; (i < 20 && navigation_autonomous_walk() != 0); ++i)
 	{
 		if(gStatus)
 		{
@@ -88,8 +97,15 @@ void turn_right()
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
 		navigation_stepping_delay();
+	}*/
+	USART_SendTurn(90, 1);
+	while(USART_turn_done() == 0)
+	{
+		USART_DecodeRxFIFO();
+		_delay_ms(10);
 	}
-	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
+	
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -105,7 +121,7 @@ void turn_around()
 	{
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
-	for(int i = 0; (i < 40 && TWI_get_autonom_settings() != 0); ++i)
+	/*for(int i = 0; (i < 40 && navigation_autonomous_walk() != 0); ++i)
 	{
 		if(gStatus)
 		{
@@ -113,7 +129,14 @@ void turn_around()
 		}
 		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
 		navigation_stepping_delay();
+	}*/
+	USART_SendTurn(180, 0);
+	while(USART_turn_done() == 0)
+	{
+		USART_DecodeRxFIFO();
+		_delay_ms(10);
 	}
+	
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Corridor ahead, done turning around.");
@@ -152,6 +175,11 @@ void walk_forward()
 	//TWI_send_float(C_ADDRESS, adjustmentRotation);
 }
 
+void climb()
+{
+	USART_SendClimb();	
+}
+
 void autonomouswalk_walk()
 {
 	navigation_low_pass_obstacle();
@@ -159,50 +187,72 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_left_turn() == 2)
 		{
-			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			for(int i = 0;i < TURN_ENTRY_ITTERATIONS; ++i)
 			{
 				walk_forward();
 			}
 			turn_left();
+			decisionCounter = 0;
 		}
 		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
 		{
-			walk_forward();
+			if(navigation_get_sensor(6) < CORRIDOR_WIDTH / 2)
+			{
+				climb();
+			}
+			else
+			{
+				walk_forward();	
+			}
+			decisionCounter = 0;
 		}
 		else if(navigation_check_right_turn() == 2)
 		{
 			turn_right();
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
 			turn_around();
+			decisionCounter = 0;
+		}
+		else if(decisionCounter < 4)
+		{
+			walk_forward();
+			++decisionCounter;
 		}
 		else
 		{
-			walk_forward();
+			decisionCounter = 0;
+			navigation_set_autonomous_walk(0);
+			TWI_send_string_fixed_length(C_ADDRESS, "ERROR: Can't make a decision, turning off autonomous mode", 57);
 		}
 	}
 	else
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			for(int i = 0;i < TURN_ENTRY_ITTERATIONS - 1; ++i)
 			{
 				walk_forward();
 			}
 			turn_right();
+			decisionCounter = 0;
 		}
 		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
 		{
 			walk_forward();
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 2)
 		{
 			turn_left();
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
 			turn_around();
+			decisionCounter = 0;
 		}
 		else if(decisionCounter < 4)
 		{
