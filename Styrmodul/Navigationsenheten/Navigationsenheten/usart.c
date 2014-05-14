@@ -28,6 +28,7 @@ uint16_t gMessageDesitnation = C_ADDRESS;
 
 uint8_t gGangReady = 0;
 uint8_t gTurnDone = 0;
+uint8_t gClimbDone = 0;
 
 uint8_t gGyroFlag = 0;
 float gGyroP = 0;
@@ -239,6 +240,11 @@ void USART_SendTurn(uint16_t angle, uint8_t dir)
 	gTxPayload[1] = b2;
 	gTxPayload[2] = dir;
 	USART_SendPacket('T', 3);
+}
+
+void USART_SendClimb()
+{
+	USART_SendPacket('H', 0);
 }
 
 void USART_RequestGyro()
@@ -465,6 +471,27 @@ uint8_t USART_DecodeTurnDoneRxFIFO()
 	return 1;
 }
 
+uint8_t USART_DecodeClimbDoneRxFIFO()
+{
+	uint8_t *len = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		TWI_send_string(S_ADDRESS, "RxFIFO CLIMB-DONE ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 0)
+	{
+		gClimbDone = 1; // set flag
+		return 0;
+	}
+	
+	return 1;
+}
+
 uint8_t USART_ready()
 {
 	if(gGangReady)
@@ -505,6 +532,16 @@ uint8_t USART_turn_done()
 	if(gTurnDone)
 	{
 		gTurnDone = 0;
+		return 1;
+	}
+	return 0;
+}
+
+uint8_t USART_climb_done()
+{
+	if(gClimbDone)
+	{
+		gClimbDone = 0;
 		return 1;
 	}
 	return 0;
@@ -566,6 +603,14 @@ void USART_DecodeRxFIFO()
 			case('T'):
 			{
 				if(USART_DecodeTurnDoneRxFIFO())
+				{
+					return;
+				}
+				break;
+			}
+			case('H'):
+			{
+				if(USART_DecodeClimbDoneRxFIFO())
 				{
 					return;
 				}

@@ -104,6 +104,8 @@ Discarded input sections
                 0x00000000        0x8 usart.o
  .text.USART_ReadByte
                 0x00000000        0x6 usart.o
+ .text.USART_send_autonom
+                0x00000000        0xe usart.o
  .text.USART_Bounce
                 0x00000000       0x30 usart.o
  .text          0x00000000        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.7.2/../../../../avr/lib/avr51\libm.a(fixunssfsi.o)
@@ -765,7 +767,7 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x2a8
+.debug_aranges  0x00000000      0x2b0
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x30 counter.o
@@ -776,18 +778,18 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_aranges
                 0x00000098      0x168 twi.o
  .debug_aranges
-                0x00000200       0xa8 usart.o
+                0x00000200       0xb0 usart.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x243e
+.debug_info     0x00000000     0x247d
  *(.debug_info)
  .debug_info    0x00000000      0x119 counter.o
  .debug_info    0x00000119      0x1b1 fifo.o
  .debug_info    0x000002ca      0x270 kommunikationsmodulen.o
  .debug_info    0x0000053a     0x12f7 twi.o
- .debug_info    0x00001831      0xc0d usart.o
+ .debug_info    0x00001831      0xc4c usart.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev   0x00000000      0x95e
@@ -798,42 +800,42 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_abbrev  0x000002ea      0x365 twi.o
  .debug_abbrev  0x0000064f      0x30f usart.o
 
-.debug_line     0x00000000     0x19ca
+.debug_line     0x00000000     0x19e1
  *(.debug_line)
  .debug_line    0x00000000      0x13c counter.o
  .debug_line    0x0000013c      0x14f fifo.o
- .debug_line    0x0000028b      0x243 kommunikationsmodulen.o
- .debug_line    0x000004ce      0xe39 twi.o
- .debug_line    0x00001307      0x6c3 usart.o
+ .debug_line    0x0000028b      0x23d kommunikationsmodulen.o
+ .debug_line    0x000004c8      0xe39 twi.o
+ .debug_line    0x00001301      0x6e0 usart.o
 
-.debug_frame    0x00000000      0x7c0
+.debug_frame    0x00000000      0x7d0
  *(.debug_frame)
  .debug_frame   0x00000000       0x44 counter.o
  .debug_frame   0x00000044       0x68 fifo.o
  .debug_frame   0x000000ac       0x6c kommunikationsmodulen.o
  .debug_frame   0x00000118      0x454 twi.o
- .debug_frame   0x0000056c      0x254 usart.o
+ .debug_frame   0x0000056c      0x264 usart.o
 
-.debug_str      0x00000000      0x8b9
+.debug_str      0x00000000      0x87a
  *(.debug_str)
- .debug_str     0x00000000       0xe6 counter.o
-                                0x11a (size before relaxing)
- .debug_str     0x000000e6       0x45 fifo.o
-                                0x12a (size before relaxing)
- .debug_str     0x0000012b       0xed kommunikationsmodulen.o
-                                0x1e9 (size before relaxing)
- .debug_str     0x00000218      0x51b twi.o
-                                0x654 (size before relaxing)
- .debug_str     0x00000733      0x186 usart.o
-                                0x3ce (size before relaxing)
+ .debug_str     0x00000000       0xea counter.o
+                                0x11e (size before relaxing)
+ .debug_str     0x000000ea       0x45 fifo.o
+                                0x12e (size before relaxing)
+ .debug_str     0x0000012f       0xed kommunikationsmodulen.o
+                                0x1ed (size before relaxing)
+ .debug_str     0x0000021c      0x4c5 twi.o
+                                0x650 (size before relaxing)
+ .debug_str     0x000006e1      0x199 usart.o
+                                0x3ee (size before relaxing)
 
-.debug_loc      0x00000000     0x1906
+.debug_loc      0x00000000     0x1936
  *(.debug_loc)
  .debug_loc     0x00000000       0x6c counter.o
  .debug_loc     0x0000006c      0x17b fifo.o
  .debug_loc     0x000001e7       0x5e kommunikationsmodulen.o
  .debug_loc     0x00000245      0xc84 twi.o
- .debug_loc     0x00000ec9      0xa3d usart.o
+ .debug_loc     0x00000ec9      0xa6d usart.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -841,13 +843,13 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x2a0
+.debug_ranges   0x00000000      0x2a8
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x20 counter.o
  .debug_ranges  0x00000020       0x20 fifo.o
  .debug_ranges  0x00000040       0x28 kommunikationsmodulen.o
  .debug_ranges  0x00000068      0x1a0 twi.o
- .debug_ranges  0x00000208       0x98 usart.o
+ .debug_ranges  0x00000208       0xa0 usart.o
 
 .debug_macro
  *(.debug_macro)

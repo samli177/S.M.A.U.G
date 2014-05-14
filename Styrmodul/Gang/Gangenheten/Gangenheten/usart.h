@@ -26,10 +26,12 @@ void USART_SendMessage(char msg[]);
 void USART_SendSensors();
 void USART_SendGyro();
 void USART_send_turn_done();
+void USART_send_climb_done();
 uint8_t USART_DecodeMessageRxFIFO();
 uint8_t USART_DecodeCommandRxFIFO();
 uint8_t USART_DecodeElevationRxFIFO();
 uint8_t USART_DecodeTurnRxFIFO();
+uint8_t USART_DecodeClimbRxFIFO();
 void USART_DecodeRxFIFO();
 void USART_Bounce();
 void USART_SendValue(float flo);
@@ -42,6 +44,8 @@ void USART_send_ready();
 uint8_t USART_get_turn_flag();
 uint8_t USART_get_turn_dir();
 uint16_t USART_get_turn_angle();
+
+uint8_t USART_get_climb_flag();
 
 float USART_get_z();
 uint8_t USART_elevation_flag();

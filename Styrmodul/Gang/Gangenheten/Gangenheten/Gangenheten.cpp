@@ -10,14 +10,7 @@
 #include "usart.h"
 #include "counter.h"
 #include "MpuInit.h"
-
-#define LED1_ON PORTC |= (1<<PORTC6)
-#define LED1_OFF PORTC &= ~(1<<PORTC6)
-#define LED1_TOGGLE PORTC ^= (1<<PORTC6)
-
-#define LED2_ON PORTC |= (1<<PORTC7)
-#define LED2_OFF PORTC &= ~(1<<PORTC7)
-#define LED2_TOGGLE PORTC ^= (1<<PORTC7)
+#include "LED.h"
 
 uint8_t std_pos_flag = 1;
 uint8_t move_to_std_flag = 0;
@@ -26,7 +19,7 @@ void wait_until_gyro_stable();
 
 int main(void)
 {
-	DDRC |= (1<<PORTC6 | 1<<PORTC7); //init LED
+	LED_INIT;
 	//servoTx;
 	sei();
 	USART_init();
@@ -57,10 +50,14 @@ int main(void)
     while(1)
     {
 		MPU_update();
-		/*
+		
 		if(USART_get_turn_flag())
 		{
 			turn_degrees(USART_get_turn_angle(), USART_get_turn_dir());
+		}
+		if(USART_get_climb_flag())
+		{
+			climb();
 		}
 		
 		uint8_t r = USART_getRotation();
@@ -78,13 +75,12 @@ int main(void)
 		if(r == 50 && s == 0 && d == 0)
 		{
 			wait(50);
-			PORTD ^= (1<<PORTD5);
 			cli();
 			USART_send_ready();
 			sei();
 		}
 		
-		*/
+		
 		
 		if(move_to_std_flag == 1)
 		{
@@ -92,12 +88,14 @@ int main(void)
 			move_to_std();
 		}
 		
+		/*
 		climb();
 		
 		
 		change_z(-130);
 		move_to_std();
 		turn_degrees(180,1);
+		*/
 		/*
 		wait(100);
 		for(int i = 0; i < 10; ++i)

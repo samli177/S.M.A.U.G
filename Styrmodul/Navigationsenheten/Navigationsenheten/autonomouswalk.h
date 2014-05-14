@@ -111,4 +111,12 @@ void walk_forward();
  */
 void autonomouswalk_walk();
 
+/**
+ * \brief 
+ * Cause the robot to climb over an obstacle
+ * 
+ * \return void
+ */
+void climb();
+
 #endif 

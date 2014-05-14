@@ -17,6 +17,7 @@
 #include "usart.h"
 #include "counter.h"
 #include "MpuInit.h"
+#include "LED.h"
 
 int speed;
 float iterations;
@@ -592,12 +593,7 @@ void leg_motion()
 	if(climbing_flag)
 	{
 		wait(300);
-		//MPU_update();
-		//climb_check_down_r = MPU_get_r();
-		//climb_check_down_p = MPU_get_p();
-		PORTC ^= (1<<PORTC6);
-	
-		
+		MPU_update();
 		legsNotDown = 1;
 		while(legsNotDown)
 		{
@@ -1117,6 +1113,56 @@ void climb()
 	move_robot(0,50,100);
 	wait(30);
 	move_robot(0,50,100);
+	USART_send_climb_done();
+}
+
+void leaning_robot()
+{
+	MPU_update();
+	
+	if (MPU_get_r() - climb_start_slope_r > 0)
+	{
+		leg1.newPosz -= 10;
+		leg6.newPosz -= 10;
+				
+		leg3.newPosz += 10;
+		leg4.newPosz += 10;
+	}
+	else if (MPU_get_r() - climb_start_slope_r < 0)
+	{
+		leg1.newPosz += 10;
+		leg6.newPosz += 10;
+
+		leg3.newPosz -= 10;
+		leg4.newPosz -= 10;
+	}
+	else if (MPU_get_p() - climb_start_slope_p > 0)
+	{
+		leg1.newPosz -= 10;
+		leg2.newPosz -= 10;
+		leg3.newPosz -= 10;
+		
+		leg4.newPosz += 10;
+		leg5.newPosz += 10;
+		leg6.newPosz += 10;
+	}
+	else if (MPU_get_p() - climb_start_slope_p < 0)
+	{
+		leg1.newPosz += 10;
+		leg2.newPosz += 10;
+		leg3.newPosz += 10;
+		
+		leg4.newPosz -= 10;
+		leg5.newPosz -= 10;
+		leg6.newPosz -= 10;
+	}
+	
+	height_change_leg1(leg1.newPosz);
+	height_change_leg2(leg2.newPosz);
+	height_change_leg3(leg3.newPosz);
+	height_change_leg4(leg4.newPosz);
+	height_change_leg5(leg5.newPosz);
+	height_change_leg6(leg6.newPosz);
 }
 
 void move_climb(struct LegData* leg, float n)
@@ -1748,10 +1794,10 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 		{
 			realDiff = fabs(diff);
 		} else if(diff < 0) {
-			PORTC ^= (1<<PORTC6);
+			LED0_TOGGLE;
 			realDiff = M_PI + fmod(diff, M_PI);
 		} else {
-			PORTC ^= (1<<PORTC7);
+			LED1_TOGGLE;
 			realDiff = M_PI - fmod(diff, M_PI);
 		}
 		angleLeft = radians - realDiff;

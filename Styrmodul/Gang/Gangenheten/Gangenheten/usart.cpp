@@ -12,6 +12,7 @@
 #include "fifo.h"
 #include "usart.h"
 #include "MpuInit.h"
+#include "LED.h"
 
 
 // -- USART Stuff --
@@ -27,6 +28,7 @@ uint8_t gRotation=50, gSpeed=0, gDirection=0;
 uint16_t gTurnAngle = 0;
 int8_t gTurnDirection = 1;
 uint8_t gTurnFlag = 0;
+uint8_t gClimbFlag = 0;
 uint8_t gElevationFlag = 0;
 
 float gZ = -120;
@@ -67,6 +69,16 @@ uint8_t USART_get_turn_flag()
 	if(gTurnFlag)
 	{
 		gTurnFlag = 0;
+		return 1;
+	}
+	return 0;
+}
+
+uint8_t USART_get_climb_flag()
+{
+	if(gClimbFlag)
+	{
+		gClimbFlag = 0;
 		return 1;
 	}
 	return 0;
@@ -386,7 +398,7 @@ uint8_t USART_DecodeCommandRxFIFO()
 		gDirection = direction;
 		gRotation = rotation;
 		
-		PORTD ^= (1<<PORTD5);
+		LED0_TOGGLE;
 
 	}else
 	{
@@ -498,6 +510,26 @@ uint8_t USART_DecodeTurnRxFIFO()
 	return 0;
 }
 
+uint8_t USART_DecodeClimbRxFIFO()
+{
+	uint8_t *len = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		return 1; // error
+	}
+	
+	int length = *len;
+	
+	if(length == 0)
+	{
+		gClimbFlag = 1;
+		return 0;
+	}
+	
+	return 1;
+}
+
 void USART_DecodeRxFIFO()
 {
 	uint8_t *tag = 0;
@@ -544,6 +576,14 @@ void USART_DecodeRxFIFO()
 				if(USART_DecodeTurnRxFIFO())
 				{
 					// TODO: flush buffer?
+					return;
+				}
+				break;
+			}
+			case('H'):
+			{
+				if(USART_DecodeClimbRxFIFO())
+				{
 					return;
 				}
 				break;

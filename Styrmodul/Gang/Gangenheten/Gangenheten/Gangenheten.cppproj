@@ -170,6 +170,9 @@
     <Compile Include="inverseKinematics.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="LED.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="MPU6050.cpp">
       <SubType>compile</SubType>
     </Compile>

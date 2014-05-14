@@ -18,6 +18,8 @@
 #define MAX_ROTATION_COUNTER_CLOCKWISE 30
 #define MAX_ROTATION_RADIANS 0.52
 #define STEPPING_TIME 400
+#define TURN_EXIT_ITTERATIONS 12
+#define TURN_ENTRY_ITTERATIONS 4
 //Variable for the speed parameter in movement commands. 
 uint8_t gSpeed = 50;
 
@@ -71,7 +73,7 @@ void turn_left()
 		_delay_ms(10);
 	}
 	
-	for(int i = 0; (i < 12 && navigation_autonomous_walk() != 0); ++i)
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -103,7 +105,7 @@ void turn_right()
 		_delay_ms(10);
 	}
 	
-	for(int i = 0; (i < 12 && navigation_autonomous_walk() != 0); ++i)
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -173,6 +175,11 @@ void walk_forward()
 	//TWI_send_float(C_ADDRESS, adjustmentRotation);
 }
 
+void climb()
+{
+	USART_SendClimb();	
+}
+
 void autonomouswalk_walk()
 {
 	navigation_low_pass_obstacle();
@@ -180,50 +187,89 @@ void autonomouswalk_walk()
 	{
 		if(navigation_check_left_turn() == 2)
 		{
-			for(int i = 0;i < 3; ++i)
+			for(int i = 0;i < 4; ++i)
 			{
 				walk_forward();
 			}
 			turn_left();
+			decisionCounter = 0;
 		}
 		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
 		{
-			walk_forward();
+			if(navigation_get_sensor(6) < CORRIDOR_WIDTH / 2 - 5)
+			{
+				climb();
+				while(USART_climb_done() == 0)
+				{
+					USART_DecodeRxFIFO();
+					_delay_ms(10);
+				}
+			}
+			else
+			{
+				walk_forward();	
+			}
+			decisionCounter = 0;
 		}
 		else if(navigation_check_right_turn() == 2)
 		{
 			turn_right();
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
 			turn_around();
+			decisionCounter = 0;
+		}
+		else if(decisionCounter < 4)
+		{
+			walk_forward();
+			++decisionCounter;
 		}
 		else
 		{
-			walk_forward();
+			decisionCounter = 0;
+			navigation_set_autonomous_walk(0);
+			TWI_send_string_fixed_length(C_ADDRESS, "ERROR: Can't make a decision, turning off autonomous mode", 57);
 		}
 	}
 	else
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			for(int i = 0;i < 2; ++i)
+			for(int i = 0;i < 4; ++i)
 			{
 				walk_forward();
 			}
 			turn_right();
+			decisionCounter = 0;
 		}
 		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
 		{
-			walk_forward();
+			if(navigation_get_sensor(6) < CORRIDOR_WIDTH / 2 - 5)
+			{
+				climb();
+				while(USART_climb_done() == 0)
+				{
+					USART_DecodeRxFIFO();
+					_delay_ms(10);
+				}
+			}
+			else
+			{
+				walk_forward();
+			}
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 2)
 		{
 			turn_left();
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
 		{
 			turn_around();
+			decisionCounter = 0;
 		}
 		else if(decisionCounter < 4)
 		{

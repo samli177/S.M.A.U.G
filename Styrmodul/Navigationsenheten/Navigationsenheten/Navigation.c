@@ -13,11 +13,12 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "twi.h"
 #include "usart.h"
 #include "counter.h"
 #include "Navigation.h"
-#include <math.h>
+#include "LED.h"
 
 #define sensorBufferSize 5
 
@@ -47,7 +48,6 @@ uint8_t lowPassObstacleFlag = 0;
 //------------- Internal declarations ---------------
 
 //static int compare(const void * a, const void * b);
-static void update_median();
 static uint8_t sortAndFilter(uint8_t data[sensorBufferSize]);
 
 //--------------- Internal functions ----------------
@@ -102,28 +102,6 @@ uint8_t sortAndFilter(uint8_t data[sensorBufferSize])
 	return data[sensorBufferSize / 2];
 }
 
-/**
- * \brief 
- * Uses sensorBuffer to calculate the median of each sensor
- * over the last x measurements, where x is sensorBufferSize.
- *
- * \return void
- */
-void update_median()
-{
-	for(int i = 0; i < 8; ++i)
-	{
-		uint8_t temp[sensorBufferSize];
-		for(int j = 0; j < sensorBufferSize; ++j)
-		{
-			temp[j] = sensorMedianBuffer[i][j];
-		}
-		//qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
-		medianBuffer[i] = sortAndFilter(temp);
-		//temp[sensorBufferSize / 2];
-	}
-}
-
 //--------------- External functions ----------------
 
 void navigation_init()
@@ -172,7 +150,7 @@ void navigation_stepping_delay()
 	{
 		USART_DecodeRxFIFO();
 		_delay_ms(20);
-		PORTA ^= (1<<PORTA1);
+		LED1_TOGGLE;
 	}
 }
 
@@ -348,7 +326,6 @@ void navigation_fill_buffer()
 	} else {
 		currentBufferLine += 1;
 	}
-	//update_median();
 }
 
 uint8_t navigation_get_sensor(int sensorNr)
@@ -360,7 +337,6 @@ uint8_t navigation_get_sensor(int sensorNr)
 	}
 	//qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
 	return sortAndFilter(temp);
-	//return TWI_get_sensor(sensorNr);
 }
 
 //-------------------------------Interrupts--------------------------------

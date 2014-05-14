@@ -16,7 +16,7 @@
 #include "display.h"
 #include "twi.h"
 #include "counter.h"
-#include "sensors.h"	
+#include "sensors.h"
 
 void send_data(void);
 void init_TWI_sensor(void);
