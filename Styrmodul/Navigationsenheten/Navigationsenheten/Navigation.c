@@ -30,7 +30,7 @@ uint8_t gAlgorithm = 1;
 
 //A regulation parameter to determine how 
 //hard to punish offset. Small Kp => small punishment.
-float gKp = 0.1;
+float gKp = 0.05;
 
 // 0 means autonomous walk is disabled.
 // 1 means autonomous walk is enabled.
@@ -151,8 +151,7 @@ void navigation_stepping_delay()
 	while(USART_ready() == 0)
 	{
 		USART_decode_rx_fifo();
-		_delay_ms(20);
-		LED1_TOGGLE;
+		_delay_ms(10);
 	}
 }
 
@@ -162,7 +161,10 @@ void navigation_low_pass_obstacle()
 	{
 		TWI_send_string_fixed_length(S_ADDRESS,"Low pass obstacle detected.", 27);
 		_delay_ms(30);
-		TWI_send_string_fixed_length(C_ADDRESS,"Low pass obstacle detected.", 27);
+		if(autonomouswalk_get_return_status())
+		{
+			TWI_send_string_fixed_length(C_ADDRESS,"Low pass obstacle detected.", 27);	
+		}
 		lowPassObstacleFlag = 1;
 	}
 	else if(!(navigation_detect_low_pass_obsticle()))
@@ -177,12 +179,12 @@ float navigation_angle_offset()
 	float angle = 0;
 	if (gAlgorithm)
 	{
-		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
+		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 20))
 		{
 			// Use wall to the left
 			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 		}
-		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
+		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 20))
 		{
 			// Use wall to the right
 			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
@@ -190,12 +192,12 @@ float navigation_angle_offset()
 	}
 	else 
 	{
-		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
+		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 20))
 		{
 			// Use wall to the right
 			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
 		}
-		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
+		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 20))
 		{
 			// Use wall to the left
 			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
@@ -259,11 +261,11 @@ float navigation_direction_regulation(float angleOffset)
 
 uint8_t navigation_check_left_turn()
 {
-	if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH / 2 + 20) && navigation_get_sensor(2) >= (CORRIDOR_WIDTH / 2 + 20))
+	if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH / 2 + 20))
 	{
 		return 2;
 	}
-	else if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH - 10))
+	else if(navigation_get_sensor(0) >= (CORRIDOR_WIDTH / 2 + 10))
 	{
 		return 1;
 	}
@@ -275,11 +277,11 @@ uint8_t navigation_check_left_turn()
 
 uint8_t navigation_check_right_turn()
 {
-	if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH / 2 + 20) && navigation_get_sensor(3) >= (CORRIDOR_WIDTH / 2 + 20))
+	if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH / 2 + 20))
 	{
 		return 2;
 	}
-	else if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH - 10))
+	else if(navigation_get_sensor(1) >= (CORRIDOR_WIDTH / 2 + 10))
 	{
 		return 1;
 	}

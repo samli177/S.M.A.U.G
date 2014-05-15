@@ -377,6 +377,40 @@ uint8_t USART_decode_autonom_rx_fifo()
 	
 }
 
+uint8_t USART_decode_status_rx_fifo()
+{
+	uint8_t *len = 0;
+	uint8_t *data = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		USART_send_message( "RxFIFO Status ERROR: LEN MISSING");
+		return 1; // error
+	}
+	
+	int length = *len;
+	uint8_t sett;
+	
+	if(length == 1)
+	{
+		
+		if(FifoRead(gRxFIFO, data))
+		{
+			USART_send_message( "RxFIFO Status ERROR!");
+			return 1; // error
+		}
+		sett = *data;
+		TWI_send_status_settings(ST_ADDRESS, sett);
+
+	}else
+	{
+		USART_send_message( "RxFIFO Status ERROR: INCORRECT LENGTH");
+		return 1;
+	}
+
+	return 0;	
+}
+
 uint8_t USART_DecodeElevationRxFIFO()
 {
 	uint8_t *len = 0;
@@ -464,6 +498,15 @@ void USART_decode_rx_fifo()
 			case('E'):
 			{
 				if(USART_DecodeElevationRxFIFO())
+				{
+					// TODO: flush buffet?
+					return;
+				}
+				break;
+			}
+			case('T'):
+			{
+				if(USART_decode_status_rx_fifo())
 				{
 					// TODO: flush buffet?
 					return;

@@ -169,6 +169,8 @@ static void get_sensor_from_bus();
  */
 static void get_elevation_from_bus();
 
+static void get_status_settings_from_bus();
+
 //------------------------ Global variables for response functions--------
 uint8_t myAdress;
 char message[255];
@@ -178,6 +180,7 @@ uint8_t sensorBuffer[8];
 uint8_t sensors[8];
 uint8_t servo;
 uint8_t sweep;
+uint8_t statusSettings;
 int sensor;
 uint8_t command[3];
 int currentCommand;
@@ -199,6 +202,7 @@ uint8_t controlSettingsFlag_ = 0;
 uint8_t autonomSettingsFlag_ = 0;
 uint8_t elevationFlag_ = 0;
 uint8_t sweepFlag_ = 0;
+uint8_t statusSettingsFlag_ = 0;
 
 
 // ------------- FIFO for TWI --------------------------------------------
@@ -721,6 +725,10 @@ void get_elevation_from_bus()
 	elevation = get_data();
 }
 
+void get_status_settings_from_bus()
+{
+	statusSettings = get_data();
+}
 
 //----------------Access functions for the TWI----------------------------
 uint8_t TWI_get_command(int i)
@@ -756,6 +764,11 @@ uint8_t TWI_get_autonom_settings()
 uint8_t TWI_get_elevation()
 {
 	return elevation;
+}
+
+uint8_t TWI_get_status_settings()
+{
+	return statusSettings;
 }
 
 //----------------------Flags---------------------------------------------
@@ -814,6 +827,16 @@ uint8_t TWI_sweep_flag()
 	if(sweepFlag_)
 	{
 		sweepFlag_ = 0;
+		return 1;
+	}
+	return 0;
+}
+
+uint8_t TWI_status_settings_flag()
+{
+	if(statusSettingsFlag_)
+	{
+		statusSettingsFlag_ = 0;
 		return 1;
 	}
 	return 0;
@@ -1054,6 +1077,11 @@ ISR(TWI_vect)
 							get_autonom_settings_from_bus();
 							break;
 						}
+						case(I_STATUS_SETTINGS):
+						{
+							get_status_settings_from_bus();
+							break;
+						}
 					}
 				}
 			}
@@ -1084,6 +1112,11 @@ ISR(TWI_vect)
 					case(I_AUTONOM):
 					{
 						autonomSettingsFlag_ = 1;
+						break;
+					}
+					case(I_STATUS_SETTINGS):
+					{
+						statusSettingsFlag_ = 1;
 						break;
 					}
 				}

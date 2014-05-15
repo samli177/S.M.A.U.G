@@ -151,6 +151,15 @@ uint8_t USART_decode_autonom_rx_fifo();
 
 /**
  * \brief 
+ * Decodes package telling if the robot should send status messages in autonomous mode.
+ * 
+ * \return uint8_t
+ */
+uint8_t USART_decode_status_rx_fifo();
+
+
+/**
+ * \brief 
  * For debugging UART
  * 
  * \return void

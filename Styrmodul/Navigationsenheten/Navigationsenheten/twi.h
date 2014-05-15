@@ -48,6 +48,7 @@
 #define I_ELEVATION 4
 #define I_AUTONOM 5
 #define I_FLOAT 6
+#define I_STATUS_SETTINGS 7
 #define I_STRING 25
 
 //Module addresses
@@ -254,6 +255,8 @@ uint8_t TWI_get_elevation();
  */
 uint8_t TWI_get_elevation();
 
+uint8_t TWI_get_status_settings();
+
 /**
  * \brief 
  * Decodes a message from the FIFO buffer.
@@ -278,5 +281,6 @@ uint8_t TWI_control_settings_flag();
 uint8_t TWI_autonom_settings_flag();
 uint8_t TWI_elevation_flag();
 uint8_t TWI_sweep_flag();
+uint8_t TWI_status_setting_flag();
 
 #endif

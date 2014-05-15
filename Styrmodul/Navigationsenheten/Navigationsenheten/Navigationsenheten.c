@@ -59,6 +59,11 @@ int main(void)
 			autonom_flag = 0;
 		}
 		
+		if(TWI_status_settings_flag())
+		{
+			autonomouswalk_set_return_status(TWI_get_status_settings());
+		}
+		
 		if(navigation_autonomous_walk() == 1)
 		{
 			if(TWI_control_settings_flag())

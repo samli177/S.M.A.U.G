@@ -32,7 +32,7 @@ int main(void)
 	TWI_init(S_ADDRESS);
 	init_counters();
 	
-	set_counter_1(100);
+	set_counter_1(50);
 	set_counter_2(3000);
 	
 	// Activate interrupts

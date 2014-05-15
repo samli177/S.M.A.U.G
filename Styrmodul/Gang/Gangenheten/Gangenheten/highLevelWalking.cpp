@@ -31,16 +31,15 @@ float climb_start_slope_r;
 float climb_start_slope_p;
 float climb_check_down_r;
 float climb_check_down_p;
-int servo_speed = 300;
+int servo_speed = 0x300;
 uint8_t rotation_flag = 0;
 float MPUPMean;
 float MPURMean;
 uint8_t climb_counter;
 uint8_t climb_rotation_counter;
 
-
-
-
+float costemp;
+float sintemp;
 float newPosxWB;
 float newPosyWB;
 
@@ -104,7 +103,7 @@ void initvar()
 {
 	speedMultiplier = 1500;
 	speed = 300;
-	iterations = 5;
+	iterations = 4;
 	maxStepLength = 55;
 	stdLength = sqrtf(get_x0_1()*get_x0_1() + get_y0_1()*get_y0_1());
 	z = -120;
@@ -302,23 +301,28 @@ void move_robot(int dir, int rot, int spd)
 		yDirection = cosf(direction * pi / 45) * speedf / 100;
 	
 		//x och y riktning för rotation, skalad med rotationshastighet
-		leg1.xRot = rotation * get_y0_1()/ stdLength;
-		leg1.yRot = rotation * get_x0_1() / stdLength;
+		tempx = (1-cosf(maxStepLength*rotation/stdLength))*stdLength/maxStepLength;
+		tempy = sinf(maxStepLength*rotation/stdLength)*stdLength/maxStepLength;
+		costemp = -get_x0_1() / stdLength;
+		sintemp = -get_y0_1() / stdLength;
+		//x och y riktning för rotation, skalad med rotationshastighet
+		leg1.xRot = tempx*costemp-tempy*sintemp;// * get_y0_1()/ stdLength;
+		leg1.yRot = tempx*sintemp+tempy*costemp;// * get_x0_1() / stdLength;
 
-		leg2.xRot = 0;
-		leg2.yRot = rotation;
+		leg2.xRot = tempx;
+		leg2.yRot = tempy;
 
-		leg3.xRot = rotation * (- get_y0_1() / stdLength);
-		leg3.yRot = rotation * get_x0_1() / stdLength;
+		leg3.xRot = tempx*costemp+tempy*sintemp;//rotation * (- get_y0_1() / stdLength);
+		leg3.yRot = -tempx*sintemp+tempy*costemp;//rotation * get_x0_1() / stdLength;
 
-		leg4.xRot = rotation * (- get_y0_1() / stdLength);
-		leg4.yRot = rotation * (- get_x0_1() / stdLength);
-	
-		leg5.xRot = 0;
-		leg5.yRot = -rotation;
+		leg4.xRot = -tempx*costemp+tempy*sintemp;//rotation * (- get_y0_1() / stdLength);
+		leg4.yRot = -tempx*sintemp-tempy*costemp;//rotation * (- get_x0_1() / stdLength);
+		
+		leg5.xRot = -tempx;//0;
+		leg5.yRot = -tempy;//-rotation;
 
-		leg6.xRot = rotation  * get_y0_1() / stdLength;
-		leg6.yRot = rotation  * (- get_x0_1() / stdLength);
+		leg6.xRot = -tempx*costemp-tempy*sintemp;//rotation  * get_y0_1() / stdLength;
+		leg6.yRot = tempx*sintemp-tempy*costemp;//rotation  * (- get_x0_1() / stdLength);
 
 		//Addera förflyttningarna och sätter Step_max till längsta stegets längd
 		stepMax = powf((xDirection + leg1.xRot),2) + powf((yDirection + leg1.yRot),2);
@@ -537,7 +541,7 @@ void leg_motion()
 		SERVO_action();
 		if(i == 0 || i == iterations + 1)
 		{
-			wait(100);
+			wait(50);
 		}
 		else
 		{
@@ -620,30 +624,44 @@ void leg_motion()
 		// steps on the obstacle:
 		if (leg3.newPosz > z_in_use && leg4.newPosz > z_in_use && climb_step < 3)
 		{
-			climb_step = 3;
-			climb_step2 = 1;
-			
-			climb_counter = 0;
-			move_robot(0,50,100);
-			wait(100);
-			move_robot(0,50,100);
-			wait(100);
-			while(fabs(MPU_get_y() - climb_start_control) > 0.10)
+			if(MPURMean - climb_start_slope_r < -0.10 && climb_step2 == 3)
 			{
-				MPU_update();
-				if (MPU_get_y() - climb_start_control > 0)
-				{
-					move_robot(0, 40, 0);
-				}
-				else
-				{
-					move_robot(0, 60, 0);
-				}
+				leg3.newPosz = z_in_use;
+				height_change_leg3(z_in_use);
+				leg3.climbing = 0;
+				leg4.newPosz = z_in_use;
+				height_change_leg4(z_in_use);
+				leg4.climbing = 0;
+				
+				move_robot(0, 50, 0);
 			}
-			
-			wait(100);
-			climb_start_slope_r = MPU_get_r();
-			climb_start_slope_p = MPU_get_p();
+			else
+			{
+				climb_step = 3;
+				climb_step2 = 1;
+				
+				climb_counter = 0;
+				move_robot(0,50,100);
+				wait(100);
+				move_robot(0,50,100);
+				wait(100);
+				while(fabs(MPU_get_y() - climb_start_control) > 0.10)
+				{
+					MPU_update();
+					if (MPU_get_y() - climb_start_control > 0)
+					{
+						move_robot(0, 40, 0);
+					}
+					else
+					{
+						move_robot(0, 60, 0);
+					}
+				}
+				
+				wait(100);
+				climb_start_slope_r = MPU_get_r();
+				climb_start_slope_p = MPU_get_p();
+			}
 		}
 		else if (leg2.newPosz > z_in_use && leg5.newPosz > z_in_use && climb_step < 3)
 		{
@@ -716,8 +734,8 @@ void leg_check_down(struct LegData* leg)
 	//update_leg_info(leg);
 	wait(100);
 	MPU_get_mean();
-	if(fabsf(MPURMean - climb_start_slope_r) > 0.03 || 
-		fabsf(MPUPMean - climb_start_slope_p) > 0.03 || 
+	if(fabsf(MPURMean - climb_start_slope_r) > 0.05 || 
+		fabsf(MPUPMean - climb_start_slope_p) > 0.05 || 
 		leg->newPosz < z_in_use - 10)
 	{
 		//leg->newPosz += 20;
@@ -726,7 +744,7 @@ void leg_check_down(struct LegData* leg)
 		// The leg is at the obstacle:
 		if (leg->newPosz >= z_in_use - 10)
 		{
-			obstacle_height = z_in_use + 60; 
+			obstacle_height = z_in_use + 65; 
 			tempz = obstacle_height;
 			leg->climbing = 0;
 			leg->newPosz = obstacle_height;
@@ -979,7 +997,22 @@ void climb()
 		
 		//For safety when climbing down, if we fall.
 		MPU_get_mean();
-		if(MPURMean - climb_start_slope_r > 0.10 && climb_step2 == 1)
+		if(MPURMean - climb_start_slope_r > 0.10 && climb_step == 1)
+		{
+			leg1.newPosz = z_in_use;
+			height_change_leg1(z_in_use);
+			leg6.newPosz = z_in_use;
+			height_change_leg6(z_in_use);
+			leg2.newPosz = z_in_use;
+			height_change_leg2(z_in_use);
+			leg2.climbing = 0;
+			leg5.newPosz = z_in_use;
+			height_change_leg5(z_in_use);
+			leg5.climbing = 0;
+			climb_step = 0;
+			
+		}
+		else if(MPURMean - climb_start_slope_r > 0.10 && climb_step2 == 1)
 		{
 			leg1.newPosz = z_in_use;
 			height_change_leg1(z_in_use);
@@ -1044,7 +1077,7 @@ void climb()
 				move_robot(0, 60, 0);
 			}
 			climb_rotation_counter += 1;
-			if(climb_rotation_counter > 8 && (leg3.newPosz > z_in_use || leg4.newPosz > z_in_use))
+			if(climb_rotation_counter > 8)
 			{
 				leg2.newPosz = z_in_use;
 				height_change_leg2(z_in_use);
@@ -1194,13 +1227,17 @@ void move_to_std()
 
 void turn_degrees(uint16_t degrees, int8_t dir)
 {
+	float turnSpeed = 0;
+	if(degrees < 100)
+	{
+		turnSpeed = 75;
+	}
 	float radians = degrees * M_PI/180;
-	float tolerance = 4 * M_PI/180;
+	float tolerance = 2 * M_PI/180;
 	wait(10);
 	float startAngle = MPU_get_y();
 	float newAngle;
 	float angleLeft, move;
-	USART_send_value(startAngle*180/M_PI);
 	float diff, realDiff;
 	
 	do
@@ -1217,12 +1254,10 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 		} 
 		else if(diff < 0)
 		{
-			LED0_TOGGLE;
 			realDiff = M_PI + fmod(diff, M_PI);
 		} 
 		else 
 		{
-			LED1_TOGGLE;
 			realDiff = M_PI - fmod(diff, M_PI);
 		}
 		angleLeft = radians - realDiff;
@@ -1240,13 +1275,12 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 				angleLeft *= -1;
 			}
 		}
-		move = 50 + dir * 40 * angleLeft * 6 / M_PI;
+		move = 50 + dir * 40 * angleLeft * 4 / M_PI;
 		if(move > 45 && move < 55)
 		{
 			move = 50 + 5 * dir * angleLeft / fabs(angleLeft);
 		}
-		USART_send_value(move);
-		move_robot(0, move, 0);
+		move_robot(0, move, turnSpeed);
 	} 
 	while(fabs(angleLeft) > tolerance);
 	
