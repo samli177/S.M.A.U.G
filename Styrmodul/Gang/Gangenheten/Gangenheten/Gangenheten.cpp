@@ -93,22 +93,28 @@ int main(void)
 			move_to_std();
 		}
 		
-		/*
-		climb();
 		
+		/*climb();
+		for(int i = 0; i < 10; ++i)
+		{
+			move_robot(0,50,100);
+			//wait(2000);
+		}
+		*/
+		/*
 		
 		change_z(-120);
 		move_to_std();
 		turn_degrees(180,1);
-		*/
-		/*
+		
+		
 		// Takes a predecided number of steps forward
 		// This is good when testing different things.
 		wait(100);
 		for(int i = 0; i < 10; ++i)
 		{
 			move_robot(0,50,100);
-			wait(2000);
+			//wait(2000);
 		}
 		*/
 		

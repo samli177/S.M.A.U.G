@@ -3,8 +3,8 @@
 
 #include <avr/io.h>
 
-#define DISTANCE_FRONT_TO_BACK 16.0   // cm
-#define DISTANCE_MIDDLE_TO_SIDE 6.7   // cm
+#define DISTANCE_FRONT_TO_BACK 12.5   // cm
+#define DISTANCE_MIDDLE_TO_SIDE 6.4   // cm
 #define CORRIDOR_WIDTH 80             // cm
 #define ACCEPTABLE_OFFSET_ANGLE 0.07   // radians
 #define ACCEPTABLE_DISTANCE_OFFSET 2  // cm

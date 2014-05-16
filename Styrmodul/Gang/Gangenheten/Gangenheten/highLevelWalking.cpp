@@ -305,24 +305,25 @@ void move_robot(int dir, int rot, int spd)
 		tempy = sinf(maxStepLength*rotation/stdLength)*stdLength/maxStepLength;
 		costemp = -get_x0_1() / stdLength;
 		sintemp = -get_y0_1() / stdLength;
+		
 		//x och y riktning för rotation, skalad med rotationshastighet
-		leg1.xRot = tempx*costemp-tempy*sintemp;// * get_y0_1()/ stdLength;
-		leg1.yRot = tempx*sintemp+tempy*costemp;// * get_x0_1() / stdLength;
+		leg1.xRot = tempx*costemp-tempy*sintemp;
+		leg1.yRot = tempx*sintemp+tempy*costemp;
 
 		leg2.xRot = tempx;
 		leg2.yRot = tempy;
 
-		leg3.xRot = tempx*costemp+tempy*sintemp;//rotation * (- get_y0_1() / stdLength);
-		leg3.yRot = -tempx*sintemp+tempy*costemp;//rotation * get_x0_1() / stdLength;
+		leg3.xRot = tempx*costemp+tempy*sintemp;
+		leg3.yRot = -tempx*sintemp+tempy*costemp;
 
-		leg4.xRot = -tempx*costemp+tempy*sintemp;//rotation * (- get_y0_1() / stdLength);
-		leg4.yRot = -tempx*sintemp-tempy*costemp;//rotation * (- get_x0_1() / stdLength);
+		leg4.xRot = -tempx*costemp+tempy*sintemp;
+		leg4.yRot = -tempx*sintemp-tempy*costemp;
 		
-		leg5.xRot = -tempx;//0;
-		leg5.yRot = -tempy;//-rotation;
+		leg5.xRot = -tempx;
+		leg5.yRot = -tempy;
 
-		leg6.xRot = -tempx*costemp-tempy*sintemp;//rotation  * get_y0_1() / stdLength;
-		leg6.yRot = tempx*sintemp-tempy*costemp;//rotation  * (- get_x0_1() / stdLength);
+		leg6.xRot = -tempx*costemp-tempy*sintemp;
+		leg6.yRot = tempx*sintemp-tempy*costemp;
 
 		//Addera förflyttningarna och sätter Step_max till längsta stegets längd
 		stepMax = powf((xDirection + leg1.xRot),2) + powf((yDirection + leg1.yRot),2);
@@ -411,16 +412,20 @@ void leg_motion_init()
 
 void move_leg(struct LegData* leg, float n)
 {
-	if(leg->lift == 1 && n != iterations+1)
+	if(leg->lift == 1 && n != iterations+1 && climbing_flag == 1)
 	{
+		/*
 		if (leg->climbing == 2)
 		{
 			tempz = obstacle_height + 50;
 		}
-		else
-		{
-			tempz = leg->newPosz + 30;
-		}
+		*/
+	
+		tempz = leg->newPosz + 90;
+	}
+	else if (leg->lift == 1 && n != iterations+1)
+	{
+	tempz = leg->newPosz + 20; 	
 		
 	}
 	else
@@ -448,6 +453,12 @@ void move_leg(struct LegData* leg, float n)
 		tempx = leg->prevPosx;
 		tempy = leg->prevPosy;
 	}
+	
+	if(leg->lift == 1 && n != iterations+1 && climbing_flag == 1)
+	{
+		tempx += 50;
+	}
+	
 	
 	calc_d(tempx, tempy, tempz);
 	leg->temp2AngleGamma = get_gamma(tempx, tempy);
@@ -484,13 +495,16 @@ void leg_motion()
 // 	climb_check_down_p = MPU_get_p();
 	for(int i = 0; i <= (int)iterations+1; ++i)
 	{
+		/*
 		if(leg1.climbing == 1)
 		{
 			move_climb(&leg1, i);
 		}
 		else
 		{
+			*/
 			move_leg(&leg1,i);
+			/*
 		}
 		
 		if(leg2.climbing == 1)
@@ -499,7 +513,9 @@ void leg_motion()
 		}
 		else
 		{
+			*/
 			move_leg(&leg2,i);
+			/*
 		}
 		
 		if(leg3.climbing == 1)
@@ -508,7 +524,9 @@ void leg_motion()
 		}
 		else
 		{
+			*/
 			move_leg(&leg3,i);
+			/*
 		}
 		
 		if(leg4.climbing == 1)
@@ -517,7 +535,9 @@ void leg_motion()
 		}
 		else
 		{
+			*/
 			move_leg(&leg4,i);
+			/*
 		}
 		
 		if(leg5.climbing == 1)
@@ -526,7 +546,9 @@ void leg_motion()
 		}
 		else
 		{
+			*/
 			move_leg(&leg5,i);
+			/*
 		}
 		
 		if(leg6.climbing == 1)
@@ -535,11 +557,17 @@ void leg_motion()
 		}
 		else
 		{
+			*/
 			move_leg(&leg6,i);
+			/*
 		}
-
+*/
 		SERVO_action();
-		if(i == 0 || i == iterations + 1)
+		if((i == 0 || i == iterations + 1) && climbing_flag)
+		{
+			wait(300);
+		}
+		else if (i == 0 || i == iterations + 1)
 		{
 			wait(50);
 		}
@@ -553,7 +581,7 @@ void leg_motion()
 			change_z(USART_get_z());
 		}
 	}
-	
+	/*
 	if(climbing_flag)
 	{
 		wait(300);
@@ -705,8 +733,10 @@ void leg_motion()
 			rotation_flag = 1;
 		}
 	}
+	*/
 }
 
+/*
 void leg_move_down(struct LegData* leg)
 {
 	leg->newPosz -=10;
@@ -1147,7 +1177,7 @@ void move_climb(struct LegData* leg, float n)
 		SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,200);
 	}
 }
-
+*/
 
 void change_z(float input)
 {
@@ -1228,7 +1258,7 @@ void move_to_std()
 void turn_degrees(uint16_t degrees, int8_t dir)
 {
 	float turnSpeed = 0;
-	if(degrees < 100)
+	if(degrees == 90)
 	{
 		turnSpeed = 75;
 	}
@@ -1290,6 +1320,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 
 void MPU_get_mean()
 {
+	wait(10);
 	MPU_update();
 	float xp = MPU_get_p();
 	float xr = MPU_get_r();
@@ -1304,3 +1335,27 @@ void MPU_get_mean()
 }
 
 
+//Ny hårdkodad climb
+void climb()
+{
+	climbing_flag = 1;
+	float tempdir;
+	MPU_update();
+	climb_start_control = MPU_get_y();
+	
+	for(int i = 0;i<16;++i)
+	{		
+		MPU_update();	
+		if(climb_start_control-MPU_get_y() <= 0)
+		{
+			tempdir = 90-300*(climb_start_control-MPU_get_y());		
+		}
+		else
+		{
+			tempdir = 300*climb_start_control-MPU_get_y();	
+		}
+		move_robot(tempdir,50+150*(climb_start_control-MPU_get_y()),100);
+	}
+	climbing_flag = 0;
+	USART_send_climb_done();	
+}

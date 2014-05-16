@@ -189,6 +189,29 @@ void autonomouswalk_walk()
 					TWI_send_string_fixed_length(C_ADDRESS, "Starting climb", 14);
 				}
 				
+				//Denna del behövs inte om roboten står rakt vid hindret
+				float tempAngle = navigation_angle_offset();
+				if (tempAngle != 0)
+				{
+					if(tempAngle>0)
+					{
+						USART_send_turn(tempAngle,0);
+					}
+					else if (tempAngle < 0)
+					{
+						USART_send_turn(-tempAngle,1);
+					}
+					while(USART_turn_done() == 0)
+					{
+						USART_decode_rx_fifo();
+						_delay_ms(10);
+					}			
+				}
+				
+				// FUL HÅRDKODNING FÖR ATT KOMPENSERA FÖR DÅLIG REGLERING! TA BORT OM ROBOTEN ALLTID KOMMER RAKT TILL HINDRET
+				navigation_stepping_delay();
+				USART_send_command_parameters(22+45*navigation_left_algorithm(),50,50);
+				
 				climb();
 				while(USART_climb_done() == 0)
 				{
