@@ -8,8 +8,7 @@ package src;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import javax.swing.JPanel;
 
 /**
@@ -20,43 +19,33 @@ public class UpperPanel extends JPanel {
 
     int MAX_POINTS = 20;
 
-    ArrayList<Point2D> vertical;
-    ArrayList<Float> ultraSound;
+    Sensor vertical;
+    Sensor ultraSound;
     int x0 = 100;
     int y0 = 132;
 
     public UpperPanel() {
         super();
-        vertical = new ArrayList<>();
-        ultraSound = new ArrayList<>();
+        vertical = new Sensor(MAX_POINTS);
+        ultraSound = new Sensor(MAX_POINTS);
     }
 
-    public synchronized void updatePoints(float length, float angle, MainWindow.SENSOR sensor) {
+    public void setParameters(int s, int m) {
+        vertical.setMaxValues(s);
+        vertical.setMedianCount(m);
+        ultraSound.setMaxValues(s);
+        ultraSound.setMedianCount(m);
+
+        MAX_POINTS = s;
+    }
+
+    public synchronized void updatePoints(float length, MainWindow.SENSOR sensor) {
         switch (sensor) {
             case VERTICAL:
-                Point2D newPoint = new Point2D.Float(angle, length);
-                vertical.add(newPoint);
-                if (vertical.size() > MAX_POINTS) {
-                    ArrayList<Point2D> temp = new ArrayList<>();
-                    for (int i = 1; i < vertical.size(); i++) {
-                        temp.add(vertical.get(i));
-                    }
-
-                    vertical = (ArrayList<Point2D>) temp.clone();
-                    temp.clear();
-                }
+                vertical.add(length);
                 break;
             case ULTRA_SOUND:
                 ultraSound.add(length);
-                if (ultraSound.size() > MAX_POINTS) {
-                    ArrayList<Float> temp = new ArrayList<>();
-                    for (int i = 1; i < ultraSound.size(); i++) {
-                        temp.add(ultraSound.get(i));
-                    }
-
-                    ultraSound = (ArrayList<Float>) temp.clone();
-                    temp.clear();
-                }
                 break;
         }
     }
@@ -65,22 +54,25 @@ public class UpperPanel extends JPanel {
         super.paintComponent(g);
 
         g.setColor(Color.red);
-        g.fillOval(x0, y0, 10, 10);
+        g.fillOval(x0, y0, 9, 9);
         g.setColor(Color.black);
 
         g.setFont(new Font("ARIAL", Font.BOLD, 16));
-        g.drawString("Vertikal Sensor", 10, 20);
+        g.drawString("Vertikala Sensorer", 10, 20);
 
         float a;
         float l;
-        for (Point2D pnt : vertical) {
-            a = (float) pnt.getX();
-            l = (float) pnt.getY();
-            g.fillOval(x0 + (int) (l * Math.cos(Math.toRadians(a))), y0 + (int) (l * Math.sin(Math.toRadians(a))), 5, 5);
+        for (int i = 0; i < vertical.size(); i++) {
+            l = (float) vertical.get(i);
+            g.fillOval(x0 + 30 + (int) (l * 1.75 - Math.cos(Math.toRadians(70)) * i * 80 / MAX_POINTS),
+                    y0 + 20 + (int) (Math.sin(Math.toRadians(70)) * i * 80 / MAX_POINTS),
+                    5, 5);
         }
         for (int i = 0; i < ultraSound.size(); i++) {
-            l = (float) ultraSound.get(ultraSound.size() - 1 - i);
-            g.fillOval(x0 + (int) (l - Math.cos(Math.toRadians(70)) * i * 3), y0 - 40 - (int) (Math.sin(Math.toRadians(70)) * i * 3), 5, 5);
+            l = (float) ultraSound.get(i);
+            g.fillOval(x0 + 30 + (int) (l * 1.75 - Math.cos(Math.toRadians(70)) * i * 80 / MAX_POINTS),
+                    y0 - 20 - (int) (Math.sin(Math.toRadians(70)) * i * 80 / MAX_POINTS),
+                    5, 5);
         }
     }
 }
