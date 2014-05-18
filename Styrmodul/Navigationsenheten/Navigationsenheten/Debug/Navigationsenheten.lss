@@ -25,11 +25,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  10 .debug_frame  00000ce0  00000000  00000000  0000f414  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000e59  00000000  00000000  000100f4  2**0
+ 11 .debug_str    00000eb5  00000000  00000000  000100f4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000273f  00000000  00000000  00010f4d  2**0
+ 12 .debug_loc    0000273f  00000000  00000000  00010fa9  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 000004a0  00000000  00000000  0001368c  2**0
+ 13 .debug_ranges 000004a0  00000000  00000000  000136e8  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -1066,12 +1066,6 @@ void autonomouswalk_walk()
      594:	08 95       	ret
 
 00000596 <set_counter_1>:
-	TCNT3 = 0;
-}
-
-void set_counter_1(uint16_t delay)
-{
-	delay = 15.625 * delay;
      596:	bc 01       	movw	r22, r24
      598:	80 e0       	ldi	r24, 0x00	; 0
      59a:	90 e0       	ldi	r25, 0x00	; 0
@@ -1082,17 +1076,11 @@ void set_counter_1(uint16_t delay)
      5a6:	51 e4       	ldi	r21, 0x41	; 65
      5a8:	0e 94 86 12 	call	0x250c	; 0x250c <__mulsf3>
      5ac:	0e 94 3f 11 	call	0x227e	; 0x227e <__fixunssfsi>
-	OCR1A = delay;
      5b0:	70 93 89 00 	sts	0x0089, r23
      5b4:	60 93 88 00 	sts	0x0088, r22
      5b8:	08 95       	ret
 
 000005ba <set_counter_2>:
-}
-
-void set_counter_2(uint16_t delay)
-{
-	delay = 15.625 * delay;
      5ba:	bc 01       	movw	r22, r24
      5bc:	80 e0       	ldi	r24, 0x00	; 0
      5be:	90 e0       	ldi	r25, 0x00	; 0
@@ -1103,57 +1091,39 @@ void set_counter_2(uint16_t delay)
      5ca:	51 e4       	ldi	r21, 0x41	; 65
      5cc:	0e 94 86 12 	call	0x250c	; 0x250c <__mulsf3>
      5d0:	0e 94 3f 11 	call	0x227e	; 0x227e <__fixunssfsi>
-	OCR3A = delay;
      5d4:	70 93 99 00 	sts	0x0099, r23
      5d8:	60 93 98 00 	sts	0x0098, r22
      5dc:	08 95       	ret
 
 000005de <init_counters>:
-
-//---------------------------------------COUNTERS/TIMERS-----------
-void init_counters()
-{
-	// WGMn3:0 = 4 (OCRnA) or 12 (OCRn), where top value is read from.
-	TCCR1B |= 0b00000101; // clock 1, prescaler 1024
      5de:	e1 e8       	ldi	r30, 0x81	; 129
      5e0:	f0 e0       	ldi	r31, 0x00	; 0
      5e2:	80 81       	ld	r24, Z
      5e4:	85 60       	ori	r24, 0x05	; 5
      5e6:	80 83       	st	Z, r24
-	TCCR3B |= 0b00000101; // clock 2, prescaler 1024
      5e8:	e1 e9       	ldi	r30, 0x91	; 145
      5ea:	f0 e0       	ldi	r31, 0x00	; 0
      5ec:	80 81       	ld	r24, Z
      5ee:	85 60       	ori	r24, 0x05	; 5
      5f0:	80 83       	st	Z, r24
-	
-	// standardvalue for interrupt is 1000ms
-	set_counter_1(1000);
      5f2:	88 ee       	ldi	r24, 0xE8	; 232
      5f4:	93 e0       	ldi	r25, 0x03	; 3
      5f6:	cf df       	rcall	.-98     	; 0x596 <set_counter_1>
-	set_counter_2(1000);
      5f8:	88 ee       	ldi	r24, 0xE8	; 232
      5fa:	93 e0       	ldi	r25, 0x03	; 3
      5fc:	de df       	rcall	.-68     	; 0x5ba <set_counter_2>
-	
-	TIMSK1 |= 0b00000010; // Enable interrupts when OCF1A, in TIFR1, is set.
      5fe:	ef e6       	ldi	r30, 0x6F	; 111
      600:	f0 e0       	ldi	r31, 0x00	; 0
      602:	80 81       	ld	r24, Z
      604:	82 60       	ori	r24, 0x02	; 2
      606:	80 83       	st	Z, r24
-	TIMSK3 |= 0b00000010; // Enable interrupts when OCF2A, in TIFR2, is set.
      608:	e1 e7       	ldi	r30, 0x71	; 113
      60a:	f0 e0       	ldi	r31, 0x00	; 0
      60c:	80 81       	ld	r24, Z
      60e:	82 60       	ori	r24, 0x02	; 2
      610:	80 83       	st	Z, r24
-	// OCF1A (or ICFn) Flag, in TIFR1, can be used to generate interrupts.
-	TCNT1 = 0;
      612:	10 92 85 00 	sts	0x0085, r1
      616:	10 92 84 00 	sts	0x0084, r1
-	TCNT3 = 0;
      61a:	10 92 95 00 	sts	0x0095, r1
      61e:	10 92 94 00 	sts	0x0094, r1
      622:	08 95       	ret
@@ -1631,9 +1601,9 @@ float navigation_direction_regulation(float angleOffset)
      904:	40 e0       	ldi	r20, 0x00	; 0
      906:	5f e3       	ldi	r21, 0x3F	; 63
      908:	0e 94 86 12 	call	0x250c	; 0x250c <__mulsf3>
-     90c:	2d ec       	ldi	r18, 0xCD	; 205
-     90e:	3c ec       	ldi	r19, 0xCC	; 204
-     910:	4c ec       	ldi	r20, 0xCC	; 204
+     90c:	23 e3       	ldi	r18, 0x33	; 51
+     90e:	33 e3       	ldi	r19, 0x33	; 51
+     910:	43 ec       	ldi	r20, 0xC3	; 195
      912:	50 e4       	ldi	r21, 0x40	; 64
      914:	0e 94 3f 10 	call	0x207e	; 0x207e <__addsf3>
      918:	20 e0       	ldi	r18, 0x00	; 0
@@ -1709,9 +1679,9 @@ float navigation_direction_regulation(float angleOffset)
      9a8:	40 e0       	ldi	r20, 0x00	; 0
      9aa:	5f e3       	ldi	r21, 0x3F	; 63
      9ac:	0e 94 86 12 	call	0x250c	; 0x250c <__mulsf3>
-     9b0:	2d ec       	ldi	r18, 0xCD	; 205
-     9b2:	3c ec       	ldi	r19, 0xCC	; 204
-     9b4:	4c ec       	ldi	r20, 0xCC	; 204
+     9b0:	23 e3       	ldi	r18, 0x33	; 51
+     9b2:	33 e3       	ldi	r19, 0x33	; 51
+     9b4:	43 ec       	ldi	r20, 0xC3	; 195
      9b6:	50 e4       	ldi	r21, 0x40	; 64
      9b8:	0e 94 3f 10 	call	0x207e	; 0x207e <__addsf3>
      9bc:	20 e0       	ldi	r18, 0x00	; 0
@@ -1791,9 +1761,9 @@ float navigation_direction_regulation(float angleOffset)
      a4e:	40 e0       	ldi	r20, 0x00	; 0
      a50:	5f e3       	ldi	r21, 0x3F	; 63
      a52:	0e 94 86 12 	call	0x250c	; 0x250c <__mulsf3>
-     a56:	2d ec       	ldi	r18, 0xCD	; 205
-     a58:	3c ec       	ldi	r19, 0xCC	; 204
-     a5a:	4c ec       	ldi	r20, 0xCC	; 204
+     a56:	23 e3       	ldi	r18, 0x33	; 51
+     a58:	33 e3       	ldi	r19, 0x33	; 51
+     a5a:	43 ec       	ldi	r20, 0xC3	; 195
      a5c:	50 e4       	ldi	r21, 0x40	; 64
      a5e:	0e 94 3f 10 	call	0x207e	; 0x207e <__addsf3>
      a62:	20 e0       	ldi	r18, 0x00	; 0
@@ -1871,9 +1841,9 @@ float navigation_direction_regulation(float angleOffset)
      af6:	40 e0       	ldi	r20, 0x00	; 0
      af8:	5f e3       	ldi	r21, 0x3F	; 63
      afa:	0e 94 86 12 	call	0x250c	; 0x250c <__mulsf3>
-     afe:	2d ec       	ldi	r18, 0xCD	; 205
-     b00:	3c ec       	ldi	r19, 0xCC	; 204
-     b02:	4c ec       	ldi	r20, 0xCC	; 204
+     afe:	23 e3       	ldi	r18, 0x33	; 51
+     b00:	33 e3       	ldi	r19, 0x33	; 51
+     b02:	43 ec       	ldi	r20, 0xC3	; 195
      b04:	50 e4       	ldi	r21, 0x40	; 64
      b06:	0e 94 3f 10 	call	0x207e	; 0x207e <__addsf3>
      b0a:	20 e0       	ldi	r18, 0x00	; 0
@@ -2067,9 +2037,9 @@ float navigation_angle_offset()
      c4c:	80 95       	com	r24
      c4e:	98 2f       	mov	r25, r24
      c50:	0e 94 6d 11 	call	0x22da	; 0x22da <__floatsisf>
-     c54:	20 e0       	ldi	r18, 0x00	; 0
-     c56:	30 e0       	ldi	r19, 0x00	; 0
-     c58:	48 e4       	ldi	r20, 0x48	; 72
+     c54:	2d ec       	ldi	r18, 0xCD	; 205
+     c56:	3c ec       	ldi	r19, 0xCC	; 204
+     c58:	44 e5       	ldi	r20, 0x54	; 84
      c5a:	51 e4       	ldi	r21, 0x41	; 65
      c5c:	0e 94 d2 10 	call	0x21a4	; 0x21a4 <__divsf3>
      c60:	0e 94 a3 10 	call	0x2146	; 0x2146 <atan>
@@ -2124,9 +2094,9 @@ float navigation_angle_offset()
      cba:	80 95       	com	r24
      cbc:	98 2f       	mov	r25, r24
      cbe:	0e 94 6d 11 	call	0x22da	; 0x22da <__floatsisf>
-     cc2:	20 e0       	ldi	r18, 0x00	; 0
-     cc4:	30 e0       	ldi	r19, 0x00	; 0
-     cc6:	48 e4       	ldi	r20, 0x48	; 72
+     cc2:	2d ec       	ldi	r18, 0xCD	; 205
+     cc4:	3c ec       	ldi	r19, 0xCC	; 204
+     cc6:	44 e5       	ldi	r20, 0x54	; 84
      cc8:	51 e4       	ldi	r21, 0x41	; 65
      cca:	0e 94 d2 10 	call	0x21a4	; 0x21a4 <__divsf3>
      cce:	0e 94 a3 10 	call	0x2146	; 0x2146 <atan>
@@ -2182,9 +2152,9 @@ float navigation_angle_offset()
      d24:	80 95       	com	r24
      d26:	98 2f       	mov	r25, r24
      d28:	0e 94 6d 11 	call	0x22da	; 0x22da <__floatsisf>
-     d2c:	20 e0       	ldi	r18, 0x00	; 0
-     d2e:	30 e0       	ldi	r19, 0x00	; 0
-     d30:	48 e4       	ldi	r20, 0x48	; 72
+     d2c:	2d ec       	ldi	r18, 0xCD	; 205
+     d2e:	3c ec       	ldi	r19, 0xCC	; 204
+     d30:	44 e5       	ldi	r20, 0x54	; 84
      d32:	51 e4       	ldi	r21, 0x41	; 65
      d34:	0e 94 d2 10 	call	0x21a4	; 0x21a4 <__divsf3>
      d38:	0e 94 a3 10 	call	0x2146	; 0x2146 <atan>
@@ -2237,9 +2207,9 @@ float navigation_angle_offset()
      d8e:	80 95       	com	r24
      d90:	98 2f       	mov	r25, r24
      d92:	0e 94 6d 11 	call	0x22da	; 0x22da <__floatsisf>
-     d96:	20 e0       	ldi	r18, 0x00	; 0
-     d98:	30 e0       	ldi	r19, 0x00	; 0
-     d9a:	48 e4       	ldi	r20, 0x48	; 72
+     d96:	2d ec       	ldi	r18, 0xCD	; 205
+     d98:	3c ec       	ldi	r19, 0xCC	; 204
+     d9a:	44 e5       	ldi	r20, 0x54	; 84
      d9c:	51 e4       	ldi	r21, 0x41	; 65
      d9e:	0e 94 d2 10 	call	0x21a4	; 0x21a4 <__divsf3>
      da2:	0e 94 a3 10 	call	0x2146	; 0x2146 <atan>
@@ -3987,12 +3957,6 @@ void get_status_settings_from_bus()
     1884:	18 95       	reti
 
 00001886 <USART_init>:
-{
-	for(int i = 0; i < gRxBuffer[1]; i++)
-	{
-		gTxPayload[i] = gRxBuffer[i+2];
-	}
-	USART_send_packet(gRxBuffer[0], gRxBuffer[1]);
     1886:	10 92 c5 00 	sts	0x00C5, r1
     188a:	87 e0       	ldi	r24, 0x07	; 7
     188c:	80 93 c4 00 	sts	0x00C4, r24
@@ -4803,11 +4767,6 @@ void get_status_settings_from_bus()
     1f50:	08 95       	ret
 
 00001f52 <__vector_20>:
-}
-
-
-ISR (USART0_RX_vect)
-{
     1f52:	1f 92       	push	r1
     1f54:	0f 92       	push	r0
     1f56:	0f b6       	in	r0, 0x3f	; 63
@@ -4833,16 +4792,10 @@ ISR (USART0_RX_vect)
     1f7e:	df 93       	push	r29
     1f80:	ef 93       	push	r30
     1f82:	ff 93       	push	r31
-	uint8_t data;
-	data = UDR0; // read data from buffer TODO: add check for overflow
     1f84:	20 91 c6 00 	lds	r18, 0x00C6
-	
-	if(data == 0x7e)
     1f88:	2e 37       	cpi	r18, 0x7E	; 126
     1f8a:	09 f0       	breq	.+2      	; 0x1f8e <__vector_20+0x3c>
     1f8c:	3f c0       	rjmp	.+126    	; 0x200c <__vector_20+0xba>
-	{
-		if(gRxBufferIndex >= 4 || gRxBufferIndex == gRxBuffer[1] + 4) //TODO: add crc check
     1f8e:	80 91 f3 13 	lds	r24, 0x13F3
     1f92:	90 91 f4 13 	lds	r25, 0x13F4
     1f96:	84 30       	cpi	r24, 0x04	; 4
@@ -4855,24 +4808,14 @@ ISR (USART0_RX_vect)
     1fa6:	82 17       	cp	r24, r18
     1fa8:	93 07       	cpc	r25, r19
     1faa:	59 f5       	brne	.+86     	; 0x2002 <__vector_20+0xb0>
-		{
-			if(gInvertNextFlag)
     1fac:	80 91 f1 13 	lds	r24, 0x13F1
     1fb0:	90 91 f2 13 	lds	r25, 0x13F2
     1fb4:	89 2b       	or	r24, r25
     1fb6:	21 f0       	breq	.+8      	; 0x1fc0 <__vector_20+0x6e>
-			{
-				data = (1<<5)^data;
-				gInvertNextFlag = 0;
     1fb8:	10 92 f2 13 	sts	0x13F2, r1
     1fbc:	10 92 f1 13 	sts	0x13F1, r1
     1fc0:	04 e5       	ldi	r16, 0x54	; 84
     1fc2:	15 e1       	ldi	r17, 0x15	; 21
-			}
-			
-			
-			// Add packet (no crc) to fifo-buffer to cue it for decoding
-			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     1fc4:	c0 e0       	ldi	r28, 0x00	; 0
     1fc6:	d0 e0       	ldi	r29, 0x00	; 0
     1fc8:	0f 2e       	mov	r0, r31
@@ -4881,8 +4824,6 @@ ISR (USART0_RX_vect)
     1fce:	f5 e1       	ldi	r31, 0x15	; 21
     1fd0:	ff 2e       	mov	r15, r31
     1fd2:	f0 2d       	mov	r31, r0
-			{
-				if(FifoWrite(gRxFIFO, gRxBuffer[i]))
     1fd4:	f8 01       	movw	r30, r16
     1fd6:	61 91       	ld	r22, Z+
     1fd8:	8f 01       	movw	r16, r30
@@ -4891,18 +4832,10 @@ ISR (USART0_RX_vect)
     1fe2:	0e 94 1a 03 	call	0x634	; 0x634 <FifoWrite>
     1fe6:	88 23       	and	r24, r24
     1fe8:	21 f0       	breq	.+8      	; 0x1ff2 <__vector_20+0xa0>
-				{
-					TWI_send_string(S_ADDRESS,"U_FIFO-full");
     1fea:	6a ec       	ldi	r22, 0xCA	; 202
     1fec:	73 e1       	ldi	r23, 0x13	; 19
     1fee:	80 e4       	ldi	r24, 0x40	; 64
     1ff0:	64 d9       	rcall	.-3384   	; 0x12ba <TWI_send_string>
-				gInvertNextFlag = 0;
-			}
-			
-			
-			// Add packet (no crc) to fifo-buffer to cue it for decoding
-			for(int i = 0; i < gRxBuffer[1] + 2; ++i)
     1ff2:	21 96       	adiw	r28, 0x01	; 1
     1ff4:	f7 01       	movw	r30, r14
     1ff6:	80 81       	ld	r24, Z
@@ -4911,43 +4844,25 @@ ISR (USART0_RX_vect)
     1ffc:	c8 17       	cp	r28, r24
     1ffe:	d9 07       	cpc	r29, r25
     2000:	4c f3       	brlt	.-46     	; 0x1fd4 <__vector_20+0x82>
-					TWI_send_string(S_ADDRESS,"U_FIFO-full");
-				}
-			}
-		}
-		
-		gRxBufferIndex = 0; // always reset buffer index when frame delimiter (0x7e) is read
     2002:	10 92 f4 13 	sts	0x13F4, r1
     2006:	10 92 f3 13 	sts	0x13F3, r1
     200a:	16 c0       	rjmp	.+44     	; 0x2038 <__vector_20+0xe6>
-		
-	}else if(data == 0x7d)
     200c:	2d 37       	cpi	r18, 0x7D	; 125
     200e:	39 f4       	brne	.+14     	; 0x201e <__vector_20+0xcc>
-	{
-		gInvertNextFlag = 1;
     2010:	81 e0       	ldi	r24, 0x01	; 1
     2012:	90 e0       	ldi	r25, 0x00	; 0
     2014:	90 93 f2 13 	sts	0x13F2, r25
     2018:	80 93 f1 13 	sts	0x13F1, r24
     201c:	0d c0       	rjmp	.+26     	; 0x2038 <__vector_20+0xe6>
-	}else
-	{
-		gRxBuffer[gRxBufferIndex] = data;
     201e:	80 91 f3 13 	lds	r24, 0x13F3
     2022:	90 91 f4 13 	lds	r25, 0x13F4
     2026:	fc 01       	movw	r30, r24
     2028:	ec 5a       	subi	r30, 0xAC	; 172
     202a:	fa 4e       	sbci	r31, 0xEA	; 234
     202c:	20 83       	st	Z, r18
-		++gRxBufferIndex;
     202e:	01 96       	adiw	r24, 0x01	; 1
     2030:	90 93 f4 13 	sts	0x13F4, r25
     2034:	80 93 f3 13 	sts	0x13F3, r24
-	}
-	
-	
-}
     2038:	ff 91       	pop	r31
     203a:	ef 91       	pop	r30
     203c:	df 91       	pop	r29
@@ -4975,18 +4890,9 @@ ISR (USART0_RX_vect)
     2068:	18 95       	reti
 
 0000206a <USART_send_command_parameters>:
-
-void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed)
-{
-	gTxPayload[0] = direction;
     206a:	80 93 59 17 	sts	0x1759, r24
-	gTxPayload[1] = rotation;
     206e:	60 93 5a 17 	sts	0x175A, r22
-	gTxPayload[2] = speed;
     2072:	40 93 5b 17 	sts	0x175B, r20
-	
-	
-	USART_send_packet('C', 3);
     2076:	63 e0       	ldi	r22, 0x03	; 3
     2078:	83 e4       	ldi	r24, 0x43	; 67
     207a:	7c cc       	rjmp	.-1800   	; 0x1974 <USART_send_packet>
