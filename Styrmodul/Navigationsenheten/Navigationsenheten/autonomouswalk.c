@@ -18,12 +18,24 @@
 #define MAX_ROTATION_COUNTER_CLOCKWISE 30
 #define MAX_ROTATION_RADIANS 0.52
 #define STEPPING_TIME 400
+#define TURN_EXIT_ITTERATIONS 1
+#define TURN_ENTRY_ITTERATIONS_RIGHT 1
+#define TURN_ENTRY_ITTERATIONS_LEFT 1
+#define CLIMB_LENGTH_LIMIT 35
 //Variable for the speed parameter in movement commands. 
-uint8_t gSpeed = 50;
+uint8_t gSpeed = 90;
 
 //Variable to decide if status messages are to be
 //sent back to the PC.
-uint8_t gStatus = 1;
+uint8_t gStatus = 0;
+
+//A counter to keep track of how many times the robot have
+//found itself unable to make a decision.
+uint8_t decisionCounter = 0;
+
+//Flags to make sure turning doesn't repeat
+uint8_t may_turn_left = 1;
+uint8_t may_turn_right = 1;
 
 void autonomouswalk_set_speed(uint8_t speed)
 {
@@ -51,16 +63,15 @@ void turn_left()
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning left.");
 	}
-	for(int i = 0; (i < 20 && TWI_get_autonom_settings() != 0); ++i)
+	
+	USART_send_turn(90, 0);
+	while(USART_turn_done() == 0)
 	{
-		if(gStatus)
-		{
-			//TWI_send_string(C_ADDRESS, "Rotating right.");
-		}
-		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
-		navigation_stepping_delay();
+		USART_decode_rx_fifo();
+		_delay_ms(10);
 	}
-	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
+	
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -76,16 +87,15 @@ void turn_right()
 	{
 		TWI_send_string(C_ADDRESS, "Starting turning right.");
 	}
-	for(int i = 0; (i < 20 && TWI_get_autonom_settings() != 0); ++i)
+	
+	USART_send_turn(90, 1);
+	while(USART_turn_done() == 0)
 	{
-		if(gStatus)
-		{
-			//TWI_send_string(C_ADDRESS, "Rotating right.");
-		}
-		USART_send_command_parameters(0, MAX_ROTATION_CLOCKWISE, 0);
-		navigation_stepping_delay();
+		USART_decode_rx_fifo();
+		_delay_ms(10);
 	}
-	for(int i = 0; (i < 12 && TWI_get_autonom_settings() != 0); ++i)
+	
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -101,15 +111,14 @@ void turn_around()
 	{
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
-	for(int i = 0; (i < 40 && TWI_get_autonom_settings() != 0); ++i)
+	
+	USART_send_turn(180, 0);
+	while(USART_turn_done() == 0)
 	{
-		if(gStatus)
-		{
-			//TWI_send_string(C_ADDRESS, "Rotating right.");
-		}
-		USART_send_command_parameters(0, MAX_ROTATION_COUNTER_CLOCKWISE, 0);
-		navigation_stepping_delay();
+		USART_decode_rx_fifo();
+		_delay_ms(10);
 	}
+	
 	if(gStatus)
 	{
 		TWI_send_string(C_ADDRESS, "Corridor ahead, done turning around.");
@@ -118,17 +127,9 @@ void turn_around()
 
 void walk_forward()
 {
-	if(gStatus)
-	{
-		//TWI_send_string(C_ADDRESS, "Finding regulation parameters.");
-	}
 	float angleOffset = navigation_angle_offset();
 	float directionCompensationAngle = navigation_direction_regulation(angleOffset);
-	if(gStatus)
-	{
-		//TWI_send_string(C_ADDRESS, "Found regulation parameters.");
-	}
-	int adjustmentRotation = (51 + 50 * angleOffset * 2.0/PI);
+	int adjustmentRotation = (50 + 50 * angleOffset * 2.0/PI);
 	if (adjustmentRotation >= 100)
 	{
 		adjustmentRotation = 100;
@@ -138,71 +139,211 @@ void walk_forward()
 		adjustmentRotation = 0;
 	}
 	int adjustmentDirection = 90 * directionCompensationAngle/(2*PI);
-	if(gStatus)
-	{
-		//TWI_send_string(C_ADDRESS, "Taking a step.");
-	}
 	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
-	//TWI_send_float(C_ADDRESS, adjustmentDirection);
 	navigation_stepping_delay();
-	//TWI_send_float(C_ADDRESS, adjustmentRotation);
+}
+
+void climb()
+{
+	USART_send_climb();	
 }
 
 void autonomouswalk_walk()
 {
-	navigation_low_pass_obsticle();
+	navigation_low_pass_obstacle();
 	if(navigation_left_algorithm())
 	{
 		if(navigation_check_left_turn() == 2)
 		{
-			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			if(may_turn_left)
+			{
+				for(int i = 0;i < TURN_ENTRY_ITTERATIONS_LEFT; ++i)
+				{
+					walk_forward();
+				}
+				turn_left();
+				may_turn_left = 0;
+				may_turn_right = 1;
+			}
+			else
 			{
 				walk_forward();
+				may_turn_left = 1;
 			}
-			turn_left();
+			decisionCounter = 0;
 		}
-		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
+		else if(navigation_get_sensor(4) > 60)
 		{
-			walk_forward();
+			if(navigation_get_sensor(6) < CLIMB_LENGTH_LIMIT)
+			{
+				/*while(navigation_get_sensor(0) - navigation_get_sensor(2) != 0)
+				{
+					float angleOffset = navigation_angle_offset();
+					uint8_t adjustmentRotation = (50 + 50 * angleOffset * 2.0/PI);
+					
+					USART_send_command_parameters(0, adjustmentRotation, 0);
+				}*/
+				
+				if(gStatus)
+				{
+					TWI_send_string_fixed_length(C_ADDRESS, "Starting climb", 14);
+				}
+				
+				//Denna del behövs inte om roboten står rakt vid hindret
+				float tempAngle = navigation_angle_offset();
+				if (tempAngle != 0)
+				{
+					if(tempAngle>0)
+					{
+						USART_send_turn(tempAngle,0);
+					}
+					else if (tempAngle < 0)
+					{
+						USART_send_turn(-tempAngle,1);
+					}
+					while(USART_turn_done() == 0)
+					{
+						USART_decode_rx_fifo();
+						_delay_ms(10);
+					}			
+				}
+				
+				// FUL HÅRDKODNING FÖR ATT KOMPENSERA FÖR DÅLIG REGLERING! TA BORT OM ROBOTEN ALLTID KOMMER RAKT TILL HINDRET
+				navigation_stepping_delay();
+				USART_send_command_parameters(22+45*navigation_left_algorithm(),50,50);
+				
+				climb();
+				while(USART_climb_done() == 0)
+				{
+					USART_decode_rx_fifo();
+					_delay_ms(10);
+				}
+				
+				if(gStatus)
+				{
+					TWI_send_string_fixed_length(C_ADDRESS, "Climb done", 10);
+				}
+			}
+			else
+			{
+				walk_forward();
+				may_turn_left = 1;
+				may_turn_right = 1;
+			}
+			decisionCounter = 0;
 		}
 		else if(navigation_check_right_turn() == 2)
 		{
-			turn_right();
+			if(may_turn_right)
+			{
+				turn_right();
+				may_turn_right = 0;
+				may_turn_left = 1;
+			}
+			else
+			{
+				walk_forward();
+				may_turn_right = 1;
+			}
+			decisionCounter = 0;
 		}
-		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
+		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0 && navigation_get_sensor(4) < 40)
 		{
 			turn_around();
+			decisionCounter = 0;
+		}
+		else if(decisionCounter < 10)
+		{
+			walk_forward();
+			++decisionCounter;
 		}
 		else
 		{
-			walk_forward();
+			decisionCounter = 0;
+			navigation_set_autonomous_walk(0);
+			TWI_send_string_fixed_length(C_ADDRESS, "ERROR: Can't make a decision, turning off autonomous mode", 57);
 		}
 	}
 	else
 	{
 		if(navigation_check_right_turn() == 2)
 		{
-			for(int i = 0;(i < 4 && TWI_get_autonom_settings() != 0); ++i)
+			if(may_turn_right)			
+			{
+				for(int i = 0;i < TURN_ENTRY_ITTERATIONS_RIGHT; ++i)
+				{
+					walk_forward();
+				}
+				turn_right();
+				may_turn_right = 0;
+				may_turn_left = 1;
+			}
+			else
 			{
 				walk_forward();
+				may_turn_right = 1;
 			}
-			turn_right();
+			decisionCounter = 0;
 		}
-		else if(navigation_get_sensor(4) > CORRIDOR_WIDTH / 2)
+		else if(navigation_get_sensor(4) > 60)
 		{
-			walk_forward();
+			if(navigation_get_sensor(6) < CLIMB_LENGTH_LIMIT)
+			{
+				if(gStatus)
+				{
+					TWI_send_string_fixed_length(C_ADDRESS, "Starting climb", 14);
+				}
+				
+				climb();
+				while(USART_climb_done() == 0)
+				{
+					USART_decode_rx_fifo();
+					_delay_ms(10);
+				}
+				
+				if(gStatus)
+				{
+					TWI_send_string_fixed_length(C_ADDRESS, "Climb done", 10);
+				}
+			}
+			else
+			{
+				walk_forward();
+				may_turn_left = 1;
+				may_turn_right = 1;
+			}
+			decisionCounter = 0;
 		}
 		else if(navigation_check_left_turn() == 2)
 		{
-			turn_left();
+			if(may_turn_left)
+			{
+				turn_left();
+				may_turn_left = 0;
+				may_turn_right = 1;
+			}
+			else
+			{
+				walk_forward();
+				may_turn_left = 1;
+			}
+			decisionCounter = 0;
 		}
-		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0)
+		else if(navigation_check_left_turn() == 0 && navigation_check_right_turn() == 0  && navigation_get_sensor(4) < 40)
 		{
 			turn_around();
+			decisionCounter = 0;
+		}
+		else if(decisionCounter < 10)
+		{
+			walk_forward();
+			++decisionCounter;
 		}
 		else
 		{
-			walk_forward();
+			decisionCounter = 0;
+			navigation_set_autonomous_walk(0);
+			TWI_send_string_fixed_length(C_ADDRESS, "ERROR: Can't make a decision, turning off autonomous mode", 57);
 		}
 	}
 }

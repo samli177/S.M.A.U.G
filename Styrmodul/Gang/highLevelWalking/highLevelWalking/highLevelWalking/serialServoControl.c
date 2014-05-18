@@ -55,7 +55,7 @@ void SERVO_init()
 	servoDDR |= (1<<servoDirPin); //set pin for controlling direction of serial communication w. servo.
 	
 	// Set torque limit
-	SERVO_set_torque_limit(BROADCASTING_ID, 0x200); // 50% of max
+	SERVO_set_torque_limit(BROADCASTING_ID, 0x300); // 75% of max
 }
 
 void SERVO_update_EEPROM(uint8_t ID)
@@ -379,7 +379,7 @@ void SERVO_update_data(uint8_t ID)
 		gServoSpeed = gServoSpeed + temp;
 		
 		temp = (uint16_t)parameters[5];
-		gServoLoad = (temp << 8);
+		gServoLoad = ((temp & 1) << 8);
 		temp = (uint16_t)parameters[4];
 		gServoLoad = gServoLoad + temp;
 		

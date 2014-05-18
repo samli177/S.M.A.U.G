@@ -48,6 +48,7 @@
 #define I_ELEVATION 4
 #define I_AUTONOM 5
 #define I_FLOAT 6
+#define I_STATUS_SETTINGS 7
 #define I_STRING 25
 
 //Module addresses
@@ -177,6 +178,9 @@ uint8_t TWI_send_string_fixed_length(uint8_t adr, uint8_t str[], int length);
  * 1 if packet was successfully sent, 0 otherwise
  */
 uint8_t TWI_send_float(uint8_t adr, float flo);
+
+uint8_t TWI_send_status_settings(uint8_t adr, uint8_t settings);
+
 /**
  * \brief 
  * Basic send function, sends one byte anywhere anyhow.

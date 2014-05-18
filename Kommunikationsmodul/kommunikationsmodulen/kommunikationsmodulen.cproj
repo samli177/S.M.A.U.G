@@ -124,6 +124,9 @@
     <Compile Include="kommunikationsmodulen.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="LED.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="twi.c">
       <SubType>compile</SubType>
     </Compile>

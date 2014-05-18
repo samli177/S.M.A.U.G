@@ -615,6 +615,37 @@ uint8_t TWI_send_float(uint8_t adr, float flo)
 	return 1;
 }
 
+uint8_t TWI_send_status_settings(uint8_t adr, uint8_t settings)
+{
+	start_bus();
+	wait_for_bus();
+	if(CONTROL != START)
+	{
+		Error();
+		return 0;
+	}
+	send_data_and_wait(adr);
+	if(CONTROL != ADDRESS_W)
+	{
+		Error();
+		return 0;
+	}
+	send_data_and_wait(I_STATUS_SETTINGS);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return 0;
+	}
+	send_data_and_wait(settings);
+	if(CONTROL != DATA_W)
+	{
+		Error();
+		return 0;
+	}
+	stop_bus();
+	return 1;
+}
+
 uint8_t TWI_send_something(uint8_t adr, uint8_t instruction, uint8_t packet)
 {
 	start_bus();
@@ -862,7 +893,7 @@ uint8_t decode_message_TwiFIFO()
 		msg[i] = *character;
 	}
 	
-	USART_SendMessage(msg);
+	USART_send_message(msg);
 	
 	return 0;
 }
@@ -963,7 +994,7 @@ ISR(TWI_vect)
 					}
 					case(I_FLOAT):
 					{
-						USART_SendValue(floatMessage);
+						USART_send_value(floatMessage);
 						break;
 					}
 				}

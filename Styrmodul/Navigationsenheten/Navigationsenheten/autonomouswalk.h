@@ -60,27 +60,13 @@ uint8_t autonomouswalk_get_return_status();
 /**
  * \brief 
  * Makes the robot turn 90 deg. to the left.
- *
- * \param sensors
- * The distances from the front and back side sensors
- * in centimeters as unsigned integers. Sensor 4 is the
- * front sensor, sensor 5 is
- * the rear sensor. Needed to regulate.
- * 
  * \return void
  */
 void turn_left();
 
 /**
  * \brief 
- * Makes the robot turn 90 deg. to the right.
- *
- * \param sensors
- * The distances from the front and back side sensors
- * in centimeters as unsigned integers. Sensor 4 is the
- * front sensor, sensor 5 is
- * the rear sensor. Needed to regulate.
- * 
+ * Makes the robot turn 90 deg. to the right. 
  * \return void
  */
 void turn_right();
@@ -124,5 +110,13 @@ void walk_forward();
  * \return void
  */
 void autonomouswalk_walk();
+
+/**
+ * \brief 
+ * Cause the robot to climb over an obstacle
+ * 
+ * \return void
+ */
+void climb();
 
 #endif 

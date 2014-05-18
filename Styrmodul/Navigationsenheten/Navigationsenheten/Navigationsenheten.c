@@ -18,42 +18,50 @@
 #include "counter.h"
 #include "Navigation.h"
 #include "autonomouswalk.h"
+#include "LED.h"
+
+//Flag to know if to send the autonom settings to the computer.
+uint8_t autonom_flag = 1;
 
 int main(void)
 {
 	USART_init();
-	USART_set_twi_message_destination(C_ADDRESS); // send messages from gang to the display, not the computer
+	USART_set_twi_message_destination(C_ADDRESS); //<<<????>>> send messages from gang to the display, not the computer
 	sei();
 	TWI_init(ST_ADDRESS);
 	init_counters();
-	DDRA |= (1<<PORTA0 | 1<<PORTA1);
+	
+	LED_INIT;
+	
+	//Buttons
+	DDRA &= ~(1<<PORTA6 | 1<<PORTA7); //For emphasize
+	PCICR |= (1<<PCIE0); //Interrupt enable
+	PCMSK0 |= (1<<PCINT6 | 1<<PCINT7); //mask for porta6 and porta7
+	
 	
 	_delay_ms(5000);
 	navigation_set_autonomous_walk(0);
+	//set_counter_1(100);
+	set_counter_2(200);
+	
     while(1)
     {
 		/*if(TWI_sensor_flag())
 		{
-			PORTA ^= (1<<PORTA1);
+			LED1_TOGGLE;
 			navigation_fill_buffer();
 		}*/
-		if(TWI_autonom_settings_flag())
+		
+		
+		if(autonom_flag)
 		{
-			uint8_t sett = TWI_get_autonom_settings();
-			if(sett == 0)
-			{
-				navigation_set_autonomous_walk(0);
-			}
-			else if(sett == 1)
-			{
-				navigation_set_autonomous_walk(1);
-				navigation_set_algorithm(1);
-			}
-			else //sett == 2
-			{
-				navigation_set_autonomous_walk(1);
-				navigation_set_algorithm(0);
-			}
+			TWI_send_autonom_settings(C_ADDRESS, navigation_left_algorithm());
+			autonom_flag = 0;
+		}
+		
+		if(TWI_status_settings_flag())
+		{
+			autonomouswalk_set_return_status(TWI_get_status_settings());
 		}
 		
 		if(navigation_autonomous_walk() == 1)
@@ -68,23 +76,68 @@ int main(void)
 		{
 			if(TWI_command_flag())
 			{
-				PORTA ^= (1<<PORTA1);
-				USART_SendCommand();
+				LED1_TOGGLE;
+				USART_send_command();
 			}
-		}
-		USART_DecodeRxFIFO();
-    }
+			
+			if(TWI_elevation_flag())
+			{
+				LED0_TOGGLE;
+				USART_send_elevation();
+			}
+		USART_decode_rx_fifo();
+	    }
+	}
 }
-
 //---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
 
 ISR(TIMER1_COMPA_vect)
 {
+	//USART_RequestGyro();
 	TCNT1 = 0;
 }
 
 ISR(TIMER3_COMPA_vect)
 {
-	//TWI_send_float(C_ADDRESS, (float)navigation_get_sensor(0));
+	if(TWI_autonom_settings_flag())
+	{
+		uint8_t sett = TWI_get_autonom_settings();
+		if(sett == 0)
+		{
+			navigation_set_autonomous_walk(0);
+		}
+		else if(sett == 1)
+		{
+			navigation_set_autonomous_walk(1);
+			navigation_set_algorithm(1);
+		}
+		else //sett == 2
+		{
+			navigation_set_autonomous_walk(1);
+			navigation_set_algorithm(0);
+		}
+		autonom_flag = 1;
+	}
 	TCNT3 = 0;
+}
+
+//-------------------Buttons PinChange interrupt---------------------
+
+ISR(PCINT0_vect)
+{
+	if(PINA & (1<<PINA6)) //Left walk
+	{
+		navigation_set_autonomous_walk(1);
+		navigation_set_algorithm(1);
+		//test
+		LED2_TOGGLE;
+	}
+	else if(PINA & (1<<PINA7)) //Right walk
+	{
+		navigation_set_autonomous_walk(1);
+		navigation_set_algorithm(0);
+		//test
+		LED3_TOGGLE;
+	}
+	autonom_flag = 1;
 }

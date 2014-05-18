@@ -48,6 +48,7 @@
 #define I_ELEVATION 4
 #define I_AUTONOM 5
 #define I_FLOAT 6
+#define I_STATUS_SETTINGS 7
 #define I_STRING 25
 
 //Module addresses
@@ -233,6 +234,7 @@ uint8_t TWI_get_command(int i);
  * The value of the setting
  */
 uint8_t TWI_get_control_setting(int i);
+
 /**
  * \brief 
  * Retrieves the autonomous settings
@@ -240,6 +242,20 @@ uint8_t TWI_get_control_setting(int i);
  * the autonomous settings
  */
 uint8_t TWI_get_autonom_settings();
+
+
+uint8_t TWI_get_elevation();
+
+/**
+ * \brief
+ * Retrieves the elevation.
+ * 
+ * \return uint8_t
+ * The elevation
+ */
+uint8_t TWI_get_elevation();
+
+uint8_t TWI_get_status_settings();
 
 /**
  * \brief 
@@ -265,5 +281,6 @@ uint8_t TWI_control_settings_flag();
 uint8_t TWI_autonom_settings_flag();
 uint8_t TWI_elevation_flag();
 uint8_t TWI_sweep_flag();
+uint8_t TWI_status_setting_flag();
 
 #endif
