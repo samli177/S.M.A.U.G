@@ -1305,10 +1305,10 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 				angleLeft *= -1;
 			}
 		}
-		move = 50 + dir * 40 * angleLeft * 4 / M_PI;
-		if(move > 45 && move < 55)
+		move = 50 + dir * 40 * angleLeft * 3 / M_PI;
+		if(move > 35 && move < 65)
 		{
-			move = 50 + 5 * dir * angleLeft / fabs(angleLeft);
+			move = 50 + 15 * dir * angleLeft / (fabs(angleLeft) * 2);
 		}
 		move_robot(0, move, turnSpeed);
 	} 

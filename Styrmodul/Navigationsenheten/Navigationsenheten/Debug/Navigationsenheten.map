@@ -1214,15 +1214,15 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
 
 .debug_str      0x00000000      0xeb5
  *(.debug_str)
- .debug_str     0x00000000      0x3fc autonomouswalk.o
-                                0x463 (size before relaxing)
- .debug_str     0x000003fc       0x96 counter.o
+ .debug_str     0x00000000      0x3e9 autonomouswalk.o
+                                0x450 (size before relaxing)
+ .debug_str     0x000003e9       0x96 counter.o
                                 0x120 (size before relaxing)
- .debug_str     0x00000492       0x82 fifo.o
+ .debug_str     0x0000047f       0x39 fifo.o
                                 0x125 (size before relaxing)
- .debug_str     0x00000514      0x16f Navigation.o
-                                0x42a (size before relaxing)
- .debug_str     0x00000683      0x186 Navigationsenheten.o
+ .debug_str     0x000004b8      0x16f Navigation.o
+                                0x417 (size before relaxing)
+ .debug_str     0x00000627      0x1e2 Navigationsenheten.o
                                 0x39e (size before relaxing)
  .debug_str     0x00000809      0x413 twi.o
                                 0x6bd (size before relaxing)

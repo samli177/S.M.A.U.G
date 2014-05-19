@@ -953,20 +953,20 @@ LOAD c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.2.1002/avr
  .debug_frame   0x000002c0      0x244 sensors.o
  .debug_frame   0x00000504      0x454 twi.o
 
-.debug_str      0x00000000      0x966
+.debug_str      0x00000000      0x90f
  *(.debug_str)
- .debug_str     0x00000000       0xf9 counter.o
-                                0x134 (size before relaxing)
- .debug_str     0x000000f9      0x17c display.o
-                                0x234 (size before relaxing)
- .debug_str     0x00000275       0x4a fifo.o
-                                0x11e (size before relaxing)
- .debug_str     0x000002bf       0x95 sensormodulen.o
-                                0x1f7 (size before relaxing)
- .debug_str     0x00000354      0x179 sensors.o
-                                0x33d (size before relaxing)
- .debug_str     0x000004cd      0x499 twi.o
-                                0x64c (size before relaxing)
+ .debug_str     0x00000000       0xea counter.o
+                                0x125 (size before relaxing)
+ .debug_str     0x000000ea      0x134 display.o
+                                0x21f (size before relaxing)
+ .debug_str     0x0000021e       0x4a fifo.o
+                                0x10f (size before relaxing)
+ .debug_str     0x00000268       0x95 sensormodulen.o
+                                0x1e8 (size before relaxing)
+ .debug_str     0x000002fd      0x179 sensors.o
+                                0x32e (size before relaxing)
+ .debug_str     0x00000476      0x499 twi.o
+                                0x637 (size before relaxing)
 
 .debug_loc      0x00000000     0x2318
  *(.debug_loc)
