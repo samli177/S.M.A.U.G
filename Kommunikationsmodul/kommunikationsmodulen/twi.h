@@ -204,7 +204,7 @@ uint8_t TWI_send_something(uint8_t adr, uint8_t instruction, uint8_t packet);
  * \return uint8_t
  * The value of sensor #i
  */
-uint8_t TWI_get_sensor(int i);
+uint16_t TWI_get_sensor(int i);
 /**
  * \brief 
  * Retrieves the value of the sensor-modules servo

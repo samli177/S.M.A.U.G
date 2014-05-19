@@ -21,7 +21,7 @@
 #define sensorPointsLong 67
 
 uint8_t gSelectedSensor = 0;
-uint8_t gSensorBuffer[8];
+uint16_t gSensorBuffer[8];
 float IRShort[sensorPointsShort][2];
 float IRLong[sensorPointsLong][2];
 bool sensorDataFlag = false;
@@ -29,8 +29,8 @@ uint8_t sensorDataSentFlag = 1;
 
 static void select_sensor(int sensor);
 static void start_ul_sensor();
-static int voltage_to_cm_short(float voltage);
-static int voltage_to_cm_long(float voltage);
+static uint16_t voltage_to_mm_short(float voltage);
+static int voltage_to_mm_long(float voltage);
 static void adc_init();
 static void adc_start();
 static void init_mux();
@@ -368,14 +368,14 @@ void init_tables()
 	IRLong[66][1] = 150;
 }
 
-int voltage_to_cm_short(float voltage)
+uint16_t voltage_to_mm_short(float voltage)
 {
 	if(voltage >= IRShort[0][0])
 	{
-		return IRShort[0][1];
+		return IRShort[0][1] * 10;
 	} else if(voltage <= IRShort[sensorPointsShort - 1][0])
 	{
-		return IRShort[sensorPointsShort - 1][1];
+		return IRShort[sensorPointsShort - 1][1] * 10;
 	}
 	
 	for(int i = 0; i < sensorPointsShort; ++i)
@@ -384,29 +384,29 @@ int voltage_to_cm_short(float voltage)
 		float next = IRShort[i+1][0];
 		if(next == voltage)
 		{
-			return IRShort[i+1][1];
+			return IRShort[i+1][1] * 10;
 		} else if(prev > voltage && next < voltage)
 		{
-			uint8_t high = IRShort[i][1];
-			uint8_t low = IRShort[i+1][1];
+			uint16_t high = IRShort[i][1] * 10;
+			uint16_t low = IRShort[i+1][1] * 10;
 			int diff = high - low;
 			float diff_to_prev = prev - voltage;
 			float volt_diff = prev - next;
-			return (uint8_t) (high - diff * diff_to_prev / volt_diff);
+			return (uint16_t) (high - diff * diff_to_prev / volt_diff);
 		}
 	}
 	
-	return IRShort[sensorPointsShort - 1][1];
+	return IRShort[sensorPointsShort - 1][1] * 10;
 }
 
-int voltage_to_cm_long(float voltage)
+int voltage_to_mm_long(float voltage)
 {
 	if(voltage >= IRLong[0][0])
 	{
-		return IRLong[0][1];
+		return IRLong[0][1] * 10;
 	} else if(voltage <= IRLong[sensorPointsLong - 1][0])
 	{
-		return IRLong[sensorPointsLong - 1][1];
+		return IRLong[sensorPointsLong - 1][1] * 10;
 	}
 	
 	for(int i = 0; i < sensorPointsLong - 1; ++i)
@@ -415,11 +415,11 @@ int voltage_to_cm_long(float voltage)
 		float next = IRLong[i+1][0];
 		if(next == voltage)
 		{
-			return IRLong[i+1][1];
+			return IRLong[i+1][1] * 10;
 		} else if(prev > voltage && next < voltage)
 		{
-			uint8_t high = IRLong[i][1];
-			uint8_t low = IRLong[i+1][1];
+			uint16_t high = IRLong[i][1] * 10;
+			uint16_t low = IRLong[i+1][1] * 10;
 			int diff = high - low;
 			float diff_to_prev = prev - voltage;
 			float volt_diff = prev - next;
@@ -427,7 +427,7 @@ int voltage_to_cm_long(float voltage)
 		}
 	}
 	
-	return IRLong[sensorPointsLong - 1][1];
+	return IRLong[sensorPointsLong - 1][1] * 10;
 }void init_mux()
 {
 	DDRA |= 0b00111110;
@@ -556,7 +556,7 @@ void sensors_reset_flag()
 	sensorDataFlag = false;
 }
 
-uint8_t* sensors_get_data()
+uint16_t* sensors_get_data()
 {
 	return gSensorBuffer;
 }
@@ -564,7 +564,7 @@ uint8_t* sensors_get_data()
 
 ISR(ADC_vect)
 {
-	cli();	uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;	if(gSelectedSensor == 4)	{		gSensorBuffer[gSelectedSensor] = voltage_to_cm_long(vin);		} else {		gSensorBuffer[gSelectedSensor] = voltage_to_cm_short(vin);	}		if(gSelectedSensor < 6)	{		// Not last sensor		select_sensor(gSelectedSensor + 1);		adc_start();	} else {
+	cli();	uint8_t adcValue = ADCH;	float vin = adcValue * 5.0 / 256.0;	if(gSelectedSensor == 4)	{		gSensorBuffer[gSelectedSensor] = voltage_to_mm_long(vin);		} else {		gSensorBuffer[gSelectedSensor] = voltage_to_mm_short(vin);	}		if(gSelectedSensor < 6)	{		// Not last sensor		select_sensor(gSelectedSensor + 1);		adc_start();	} else {
 		select_sensor(0);		enable_counter_0(1);		set_counter_0(50);		start_ul_sensor();	}	sei();}
 
 ISR(PCINT0_vect)

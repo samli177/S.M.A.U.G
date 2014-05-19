@@ -188,12 +188,13 @@ void USART_send_sensors()
 {
 	for(int i = 0; i < 8; i++)
 	{
-		gTxPayload[i] = TWI_get_sensor(i);
+		gTxPayload[i*2] = (uint8_t)(TWI_get_sensor(i)>>8);
+		gTxPayload[i*2+1] = (uint8_t)(TWI_get_sensor(i));
 	}
 	
-	gTxPayload[8] = TWI_get_servo();
+	//gTxPayload[8] = TWI_get_servo();
 	
-	USART_send_packet('S', 9);
+	USART_send_packet('S', 16);
 }
 
 void USART_send_autonom(uint8_t settings)

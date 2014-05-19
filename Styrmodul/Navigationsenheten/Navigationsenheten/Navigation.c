@@ -37,7 +37,7 @@ float gKp = 0.05;
 uint8_t gAutonomousWalk = 1;
 
 // Used to take the median of the most recent measurements.
-uint8_t sensorMedianBuffer[8][sensorBufferSize];
+float sensorMedianBuffer[8][sensorBufferSize];
 uint8_t medianBuffer[8];
 
 // A help variable to be used in fill_buffer().
@@ -50,7 +50,7 @@ uint8_t lowPassObstacleFlag = 0;
 //------------- Internal declarations ---------------
 
 //static int compare(const void * a, const void * b);
-static uint8_t sortAndFilter(uint8_t data[sensorBufferSize]);
+static float sortAndFilter(float data[sensorBufferSize]);
 
 //--------------- Internal functions ----------------
 
@@ -86,9 +86,9 @@ static uint8_t sortAndFilter(uint8_t data[sensorBufferSize]);
  * \return uint8_t
  * The returned median as a uint8_t
  */
-uint8_t sortAndFilter(uint8_t data[sensorBufferSize])
+float sortAndFilter(float data[sensorBufferSize])
 {
-	uint8_t largest;
+	float largest;
 	for (int i=0; i < sensorBufferSize-1; ++i)
 	{
 		for(int j = 0; j < sensorBufferSize - i - 1; ++j)
@@ -332,9 +332,9 @@ void navigation_fill_buffer()
 	}
 }
 
-uint8_t navigation_get_sensor(int sensorNr)
+float navigation_get_sensor(int sensorNr)
 {
-	uint8_t temp[sensorBufferSize];
+	float temp[sensorBufferSize];
 	for(int j = 0; j < sensorBufferSize; ++j)
 	{
 		temp[j] = sensorMedianBuffer[sensorNr][j];

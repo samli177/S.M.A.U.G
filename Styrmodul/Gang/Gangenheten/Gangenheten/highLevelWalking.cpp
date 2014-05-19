@@ -282,6 +282,7 @@ void move_robot(int dir, int rot, int spd)
 	
 	if (speedf != 0 || rotation != 0)
 	{
+
 		step_start(&leg1);
 		step_start(&leg2);
 		step_start(&leg3);
@@ -1257,10 +1258,12 @@ void move_to_std()
 
 void turn_degrees(uint16_t degrees, int8_t dir)
 {
-	float turnSpeed = 0;
+	float turnSpeedMax = 0;
+	float turnSpeedMin = 0;
 	if(degrees == 90)
 	{
-		turnSpeed = 75;
+		turnSpeedMax = 75;
+		turnSpeedMin = 40;
 	}
 	float radians = degrees * M_PI/180;
 	float tolerance = 2 * M_PI/180;
@@ -1310,7 +1313,15 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 		{
 			move = 50 + 15 * dir * angleLeft / (fabs(angleLeft) * 2);
 		}
-		move_robot(0, move, turnSpeed);
+		uint8_t speed = turnSpeedMax * angleLeft * 3 / M_PI;
+		if(speed > turnSpeedMax)
+		{
+			speed = turnSpeedMax;
+		} else if(speed < turnSpeedMin)
+		{
+			speed = turnSpeedMin;	
+		}
+		move_robot(0, move, speed);
 	} 
 	while(fabs(angleLeft) > tolerance);
 	

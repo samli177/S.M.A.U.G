@@ -501,7 +501,7 @@ uint8_t TWI_send_elevation(uint8_t elevation)
 	return 1;
 }
 
-uint8_t TWI_send_sensors(uint8_t sens[8], uint8_t serv)
+uint8_t TWI_send_sensors(uint16_t sens[8], uint16_t serv)
 {
 	start_bus();
 	wait_for_bus();
@@ -518,7 +518,8 @@ uint8_t TWI_send_sensors(uint8_t sens[8], uint8_t serv)
 	}
 	for(int i=0; i < 8; ++i) //7 Sensors?
 	{
-		send_data_and_wait(sens[i]);
+		send_data_and_wait((uint8_t)(sens[i]>>8)); // shift MSB to lower byte and truncate
+		send_data_and_wait((uint8_t)sens[i]);
 	}
 	send_data_and_wait(serv);
 	stop_bus();

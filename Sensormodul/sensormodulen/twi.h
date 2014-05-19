@@ -134,7 +134,7 @@ uint8_t TWI_send_elevation(uint8_t elevation);
  * \return int
  * 1 if packet was successfully sent, 0 otherwise
  */
-uint8_t TWI_send_sensors(uint8_t sens[8], uint8_t serv);
+uint8_t TWI_send_sensors(uint16_t sens[8], uint16_t serv);
 /**
  * \brief 
  * Sends an order for sweep, navigation -> sensor

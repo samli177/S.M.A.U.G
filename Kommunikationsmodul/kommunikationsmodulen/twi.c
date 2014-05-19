@@ -15,6 +15,7 @@
 #include "usart.h"
 #include "fifo.h"
 
+uint8_t gMSB = 1;
 //------------------Internal declarations---------------------------------
 
 /**
@@ -174,8 +175,8 @@ uint8_t myAdress;
 char message[255];
 int messageCounter;
 uint8_t controlSettings[3]; //KP, KI, KD
-uint8_t sensorBuffer[8];
-uint8_t sensors[8];
+uint16_t sensorBuffer[8];
+uint16_t sensors[8];
 uint8_t servo;
 uint8_t sweep;
 int sensor;
@@ -693,6 +694,8 @@ void reset_TWI()
 	TWCR |= (1<<TWINT) | (1<<TWEA);
 }
 
+
+
 void get_sensor_from_bus()
 {
 	if(sensor == 8)
@@ -704,9 +707,15 @@ void get_sensor_from_bus()
 		servo = get_data();
 		sensorFlag_ = 1;
 	}
-	else
+	else if(gMSB)
 	{
-		sensorBuffer[sensor] = get_data();
+		uint16_t tempSensor = (get_data()<<8);
+		sensorBuffer[sensor] = tempSensor;
+		gMSB = 0;
+	}else
+	{
+		sensorBuffer[sensor] += get_data();
+		gMSB = 1;
 		sensor += 1;
 	}
 }
@@ -770,7 +779,7 @@ uint8_t TWI_get_command(int i)
 	return command[i];
 }
 
-uint8_t TWI_get_sensor(int i)
+uint16_t TWI_get_sensor(int i)
 {
 	return sensors[i];
 }

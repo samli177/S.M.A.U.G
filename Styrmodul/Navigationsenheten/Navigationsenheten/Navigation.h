@@ -230,6 +230,6 @@ void navigation_fill_buffer();
  * The value from the sensor measured in centimeters given as an
  * uint8_t.
  */
-uint8_t navigation_get_sensor(int sensorNr);
+float navigation_get_sensor(int sensorNr);
 
 #endif

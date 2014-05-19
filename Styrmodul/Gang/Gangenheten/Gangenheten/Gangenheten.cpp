@@ -52,6 +52,8 @@ int main(void)
 	reset_counter_1();
 	set_counter_1(3000);
 	
+	uint8_t readyCounter = 0;
+	
     while(1)
     {
 		MPU_update();
@@ -72,17 +74,18 @@ int main(void)
 		{
 			std_pos_flag = 0;
 			reset_counter_1();
+			readyCounter = 3;
 		}
 		
 		move_robot(d, r, s);
 		
 		
-		if(r == 50 && s == 0 && d == 0)
+		if(r == 50 && s == 0 && d == 0 && readyCounter)
 		{
-			wait(50);
 			cli();
 			USART_send_ready();
 			sei();
+			readyCounter--;
 		}
 		
 		

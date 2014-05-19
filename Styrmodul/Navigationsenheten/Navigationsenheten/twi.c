@@ -15,6 +15,8 @@
 #include "fifo.h"
 #include "Navigation.h"
 
+uint8_t gMSB = 0;
+
 //------------------Internal declarations---------------------------------
 
 /**
@@ -176,8 +178,8 @@ uint8_t myAdress;
 char message[255];
 int messageCounter;
 uint8_t controlSettings[3]; //KP, KI, KD
-uint8_t sensorBuffer[8];
-uint8_t sensors[8];
+uint16_t sensorBuffer[8];
+uint16_t sensors[8];
 uint8_t servo;
 uint8_t sweep;
 uint8_t statusSettings;
@@ -678,9 +680,15 @@ void get_sensor_from_bus()
 		sensorFlag_ = 1;
 		navigation_fill_buffer();
 	}
-	else
+	else if(gMSB)
 	{
-		sensorBuffer[sensor] = get_data();
+		uint16_t tempSensor = (get_data()<<8);
+		sensorBuffer[sensor] = tempSensor;
+		gMSB = 0;
+	}else
+	{
+		sensorBuffer[sensor] += get_data();
+		gMSB = 1;
 		sensor += 1;
 	}
 }
@@ -736,9 +744,11 @@ uint8_t TWI_get_command(int i)
 	return command[i];
 }
 
-uint8_t TWI_get_sensor(int i)
+float TWI_get_sensor(int i)
 {
-	return sensors[i];
+	float temp = sensors[i];
+	temp = temp/10.0;
+	return temp;
 }
 
 uint8_t TWI_get_servo()

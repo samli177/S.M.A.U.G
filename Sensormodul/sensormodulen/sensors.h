@@ -43,6 +43,6 @@ void sensors_reset_flag();
  * \return uint8_t[8]
  * Array with 0-6th being IR, and 7th being US.
  */
-uint8_t* sensors_get_data();
+uint16_t* sensors_get_data();
 
 #endif

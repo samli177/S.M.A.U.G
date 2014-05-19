@@ -18,10 +18,11 @@
 #define MAX_ROTATION_COUNTER_CLOCKWISE 30
 #define MAX_ROTATION_RADIANS 0.52
 #define STEPPING_TIME 400
-#define TURN_EXIT_ITTERATIONS 1
-#define TURN_ENTRY_ITTERATIONS_RIGHT 1
-#define TURN_ENTRY_ITTERATIONS_LEFT 1
+#define TURN_EXIT_ITTERATIONS 0
+#define TURN_ENTRY_ITTERATIONS_RIGHT 0
+#define TURN_ENTRY_ITTERATIONS_LEFT 0
 #define CLIMB_LENGTH_LIMIT 35
+#define ANGLE_SCALE_FACTOR 0.3
 //Variable for the speed parameter in movement commands. 
 uint8_t gSpeed = 90;
 
@@ -129,7 +130,7 @@ void walk_forward()
 {
 	float angleOffset = navigation_angle_offset();
 	float directionCompensationAngle = navigation_direction_regulation(angleOffset);
-	int adjustmentRotation = (50 + 50 * angleOffset * 2.0/PI);
+	int adjustmentRotation = (50 + 50 * angleOffset * ANGLE_SCALE_FACTOR);
 	if (adjustmentRotation >= 100)
 	{
 		adjustmentRotation = 100;
@@ -161,6 +162,7 @@ void autonomouswalk_walk()
 				{
 					walk_forward();
 				}
+				
 				turn_left();
 				may_turn_left = 0;
 				may_turn_right = 1;
@@ -195,11 +197,11 @@ void autonomouswalk_walk()
 				{
 					if(tempAngle>0)
 					{
-						USART_send_turn(tempAngle,0);
+						USART_send_turn((uint16_t)tempAngle*180/M_PI,0);
 					}
 					else if (tempAngle < 0)
 					{
-						USART_send_turn(-tempAngle,1);
+						USART_send_turn((uint16_t)-tempAngle*180/M_PI,1);
 					}
 					while(USART_turn_done() == 0)
 					{
@@ -208,9 +210,11 @@ void autonomouswalk_walk()
 					}			
 				}
 				
+				/*
 				// FUL HÅRDKODNING FÖR ATT KOMPENSERA FÖR DÅLIG REGLERING! TA BORT OM ROBOTEN ALLTID KOMMER RAKT TILL HINDRET
 				navigation_stepping_delay();
 				USART_send_command_parameters(22+45*navigation_left_algorithm(),50,50);
+				*/
 				
 				climb();
 				while(USART_climb_done() == 0)
