@@ -10,8 +10,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
-import java.util.LinkedList;
 import javax.swing.JPanel;
 
 /**
@@ -126,7 +124,7 @@ public class LowerPanel extends JPanel {
         }
         for (int i = 0; i < front.size(); i++) {
             l = (float) front.get(i);
-            g.fillOval((int) ((xR + xL)/2.0) + 70 - i * 140 / MAX_POINTS, yU - 10 - (int) l, 5, 5);
+            g.fillOval((int) ((xR + xL)/2.0) + 70 - i * 140 / MAX_POINTS, yU - 10 - (int) (l * 0.9), 5, 5);
         }
         for (int i = 0; i < back.size(); i++) {
             l = (float) back.get(i);
