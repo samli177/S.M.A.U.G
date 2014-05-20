@@ -263,14 +263,17 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         irLeftFrontTextField.setText("0");
         irLeftFrontTextField.setFocusable(false);
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("IR vänster fram");
 
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("IR höger fram");
 
         irRightFrontTextField.setEditable(false);
         irRightFrontTextField.setText("0");
         irRightFrontTextField.setFocusable(false);
 
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("IR hinder");
 
         irVerticalTextField.setEditable(false);
@@ -281,20 +284,24 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         irLeftBackTextField.setText("0");
         irLeftBackTextField.setFocusable(false);
 
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("IR vänster bak");
 
         irRightBackTextField.setEditable(false);
         irRightBackTextField.setText("0");
         irRightBackTextField.setFocusable(false);
 
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("IR höger bak");
 
         irBackTextField.setEditable(false);
         irBackTextField.setText("0");
         irBackTextField.setFocusable(false);
 
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel9.setText("IR bak");
 
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel10.setText("Ultraljud");
 
         ultraSoundTextField.setEditable(false);
@@ -305,6 +312,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         irFrontTextField.setText("0");
         irFrontTextField.setFocusable(false);
 
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("IR fram");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -739,7 +747,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                                             .addComponent(jLabel23))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(deleteAllDebugDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                                            .addComponent(deleteAllDebugDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(deleteDebugDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(addDebugDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -993,24 +1001,22 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSeparator5)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(upperDrawArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lowerDrawArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(upperDrawArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lowerDrawArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jTabbedPane1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jSeparator5))
+                        .addComponent(jTabbedPane1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -1749,42 +1755,51 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     private void sensorUpdate(byte[] data) {
-        for (int sensor = 0; sensor < data.length; sensor++) {
-            int length = data[sensor];
+        for (int sensor = 0; sensor < data.length / 2; sensor++) {
+            int msb = data[sensor * 2];
+            if(msb < 0){
+                msb += 256;
+            }
+            int lsb = data[sensor * 2 + 1];
+            if(lsb < 0){
+                lsb += 256;
+            }
+            int length = msb * 256 + lsb;
+            writeDebugMessage(msb + ", " + lsb);
             if (length < 0) {
-                length += 256;
+                //length += 65536;
             }
             switch (sensor) {
                 case 0:
-                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_FRONT);
+                    ((LowerPanel) lowerDrawArea).updatePoints(length / 10, SENSOR.LEFT_FRONT);
                     irLeftFrontTextField.setText("" + length);
                     break;
                 case 1:
-                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.RIGHT_FRONT);
+                    ((LowerPanel) lowerDrawArea).updatePoints(length / 10, SENSOR.RIGHT_FRONT);
                     irRightFrontTextField.setText("" + length);
                     break;
                 case 2:
-                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.LEFT_BACK);
+                    ((LowerPanel) lowerDrawArea).updatePoints(length / 10, SENSOR.LEFT_BACK);
                     irLeftBackTextField.setText("" + length);
                     break;
                 case 3:
-                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.RIGHT_BACK);
+                    ((LowerPanel) lowerDrawArea).updatePoints(length / 10, SENSOR.RIGHT_BACK);
                     irRightBackTextField.setText("" + length);
                     break;
                 case 4:
-                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.FRONT);
+                    ((LowerPanel) lowerDrawArea).updatePoints(length / 10, SENSOR.FRONT);
                     irFrontTextField.setText("" + length);
                     break;
                 case 5:
-                    ((LowerPanel) lowerDrawArea).updatePoints(length, SENSOR.BACK);
+                    ((LowerPanel) lowerDrawArea).updatePoints(length / 10, SENSOR.BACK);
                     irBackTextField.setText("" + length);
                     break;
                 case 6:
-                    ((UpperPanel) upperDrawArea).updatePoints(length, SENSOR.VERTICAL);
+                    ((UpperPanel) upperDrawArea).updatePoints(length / 10, SENSOR.VERTICAL);
                     irVerticalTextField.setText("" + length);
                     break;
                 case 7:
-                    ((UpperPanel) upperDrawArea).updatePoints(length, SENSOR.ULTRA_SOUND);
+                    ((UpperPanel) upperDrawArea).updatePoints(length / 10, SENSOR.ULTRA_SOUND);
                     ultraSoundTextField.setText("" + length);
                     break;
                 default:
