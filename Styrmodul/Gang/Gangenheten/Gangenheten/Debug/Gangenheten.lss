@@ -21,15 +21,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   8 .debug_abbrev 00001a89  00000000  00000000  00021686  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00005f5d  00000000  00000000  0002310f  2**0
+  9 .debug_line   00005fab  00000000  00000000  0002310f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  000037bc  00000000  00000000  0002906c  2**2
+ 10 .debug_frame  000037bc  00000000  00000000  000290bc  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00006cc5  00000000  00000000  0002c828  2**0
+ 11 .debug_str    00006cb1  00000000  00000000  0002c878  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0001092e  00000000  00000000  000334ed  2**0
+ 12 .debug_loc    0001092e  00000000  00000000  00033529  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000e60  00000000  00000000  00043e1b  2**0
+ 13 .debug_ranges 00000e60  00000000  00000000  00043e57  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -3931,9 +3931,9 @@ int main(void)
     2b24:	0f be       	out	0x3f, r0	; 63
     2b26:	cd bf       	out	0x3d, r28	; 61
     2b28:	36 2e       	mov	r3, r22
-    2b2a:	8a 35       	cpi	r24, 0x5A	; 90
+    2b2a:	8d 37       	cpi	r24, 0x7D	; 125
     2b2c:	91 05       	cpc	r25, r1
-    2b2e:	41 f0       	breq	.+16     	; 0x2b40 <_Z12turn_degreesja+0x4c>
+    2b2e:	40 f0       	brcs	.+16     	; 0x2b40 <_Z12turn_degreesja+0x4c>
     2b30:	1c 86       	std	Y+12, r1	; 0x0c
     2b32:	1d 86       	std	Y+13, r1	; 0x0d
     2b34:	1e 86       	std	Y+14, r1	; 0x0e
@@ -3944,7 +3944,7 @@ int main(void)
     2b3e:	10 c0       	rjmp	.+32     	; 0x2b60 <_Z12turn_degreesja+0x6c>
     2b40:	20 e0       	ldi	r18, 0x00	; 0
     2b42:	30 e0       	ldi	r19, 0x00	; 0
-    2b44:	40 e2       	ldi	r20, 0x20	; 32
+    2b44:	40 e7       	ldi	r20, 0x70	; 112
     2b46:	52 e4       	ldi	r21, 0x42	; 66
     2b48:	2c 87       	std	Y+12, r18	; 0x0c
     2b4a:	3d 87       	std	Y+13, r19	; 0x0d
@@ -4232,7 +4232,7 @@ int main(void)
     2dba:	0e 94 b0 33 	call	0x6760	; 0x6760 <__mulsf3>
     2dbe:	20 e0       	ldi	r18, 0x00	; 0
     2dc0:	30 e0       	ldi	r19, 0x00	; 0
-    2dc2:	40 e4       	ldi	r20, 0x40	; 64
+    2dc2:	40 e8       	ldi	r20, 0x80	; 128
     2dc4:	50 e4       	ldi	r21, 0x40	; 64
     2dc6:	0e 94 b0 33 	call	0x6760	; 0x6760 <__mulsf3>
     2dca:	2b ed       	ldi	r18, 0xDB	; 219
@@ -4290,9 +4290,9 @@ int main(void)
     2e44:	c7 01       	movw	r24, r14
     2e46:	b6 01       	movw	r22, r12
     2e48:	9f 77       	andi	r25, 0x7F	; 127
-    2e4a:	25 e3       	ldi	r18, 0x35	; 53
-    2e4c:	3a ef       	ldi	r19, 0xFA	; 250
-    2e4e:	4e e0       	ldi	r20, 0x0E	; 14
+    2e4a:	23 ec       	ldi	r18, 0xC3	; 195
+    2e4c:	38 eb       	ldi	r19, 0xB8	; 184
+    2e4e:	42 eb       	ldi	r20, 0xB2	; 178
     2e50:	5d e3       	ldi	r21, 0x3D	; 61
     2e52:	0e 94 a5 33 	call	0x674a	; 0x674a <__gesf2>
     2e56:	18 16       	cp	r1, r24

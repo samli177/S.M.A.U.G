@@ -23,13 +23,13 @@
 #define TURN_ENTRY_ITTERATIONS_LEFT 0
 #define CLIMB_LENGTH_LIMIT 35
 #define ANGLE_SCALE_FACTOR 0.3
+#define FRONT_SENSOR_MIN_LENGTH 50
 //Variable for the speed parameter in movement commands. 
 uint8_t gSpeed = 90;
 
 //Variable to decide if status messages are to be
 //sent back to the PC.
 uint8_t gStatus = 0;
-
 //A counter to keep track of how many times the robot have
 //found itself unable to make a decision.
 uint8_t decisionCounter = 0;
@@ -65,7 +65,16 @@ void turn_left()
 		TWI_send_string(C_ADDRESS, "Starting turning left.");
 	}
 	
-	USART_send_turn(90, 0);
+	// Turn 90 degrees plus offset if a wall is to the right, else just turn 90.
+	/*if(navigation_get_sensor(1) < CORRIDOR_WIDTH / 2 && navigation_get_sensor(3) < CORRIDOR_WIDTH / 2)
+	{
+		uint8_t offset = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
+		USART_send_turn(90 - offset, 0);
+	} else
+	{*/
+	USART_send_turn(90, 0);	
+	//}
+	
 	while(USART_turn_done() == 0)
 	{
 		USART_decode_rx_fifo();
@@ -89,7 +98,16 @@ void turn_right()
 		TWI_send_string(C_ADDRESS, "Starting turning right.");
 	}
 	
+	// Turn 90 degrees plus offset if a wall is to the left, else just turn 90.
+	/*if(navigation_get_sensor(0) < CORRIDOR_WIDTH / 2 && navigation_get_sensor(2) < CORRIDOR_WIDTH / 2)
+	{
+		uint8_t offset = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
+		USART_send_turn(90 + offset, 1);
+	} else
+	{*/
 	USART_send_turn(90, 1);
+	//}
+	
 	while(USART_turn_done() == 0)
 	{
 		USART_decode_rx_fifo();
@@ -113,7 +131,7 @@ void turn_around()
 		TWI_send_string(C_ADDRESS, "Starting to turn around.");
 	}
 	
-	USART_send_turn(180, 0);
+	USART_send_turn(180 - navigation_angle_offset(), 0);
 	while(USART_turn_done() == 0)
 	{
 		USART_decode_rx_fifo();
@@ -160,6 +178,10 @@ void autonomouswalk_walk()
 			{
 				for(int i = 0;i < TURN_ENTRY_ITTERATIONS_LEFT; ++i)
 				{
+					if(navigation_get_sensor(3) > CORRIDOR_WIDTH / 2 + 20)
+					{
+						break;
+					}
 					walk_forward();
 				}
 				
@@ -174,7 +196,7 @@ void autonomouswalk_walk()
 			}
 			decisionCounter = 0;
 		}
-		else if(navigation_get_sensor(4) > 60)
+		else if(navigation_get_sensor(4) > FRONT_SENSOR_MIN_LENGTH)
 		{
 			if(navigation_get_sensor(6) < CLIMB_LENGTH_LIMIT)
 			{
@@ -208,6 +230,24 @@ void autonomouswalk_walk()
 						USART_decode_rx_fifo();
 						_delay_ms(10);
 					}			
+				}
+				
+				float d = navigation_get_sensor(0) + navigation_get_sensor(2) - navigation_get_sensor(1) - navigation_get_sensor(3);
+				while(fabs(d) > 3)
+				{
+					if(d > 0)
+					{
+						USART_send_command_parameters(23, 50, 10);
+					} else
+					{
+						USART_send_command_parameters(67, 50, 10);
+					}
+					while(USART_ready() == 0)
+					{
+						USART_decode_rx_fifo();
+						_delay_ms(10);	
+					}
+					d = navigation_get_sensor(0) + navigation_get_sensor(2) - navigation_get_sensor(1) - navigation_get_sensor(3);
 				}
 				
 				/*
@@ -274,8 +314,14 @@ void autonomouswalk_walk()
 		{
 			if(may_turn_right)			
 			{
+				
 				for(int i = 0;i < TURN_ENTRY_ITTERATIONS_RIGHT; ++i)
 				{
+					if(navigation_get_sensor(2) > CORRIDOR_WIDTH / 2 + 20)
+					{
+						break;
+					}
+					TWI_send_string(S_ADDRESS, "TURN ENTRY ITERATION");
 					walk_forward();
 				}
 				turn_right();
@@ -289,13 +335,50 @@ void autonomouswalk_walk()
 			}
 			decisionCounter = 0;
 		}
-		else if(navigation_get_sensor(4) > 60)
+		else if(navigation_get_sensor(4) > FRONT_SENSOR_MIN_LENGTH)
 		{
 			if(navigation_get_sensor(6) < CLIMB_LENGTH_LIMIT)
 			{
 				if(gStatus)
 				{
 					TWI_send_string_fixed_length(C_ADDRESS, "Starting climb", 14);
+				}
+				
+				//Denna del behövs inte om roboten står rakt vid hindret
+				float tempAngle = navigation_angle_offset();
+				if (tempAngle != 0)
+				{
+					if(tempAngle>0)
+					{
+						USART_send_turn((uint16_t)tempAngle*180/M_PI,0);
+					}
+					else if (tempAngle < 0)
+					{
+						USART_send_turn((uint16_t)-tempAngle*180/M_PI,1);
+					}
+					while(USART_turn_done() == 0)
+					{
+						USART_decode_rx_fifo();
+						_delay_ms(10);
+					}
+				}
+				
+				float d = navigation_get_sensor(0) + navigation_get_sensor(2) - navigation_get_sensor(1) - navigation_get_sensor(3);
+				while(fabs(d) > 3)
+				{
+					if(d > 0)
+					{
+						USART_send_command_parameters(23, 50, 10);
+					} else
+					{
+						USART_send_command_parameters(67, 50, 10);
+					}
+					while(USART_ready() == 0)
+					{
+						USART_decode_rx_fifo();
+						_delay_ms(10);
+					}
+					d = navigation_get_sensor(0) + navigation_get_sensor(2) - navigation_get_sensor(1) - navigation_get_sensor(3);
 				}
 				
 				climb();

@@ -1260,13 +1260,13 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 {
 	float turnSpeedMax = 0;
 	float turnSpeedMin = 0;
-	if(degrees == 90)
+	if(degrees < 125)
 	{
 		turnSpeedMax = 75;
-		turnSpeedMin = 40;
+		turnSpeedMin = 60;
 	}
 	float radians = degrees * M_PI/180;
-	float tolerance = 2 * M_PI/180;
+	float tolerance = 5 * M_PI/180;
 	wait(10);
 	float startAngle = MPU_get_y();
 	float newAngle;
@@ -1313,7 +1313,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 		{
 			move = 50 + 15 * dir * angleLeft / (fabs(angleLeft) * 2);
 		}
-		uint8_t speed = turnSpeedMax * angleLeft * 3 / M_PI;
+		uint8_t speed = turnSpeedMax * angleLeft * 4 / M_PI;
 		if(speed > turnSpeedMax)
 		{
 			speed = turnSpeedMax;
