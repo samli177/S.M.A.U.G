@@ -323,7 +323,7 @@ uint8_t TWI_send_status(uint8_t adr)
 	return 1;
 }
 
-uint8_t TWI_send_control_settings(uint8_t adr, uint8_t KP,uint8_t KI,uint8_t KD)
+uint8_t TWI_send_parameters(uint8_t adr, uint8_t length, uint8_t parameters[])
 {
 	start_bus();
 	wait_for_bus();
@@ -344,24 +344,16 @@ uint8_t TWI_send_control_settings(uint8_t adr, uint8_t KP,uint8_t KI,uint8_t KD)
 		Error();
 		return 0;
 	}
-	send_data_and_wait(KP);
-	if(CONTROL != DATA_W)
+	for(int i = 0; i < length; ++i)
 	{
-		Error();
-		return 0;
+		if(CONTROL != ADDRESS_W)
+		{
+			Error();
+			return 0;
+		}
+		send_data_and_wait(parameters[i]);
 	}
-	send_data_and_wait(KI);
-	if(CONTROL != DATA_W)
-	{
-		Error();
-		return 0;
-	}
-	send_data_and_wait(KD);
-	if(CONTROL != DATA_W)
-	{
-		Error();
-		return 0;
-	}
+	
 	stop_bus();
 	return 1;
 }

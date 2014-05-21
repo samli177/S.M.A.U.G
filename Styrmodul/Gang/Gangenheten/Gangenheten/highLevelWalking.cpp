@@ -19,8 +19,16 @@
 #include "MpuInit.h"
 #include "LED.h"
 
+float TURN_WALK_SPEED_MIN = 60;
+float TURN_WALK_SPEED_MAX = 75;
+float TURN_TOLERANCE = 5;
+float TURN_MIN_SPEED = 15;
+float TURN_SCALE_FACTOR = 75 * M_PI / 180;
+float TURN_WALK_SCALE_FACTOR = 45 * M_PI / 180;
+float ITERATIONS;
+int SERVO_SPEED = 0x300;
+
 int speed;
-float iterations;
 float height;
 float climb_step;
 float climb_step2;
@@ -31,7 +39,6 @@ float climb_start_slope_r;
 float climb_start_slope_p;
 float climb_check_down_r;
 float climb_check_down_p;
-int servo_speed = 0x300;
 uint8_t rotation_flag = 0;
 float MPUPMean;
 float MPURMean;
@@ -73,7 +80,7 @@ float speedf;
 float xDirection;
 float yDirection;
 
-float stepMax;
+float stepMax; 
 float stepTest;
 float stepScaling;
 
@@ -81,7 +88,7 @@ float stepScaling;
 float stdLength;
 
 //Max möjliga steglängd från grundpositionen
-float maxStepLength;
+float MAX_STEP_LENGTH; //abcd
 
 
 void init_struct(struct LegData* leg)
@@ -103,8 +110,8 @@ void initvar()
 {
 	speedMultiplier = 1500;
 	speed = 300;
-	iterations = 4;
-	maxStepLength = 55;
+	ITERATIONS = 4;
+	MAX_STEP_LENGTH = 55;
 	stdLength = sqrtf(get_x0_1()*get_x0_1() + get_y0_1()*get_y0_1());
 	z = -120;
 	
@@ -239,8 +246,8 @@ void step_start(struct LegData* leg)
 
 void step_part1_calculator(struct LegData* leg)
 {
-	newPosxWB = leg->lift * maxStepLength / stepMax * (xDirection + leg->xRot) * stepScaling;
-	newPosyWB = leg->lift * maxStepLength / stepMax * (yDirection + leg->yRot) * stepScaling;
+	newPosxWB = leg->lift * MAX_STEP_LENGTH / stepMax * (xDirection + leg->xRot) * stepScaling;
+	newPosyWB = leg->lift * MAX_STEP_LENGTH / stepMax * (yDirection + leg->yRot) * stepScaling;
 	//leg->newPosz = z;
 }
 
@@ -302,8 +309,8 @@ void move_robot(int dir, int rot, int spd)
 		yDirection = cosf(direction * pi / 45) * speedf / 100;
 	
 		//x och y riktning för rotation, skalad med rotationshastighet
-		tempx = (1-cosf(maxStepLength*rotation/stdLength))*stdLength/maxStepLength;
-		tempy = sinf(maxStepLength*rotation/stdLength)*stdLength/maxStepLength;
+		tempx = (1-cosf(MAX_STEP_LENGTH*rotation/stdLength))*stdLength/MAX_STEP_LENGTH;
+		tempy = sinf(MAX_STEP_LENGTH*rotation/stdLength)*stdLength/MAX_STEP_LENGTH;
 		costemp = -get_x0_1() / stdLength;
 		sintemp = -get_y0_1() / stdLength;
 		
@@ -413,7 +420,7 @@ void leg_motion_init()
 
 void move_leg(struct LegData* leg, float n)
 {
-	if(leg->lift == 1 && n != iterations+1 && climbing_flag == 1)
+	if(leg->lift == 1 && n != ITERATIONS+1 && climbing_flag == 1)
 	{
 		/*
 		if (leg->climbing == 2)
@@ -424,7 +431,7 @@ void move_leg(struct LegData* leg, float n)
 	
 		tempz = leg->newPosz + 90;
 	}
-	else if (leg->lift == 1 && n != iterations+1)
+	else if (leg->lift == 1 && n != ITERATIONS+1)
 	{
 	tempz = leg->newPosz + 20; 	
 		
@@ -434,16 +441,16 @@ void move_leg(struct LegData* leg, float n)
 		tempz = leg->newPosz;
 	}
 	
-	if(n != 0 && n != iterations+1)
+	if(n != 0 && n != ITERATIONS+1)
 	{
 		leg->temp1AngleGamma = leg->temp2AngleGamma;
 		leg->temp1AngleBeta = leg->temp2AngleBeta;
 		leg->temp1AngleAlpha = leg->temp2AngleAlpha;
 
-		tempx = leg->prevPosx + n*(leg->newPosx - leg->prevPosx)/iterations;
-		tempy = leg->prevPosy + n*(leg->newPosy - leg->prevPosy)/iterations;
+		tempx = leg->prevPosx + n*(leg->newPosx - leg->prevPosx)/ITERATIONS;
+		tempy = leg->prevPosy + n*(leg->newPosy - leg->prevPosy)/ITERATIONS;
 	}
-	else if (n == iterations+1)
+	else if (n == ITERATIONS+1)
 	{
 		tempx = leg->newPosx;
 		tempy = leg->newPosy;
@@ -455,7 +462,7 @@ void move_leg(struct LegData* leg, float n)
 		tempy = leg->prevPosy;
 	}
 	
-	if(leg->lift == 1 && n != iterations+1 && climbing_flag == 1)
+	if(leg->lift == 1 && n != ITERATIONS+1 && climbing_flag == 1)
 	{
 		tempx += 50;
 	}
@@ -474,17 +481,17 @@ void move_leg(struct LegData* leg, float n)
 	
 	if(leg->climbing == 4)
 	{
-		SERVO_goto(leg->servoAlpha, leg->goalAngleAlpha,servo_speed);
-		SERVO_goto(leg->servoBeta, leg->goalAngleBeta,servo_speed);
-		SERVO_goto(leg->servoGamma, leg->goalAngleGamma,servo_speed);
+		SERVO_goto(leg->servoAlpha, leg->goalAngleAlpha,SERVO_SPEED);
+		SERVO_goto(leg->servoBeta, leg->goalAngleBeta,SERVO_SPEED);
+		SERVO_goto(leg->servoGamma, leg->goalAngleGamma,SERVO_SPEED);
 		leg->climbing = 0;
 		wait(500);
 	}
 	else
 	{
-		SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,servo_speed);
-		SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,servo_speed);
-		SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,servo_speed);
+		SERVO_buffer_position(leg->servoAlpha, leg->goalAngleAlpha,SERVO_SPEED);
+		SERVO_buffer_position(leg->servoBeta, leg->goalAngleBeta,SERVO_SPEED);
+		SERVO_buffer_position(leg->servoGamma, leg->goalAngleGamma,SERVO_SPEED);
 	}
 }
 
@@ -494,7 +501,7 @@ void leg_motion()
 	MPU_update();
 // 	climb_check_down_r = MPU_get_r();
 // 	climb_check_down_p = MPU_get_p();
-	for(int i = 0; i <= (int)iterations+1; ++i)
+	for(int i = 0; i <= (int)ITERATIONS+1; ++i)
 	{
 		/*
 		if(leg1.climbing == 1)
@@ -564,17 +571,17 @@ void leg_motion()
 		}
 */
 		SERVO_action();
-		if((i == 0 || i == iterations + 1) && climbing_flag)
+		if((i == 0 || i == ITERATIONS + 1) && climbing_flag)
 		{
 			wait(300);
 		}
-		else if (i == 0 || i == iterations + 1)
+		else if (i == 0 || i == ITERATIONS + 1)
 		{
-			wait(50);
+			wait(50); //abcd
 		}
 		else
 		{
-			wait(25);
+			wait(25); //abcd
 		}
 		
 		if(USART_elevation_flag())
@@ -1258,19 +1265,19 @@ void move_to_std()
 
 void turn_degrees(uint16_t degrees, int8_t dir)
 {
-	float turnSpeedMax = 0;
-	float turnSpeedMin = 0;
+	float walkSpeedMax = 0;
+	float walkSpeedMin = 0;
 	if(degrees < 125)
 	{
-		turnSpeedMax = 75;
-		turnSpeedMin = 60;
+		walkSpeedMax = TURN_WALK_SPEED_MAX;
+		walkSpeedMin = TURN_WALK_SPEED_MIN;
 	}
 	float radians = degrees * M_PI/180;
-	float tolerance = 5 * M_PI/180;
+	float tolerance = TURN_TOLERANCE * M_PI/180;
 	wait(10);
 	float startAngle = MPU_get_y();
 	float newAngle;
-	float angleLeft, move;
+	float angleLeft, turnRotation;
 	float diff, realDiff;
 	
 	do
@@ -1308,20 +1315,20 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 				angleLeft *= -1;
 			}
 		}
-		move = 50 + dir * 40 * angleLeft * 3 / M_PI;
-		if(move > 35 && move < 65)
+		turnRotation = 50 + dir * 50 * angleLeft / TURN_SCALE_FACTOR;
+		if(turnRotation > 50 - TURN_MIN_SPEED && turnRotation < 50 + TURN_MIN_SPEED)
 		{
-			move = 50 + 15 * dir * angleLeft / (fabs(angleLeft) * 2);
+			turnRotation = 50 + TURN_MIN_SPEED * dir * angleLeft / (fabs(angleLeft) * 2);
 		}
-		uint8_t speed = turnSpeedMax * angleLeft * 4 / M_PI;
-		if(speed > turnSpeedMax)
+		uint8_t speed = walkSpeedMax * angleLeft / TURN_WALK_SCALE_FACTOR;
+		if(speed > walkSpeedMax)
 		{
-			speed = turnSpeedMax;
-		} else if(speed < turnSpeedMin)
+			speed = walkSpeedMax;
+		} else if(speed < walkSpeedMin)
 		{
-			speed = turnSpeedMin;	
+			speed = walkSpeedMin;	
 		}
-		move_robot(0, move, speed);
+		move_robot(0, turnRotation, speed);
 	} 
 	while(fabs(angleLeft) > tolerance);
 	

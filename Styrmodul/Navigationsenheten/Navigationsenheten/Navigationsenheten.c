@@ -59,6 +59,21 @@ int main(void)
 			autonom_flag = 0;
 		}
 		
+		if(TWI_parameters_flag())
+		{
+			if(TWI_get_parameters_tag() == 'N')
+			{
+				uint8_t params[47];
+				for(int i = 0; i < 47; ++i)
+				{
+					params[i] = TWI_get_parameter();
+				}
+				navigation_update_parameters(params);
+			} else if(TWI_get_parameters_tag() == 'G') {
+				// USART
+			}
+		}
+		
 		if(TWI_status_settings_flag())
 		{
 			autonomouswalk_set_return_status(TWI_get_status_settings());
@@ -66,9 +81,9 @@ int main(void)
 		
 		if(navigation_autonomous_walk() == 1)
 		{
-			if(TWI_control_settings_flag())
+			if(TWI_parameters_flag())
 			{
-				navigation_set_Kp(TWI_get_control_setting(0));
+				navigation_set_Kp(TWI_get_parameter(0));
 			}
 			autonomouswalk_walk();
 		}
@@ -89,6 +104,7 @@ int main(void)
 	    }
 	}
 }
+
 //---------------------------------------COUNTERS/TIMERS interrupt vectors-----------
 
 ISR(TIMER1_COMPA_vect)

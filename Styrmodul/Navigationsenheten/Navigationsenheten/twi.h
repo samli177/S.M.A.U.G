@@ -233,7 +233,9 @@ uint8_t TWI_get_command(int i);
  * \return uint8_t
  * The value of the setting
  */
-uint8_t TWI_get_control_setting(int i);
+uint8_t TWI_get_parameter(uint8_t index);
+
+uint8_t TWI_get_parameters_tag();
 
 /**
  * \brief 
@@ -277,7 +279,7 @@ uint8_t write_to_TwiFIFO(char msg[]);
 //Returns 1 if a new instruction of the respective type has been received.
 uint8_t TWI_sensor_flag();
 uint8_t TWI_command_flag();
-uint8_t TWI_control_settings_flag();
+uint8_t TWI_parameters_flag();
 uint8_t TWI_autonom_settings_flag();
 uint8_t TWI_elevation_flag();
 uint8_t TWI_sweep_flag();

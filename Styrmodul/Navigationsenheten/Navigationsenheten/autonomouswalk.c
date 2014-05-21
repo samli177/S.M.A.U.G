@@ -14,10 +14,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define MAX_ROTATION_CLOCKWISE 70
-#define MAX_ROTATION_COUNTER_CLOCKWISE 30
-#define MAX_ROTATION_RADIANS 0.52
-#define STEPPING_TIME 400
 #define TURN_EXIT_ITTERATIONS 0
 #define TURN_ENTRY_ITTERATIONS_RIGHT 0
 #define TURN_ENTRY_ITTERATIONS_LEFT 0
@@ -25,7 +21,7 @@
 #define ANGLE_SCALE_FACTOR 0.3
 #define FRONT_SENSOR_MIN_LENGTH 50
 //Variable for the speed parameter in movement commands. 
-uint8_t gSpeed = 90;
+uint8_t G_SPEED = 90;
 
 //Variable to decide if status messages are to be
 //sent back to the PC.
@@ -40,12 +36,12 @@ uint8_t may_turn_right = 1;
 
 void autonomouswalk_set_speed(uint8_t speed)
 {
-	gSpeed=speed;
+	G_SPEED = speed;
 }
 
 uint8_t autonomouswalk_get_speed()
 {
-	return gSpeed;
+	return G_SPEED;
 }
 
 void autonomouswalk_set_return_status(uint8_t status)
@@ -158,7 +154,7 @@ void walk_forward()
 		adjustmentRotation = 0;
 	}
 	int adjustmentDirection = 90 * directionCompensationAngle/(2*PI);
-	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, gSpeed);
+	USART_send_command_parameters((uint8_t)adjustmentDirection, (uint8_t)adjustmentRotation, G_SPEED);
 	navigation_stepping_delay();
 }
 
