@@ -3,7 +3,6 @@ package src;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -230,7 +229,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         jLabel25 = new javax.swing.JLabel();
         parameterMaxDiffAngleTextField = new javax.swing.JTextField();
         jLabel26 = new javax.swing.JLabel();
-        parameterMaxDiffDistTextField = new javax.swing.JTextField();
+        parameterMaxDistDistTextField = new javax.swing.JTextField();
         jLabel27 = new javax.swing.JLabel();
         jLabel28 = new javax.swing.JLabel();
         parameterIterationsTextField = new javax.swing.JTextField();
@@ -276,6 +275,38 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         jLabel73 = new javax.swing.JLabel();
         jLabel74 = new javax.swing.JLabel();
         jLabel75 = new javax.swing.JLabel();
+        jLabel67 = new javax.swing.JLabel();
+        jLabel68 = new javax.swing.JLabel();
+        parameterAcceptableAngleTextField = new javax.swing.JTextField();
+        parameterAcceptableDistTextField = new javax.swing.JTextField();
+        jLabel69 = new javax.swing.JLabel();
+        jLabel70 = new javax.swing.JLabel();
+        jLabel76 = new javax.swing.JLabel();
+        jLabel77 = new javax.swing.JLabel();
+        jLabel78 = new javax.swing.JLabel();
+        jLabel79 = new javax.swing.JLabel();
+        jLabel80 = new javax.swing.JLabel();
+        jLabel81 = new javax.swing.JLabel();
+        jLabel82 = new javax.swing.JLabel();
+        jLabel83 = new javax.swing.JLabel();
+        jLabel84 = new javax.swing.JLabel();
+        parameterOffsetSensor4TextField = new javax.swing.JTextField();
+        parameterOffsetSensor0TextField = new javax.swing.JTextField();
+        parameterOffsetSensor2TextField = new javax.swing.JTextField();
+        parameterOffsetSensor1TextField = new javax.swing.JTextField();
+        parameterOffsetSensor3TextField = new javax.swing.JTextField();
+        parameterOffsetSensor5TextField = new javax.swing.JTextField();
+        parameterOffsetSensor6TextField = new javax.swing.JTextField();
+        jLabel85 = new javax.swing.JLabel();
+        jLabel86 = new javax.swing.JLabel();
+        jLabel87 = new javax.swing.JLabel();
+        jLabel88 = new javax.swing.JLabel();
+        jLabel89 = new javax.swing.JLabel();
+        jLabel90 = new javax.swing.JLabel();
+        jLabel91 = new javax.swing.JLabel();
+        jLabel92 = new javax.swing.JLabel();
+        parameterMaxDistRotTextField = new javax.swing.JTextField();
+        jLabel93 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         jSeparator4 = new javax.swing.JSeparator();
         jSeparator5 = new javax.swing.JSeparator();
@@ -684,7 +715,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                     .addComponent(jLabel35)
                     .addComponent(medianSensorValuesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(sensorValuesUpdateButton))
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addContainerGap(62, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Inställningar", jPanel5);
@@ -878,13 +909,15 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                                     .addComponent(jRadioButton5)
                                     .addComponent(jRadioButton6))))
                         .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(11, 11, 11))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Debug", jPanel1);
 
         jScrollPane4.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane4.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        jPanel7.setMaximumSize(new java.awt.Dimension(549, 32767));
 
         parameterOffsetRightTextField.setText("5");
         parameterOffsetRightTextField.setName("Offset right"); // NOI18N
@@ -964,9 +997,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             }
         });
 
-        jLabel6.setText("Gräns för att klättringshindret hittas (mm):");
+        jLabel6.setText("Gräns för att klättringshindret hittas (cm):");
 
-        parameterClimbLimitTextField.setText("350");
+        parameterClimbLimitTextField.setText("35");
         parameterClimbLimitTextField.setName("Climb limit"); // NOI18N
 
         jLabel14.setText("Skalfaktor för vinkelreglering mot väggarna:");
@@ -974,7 +1007,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         parameterAngleScaleFactorTextField.setText("0.3");
         parameterAngleScaleFactorTextField.setName("Angle scale factor"); // NOI18N
 
-        jLabel15.setText("Avståndet som roboten ser väggar framför sig (mm):");
+        jLabel15.setText("Avståndet som roboten ser väggar framför sig (cm):");
 
         parameterMinFrontLengthTextField.setText("50");
         parameterMinFrontLengthTextField.setName("Front min dist"); // NOI18N
@@ -991,8 +1024,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
         jLabel26.setText("Maximalt avstånd till väggen för reglering av avstånd (cm):");
 
-        parameterMaxDiffDistTextField.setText("60");
-        parameterMaxDiffDistTextField.setName("Max regulation sensor dist"); // NOI18N
+        parameterMaxDistDistTextField.setText("50");
+        parameterMaxDistDistTextField.setName("Regulation max dist dist"); // NOI18N
 
         jLabel27.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel27.setText("Gång");
@@ -1112,6 +1145,93 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         jLabel75.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel75.setText("Flyttal");
 
+        jLabel67.setText("Tillåten vinkel mot väggen (grader):");
+
+        jLabel68.setText("Tillåtet avstånd från mitten (cm):");
+
+        parameterAcceptableAngleTextField.setText("5");
+        parameterAcceptableAngleTextField.setName("Acceptable angle offset"); // NOI18N
+
+        parameterAcceptableDistTextField.setText("2");
+        parameterAcceptableDistTextField.setName("Acceptable distance offset"); // NOI18N
+
+        jLabel69.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel69.setText("Flyttal");
+
+        jLabel70.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel70.setText("Flyttal");
+
+        jLabel76.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel76.setText("Flyttal");
+
+        jLabel77.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel77.setText("Flyttal");
+
+        jLabel78.setText("Offset sensor fram (cm):");
+
+        jLabel79.setText("Offset sensor vänster fram (cm):");
+
+        jLabel80.setText("Offset sensor vänster bak (cm):");
+
+        jLabel81.setText("Offset sensor höger fram (cm):");
+
+        jLabel82.setText("Offset sensor höger bak (cm):");
+
+        jLabel83.setText("Offset sensor bak (cm):");
+
+        jLabel84.setText("Offset sensor hinder (cm):");
+
+        parameterOffsetSensor4TextField.setText("0");
+        parameterOffsetSensor4TextField.setName("Sensor offset 4"); // NOI18N
+
+        parameterOffsetSensor0TextField.setText("0");
+        parameterOffsetSensor0TextField.setName("Sensor offset 0"); // NOI18N
+
+        parameterOffsetSensor2TextField.setText("0");
+        parameterOffsetSensor2TextField.setName("Sensor offset 2"); // NOI18N
+
+        parameterOffsetSensor1TextField.setText("0");
+        parameterOffsetSensor1TextField.setName("Sensor offset 1"); // NOI18N
+
+        parameterOffsetSensor3TextField.setText("0");
+        parameterOffsetSensor3TextField.setName("Sensor offset 3"); // NOI18N
+
+        parameterOffsetSensor5TextField.setText("0");
+        parameterOffsetSensor5TextField.setName("Sensor offset 5"); // NOI18N
+
+        parameterOffsetSensor6TextField.setText("0");
+        parameterOffsetSensor6TextField.setName("Sensor offset 6"); // NOI18N
+
+        jLabel85.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel85.setText("Flyttal");
+
+        jLabel86.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel86.setText("Flyttal");
+
+        jLabel87.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel87.setText("Flyttal");
+
+        jLabel88.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel88.setText("Flyttal");
+
+        jLabel89.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel89.setText("Flyttal");
+
+        jLabel90.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel90.setText("Flyttal");
+
+        jLabel91.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel91.setText("Flyttal");
+
+        jLabel92.setText("Maximalt avstånd till väggen för reglering av rotation (cm):");
+        jLabel92.setName("Regulation max dist rot"); // NOI18N
+
+        parameterMaxDistRotTextField.setText("60");
+        parameterMaxDistRotTextField.setName("Max regulation sensor diff"); // NOI18N
+
+        jLabel93.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
+        jLabel93.setText("Flyttal");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
@@ -1119,163 +1239,215 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator13)
                     .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(jLabel46)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 164, Short.MAX_VALUE)
-                        .addComponent(sendParametrsButton))
-                    .addComponent(jSeparator12)
-                    .addComponent(jSeparator8)
+                        .addComponent(jSeparator13)
+                        .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                        .addComponent(saveLoadParametersTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(saveParametersButton, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(loadParametersButton, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jSeparator14)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel44)
-                            .addComponent(jLabel50)
-                            .addGroup(jPanel7Layout.createSequentialGroup()
-                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel47)
+                                        .addComponent(jLabel84)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterSampleRateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel48, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel56)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterAutoElevationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel55)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterMinRotationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel54)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterTurnWalkScaleFactorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel53)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterTurnScaleFactorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel52)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterTurnToleranceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel51)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterMinWalkTurnTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel49)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterMaxWalkTurnTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel36)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterStepHeightClimbingTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel33)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterStepHeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel32)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterIterationsDelayTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel31)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterIterationsDelayStartTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel30)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterStepLengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel29)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterServoSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel28)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterIterationsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel27, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel38)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterKPTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(parameterOffsetSensor6TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel40)
+                                        .addComponent(jLabel83)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(parameterOffsetSensor5TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel39)
+                                        .addComponent(jLabel82)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterEntryStepLeftTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(parameterOffsetSensor3TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel41)
+                                        .addComponent(jLabel81)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterExitStepLeftTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(parameterOffsetSensor1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel42)
+                                        .addComponent(jLabel80)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterEntryStepRightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(parameterOffsetSensor2TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel43)
+                                        .addComponent(jLabel79)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterExitStepRightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(parameterOffsetSensor0TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel45)
+                                        .addComponent(jLabel78)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterOffsetLeftTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(parameterOffsetSensor4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel37)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterOffsetRightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel6)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterClimbLimitTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel14)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterAngleScaleFactorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel15)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterMinFrontLengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel16)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterCorridorWidthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel25)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
-                                        .addComponent(parameterMaxDiffAngleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel26)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(parameterMaxDiffDistTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(0, 403, Short.MAX_VALUE)
+                                        .addComponent(parameterSampleRateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(18, 18, 18)
                                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel57)
-                                    .addComponent(jLabel58)
-                                    .addComponent(jLabel59)
-                                    .addComponent(jLabel60)
-                                    .addComponent(jLabel61)
-                                    .addComponent(jLabel62)
-                                    .addComponent(jLabel63)
-                                    .addComponent(jLabel64)
-                                    .addComponent(jLabel65)
-                                    .addComponent(jLabel66)
-                                    .addComponent(jLabel71)
-                                    .addComponent(jLabel72)
-                                    .addComponent(jLabel73)
-                                    .addComponent(jLabel74)
-                                    .addComponent(jLabel75))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                                    .addComponent(jLabel85)
+                                    .addComponent(jLabel86)
+                                    .addComponent(jLabel87)
+                                    .addComponent(jLabel88)
+                                    .addComponent(jLabel89)
+                                    .addComponent(jLabel90)
+                                    .addComponent(jLabel91)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel30)
+                                    .addComponent(jLabel52)
+                                    .addComponent(jLabel53)
+                                    .addComponent(jLabel54)
+                                    .addComponent(jLabel55)
+                                    .addComponent(jLabel56)
+                                    .addComponent(jLabel32)
+                                    .addComponent(jLabel33)
+                                    .addComponent(jLabel36)
+                                    .addComponent(jLabel49)
+                                    .addComponent(jLabel51)
+                                    .addComponent(jLabel31))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(parameterServoSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(parameterIterationsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(parameterIterationsDelayStartTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(parameterIterationsDelayTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(parameterStepHeightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(parameterStepHeightClimbingTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(parameterMaxWalkTurnTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(parameterMinWalkTurnTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addComponent(parameterTurnToleranceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel72))
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addComponent(parameterTurnScaleFactorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel73))
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addComponent(parameterTurnWalkScaleFactorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel74))
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addComponent(parameterMinRotationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel75))
+                                    .addComponent(parameterAutoElevationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addComponent(parameterStepLengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel71)))))
+                        .addContainerGap(69, Short.MAX_VALUE))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator8)
+                            .addComponent(jSeparator14)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel29)
+                                    .addComponent(jLabel47)
+                                    .addComponent(jLabel48)
+                                    .addComponent(jLabel44)
+                                    .addComponent(jLabel50)
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel92)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterMaxDistRotTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jLabel28, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel27, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel68)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterAcceptableDistTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel67)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterAcceptableAngleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel38)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterKPTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel40)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterSpeedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel39)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterEntryStepLeftTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel41)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterExitStepLeftTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel42)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterEntryStepRightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel43)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterExitStepRightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel45)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterOffsetLeftTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel37)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterOffsetRightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel6)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterClimbLimitTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel14)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterAngleScaleFactorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel15)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterMinFrontLengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel16)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterCorridorWidthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel25)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                                                .addComponent(parameterMaxDiffAngleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
+                                                .addComponent(jLabel26)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(parameterMaxDistDistTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel70)
+                                            .addComponent(jLabel58)
+                                            .addComponent(jLabel57)
+                                            .addComponent(jLabel59)
+                                            .addComponent(jLabel60)
+                                            .addComponent(jLabel61)
+                                            .addComponent(jLabel62)
+                                            .addComponent(jLabel63)
+                                            .addComponent(jLabel77)
+                                            .addComponent(jLabel64)
+                                            .addComponent(jLabel76)
+                                            .addComponent(jLabel65)
+                                            .addComponent(jLabel66)
+                                            .addComponent(jLabel69)
+                                            .addComponent(jLabel93))))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addComponent(saveLoadParametersTextField)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(saveParametersButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(loadParametersButton)))
+                        .addContainerGap())
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel46)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(sendParametrsButton)
+                        .addContainerGap())
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jSeparator12)
+                        .addContainerGap())))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1330,7 +1502,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(parameterClimbLimitTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel77))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(parameterAngleScaleFactorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1339,7 +1512,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel15)
-                    .addComponent(parameterMinFrontLengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(parameterMinFrontLengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel76))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
@@ -1351,9 +1525,24 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                     .addComponent(jLabel65))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel92)
+                    .addComponent(parameterMaxDistRotTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel93))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel26)
                     .addComponent(jLabel66)
-                    .addComponent(parameterMaxDiffDistTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(parameterMaxDistDistTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel67)
+                    .addComponent(parameterAcceptableAngleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel69))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel68)
+                    .addComponent(parameterAcceptableDistTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel70))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator12, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1427,6 +1616,41 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel47)
                     .addComponent(parameterSampleRateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel78)
+                    .addComponent(parameterOffsetSensor4TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel85))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel79)
+                    .addComponent(parameterOffsetSensor0TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel86))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel80)
+                    .addComponent(parameterOffsetSensor2TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel87))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel81)
+                    .addComponent(parameterOffsetSensor1TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel88))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel82)
+                    .addComponent(parameterOffsetSensor3TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel89))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel83)
+                    .addComponent(parameterOffsetSensor5TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel90))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel84)
+                    .addComponent(parameterOffsetSensor6TextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel91))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jSeparator14, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1766,6 +1990,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void saveParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveParametersButtonActionPerformed
         String path = MainWindow.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
+        if(!path.endsWith("/")){
+            path = path.substring(0, path.lastIndexOf('/') + 1);
+        }
         File folder = new File(path, "Parametrar");
         folder.mkdir();
 
@@ -1805,6 +2032,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
 
     private void loadParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadParametersButtonActionPerformed
         String path = MainWindow.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
+        if(!path.endsWith("/")){
+            path = path.substring(0, path.lastIndexOf('/') + 1);
+        }
         String name = saveLoadParametersTextField.getText();
         if (name.equals("")) {
             writeMessage("Skriv ett namn innan du laddar!");
@@ -1841,10 +2071,11 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             writeMessage("Fel vid läsning av filen!");
             System.out.println(ex);
         }
-
     }//GEN-LAST:event_loadParametersButtonActionPerformed
 
     private void sendParametrsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendParametrsButtonActionPerformed
+        boolean correct = true;
+        
         byte data[] = new byte[63];
         data[0] = (byte) 'N';
         addFloatToData(data, 1, Float.parseFloat(parameterKPTextField.getText()));
@@ -1860,14 +2091,57 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         addFloatToData(data, 38, Float.parseFloat(parameterMinFrontLengthTextField.getText()));
         data[42] = Byte.parseByte(parameterCorridorWidthTextField.getText());
         addFloatToData(data, 43, Float.parseFloat(parameterMaxDiffAngleTextField.getText()));
-        addFloatToData(data, 47, 60);
-        addFloatToData(data, 51, 50);
-        addFloatToData(data, 55, 5);
-        addFloatToData(data, 59, 2);
+        addFloatToData(data, 47, Float.parseFloat(parameterMaxDistRotTextField.getText()));
+        addFloatToData(data, 51, Float.parseFloat(parameterMaxDistDistTextField.getText()));
+        addFloatToData(data, 55, Float.parseFloat(parameterAcceptableAngleTextField.getText()));
+        addFloatToData(data, 59, Float.parseFloat(parameterAcceptableDistTextField.getText()));
+        correct = correct && sendData('P', data);
+
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException ex) {
+        }
         
-        sendData('P', data);
+        data = new byte[34];
+        data[0] = (byte) 'G';
+        data[1] = Byte.parseByte(parameterIterationsTextField.getText());
+        addInt16ToData(data, 2, Integer.parseInt(parameterServoSpeedTextField.getText()));
+        addFloatToData(data, 4, Float.parseFloat(parameterStepLengthTextField.getText()));
+        addInt16ToData(data, 8, Integer.parseInt(parameterIterationsDelayStartTextField.getText()));
+        addInt16ToData(data, 10, Integer.parseInt(parameterIterationsDelayTextField.getText()));
+        data[12] = Byte.parseByte(parameterStepHeightTextField.getText());
+        data[13] = Byte.parseByte(parameterStepHeightClimbingTextField.getText());
+        data[14] = Byte.parseByte(parameterMaxWalkTurnTextField.getText());
+        data[15] = Byte.parseByte(parameterMinWalkTurnTextField.getText());
+        addFloatToData(data, 16, Float.parseFloat(parameterTurnToleranceTextField.getText()));
+        addFloatToData(data, 20, Float.parseFloat(parameterTurnScaleFactorTextField.getText()));
+        addFloatToData(data, 24, Float.parseFloat(parameterTurnWalkScaleFactorTextField.getText()));
+        addFloatToData(data, 28, Float.parseFloat(parameterMinRotationTextField.getText()));
+        addInt16ToData(data, 32, Integer.parseInt(parameterAutoElevationTextField.getText()));
+        correct = sendData('P', data) && correct;
         
-        writeMessage("Skickade parametrar");
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException ex) {
+        }
+        
+        data = new byte[30];
+        data[0] = (byte) 'S';
+        data[1] = Byte.parseByte(parameterSampleRateTextField.getText());
+        addFloatToData(data, 2, Float.parseFloat(parameterOffsetSensor0TextField.getText()));
+        addFloatToData(data, 6, Float.parseFloat(parameterOffsetSensor0TextField.getText()));
+        addFloatToData(data, 10, Float.parseFloat(parameterOffsetSensor0TextField.getText()));
+        addFloatToData(data, 14, Float.parseFloat(parameterOffsetSensor0TextField.getText()));
+        addFloatToData(data, 18, Float.parseFloat(parameterOffsetSensor0TextField.getText()));
+        addFloatToData(data, 22, Float.parseFloat(parameterOffsetSensor0TextField.getText()));
+        addFloatToData(data, 26, Float.parseFloat(parameterOffsetSensor0TextField.getText()));
+        correct = sendData('P', data) && correct;
+        
+        if(correct){
+            writeMessage("Skickade parametrar");
+        } else {
+            writeMessage("Kunde inte skicka parametrar");
+        }
     }//GEN-LAST:event_sendParametrsButtonActionPerformed
 
     private void addFloatToData(byte data[], int index, float f) {
@@ -1875,6 +2149,11 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             data[index] = b;
             index++;
         }
+    }
+    
+    private void addInt16ToData(byte data[], int index, int i){
+        data[index] = (byte) (i >> 8);
+        data[index + 1] = (byte) (i & 0x00FF);
     }
 
     /**
@@ -2004,14 +2283,36 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JLabel jLabel64;
     private javax.swing.JLabel jLabel65;
     private javax.swing.JLabel jLabel66;
+    private javax.swing.JLabel jLabel67;
+    private javax.swing.JLabel jLabel68;
+    private javax.swing.JLabel jLabel69;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel70;
     private javax.swing.JLabel jLabel71;
     private javax.swing.JLabel jLabel72;
     private javax.swing.JLabel jLabel73;
     private javax.swing.JLabel jLabel74;
     private javax.swing.JLabel jLabel75;
+    private javax.swing.JLabel jLabel76;
+    private javax.swing.JLabel jLabel77;
+    private javax.swing.JLabel jLabel78;
+    private javax.swing.JLabel jLabel79;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel80;
+    private javax.swing.JLabel jLabel81;
+    private javax.swing.JLabel jLabel82;
+    private javax.swing.JLabel jLabel83;
+    private javax.swing.JLabel jLabel84;
+    private javax.swing.JLabel jLabel85;
+    private javax.swing.JLabel jLabel86;
+    private javax.swing.JLabel jLabel87;
+    private javax.swing.JLabel jLabel88;
+    private javax.swing.JLabel jLabel89;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabel90;
+    private javax.swing.JLabel jLabel91;
+    private javax.swing.JLabel jLabel92;
+    private javax.swing.JLabel jLabel93;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -2045,6 +2346,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JTextField medianSensorValuesTextField;
     private javax.swing.JTextArea messageTextArea;
     private javax.swing.JTextField messageTextField;
+    private javax.swing.JTextField parameterAcceptableAngleTextField;
+    private javax.swing.JTextField parameterAcceptableDistTextField;
     private javax.swing.JTextField parameterAngleScaleFactorTextField;
     private javax.swing.JTextField parameterAutoElevationTextField;
     private javax.swing.JTextField parameterClimbLimitTextField;
@@ -2058,13 +2361,21 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JTextField parameterIterationsTextField;
     private javax.swing.JTextField parameterKPTextField;
     private javax.swing.JTextField parameterMaxDiffAngleTextField;
-    private javax.swing.JTextField parameterMaxDiffDistTextField;
+    private javax.swing.JTextField parameterMaxDistDistTextField;
+    private javax.swing.JTextField parameterMaxDistRotTextField;
     private javax.swing.JTextField parameterMaxWalkTurnTextField;
     private javax.swing.JTextField parameterMinFrontLengthTextField;
     private javax.swing.JTextField parameterMinRotationTextField;
     private javax.swing.JTextField parameterMinWalkTurnTextField;
     private javax.swing.JTextField parameterOffsetLeftTextField;
     private javax.swing.JTextField parameterOffsetRightTextField;
+    private javax.swing.JTextField parameterOffsetSensor0TextField;
+    private javax.swing.JTextField parameterOffsetSensor1TextField;
+    private javax.swing.JTextField parameterOffsetSensor2TextField;
+    private javax.swing.JTextField parameterOffsetSensor3TextField;
+    private javax.swing.JTextField parameterOffsetSensor4TextField;
+    private javax.swing.JTextField parameterOffsetSensor5TextField;
+    private javax.swing.JTextField parameterOffsetSensor6TextField;
     private javax.swing.JTextField parameterSampleRateTextField;
     private javax.swing.JTextField parameterServoSpeedTextField;
     private javax.swing.JTextField parameterSpeedTextField;
