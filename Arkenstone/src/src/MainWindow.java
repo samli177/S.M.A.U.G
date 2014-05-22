@@ -1,6 +1,10 @@
 package src;
 
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -8,6 +12,8 @@ import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.text.DefaultCaret;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -204,6 +210,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         parameterInStepLeftTextField6 = new javax.swing.JTextField();
         parameterInStepLeftTextField7 = new javax.swing.JTextField();
         jLabel33 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        loadParametersButton = new javax.swing.JButton();
+        saveParametersButton = new javax.swing.JButton();
+        saveLoadParametersTextField = new javax.swing.JTextField();
+        jLabel36 = new javax.swing.JLabel();
+        jSeparator11 = new javax.swing.JSeparator();
         jSeparator3 = new javax.swing.JSeparator();
         jSeparator4 = new javax.swing.JSeparator();
         jSeparator5 = new javax.swing.JSeparator();
@@ -354,7 +366,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(ultraSoundTextField)
                             .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(123, Short.MAX_VALUE))
+                .addContainerGap(138, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -515,7 +527,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(sendMessageButton, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 114, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel24, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(statusToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -919,7 +931,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                                 .addComponent(jLabel31)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(parameterInStepLeftTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 101, Short.MAX_VALUE)))
+                        .addGap(0, 52, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -975,6 +987,54 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         );
 
         jTabbedPane1.addTab("Parametrar", jPanel2);
+
+        loadParametersButton.setText("Ladda parametrar");
+
+        saveParametersButton.setText("Spara parametrar");
+        saveParametersButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveParametersButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel36.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel36.setText("Spara eller ladda parametrar från en fil");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(saveLoadParametersTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(saveParametersButton, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(loadParametersButton, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel36)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jSeparator11))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(322, Short.MAX_VALUE)
+                .addComponent(jSeparator11, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel36)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(loadParametersButton)
+                    .addComponent(saveParametersButton)
+                    .addComponent(saveLoadParametersTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Parametrar 2", jPanel3);
 
         jTabbedPane1.setSelectedIndex(1);
 
@@ -1288,6 +1348,33 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         ((LowerPanel) lowerDrawArea).setParameters(s, m);
     }//GEN-LAST:event_sensorValuesUpdateButtonActionPerformed
 
+    private void saveParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveParametersButtonActionPerformed
+        String path = MainWindow.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
+        File folder = new File(path, "Parametrar");
+        folder.mkdir();
+        
+        String name = saveLoadParametersTextField.getText();
+        System.out.println(path);
+        if(name.equals("")){
+            writeMessage("Must enter filename before saving!");
+            return;
+        }
+        File file = new File(path + "Parametrar/", name);
+        try {
+            if(!file.createNewFile()){
+                writeMessage("This file already exist!");
+                return;
+            }
+            PrintWriter pw = new PrintWriter(file);
+            pw.println("Test");
+            pw.close();
+            
+        } catch(IOException e){
+            writeMessage("Fel vid hantering av filen.");
+            System.out.println(e);
+        }
+    }//GEN-LAST:event_saveParametersButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1381,6 +1468,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
+    private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1389,6 +1477,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JRadioButton jRadioButton1;
@@ -1402,6 +1491,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator10;
+    private javax.swing.JSeparator jSeparator11;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
@@ -1411,6 +1501,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JSeparator jSeparator8;
     private javax.swing.JSeparator jSeparator9;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JButton loadParametersButton;
     private javax.swing.JPanel lowerDrawArea;
     private javax.swing.JTextField medianSensorValuesTextField;
     private javax.swing.JTextArea messageTextArea;
@@ -1425,6 +1516,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     private javax.swing.JTextField parameterInStepLeftTextField7;
     private javax.swing.JTextField parameterKPTextField;
     private javax.swing.JTextField parameterSpeedTextField;
+    private javax.swing.JTextField saveLoadParametersTextField;
+    private javax.swing.JButton saveParametersButton;
     private javax.swing.JTextField savedSensorValuesTextField;
     private javax.swing.JButton searchControllersButton;
     private javax.swing.JButton sendAutoSettingsButton;

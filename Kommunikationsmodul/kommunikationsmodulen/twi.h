@@ -87,7 +87,7 @@ uint8_t TWI_send_status(uint8_t adr);
  * \return int
  * 1 if packet was successfully sent, 0 otherwise
  */
-uint8_t TWI_send_control_settings(uint8_t adr, uint8_t KP,uint8_t KI,uint8_t KD);
+uint8_t TWI_send_parameters(uint8_t adr, uint8_t length, uint8_t parameters[]);
 /**
  * \brief 
  * Sends autonomous settings, navigation -> communication or vise versa.

@@ -304,38 +304,29 @@ uint8_t USART_decode_parameters_rx_fifo()
 	}
 	
 	int length = *len;
-	uint8_t Kp, Ki, Kd;
+	uint8_t parameters[255];
 	
-	if(length == 3)
+	if(FifoRead(gRxFIFO, data))
 	{
-		
-		if(FifoRead(gRxFIFO, data))
-		{
-			USART_send_message("RxFIFO Parameters ERROR!");
-			return 1; // error
-		}
-		Kp = *data;
-		
-		if(FifoRead(gRxFIFO, data))
-		{
-			USART_send_message("RxFIFO Parameters ERROR!");
-			return 1; // error
-		}
-		Ki = *data;
-		
-		if(FifoRead(gRxFIFO, data))
-		{
-			USART_send_message("RxFIFO Parameters ERROR!");
-			return 1; // error
-		}
-		Kd = *data;
-		
-		TWI_send_control_settings(ST_ADDRESS, Kp, Ki, Kd);
-
-	}else
+		USART_send_message("RxFIFO Parameters ERROR!");
+		return 1; // error
+	}
+	
+	if(*data == 'N' || *data == 'G')
 	{
-		USART_send_message( "RxFIFO COMMAND ERROR: INCORRECT LENGTH");
-		return 1;
+		parameters[0] = *data;
+		for(int i = 1; i < length; i++)
+		{
+			if(FifoRead(gRxFIFO, data))
+			{
+				USART_send_message("RxFIFO Parameters ERROR!");
+				return 1; // error
+			}
+			parameters[i] = *data;
+		}
+		
+		TWI_send_parameters(ST_ADDRESS, length, parameters);
+		
 	}
 
 	return 0;

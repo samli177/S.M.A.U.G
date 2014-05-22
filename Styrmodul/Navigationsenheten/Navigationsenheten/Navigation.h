@@ -232,4 +232,6 @@ void navigation_fill_buffer();
  */
 float navigation_get_sensor(int sensorNr);
 
+void navigation_update_parameters(uint8_t parameters[37]);
+
 #endif

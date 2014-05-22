@@ -20,24 +20,28 @@
 #include "Navigation.h"
 #include "LED.h"
 
-#define sensorBufferSize 5
-#define RIGHT_SIDE_OFFSET 5
-#define LEFT_SIDE_OFFSET 5
+#define SENSOR_BUFFER_SIZE 5
+
+float RIGHT_SIDE_OFFSET = 5;
+float LEFT_SIDE_OFFSET = 5;
+float REGULATION_MAX_SENSOR_DIFF = 10;
+float REGULATION_MAX_SENSOR_DIST_ROT = 60;
+float REGULATION_MAX_SENSOR_DIST_D = 50;
+
+//A regulation parameter to determine how
+//hard to punish offset. Small Kp => small punishment.
+float G_KP = 0.05;
 
 // 0 means use a right side algorithm.
 // 1 means use a left side algorithm.
 uint8_t gAlgorithm = 1;
-
-//A regulation parameter to determine how 
-//hard to punish offset. Small Kp => small punishment.
-float gKp = 0.05;
 
 // 0 means autonomous walk is disabled.
 // 1 means autonomous walk is enabled.
 uint8_t gAutonomousWalk = 1;
 
 // Used to take the median of the most recent measurements.
-float sensorMedianBuffer[8][sensorBufferSize];
+float sensorMedianBuffer[8][SENSOR_BUFFER_SIZE];
 uint8_t medianBuffer[8];
 
 // A help variable to be used in fill_buffer().
@@ -50,7 +54,7 @@ uint8_t lowPassObstacleFlag = 0;
 //------------- Internal declarations ---------------
 
 //static int compare(const void * a, const void * b);
-static float sortAndFilter(float data[sensorBufferSize]);
+static float sortAndFilter(float data[SENSOR_BUFFER_SIZE]);
 
 //--------------- Internal functions ----------------
 
@@ -86,12 +90,12 @@ static float sortAndFilter(float data[sensorBufferSize]);
  * \return uint8_t
  * The returned median as a uint8_t
  */
-float sortAndFilter(float data[sensorBufferSize])
+float sortAndFilter(float data[SENSOR_BUFFER_SIZE])
 {
 	float largest;
-	for (int i=0; i < sensorBufferSize-1; ++i)
+	for (int i=0; i < SENSOR_BUFFER_SIZE-1; ++i)
 	{
-		for(int j = 0; j < sensorBufferSize - i - 1; ++j)
+		for(int j = 0; j < SENSOR_BUFFER_SIZE - i - 1; ++j)
 		{
 			if(data[j] > data[j+1])
 			{
@@ -101,7 +105,7 @@ float sortAndFilter(float data[sensorBufferSize])
 			}
 		}
 	}
-	return data[sensorBufferSize / 2];
+	return data[SENSOR_BUFFER_SIZE / 2];
 }
 
 //--------------- External functions ----------------
@@ -118,12 +122,12 @@ void navigation_init()
 
 uint8_t navigation_get_Kp()
 {
-	return gKp;
+	return G_KP;
 }
 
 void navigation_set_Kp(uint8_t Kp)
 {
-	gKp = Kp;
+	G_KP = Kp;
 }
 
 uint8_t navigation_left_algorithm()
@@ -179,12 +183,12 @@ float navigation_angle_offset()
 	float angle = 0;
 	if (gAlgorithm)
 	{
-		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 20))
+		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(0) < REGULATION_MAX_SENSOR_DIST_ROT)
 		{
 			// Use wall to the left
 			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 		}
-		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 20))
+		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(1) < REGULATION_MAX_SENSOR_DIST_ROT)
 		{
 			// Use wall to the right
 			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
@@ -192,12 +196,12 @@ float navigation_angle_offset()
 	}
 	else 
 	{
-		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 20))
+		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(1) < REGULATION_MAX_SENSOR_DIST_ROT)
 		{
 			// Use wall to the right
 			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
 		}
-		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 20))
+		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(0) < REGULATION_MAX_SENSOR_DIST_ROT)
 		{
 			// Use wall to the left
 			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
@@ -219,22 +223,22 @@ float navigation_direction_regulation(float angleOffset)
 	int d = 0;
 	if(gAlgorithm)
 	{
-		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
+		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(0) < REGULATION_MAX_SENSOR_DIST_D)
 		{
 			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE - LEFT_SIDE_OFFSET) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
 		}
-		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
+		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(1) < REGULATION_MAX_SENSOR_DIST_D)
 		{
 			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE - RIGHT_SIDE_OFFSET) * cosf(angleOffset);
 		}
 	}
 	else 
 	{
-		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < 10 && navigation_get_sensor(1) < (CORRIDOR_WIDTH / 2 + 10))
+		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(1) < REGULATION_MAX_SENSOR_DIST_D)
 		{
 			d = CORRIDOR_WIDTH / 2 - ((navigation_get_sensor(1) + navigation_get_sensor(3)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE - RIGHT_SIDE_OFFSET) * cosf(angleOffset);
 		}
-		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < 10 && navigation_get_sensor(0) < (CORRIDOR_WIDTH / 2 + 10))
+		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(0) < REGULATION_MAX_SENSOR_DIST_D)
 		{
 			d = ((navigation_get_sensor(2) + navigation_get_sensor(0)) / 2.0 + DISTANCE_MIDDLE_TO_SIDE - LEFT_SIDE_OFFSET) * cosf(angleOffset) - CORRIDOR_WIDTH / 2;
 		}
@@ -246,7 +250,7 @@ float navigation_direction_regulation(float angleOffset)
 	}
 	else
 	{
-		float dir = atanf(d * gKp);
+		float dir = atanf(d * G_KP);
 		if(dir < 0)
 		{
 			dir += 2*PI;
@@ -324,7 +328,7 @@ void navigation_fill_buffer()
 	{
 		sensorMedianBuffer[i][currentBufferLine] = TWI_get_sensor(i);
 	}
-	if(currentBufferLine == sensorBufferSize - 1)
+	if(currentBufferLine == SENSOR_BUFFER_SIZE - 1)
 	{
 		currentBufferLine = 0;
 	} else {
@@ -334,13 +338,17 @@ void navigation_fill_buffer()
 
 float navigation_get_sensor(int sensorNr)
 {
-	float temp[sensorBufferSize];
-	for(int j = 0; j < sensorBufferSize; ++j)
+	float temp[SENSOR_BUFFER_SIZE];
+	for(int j = 0; j < SENSOR_BUFFER_SIZE; ++j)
 	{
 		temp[j] = sensorMedianBuffer[sensorNr][j];
 	}
 	//qsort(temp, sensorBufferSize, sizeof(uint8_t), compare);
 	return sortAndFilter(temp);
+}
+
+void navigation_update_parameters(uint8_t parameters[37]){
+	// Do stuff
 }
 
 //-------------------------------Interrupts--------------------------------

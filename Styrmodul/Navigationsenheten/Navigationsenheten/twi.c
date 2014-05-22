@@ -15,7 +15,6 @@
 #include "fifo.h"
 #include "Navigation.h"
 
-uint8_t gMSB = 0;
 
 //------------------Internal declarations---------------------------------
 
@@ -111,7 +110,7 @@ static void reset_TWI();
  * 
  * \return void
  */
-static void get_control_settings_from_bus();
+static void get_parameters_from_bus();
 /**
  * \brief 
  * Retrieves the autonomous settings from the bus and 
@@ -192,6 +191,10 @@ int currentSetting;
 int elevation;
 uint8_t floatMessage[4];
 int floatCounter;
+uint8_t gMSB = 0;
+uint8_t parametersTag;
+uint8_t parameters[255];
+uint8_t parameterCount = 0;
 
 //-----------Global variables for the interrupts--------------------------
 uint8_t instruction;
@@ -200,12 +203,11 @@ int currentInstruction;
 //------------Flags for new data, should be set 0 when read 1-------------
 uint8_t sensorFlag_ = 0;
 uint8_t commandFlag_ = 0;
-uint8_t controlSettingsFlag_ = 0;
+uint8_t parametersFlag_ = 0;
 uint8_t autonomSettingsFlag_ = 0;
 uint8_t elevationFlag_ = 0;
 uint8_t sweepFlag_ = 0;
 uint8_t statusSettingsFlag_ = 0;
-
 
 // ------------- FIFO for TWI --------------------------------------------
 MK_FIFO(1); // use 1 B
@@ -698,10 +700,15 @@ void get_sweep_from_bus()
 	sweep = get_data();
 }
 
-void get_control_settings_from_bus()
+void get_parameters_from_bus()
 {
-	controlSettings[currentSetting] = get_data();
-	currentSetting = 0;
+	if(parameterCount == 0)
+	{
+		parametersTag = get_data();
+	} else {
+		parameters[parameterCount - 1] = get_data();
+	}
+	++parameterCount;
 }
 
 void get_autonom_settings_from_bus()
@@ -761,9 +768,9 @@ uint8_t TWI_get_sweep()
 	return sweep;
 }
 
-uint8_t TWI_get_control_setting(int i)
+uint8_t TWI_get_parameter(uint8_t index)
 {
-	return controlSettings[i];
+	return parameters[index];
 }
 
 uint8_t TWI_get_autonom_settings()
@@ -802,11 +809,11 @@ uint8_t TWI_command_flag()
 	return 0;
 }
 
-uint8_t TWI_control_settings_flag()
+uint8_t TWI_parameters_flag()
 {
-	if(controlSettingsFlag_)
+	if(parametersFlag_)
 	{
-		controlSettingsFlag_ = 0;
+		parametersFlag_ = 0;
 		return 1;
 	}
 	return 0;
@@ -939,7 +946,7 @@ ISR(TWI_vect)
 					{
 						case(I_SETTINGS):
 						{
-							get_control_settings_from_bus();
+							get_parameters_from_bus();
 							break;
 						}
 						case(I_AUTONOM):
@@ -971,7 +978,8 @@ ISR(TWI_vect)
 				{
 					case(I_SETTINGS):
 					{
-						controlSettingsFlag_ = 1;
+						parametersFlag_ = 1;
+						parameterCount = 0;
 						break;
 					}
 					case(I_AUTONOM):
@@ -1079,7 +1087,7 @@ ISR(TWI_vect)
 						}
 						case(I_SETTINGS):
 						{
-							get_control_settings_from_bus();
+							get_parameters_from_bus();
 							break;
 						}
 						case(I_AUTONOM):
@@ -1116,7 +1124,7 @@ ISR(TWI_vect)
 					}
 					case(I_SETTINGS):
 					{
-						controlSettingsFlag_ = 1;
+						parametersFlag_ = 1;
 						break;
 					}
 					case(I_AUTONOM):
