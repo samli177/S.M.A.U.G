@@ -326,7 +326,6 @@ uint8_t USART_decode_parameters_rx_fifo()
 		}
 		
 		TWI_send_parameters(ST_ADDRESS, length, parameters);
-		
 	}
 
 	return 0;

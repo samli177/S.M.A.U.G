@@ -5,11 +5,10 @@
 
 #define DISTANCE_FRONT_TO_BACK 13.3   // cm
 #define DISTANCE_MIDDLE_TO_SIDE 6.1   // cm
-#define CORRIDOR_WIDTH 80             // cm
-#define ACCEPTABLE_OFFSET_ANGLE 0.07   // radians
-#define ACCEPTABLE_DISTANCE_OFFSET 2  // cm
 #define HEIGHT_LIMIT 40              // cm
 #define PI 3.14159265
+
+float navigation_get_corridor_width();
 
 /**
  * \brief 
@@ -233,5 +232,7 @@ void navigation_fill_buffer();
 float navigation_get_sensor(int sensorNr);
 
 void navigation_update_parameters(uint8_t parameters[37]);
+
+float floatCast(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4);
 
 #endif

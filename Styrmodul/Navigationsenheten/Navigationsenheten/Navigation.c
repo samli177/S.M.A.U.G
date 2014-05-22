@@ -27,6 +27,10 @@ float LEFT_SIDE_OFFSET = 5;
 float REGULATION_MAX_SENSOR_DIFF = 10;
 float REGULATION_MAX_SENSOR_DIST_ROT = 60;
 float REGULATION_MAX_SENSOR_DIST_D = 50;
+uint8_t CORRIDOR_WIDTH = 80;             // cm
+float ACCEPTABLE_OFFSET_ANGLE = 0.07;   // radians
+float ACCEPTABLE_DISTANCE_OFFSET = 2;  // cm
+
 
 //A regulation parameter to determine how
 //hard to punish offset. Small Kp => small punishment.
@@ -347,8 +351,37 @@ float navigation_get_sensor(int sensorNr)
 	return sortAndFilter(temp);
 }
 
-void navigation_update_parameters(uint8_t parameters[37]){
-	// Do stuff
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];
+};
+
+float floatCast(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4)
+{
+	union Union_floatcast foo;
+	foo.s[0] = b1;
+	foo.s[1] = b2;
+	foo.s[2] = b3;
+	foo.s[3] = b4;
+	return foo.f;
+}
+
+void navigation_update_parameters(uint8_t parameters[62]){
+	G_KP = floatCast(parameters[0], parameters[1], parameters[2], parameters[3]);
+	LEFT_SIDE_OFFSET = floatCast(parameters[21], parameters[22], parameters[23], parameters[24]);
+	RIGHT_SIDE_OFFSET = floatCast(parameters[25], parameters[26], parameters[27], parameters[28]);
+	REGULATION_MAX_SENSOR_DIFF = floatCast(parameters[42], parameters[43], parameters[44], parameters[45]);
+	REGULATION_MAX_SENSOR_DIST_ROT = floatCast(parameters[46], parameters[47], parameters[48], parameters[49]);
+	REGULATION_MAX_SENSOR_DIST_D = floatCast(parameters[50], parameters[51], parameters[52], parameters[53]);
+	CORRIDOR_WIDTH = parameters[41];
+	ACCEPTABLE_OFFSET_ANGLE = floatCast(parameters[54], parameters[55], parameters[56], parameters[57]) * M_PI / 180;
+	ACCEPTABLE_DISTANCE_OFFSET = floatCast(parameters[58], parameters[59], parameters[60], parameters[61]);
+}
+
+float navigation_get_corridor_width()
+{
+	return CORRIDOR_WIDTH;
 }
 
 //-------------------------------Interrupts--------------------------------

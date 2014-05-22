@@ -63,10 +63,10 @@ int main(void)
 		{
 			if(TWI_get_parameters_tag() == 'N')
 			{
-				uint8_t params[47];
-				for(int i = 0; i < 47; ++i)
+				uint8_t params[62];
+				for(int i = 0; i < 62; ++i)
 				{
-					params[i] = TWI_get_parameter();
+					params[i] = TWI_get_parameter(i);
 				}
 				navigation_update_parameters(params);
 			} else if(TWI_get_parameters_tag() == 'G') {

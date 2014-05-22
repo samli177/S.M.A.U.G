@@ -14,12 +14,13 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define TURN_EXIT_ITTERATIONS 0
-#define TURN_ENTRY_ITTERATIONS_RIGHT 0
-#define TURN_ENTRY_ITTERATIONS_LEFT 0
-#define CLIMB_LENGTH_LIMIT 35
-#define ANGLE_SCALE_FACTOR 0.3
-#define FRONT_SENSOR_MIN_LENGTH 50
+float TURN_EXIT_ITTERATIONS_LEFT = 0;
+float TURN_EXIT_ITTERATIONS_RIGHT = 0;
+float TURN_ENTRY_ITTERATIONS_RIGHT = 0;
+float TURN_ENTRY_ITTERATIONS_LEFT = 0;
+float CLIMB_LENGTH_LIMIT = 35;
+float ANGLE_SCALE_FACTOR = 0.3;
+float FRONT_SENSOR_MIN_LENGTH = 50;
 //Variable for the speed parameter in movement commands. 
 uint8_t G_SPEED = 90;
 
@@ -77,7 +78,7 @@ void turn_left()
 		_delay_ms(10);
 	}
 	
-	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS_LEFT && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -110,7 +111,7 @@ void turn_right()
 		_delay_ms(10);
 	}
 	
-	for(int i = 0; (i < TURN_EXIT_ITTERATIONS && navigation_autonomous_walk() != 0); ++i)
+	for(int i = 0; (i < TURN_EXIT_ITTERATIONS_RIGHT && navigation_autonomous_walk() != 0); ++i)
 	{
 		walk_forward();
 	}
@@ -174,7 +175,7 @@ void autonomouswalk_walk()
 			{
 				for(int i = 0;i < TURN_ENTRY_ITTERATIONS_LEFT; ++i)
 				{
-					if(navigation_get_sensor(3) > CORRIDOR_WIDTH / 2 + 20)
+					if(navigation_get_sensor(3) > navigation_get_corridor_width() / 2 + 20)
 					{
 						break;
 					}
@@ -313,7 +314,7 @@ void autonomouswalk_walk()
 				
 				for(int i = 0;i < TURN_ENTRY_ITTERATIONS_RIGHT; ++i)
 				{
-					if(navigation_get_sensor(2) > CORRIDOR_WIDTH / 2 + 20)
+					if(navigation_get_sensor(2) > navigation_get_corridor_width() / 2 + 20)
 					{
 						break;
 					}
@@ -430,3 +431,16 @@ void autonomouswalk_walk()
 		}
 	}
 }
+
+void autonomouswalk_update_parameters(uint8_t parameters[62])
+{
+	G_SPEED = parameters[4];
+	TURN_ENTRY_ITTERATIONS_LEFT = floatCast(parameters[5], parameters[6], parameters[7], parameters[8]);
+	TURN_ENTRY_ITTERATIONS_RIGHT = floatCast(parameters[9], parameters[10], parameters[11], parameters[12]);
+	TURN_EXIT_ITTERATIONS_LEFT = floatCast(parameters[13], parameters[14], parameters[15], parameters[16]);
+	TURN_EXIT_ITTERATIONS_RIGHT = floatCast(parameters[17], parameters[18], parameters[19], parameters[20]);
+	CLIMB_LENGTH_LIMIT = floatCast(parameters[29], parameters[30], parameters[31], parameters[32]);
+	ANGLE_SCALE_FACTOR = floatCast(parameters[33], parameters[30], parameters[31], parameters[32]);
+	FRONT_SENSOR_MIN_LENGTH = floatCast(parameters[33], parameters[34], parameters[35], parameters[36]);
+}
+

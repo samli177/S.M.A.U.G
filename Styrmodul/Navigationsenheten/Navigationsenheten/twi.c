@@ -788,6 +788,11 @@ uint8_t TWI_get_status_settings()
 	return statusSettings;
 }
 
+uint8_t TWI_get_parameters_tag()
+{
+	return parametersTag;
+}
+
 //----------------------Flags---------------------------------------------
 uint8_t TWI_sensor_flag()
 {
