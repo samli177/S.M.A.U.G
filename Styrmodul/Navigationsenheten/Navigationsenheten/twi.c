@@ -663,6 +663,7 @@ void stop_twi()
 	messageCounter = 0;
 	currentSetting = 0;
 	floatCounter = 0;
+	parameterCount = 0;
 }
 
 void reset_TWI()
@@ -984,7 +985,6 @@ ISR(TWI_vect)
 					case(I_SETTINGS):
 					{
 						parametersFlag_ = 1;
-						parameterCount = 0;
 						break;
 					}
 					case(I_AUTONOM):

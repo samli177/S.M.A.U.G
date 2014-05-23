@@ -100,6 +100,9 @@ void USART_decode_rx_fifo();
  */
 uint8_t USART_decode_message_rx_fifo();
 
+uint8_t USART_decode_parameters_rx_fifo();
+
+
 /**
  * \brief 
  * Transmits a value (float) over UART
@@ -225,6 +228,10 @@ uint8_t USART_get_turn_dir();
 uint16_t USART_get_turn_angle();
 
 uint8_t USART_get_climb_flag();
+
+uint8_t USART_parameters_flag();
+
+uint8_t USART_get_parameter(uint8_t index);
 
 
 /**

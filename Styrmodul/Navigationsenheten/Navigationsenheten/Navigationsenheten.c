@@ -69,8 +69,14 @@ int main(void)
 					params[i] = TWI_get_parameter(i);
 				}
 				navigation_update_parameters(params);
+				autonomouswalk_update_parameters(params);
 			} else if(TWI_get_parameters_tag() == 'G') {
-				// USART
+				uint8_t params[33];
+				for(int i = 0; i < 33; ++i)
+				{
+					params[i] = TWI_get_parameter(i);
+				}
+				USART_send_parameters(params);
 			}
 		}
 		

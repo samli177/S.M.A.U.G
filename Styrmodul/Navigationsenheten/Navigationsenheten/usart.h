@@ -209,6 +209,9 @@ uint8_t USART_decode_turn_done_rx_fifo();
  */
 void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t speed);
 
+void USART_send_parameters(uint8_t parameters[34]);
+
+
 /**
  * \brief 
  * Check if the GangReady-flag is set. 

@@ -440,7 +440,7 @@ void autonomouswalk_update_parameters(uint8_t parameters[62])
 	TURN_EXIT_ITTERATIONS_LEFT = floatCast(parameters[13], parameters[14], parameters[15], parameters[16]);
 	TURN_EXIT_ITTERATIONS_RIGHT = floatCast(parameters[17], parameters[18], parameters[19], parameters[20]);
 	CLIMB_LENGTH_LIMIT = floatCast(parameters[29], parameters[30], parameters[31], parameters[32]);
-	ANGLE_SCALE_FACTOR = floatCast(parameters[33], parameters[30], parameters[31], parameters[32]);
-	FRONT_SENSOR_MIN_LENGTH = floatCast(parameters[33], parameters[34], parameters[35], parameters[36]);
+	ANGLE_SCALE_FACTOR = floatCast(parameters[33], parameters[34], parameters[35], parameters[36]);
+	FRONT_SENSOR_MIN_LENGTH = floatCast(parameters[37], parameters[38], parameters[39], parameters[40]);
 }
 

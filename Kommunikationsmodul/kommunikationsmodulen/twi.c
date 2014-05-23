@@ -346,11 +346,6 @@ uint8_t TWI_send_parameters(uint8_t adr, uint8_t length, uint8_t parameters[])
 	}
 	for(int i = 0; i < length; ++i)
 	{
-		if(CONTROL != ADDRESS_W)
-		{
-			Error();
-			return 0;
-		}
 		send_data_and_wait(parameters[i]);
 	}
 	

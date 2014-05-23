@@ -187,12 +187,12 @@ float navigation_angle_offset()
 	float angle = 0;
 	if (gAlgorithm)
 	{
-		if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(0) < REGULATION_MAX_SENSOR_DIST_ROT)
+		if(fabs(navigation_get_sensor(2) - navigation_get_sensor(0)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(0) < REGULATION_MAX_SENSOR_DIST_ROT)
 		{
 			// Use wall to the left
 			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
 		}
-		else if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(1) < REGULATION_MAX_SENSOR_DIST_ROT)
+		else if(fabs(navigation_get_sensor(1) - navigation_get_sensor(3)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(1) < REGULATION_MAX_SENSOR_DIST_ROT)
 		{
 			// Use wall to the right
 			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
@@ -200,12 +200,12 @@ float navigation_angle_offset()
 	}
 	else 
 	{
-		if(abs(navigation_get_sensor(1) - navigation_get_sensor(3)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(1) < REGULATION_MAX_SENSOR_DIST_ROT)
+		if(fabs(navigation_get_sensor(1) - navigation_get_sensor(3)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(1) < REGULATION_MAX_SENSOR_DIST_ROT)
 		{
 			// Use wall to the right
 			angle = atanf((navigation_get_sensor(1) - navigation_get_sensor(3))/DISTANCE_FRONT_TO_BACK);
 		}
-		else if(abs(navigation_get_sensor(2) - navigation_get_sensor(0)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(0) < REGULATION_MAX_SENSOR_DIST_ROT)
+		else if(fabs(navigation_get_sensor(2) - navigation_get_sensor(0)) < REGULATION_MAX_SENSOR_DIFF && navigation_get_sensor(0) < REGULATION_MAX_SENSOR_DIST_ROT)
 		{
 			// Use wall to the left
 			angle = atanf((navigation_get_sensor(2) - navigation_get_sensor(0))/DISTANCE_FRONT_TO_BACK);
@@ -377,6 +377,8 @@ void navigation_update_parameters(uint8_t parameters[62]){
 	CORRIDOR_WIDTH = parameters[41];
 	ACCEPTABLE_OFFSET_ANGLE = floatCast(parameters[54], parameters[55], parameters[56], parameters[57]) * M_PI / 180;
 	ACCEPTABLE_DISTANCE_OFFSET = floatCast(parameters[58], parameters[59], parameters[60], parameters[61]);
+	
+	TWI_send_float(C_ADDRESS, G_KP);
 }
 
 float navigation_get_corridor_width()

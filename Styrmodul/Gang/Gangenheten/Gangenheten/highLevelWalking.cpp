@@ -27,6 +27,11 @@ float TURN_SCALE_FACTOR = 75 * M_PI / 180;
 float TURN_WALK_SCALE_FACTOR = 45 * M_PI / 180;
 float ITERATIONS;
 int SERVO_SPEED = 0x300;
+uint16_t ITERATIONS_DELAY_START = 50;
+uint16_t ITERATIONS_DELAY = 25;
+uint8_t STEP_HEIGHT = 20;
+uint8_t STEP_HEIGHT_CLIMB = 90;
+float AUTO_ELEVATION = -120;
 
 int speed;
 float height;
@@ -429,11 +434,11 @@ void move_leg(struct LegData* leg, float n)
 		}
 		*/
 	
-		tempz = leg->newPosz + 90;
+		tempz = leg->newPosz + STEP_HEIGHT_CLIMB;
 	}
 	else if (leg->lift == 1 && n != ITERATIONS+1)
 	{
-	tempz = leg->newPosz + 20; 	
+	tempz = leg->newPosz + STEP_HEIGHT; 	
 		
 	}
 	else
@@ -577,11 +582,11 @@ void leg_motion()
 		}
 		else if (i == 0 || i == ITERATIONS + 1)
 		{
-			wait(50); //abcd
+			wait(ITERATIONS_DELAY_START); //abcd
 		}
 		else
 		{
-			wait(25); //abcd
+			wait(ITERATIONS_DELAY); //abcd
 		}
 		
 		if(USART_elevation_flag())
@@ -1352,6 +1357,42 @@ void MPU_get_mean()
 	MPURMean = (xr+yr+ MPU_get_r())/3;
 }
 
+union Union_floatcast
+{
+	float f;
+	char s[sizeof(float)];
+};
+
+float floatCast(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4)
+{
+	union Union_floatcast foo;
+	foo.s[0] = b1;
+	foo.s[1] = b2;
+	foo.s[2] = b3;
+	foo.s[3] = b4;
+	return foo.f;
+}
+
+void update_parameters(uint8_t params[33])
+{
+	ITERATIONS = params[0];
+	SERVO_SPEED = (((uint16_t) params[1]) << 8) | params[2];
+	MAX_STEP_LENGTH = floatCast(params[3], params[4], params[5], params[6]) * 10;
+	ITERATIONS_DELAY_START = (((uint16_t) params[7]) << 8) | params[8];
+	ITERATIONS_DELAY = (((uint16_t) params[9]) << 8) | params[10];
+	STEP_HEIGHT = params[11] * 10;
+	STEP_HEIGHT_CLIMB = params[12] * 10;
+	TURN_WALK_SPEED_MAX = params[13];
+	TURN_WALK_SPEED_MIN = params[14];
+	TURN_TOLERANCE = floatCast(params[15], params[16], params[17], params[18]);
+	TURN_SCALE_FACTOR = floatCast(params[19], params[20], params[21], params[22]) * M_PI / 180;
+	TURN_WALK_SCALE_FACTOR = floatCast(params[23], params[24], params[25], params[26]) * M_PI / 180;
+	TURN_MIN_SPEED = floatCast(params[27], params[28], params[29], params[30]);
+	AUTO_ELEVATION = -((float) ((((uint16_t) params[31]) << 8) | params[32]));
+	change_z(AUTO_ELEVATION);
+	
+	USART_send_value(MAX_STEP_LENGTH);
+}
 
 //Ny hårdkodad climb
 void climb()

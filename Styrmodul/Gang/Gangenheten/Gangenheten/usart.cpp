@@ -24,12 +24,15 @@ uint8_t gRxBuffer [517];
 uint16_t gRxBufferIndex = 0;
 uint16_t gInvertNextFlag = 0;
 
+uint8_t parameters[34];
+
 uint8_t gRotation=50, gSpeed=0, gDirection=0;
 uint16_t gTurnAngle = 0;
 int8_t gTurnDirection = 1;
 uint8_t gTurnFlag = 0;
 uint8_t gClimbFlag = 0;
 uint8_t gElevationFlag = 0;
+uint8_t gParametersFlag = 0;
 
 float gZ = -120;
 
@@ -517,6 +520,34 @@ uint8_t USART_decode_climb_rx_fifo()
 	return 1;
 }
 
+uint8_t USART_decode_parameters_rx_fifo()
+{
+	uint8_t *len = 0;
+	
+	if(FifoRead(gRxFIFO, len))
+	{
+		return 1;
+	}
+	
+	int length = *len;
+	
+	if(length == 33)
+	{
+		uint8_t *data;
+		for(int i = 0; i < 33; ++i)
+		{
+			if(FifoRead(gRxFIFO, data))
+			{
+				return 1;
+			}
+			parameters[i] = *data;
+		}
+		gParametersFlag = 1;
+		return 0;
+	}
+	
+	return 1;
+}
 
 void USART_decode_rx_fifo()
 
@@ -577,6 +608,14 @@ void USART_decode_rx_fifo()
 				}
 				break;
 			}
+			case('P'):
+			{
+				if(USART_decode_parameters_rx_fifo())
+				{
+					return;
+				}
+				break;
+			}
 		}
 	}
 }
@@ -586,6 +625,16 @@ uint8_t USART_elevation_flag()
 	if(gElevationFlag)
 	{
 		gElevationFlag = 0;
+		return 1;
+	}
+	return 0;
+}
+
+uint8_t USART_parameters_flag()
+{
+	if(gParametersFlag)
+	{
+		gParametersFlag = 0;
 		return 1;
 	}
 	return 0;
@@ -643,5 +692,12 @@ ISR (USART0_RX_vect)
 	
 	
 }
+
+uint8_t USART_get_parameter(uint8_t index)
+{
+	return parameters[index];
+}
+
+
 
 // -- END USART stuff --

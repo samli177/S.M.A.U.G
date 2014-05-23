@@ -308,5 +308,6 @@ void turn_degrees(uint16_t degrees, int8_t dir);		// Is this correct?
  */
 void MPU_get_mean();
 
+void update_parameters(uint8_t params[33]);
 
 #endif /* HIGHLEVELWALKING_H_ */

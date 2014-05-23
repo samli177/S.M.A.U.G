@@ -686,4 +686,14 @@ void USART_send_command_parameters(uint8_t direction, uint8_t rotation, uint8_t 
 	
 }
 
+void USART_send_parameters(uint8_t parameters[33])
+{
+	for(int i = 0; i < 33; ++i)
+	{
+		gTxPayload[i] = parameters[i];
+	}
+	
+	USART_send_packet('P', 33);
+}
+
 // -- END USART stuff --

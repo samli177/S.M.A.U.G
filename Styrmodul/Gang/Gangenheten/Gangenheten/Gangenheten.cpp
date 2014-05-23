@@ -66,6 +66,15 @@ int main(void)
 		{
 			climb();
 		}
+		if(USART_parameters_flag())
+		{
+			uint8_t params[33];
+			for(int i = 0; i < 33; ++i)
+			{
+				params[i] = USART_get_parameter(i);
+			}
+			update_parameters(params);
+		}
 		
 		uint8_t r = USART_getRotation();
 		uint8_t s = USART_getSpeed();
