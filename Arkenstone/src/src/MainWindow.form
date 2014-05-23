@@ -220,7 +220,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace pref="123" max="32767" attributes="0"/>
+                      <EmptySpace pref="138" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -420,7 +420,7 @@
                                   <Component id="messageTextField" alignment="0" min="-2" pref="383" max="-2" attributes="0"/>
                                   <Component id="sendMessageButton" alignment="0" min="-2" pref="383" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="103" max="32767" attributes="0"/>
+                              <EmptySpace pref="114" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="jLabel24" max="32767" attributes="0"/>
                                   <Component id="statusToggleButton" min="-2" pref="120" max="-2" attributes="0"/>
@@ -1127,7 +1127,7 @@
                                                       <Component id="parameterOffsetSensor4TextField" min="-2" pref="80" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" attributes="0">
-                                                      <EmptySpace min="0" pref="403" max="32767" attributes="0"/>
+                                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                                       <Component id="parameterSampleRateTextField" min="-2" pref="80" max="-2" attributes="0"/>
                                                   </Group>
                                               </Group>
@@ -1196,7 +1196,7 @@
                                               </Group>
                                           </Group>
                                       </Group>
-                                      <EmptySpace pref="69" max="32767" attributes="0"/>
+                                      <EmptySpace pref="71" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -1847,7 +1847,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="parameterIterationsTextField">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="7"/>
+                        <Property name="text" type="java.lang.String" value="5"/>
                         <Property name="name" type="java.lang.String" value="Iterations" noResource="true"/>
                       </Properties>
                     </Component>
