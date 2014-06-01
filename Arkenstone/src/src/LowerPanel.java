@@ -42,6 +42,11 @@ public class LowerPanel extends JPanel {
         back = new Sensor(MAX_POINTS);
     }
 
+    /**
+     * Sets amount of saved sensor values and median count for each sensor.
+     * @param s Number of saved values.
+     * @param m Number of medians values used.
+     */
     public void setParameters(int s, int m){
         leftFront.setMaxValues(s);
         leftFront.setMedianCount(m);
@@ -59,6 +64,11 @@ public class LowerPanel extends JPanel {
         MAX_POINTS = s;
     }
     
+    /**
+     * Adds a new sensor value to the specified sensor.
+     * @param length The sensor length.
+     * @param sensor The sensor to be updated. Enum MainWindow.SENSOR.
+     */
     public synchronized void updatePoints(float length, MainWindow.SENSOR sensor) {
         switch (sensor) {
             case LEFT_FRONT:
@@ -83,6 +93,10 @@ public class LowerPanel extends JPanel {
 
     }
 
+    /**
+     * Paints the sensor values.
+     * @param g 
+     */
     protected synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
         

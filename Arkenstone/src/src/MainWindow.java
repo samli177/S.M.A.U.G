@@ -27,13 +27,24 @@ import net.java.games.input.Event;
 import net.java.games.input.EventQueue;
 
 /**
- *
+ * MainWindow.
+ * This is the window in witch the entire program is displayed.
+ * This class handles drawind and updating graphics, and has most of the
+ * important functions for communicating with the robot.
+ * The reason for this class to handle communications is that a lot of the
+ * text fields, buttons, etc. needs to be read from when sending data,
+ * so the most convinient way of handling this is to have all communication
+ * in this class.
+ * Another reason is that the communication functions needs to be synchronized
+ * with stuff like reading message buffer and setting values in the
+ * sensor display windows.
+ * 
  * @author Martin
  */
 public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPortEventListener {
 
     public static enum SENSOR {
-
+        // Just to make the code easier to read.
         LEFT_FRONT,
         RIGHT_FRONT,
         LEFT_BACK,
@@ -45,12 +56,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     }
 
     final int CONTROLL_DELAY = 100; // milli-seconds
-    final int MIN_SPEED = 20;
-    final int MIN_ROTATION = 15;
+    final int MIN_SPEED = 20; // For controller support
+    final int MIN_ROTATION = 15; // For controller support
 
     SerialPort comPort;
     LinkedList<byte[]> messageBuffer;
-    final Object lock;
+    final Object lock; // Used for synchronization
 
     Controller controller;
     EventQueue eventQueue;
@@ -60,8 +71,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     float arrowsAngle = -1;
     int rotationValue = 0;
 
+    // Buffer for making custom debug messages.
     Vector<Byte> debugData;
 
+    // used to make sure that the buttons only registrer once.
     boolean keyUpPressed, keyDownPressed, keyLeftPressed, keyRightPressed, keyZeroPressed, keyControlPressed;
     boolean keyRaisePressed, keyLowerPressed;
 
@@ -71,6 +84,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     public MainWindow() {
         initComponents();
 
+        // Make message windows auto scroll
         DefaultCaret caret = (DefaultCaret) messageTextArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         DefaultCaret caret2 = (DefaultCaret) debugTextArea.getCaret();
@@ -86,6 +100,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         Thread t = new Thread(this);
         t.start();
 
+        // This timer handles keyboard and controller support
         controllerTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -1721,6 +1736,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Is called when a key pressed event happens while the lower
+     * sensor window has focus. Handles pressed keys.
+     */
     private void lowerDrawAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lowerDrawAreaKeyPressed
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_UP:
@@ -1774,6 +1793,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_lowerDrawAreaKeyPressed
 
+    /**
+    * Is called when a key released event happens while the lower
+    * sensor window has focus. Handles released keys.
+    */
     private void lowerDrawAreaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lowerDrawAreaKeyReleased
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_UP:
@@ -1811,12 +1834,20 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_lowerDrawAreaKeyReleased
 
+    /**
+     * Makes sure that the right class has focus.
+     * This is used to steer the robot with the keyboard.
+     */
     private void lowerDrawAreaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lowerDrawAreaMouseClicked
         lowerDrawArea.requestFocus();
     }//GEN-LAST:event_lowerDrawAreaMouseClicked
 
+    /**
+     * Deletes a specific item in the debug byte buffer.
+     */
     private void deleteDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteDebugDataButtonActionPerformed
         if (debugDataList.getSelectedValue() != null) {
+            // Item selected
             debugData.remove(debugDataList.getSelectedIndex());
             debugDataList.setListData(debugData);
             int lastIndex = debugDataList.getModel().getSize() - 1;
@@ -1826,11 +1857,17 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_deleteDebugDataButtonActionPerformed
 
+    /**
+     * Clears the debug byte buffer.
+     */
     private void deleteAllDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteAllDebugDataButtonActionPerformed
         debugData.clear();
         debugDataList.setListData(debugData);
     }//GEN-LAST:event_deleteAllDebugDataButtonActionPerformed
 
+    /**
+     * Adds data to the debug byte buffer.
+     */
     private void addDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDebugDataButtonActionPerformed
         String name = dataParseButtonGroup.getSelection().getActionCommand();
         String data = debugDataTextField.getText();
@@ -1838,22 +1875,26 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             writeDebugMessage("Ange data innan du lägger till den.");
             return;
         }
-
+        
         switch (name) {
             case "B":
+                // Add single byte
                 debugData.add(Byte.parseByte(data, 2));
                 break;
             case "F":
+                // Add a float as four bytes
                 Float f = Float.parseFloat(data);
                 for (byte b : ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putFloat(f).array()) {
                     debugData.add(b);
                 }
                 break;
             case "I":
+                // Add an integer as one byte
                 Integer i = Integer.parseInt(data);
                 debugData.add(ByteBuffer.allocate(4).putInt(i).array()[3]);
                 break;
             case "S":
+                // Add a string as bytes
                 for (byte b : data.getBytes()) {
                     debugData.add(b);
                 }
@@ -1868,11 +1909,15 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_addDebugDataButtonActionPerformed
 
+    /**
+     * Send the data in the debug byte buffer to the selected reciever.
+     */
     private void sendDebugDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendDebugDataButtonActionPerformed
         String name = inOutButtonGroup.getSelection().getActionCommand();
         byte[] data;
         switch (name) {
             case "I":
+                // Emulate data recieved from robot
                 data = new byte[debugData.size() + 2];
                 data[0] = (byte) debugTagTextField.getText().charAt(0);
                 data[1] = (byte) debugData.size();
@@ -1883,6 +1928,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 decodeMessage();
                 break;
             case "O":
+                // Send data to robot
                 data = new byte[debugData.size()];
                 for (int i = 0; i < debugData.size(); i++) {
                     data[i] = debugData.elementAt(i);
@@ -1892,11 +1938,18 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_sendDebugDataButtonActionPerformed
 
+    /**
+     * Clears the debug counter.
+     */
     private void clearDebugButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearDebugButtonActionPerformed
         debugTextArea.setText("");
         debugCallsTextField.setText("0");
     }//GEN-LAST:event_clearDebugButtonActionPerformed
 
+    /**
+     * Sets new parameters for displaying sensors in the upper and lower
+     * draw windows.
+     */
     private void sensorValuesUpdateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sensorValuesUpdateButtonActionPerformed
         int s = Integer.parseInt(savedSensorValuesTextField.getText());
         int m = Integer.parseInt(medianSensorValuesTextField.getText());
@@ -1904,6 +1957,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         ((LowerPanel) lowerDrawArea).setParameters(s, m);
     }//GEN-LAST:event_sensorValuesUpdateButtonActionPerformed
 
+    /**
+     * Sends data to robot telling if status messages is to be sent to computer.
+     */
     private void statusToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusToggleButtonActionPerformed
         byte data[] = new byte[1];
         if (statusToggleButton.isSelected()) {
@@ -1916,6 +1972,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         sendData('T', data);
     }//GEN-LAST:event_statusToggleButtonActionPerformed
 
+    /**
+     * Sends data to robot setting it in auto/manual mode and in which algoritm.
+     */
     private void sendAutoSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendAutoSettingsButtonActionPerformed
         byte data[] = new byte[1];
         if (autoButton.isSelected()) {
@@ -1934,6 +1993,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_sendAutoSettingsButtonActionPerformed
 
+    /**
+     * Connects a controller to the program.
+     */
     private void connectControllerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectControllerButtonActionPerformed
         Controller c = (Controller) controllersComboBox.getSelectedItem();
         if (c != null) {
@@ -1942,7 +2004,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             chosenControllerLabel.setText(c.getName());
         }
     }//GEN-LAST:event_connectControllerButtonActionPerformed
-
+    
+    /**
+     * Finds all controllers of type GAMEPAD connected to the computer.
+     */
     private void searchControllersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchControllersButtonActionPerformed
         controllersComboBox.removeAllItems();
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
@@ -1953,6 +2018,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_searchControllersButtonActionPerformed
 
+    /**
+     * Sends a message to the the robot.
+     * It will be displayed on the LCD display.
+     */
     private void sendMessageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMessageButtonActionPerformed
         String mess = messageTextField.getText();
         if (sendMessage(mess)) {
@@ -1962,10 +2031,14 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_sendMessageButtonActionPerformed
 
+    /**
+     * Toggles connection on/off.
+     */
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
         if (connectButton.getText() == "Koppla ifrån") {
             try {
                 writeMessage("Kopplar ifrån");
+                comPort.purgePort(15); // I believe this will fix the PORT BUSY problem...
                 comPort.closePort();
                 writeMessage("Ifrånkopplad");
                 connectButton.setText("Koppla upp");
@@ -1978,6 +2051,11 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 
+    /**
+     * Toogles autonomous mode on/off.
+     * The information is not sent to the robot until the
+     * sendAutoSettings button is pressed.
+     */
     private void autoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoButtonActionPerformed
         if (autoButton.isSelected()) {
             autoButton.setText("Autonomt läge (på)");
@@ -1986,11 +2064,19 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_autoButtonActionPerformed
 
+    /**
+     * Saves the testing parameters in the parameters tab to a file.
+     * The file is .txt and can be read and written outside this program.
+     */
     private void saveParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveParametersButtonActionPerformed
         String path = MainWindow.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
+        
+        // This ensures that it works both from the IDE and standalone version.
         if(!path.endsWith("/")){
             path = path.substring(0, path.lastIndexOf('/') + 1);
         }
+        
+        // Create folder if it does not exist.
         File folder = new File(path, "Parametrar");
         folder.mkdir();
 
@@ -2028,6 +2114,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_saveParametersButtonActionPerformed
 
+    /**
+     * Loads the parameters from a file.
+     */
     private void loadParametersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadParametersButtonActionPerformed
         String path = MainWindow.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
         if(!path.endsWith("/")){
@@ -2071,6 +2160,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_loadParametersButtonActionPerformed
 
+    /**
+     * Sends the parameters to the robot. Uses three packages to reduce size.
+     */
     private void sendParametrsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendParametrsButtonActionPerformed
         boolean correct = true;
         
@@ -2142,6 +2234,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }//GEN-LAST:event_sendParametrsButtonActionPerformed
 
+    /**
+     * Adds a float to a byte array using LITTLE_ENDIAN format.
+     * @param data The byte array to be written to.
+     * @param index The index in the array for the first byte of the float.
+     * @param f The value.
+     */
     private void addFloatToData(byte data[], int index, float f) {
         for (byte b : ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putFloat(f).array()) {
             data[index] = b;
@@ -2149,6 +2247,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
     
+    /**
+     * Adds an integer to a byte array. Only unsigned values are supported.
+     * @param data The array to be written to.
+     * @param index The index of the first byte of the integer.
+     * @param i The integer.
+     */
     private void addInt16ToData(byte data[], int index, int i){
         data[index] = (byte) (i >> 8);
         data[index + 1] = (byte) (i & 0x00FF);
@@ -2398,7 +2502,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     // End of variables declaration//GEN-END:variables
 
     /* ------------------------------------------------
-     My own functions, not generated by swing. */
+     Methods not generated by swing. */
+    
+    /**
+     * Writes a message in the message window. Always starts on a new line.
+     * @param message The string that will be written.
+     */
     private void writeMessage(String message) {
         messageTextArea.append("\n" + message);
         if (!messageTextArea.hasFocus()) {
@@ -2406,6 +2515,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
 
+    /**
+     * Writes a message in the debug window. Always starts on a new line.
+     * @param message The string to be written.
+     */
     private void writeDebugMessage(String message) {
         debugTextArea.append(message + "\n");
         debugCallsTextField.setText(Integer.parseInt(debugCallsTextField.getText()) + 1 + "");
@@ -2442,6 +2555,13 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         writeMessage("Uppkopplingen lyckades");
     }
 
+    /**
+     * Is called when data is recieved on the serial port.
+     * Reads bytes until eighter a stop byte is read, or the function times out.
+     * If read successfully, the data is stored in the message buffer to be
+     * decoded later.
+     * @param serialPortEvent 
+     */
     public void serialEvent(SerialPortEvent serialPortEvent) {
         try {
             ArrayList<Byte> bytes = new ArrayList();
@@ -2523,6 +2643,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
 
+    /**
+     * Cyclic redundancy check with 16 bits.
+     * @param length Length of the message.
+     * @param data The message
+     * @return Byte one and two of the CRC16 as byte one and two of an int.
+     */
     private int crc16(int length, byte[] data) {
         int crc = 0xFFFF;
         int poly = 0x8408;
@@ -2547,22 +2673,39 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         return crc;
     }
 
+    /**
+     * Sends a message string to the robot.
+     * @param message The string to be sent.
+     * @return True if successfull, false otherwise.
+     */
     public boolean sendMessage(String message) {
         return sendData('M', message.getBytes());
     }
 
+    /**
+     * Sends a command telling the robot to move.
+     * @param angle The direction the robot should walk. Direction 0 is straight ahead, and increase counter clockwice 4 degrees per unit. Maximum direction is 90.
+     * @param rotation The rotation speed the robot should use. Rotation 0 is max left, rotation 100 is max right. Rotation 0 is no rotation.
+     * @param speed The walking speed. From 0 to 100.
+     * @return True is successfully sent, false otherwise.
+     */
     public boolean sendSteerCommand(int angle, int rotation, int speed) {
-        // 0 <= angle < 180
+        // 0 <= angle < 90
         // 0 <= speed <= 100
         // 0 <= rotation <= 100
         byte data[] = new byte[3];
         data[0] = (byte) angle;
         data[1] = (byte) rotation;
         data[2] = (byte) speed;
-
+        
         return sendData('C', data);
     }
 
+    /**
+     * Sends command to the robot changing elevation.
+     * @param up True is robot should raise, false if it should lower itself.
+     * @return True is successfully sent, false otherwise.
+     */
     public boolean sendElevationCommand(boolean up) {
         System.out.println("Elevation");
         byte data[] = new byte[1];
@@ -2574,6 +2717,13 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         return sendData('E', data);
     }
 
+    /**
+     * Sends a sequense of bytes to the robot.
+     * Used by all the other send methods.
+     * @param tag The message tag. Tells the robot what to do with the data.
+     * @param data The bytes to be sent.
+     * @return True is successfully sent, false otherwise.
+     */
     public boolean sendData(char tag, byte[] data) {
         if (comPort == null || !comPort.isOpened()) {
             writeMessage("Koppla upp till roboten först!");
@@ -2617,6 +2767,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         return true;
     }
 
+    /**
+     * The main loop, does the painting and updating of everything.
+     */
     public void run() {
         while (true) {
             // Draw sensor values
@@ -2655,13 +2808,21 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
 
+    /**
+     * Checks if message buffer has message.
+     * @return True is there is a buffered message, false otherwise.
+     */
     private boolean hasMessage() {
         return messageBuffer.size() > 0;
     }
 
+    /**
+     * Takes the first message in the message buffer and decodes it
+     * by reading its tag, and handling the data depending on it.
+     */
     private void decodeMessage() {
         byte[] message = messageBuffer.getFirst();
-        //Kanske behöver synkroniseras med serialEvent...
+        // Maybe needs to be synchronized with serialEvent...
         synchronized (lock) {
             messageBuffer.removeFirst();
         }
@@ -2693,6 +2854,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
 
+    /**
+     * Updates autonomous settings because it changed on the robot.
+     * @param data The settings.
+     */
     private void autonomousUpdate(byte[] data) {
         int a = data[0];
         if (a == 0) {
@@ -2705,6 +2870,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         autoButton.setSelected(true);
     }
 
+    /**
+     * Decodes a message and displays it.
+     * @param data The message.
+     */
     private void messageRecieved(byte[] data) {
         String m = "";
 
@@ -2715,6 +2884,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         writeMessage("Message: " + m);
     }
 
+    /**
+     * Decodes sensor values and updates the drawing areas and text fields.
+     * @param data The values. Each value is a unsigned int16.
+     */
     private void sensorUpdate(byte[] data) {
         for (int sensor = 0; sensor < data.length / 2; sensor++) {
             int msb = data[sensor * 2];
@@ -2726,9 +2899,7 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 lsb += 256;
             }
             int length = msb * 256 + lsb;
-            if (length < 0) {
-                //length += 65536;
-            }
+            
             switch (sensor) {
                 case 0:
                     ((LowerPanel) lowerDrawArea).updatePoints(length / 10, SENSOR.LEFT_FRONT);
@@ -2768,6 +2939,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
 
+    /**
+     * Decodes a float value using LITTLE_ENDIAN format.
+     * @param data The float as four bytes.
+     */
     private void valueRecieved(byte[] data) {
         try {
             float f = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).getFloat();
@@ -2777,6 +2952,13 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
 
+    /**
+     * Decodes an unknown message and displays it in the debug window.
+     * This is called when the tag is not recogniced.
+     * Prints the tag, the byte values and the message as a string.
+     * @param tag The message tag.
+     * @param data The data.
+     */
     private void debugMessageRecieved(char tag, byte data[]) {
         writeDebugMessage("\n-- Okänt meddelande --");
         writeDebugMessage("Tag: " + tag);
@@ -2790,6 +2972,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         writeDebugMessage("-- Slut --\n");
     }
 
+    /**
+     * Updates steering values from keyboard state.
+     * The values are used in the timer controlling the steering commands.
+     */
     private void keyUpdate() {
         int walk = 0;
         int strafe = 0;
@@ -2826,11 +3012,12 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
 
         rotationValue = rot * 50;
-
-        // Send package with direction, speed and rot.
-        //sendSteerCommand(direction / 2, rot * 50, speed);
     }
 
+    /**
+     * Called when a button on the controller is pressed.
+     * @param event 
+     */
     private void controllerButtonEvent(Event event) {
         String name = event.getComponent().getName();
         if (name.equals("Styrknapp")) {
@@ -2849,6 +3036,10 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
     }
 
+    /**
+     * Called from timer. Handles controller input and keyboard values.
+     * Sends steering command to robot.
+     */
     private void robotSteeringUpdate() {
         float x = 0, y = 0, xrot = 0;
 
@@ -2905,7 +3096,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
         }
 
         if (speed > 0 || Math.abs(rotation) > 0) {
-            // För att kunna skicka över UART
+            // Scale the values to be able to send them the the robot.
+            // Must be carefull about signed/unsigned representations.
             angle /= 4;
             rotation += 50;
             System.out.println("Direction: " + (int) angle + ", rotation: " + rotation + ", speed: " + speed);

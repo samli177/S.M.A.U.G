@@ -26,6 +26,11 @@ public class Sensor {
         medianNumbers = new LinkedList<>();
     }
 
+    /**
+     * Sets max number of values stored.
+     * @param max Max values stored.
+     * @return True is valid number, false otherwise.
+     */
     public boolean setMaxValues(int max) {
         if (max > 0) {
             maxValues = max;
@@ -37,6 +42,11 @@ public class Sensor {
         return false;
     }
 
+    /**
+     * Sets the number of values used in the median.
+     * @param medianCount Number of values.
+     * @return True if valid number.
+     */
     public boolean setMedianCount(int medianCount) {
         if (medianCount > 0) {
             this.medianCount = medianCount;
@@ -48,6 +58,10 @@ public class Sensor {
         return false;
     }
 
+    /**
+     * Adds a new sensor value. Removes oldest if buffer is full.
+     * @param sensorValue The length in mm.
+     */
     public void add(float sensorValue) {
         if (medianCount == 1) {
             values.addFirst(sensorValue);
@@ -78,10 +92,19 @@ public class Sensor {
         }
     }
 
+    /**
+     * Returns the value at a position in the buffer.
+     * @param index The index.
+     * @return The length in mm.
+     */
     public float get(int index) {
         return values.get(index);
     }
     
+    /**
+     * Number of values stored in the buffer.
+     * @return The number of values.
+     */
     public int size(){
         return values.size();
     }

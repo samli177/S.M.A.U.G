@@ -8,7 +8,6 @@ package src;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.LinkedList;
 import javax.swing.JPanel;
 
 /**
@@ -29,7 +28,12 @@ public class UpperPanel extends JPanel {
         vertical = new Sensor(MAX_POINTS);
         ultraSound = new Sensor(MAX_POINTS);
     }
-
+    
+    /**
+     * Sets amount of saved sensor values and median count for each sensor.
+     * @param s Number of saved values.
+     * @param m Number of medians values used.
+     */
     public void setParameters(int s, int m) {
         vertical.setMaxValues(s);
         vertical.setMedianCount(m);
@@ -39,6 +43,11 @@ public class UpperPanel extends JPanel {
         MAX_POINTS = s;
     }
 
+    /**
+     * Adds a new sensor value to the specified sensor.
+     * @param length The sensor length.
+     * @param sensor The sensor to be updated. Enum MainWindow.SENSOR.
+     */
     public synchronized void updatePoints(float length, MainWindow.SENSOR sensor) {
         switch (sensor) {
             case VERTICAL:
@@ -50,6 +59,10 @@ public class UpperPanel extends JPanel {
         }
     }
 
+    /**
+     * Paints the sensor values.
+     * @param g 
+     */
     protected synchronized void paintComponent(Graphics g) {
         super.paintComponent(g);
 
