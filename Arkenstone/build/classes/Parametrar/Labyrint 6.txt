@@ -1,0 +1,39 @@
+Sensor offset 6 : 0
+Sensor offset 5 : 0
+Sensor offset 3 : 0
+Sensor offset 1 : 0
+Sensor offset 2 : 0
+Sensor offset 0 : 0
+Sensor offset 4 : 0
+Sample rate : 20
+Servo speed : 768
+Iterations : 4
+Iterations delay start : 20
+Iterations delay : 25
+Step height : 2
+Step height climbing : 9
+Max turn walk speed : 100
+Min turn walk speed : 60
+Turn tolerance : 5
+Turn scale factor : 60
+Turn walk scale factor : 60
+Min turn rotation : 15
+Auto elevation : 120
+Max step length : 5
+Max regulation sensor diff : 10
+Acceptable distance offset : 2
+Acceptable angle offset : 3
+Kp : 0.05
+Speed : 90
+Entry steps left : 0
+Exit steps left : 0
+Entry steps right : 0
+Exit steps right : 0
+Offset left : 5
+Offset right : 2
+Climb limit : 30
+Angle scale factor : 0.3
+Front min dist : 75
+Corridor width : 80
+Max regulation sensor diff : 10
+Regulation max dist dist : 50

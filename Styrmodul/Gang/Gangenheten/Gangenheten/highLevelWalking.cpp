@@ -1272,7 +1272,7 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 {
 	float walkSpeedMax = 0;
 	float walkSpeedMin = 0;
-	if(degrees < 125)
+	if(degrees < 135)
 	{
 		walkSpeedMax = TURN_WALK_SPEED_MAX;
 		walkSpeedMin = TURN_WALK_SPEED_MIN;
@@ -1320,7 +1320,13 @@ void turn_degrees(uint16_t degrees, int8_t dir)
 				angleLeft *= -1;
 			}
 		}
-		turnRotation = 50 + dir * 50 * angleLeft / TURN_SCALE_FACTOR;
+		if(degrees < 135)
+		{
+			turnRotation = 50 + dir * 50 * angleLeft / TURN_SCALE_FACTOR;
+		} else {
+			turnRotation = 50 + dir * 50 * angleLeft / M_PI_2;
+		}
+		
 		if(turnRotation > 50 - TURN_MIN_SPEED && turnRotation < 50 + TURN_MIN_SPEED)
 		{
 			turnRotation = 50 + TURN_MIN_SPEED * dir * angleLeft / (fabs(angleLeft) * 2);
@@ -1397,6 +1403,8 @@ void update_parameters(uint8_t params[33])
 //Ny hårdkodad climb
 void climb()
 {
+	float tempStepLength = MAX_STEP_LENGTH;
+	MAX_STEP_LENGTH = 55;
 	climbing_flag = 1;
 	float tempdir;
 	MPU_update();
@@ -1416,5 +1424,6 @@ void climb()
 		move_robot(tempdir,50+150*(climb_start_control-MPU_get_y()),100);
 	}
 	climbing_flag = 0;
+	MAX_STEP_LENGTH = tempStepLength;
 	USART_send_climb_done();	
 }

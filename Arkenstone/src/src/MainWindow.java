@@ -77,6 +77,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
     // used to make sure that the buttons only registrer once.
     boolean keyUpPressed, keyDownPressed, keyLeftPressed, keyRightPressed, keyZeroPressed, keyControlPressed;
     boolean keyRaisePressed, keyLowerPressed;
+    
+    boolean addRotation = false;
 
     /**
      * Creates new form MainWindow
@@ -2154,6 +2156,8 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                 }
             }
 
+            writeMessage("Laddade parametrar från filen \"" + name + ".txt\"");
+            
         } catch (IOException ex) {
             writeMessage("Fel vid läsning av filen!");
             System.out.println(ex);
@@ -3032,6 +3036,14 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
                     // Right shoulder, send raise
                     sendElevationCommand(false);
                     break;
+                case "Knapp 3":
+                    addRotation = !addRotation;
+                    if(addRotation){
+                        writeMessage("Rotationstillskott aktiverat");
+                    } else {
+                        writeMessage("Rotationstillskott avaktiverat");
+                    }
+                    break;
             }
         }
     }
@@ -3100,6 +3112,9 @@ public class MainWindow extends javax.swing.JFrame implements Runnable, SerialPo
             // Must be carefull about signed/unsigned representations.
             angle /= 4;
             rotation += 50;
+            if(addRotation){
+                rotation += 1;
+            }
             System.out.println("Direction: " + (int) angle + ", rotation: " + rotation + ", speed: " + speed);
             sendSteerCommand((int) angle, rotation, speed);
         }
